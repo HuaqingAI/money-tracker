@@ -43,7 +43,7 @@ design_status: not-started
 ## Device & Starting Point (Q5 + Q6)
 
 **Device:** Mobile — Android
-**Entry:** 从Dashboard右上角点击头像/设置图标进入。
+**Entry:** 从Dashboard底部Tab"我的"进入 08.0 My Hub。
 
 ---
 
@@ -59,8 +59,9 @@ design_status: not-started
 
 ## Shortest Path (Q8)
 
-1. **设置** — 查看数据安全说明、配置通知偏好、管理权限
-2. **个人资料/账户** — 更新个人信息、查看账户状态 ✓
+1. **我的 Hub** — 底部 Tab "我的"首页，展示资料卡、会员状态、快捷功能入口
+2. **设置** — 查看数据安全说明、配置通知偏好、管理权限
+3. **个人资料/账户** — 更新个人信息、查看账户状态 ✓
 
 ---
 
@@ -79,7 +80,8 @@ design_status: not-started
 
 | Step | Folder | Purpose | Exit Action |
 |------|--------|---------|-------------|
-| 08.1 | `08.1-settings/` | 查看安全说明并配置偏好 | 点击"个人资料" |
+| 08.0 | `08.0-my-hub/` | "我的"Tab 首页，资料 + 快捷入口 | 点击"设置"或"个人资料" |
+| 08.1 | `08.1-settings/` | 查看安全说明并配置偏好 | 返回 Hub 或底部 Tab |
 | 08.2 | `08.2-profile-account/` | 更新个人信息 | 关闭页面 ✓ |
 
-**First step** (08.1) includes full entry context (Q3 + Q4 + Q5 + Q6).
+**First step** (08.0) is the Tab landing page. 08.1 and 08.2 are push destinations from Hub.
