@@ -1,6 +1,6 @@
 ---
 design_intent: D
-design_status: not-started
+design_status: specified
 ---
 
 # 06: 全员的手动记账与分类补充

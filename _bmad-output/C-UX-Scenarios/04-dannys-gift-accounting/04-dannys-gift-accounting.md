@@ -1,6 +1,6 @@
 ---
 design_intent: S
-design_status: not-started
+design_status: specified
 ---
 
 # 04: 大强的人情账管理
@@ -80,7 +80,10 @@ design_status: not-started
 
 | Step | Folder | Purpose | Exit Action |
 |------|--------|---------|-------------|
-| 04.1 | `04.1-gift-management/` | 搜索并查看人情历史 | 点击"获取建议" |
-| 04.2 | `04.2-gift-smart-suggestion/` | 获取回礼建议并记录 | 确认记录 ✓ |
+| 04.1 | `04.1-gift-management/` | 人情账主控台：搜索联系人、查看历史、管理事件 | 点击"获取建议" / 点击"拍照导入" |
+| 04.1a | `04.1a-gift-book-import/` | 礼簿拍照OCR批量导入（数据冷启动） | 导入完成返回04.1 |
+| 04.2 | `04.2-gift-smart-suggestion/` | AI回礼建议并记录 | 确认记录 ✓ |
 
 **First step** (04.1) includes full entry context (Q3 + Q4 + Q5 + Q6).
+
+**04.1a** is a side page (not part of main scenario flow) for data onboarding — critical for cold start.

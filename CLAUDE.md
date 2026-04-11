@@ -22,7 +22,7 @@ AI驱动的零记账智能财务管家 -- 通过AI自动捕获和智能管理，
 - API 响应格式：`{ success: boolean, data?: T, error?: string }`
 
 ---
-
+<!-- bmad-project-config -->
 ## Workflow Commands
 
 Workflow files are located in the `workflow/` directory, to be executed step-by-step by AI Agents.
@@ -40,3 +40,4 @@ Execution: Read `workflow/story-dev-workflow-single-repo.md` and follow the work
 
 - Coding standards: refer to project-specific documentation (e.g. `docs/CODE_STYLE.md` or equivalent)
 - Before making changes, read relevant existing code to understand patterns and conventions
+<!-- /bmad-project-config -->
