@@ -1,0 +1,79 @@
+{
+  "meta": {
+    "scenario": "05-meis-multi-identity-accounting",
+    "created": "2026-04-11",
+    "language": "zh-CN",
+    "currency": "CNY",
+    "amounts_in_cents": true
+  },
+  "user": {
+    "id": "usr_mei_001",
+    "name": "小美",
+    "phone": "139****2345"
+  },
+  "identities": [
+    {
+      "id": "default",
+      "name": "打工人小美",
+      "icon": "👩‍💻",
+      "desc": "设计公司 · 主业收入",
+      "type": "main",
+      "monthly_expense_cents": 420000,
+      "monthly_income_cents": 900000
+    },
+    {
+      "id": "sidehustle",
+      "name": "老板小美",
+      "icon": "👩‍💼",
+      "desc": "小红书带货 · 副业",
+      "type": "sidehustle",
+      "monthly_expense_cents": 615300,
+      "monthly_income_cents": 900000,
+      "net_profit_cents": 284700,
+      "prev_month_profit_cents": 250700
+    }
+  ],
+  "ai_rules": [
+    { "icon": "📱", "title": "小红书平台消费", "merchants": "小红书、薯店 等", "count": 18, "amount_cents": 320000, "type": "expense" },
+    { "icon": "📦", "title": "快递发货", "merchants": "韵达、中通、圆通 等", "count": 22, "amount_cents": 88000, "type": "expense" },
+    { "icon": "🏭", "title": "1688 进货", "merchants": "1688.com 等", "count": 8, "amount_cents": 460000, "type": "expense" },
+    { "icon": "💰", "title": "小红书带货收入", "merchants": "薯店结算、品牌合作 等", "count": 6, "amount_cents": 900000, "type": "income" }
+  ],
+  "uncertain_transactions": [
+    { "merchant": "丝芙兰", "amount_cents": 28900, "category": "购物·美妆", "date": "4月5日" },
+    { "merchant": "得物", "amount_cents": 16800, "category": "购物·综合", "date": "4月3日" },
+    { "merchant": "名创优品", "amount_cents": 5900, "category": "购物·日用", "date": "4月1日" },
+    { "merchant": "闲鱼", "amount_cents": 12000, "category": "购物·二手", "date": "3月28日" },
+    { "merchant": "微信转账-张三", "amount_cents": 50000, "category": "转账", "date": "3月25日" },
+    { "merchant": "拼多多", "amount_cents": 8900, "category": "购物·综合", "date": "3月22日" },
+    { "merchant": "淘宝-某美妆店", "amount_cents": 15600, "category": "购物·美妆", "date": "3月20日" }
+  ],
+  "pnl": {
+    "income": [
+      { "icon": "💰", "name": "薯店结算", "amount_cents": 540000 },
+      { "icon": "🤝", "name": "品牌合作", "amount_cents": 320000 },
+      { "icon": "🎁", "name": "样品佣金", "amount_cents": 40000 }
+    ],
+    "costs": [
+      { "icon": "📱", "name": "广告投流", "amount_cents": 200000, "pct": 32.5 },
+      { "icon": "📦", "name": "样品采购", "amount_cents": 160000, "pct": 26.0 },
+      { "icon": "🚚", "name": "快递物流", "amount_cents": 88000, "pct": 14.3 },
+      { "icon": "📋", "name": "平台佣金", "amount_cents": 87300, "pct": 14.2 },
+      { "icon": "🔄", "name": "售后退款", "amount_cents": 80000, "pct": 13.0 }
+    ],
+    "time": {
+      "hours": 124,
+      "side_rate": 23,
+      "main_rate": 51,
+      "ratio_pct": 45
+    },
+    "trend": [
+      { "month": "1月", "profit": 1800, "income": 6500, "expense": 4700 },
+      { "month": "2月", "profit": 2100, "income": 7200, "expense": 5100 },
+      { "month": "3月", "profit": 2507, "income": 8500, "expense": 5993 },
+      { "month": "4月", "profit": 2847, "income": 9000, "expense": 6153 }
+    ],
+    "attribution": { "assigned": 54, "pending": 7 },
+    "fulltime_progress": { "months_qualified": 2, "months_needed": 3 }
+  }
+}

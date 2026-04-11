@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>08.0 My Hub - 了然</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'liaoran': {
+                            50: '#E8F5F1', 100: '#D1EBE3', 200: '#A3D7C7',
+                            300: '#75C3AB', 400: '#47AF8F', 500: '#1A6B5A',
+                            600: '#165A4B', 700: '#0F4F42', 800: '#0A3A31', 900: '#052520',
+                        }
+                    },
+                    fontFamily: { sans: ['-apple-system', 'PingFang SC', 'Noto Sans CJK SC', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body { overscroll-behavior: none; }
+        .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom, 0px)); }
+        .tab-bar { box-shadow: 0 -1px 0 rgba(0,0,0,0.06); }
+        .press-scale { transition: transform 0.1s ease; }
+        .press-scale:active { transform: scale(0.97); }
+        .membership-free { background: #F3F4F6; color: #6B7280; border: 1px solid #E5E7EB; }
+        .membership-trial { background: linear-gradient(135deg, #1A6B5A, #47AF8F); color: white; }
+        .membership-active { background: linear-gradient(135deg, #D4A537, #F5C842, #D4A537); color: #7C4A00; }
+        .membership-expired { background: #F3F4F6; color: #9CA3AF; border: 1px dashed #D1D5DB; }
+        .lock-overlay { position: relative; }
+        .lock-overlay::after {
+            content: '会员';
+            position: absolute; top: 6px; right: 6px;
+            font-size: 9px; padding: 1px 5px; border-radius: 4px;
+            background: linear-gradient(135deg, #D4A537, #F5C842);
+            color: #7C4A00; font-weight: 600;
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+
+    <div class="h-[100dvh] flex flex-col">
+
+        <!-- SCROLLABLE CONTENT -->
+        <div class="flex-1 overflow-y-auto pb-24">
+
+            <!-- ===== PROFILE CARD ===== -->
+            <div id="hub-profile-card"
+                 class="mx-4 mt-5 rounded-2xl bg-white shadow-sm p-5 flex items-center gap-4 press-scale active:bg-gray-50 cursor-pointer"
+                 onclick="navigateTo('08.2-Profile.html')">
+
+                <!-- Avatar -->
+                <div id="hub-profile-avatar"
+                     class="w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold text-white flex-shrink-0"
+                     style="background: linear-gradient(135deg, #1A6B5A, #47AF8F);">
+                    强
+                </div>
+
+                <!-- Info -->
+                <div class="flex-1 min-w-0">
+                    <h2 id="hub-profile-name" class="text-lg font-bold text-gray-900 truncate">大强</h2>
+                    <p id="hub-profile-subtitle" class="text-sm text-gray-400 mt-0.5">138****6789</p>
+                    <!-- Membership Badge -->
+                    <span id="hub-profile-membership"
+                          class="inline-block mt-1.5 text-xs font-medium px-2.5 py-0.5 rounded-full membership-trial">
+                        体验会员 · 到期 4/15
+                    </span>
+                </div>
+
+                <!-- Chevron -->
+                <svg id="hub-profile-chevron" class="text-gray-300 flex-shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+
+            <!-- ===== FEATURE GRID ===== -->
+            <div class="mx-4 mt-6">
+                <h3 id="hub-feature-grid-header" class="text-sm font-semibold text-gray-500 mb-3 px-1">我的功能</h3>
+                <div id="hub-feature-grid" class="grid grid-cols-3 gap-3">
+                    <!-- Gift Accounting -->
+                    <button id="hub-feature-gift"
+                            class="bg-white rounded-xl shadow-sm p-4 flex flex-col items-center gap-2 press-scale active:bg-gray-50"
+                            onclick="navigateTo('../04-dannys-gift-accounting-Prototype/04.1-GiftManagement.html')">
+                        <span class="text-2xl">🎁</span>
+                        <span class="text-xs font-medium text-gray-700">人情账</span>
+                    </button>
+
+                    <!-- Family Ledger -->
+                    <button id="hub-feature-family"
+                            class="bg-white rounded-xl shadow-sm p-4 flex flex-col items-center gap-2 press-scale active:bg-gray-50 feature-lockable"
+                            onclick="handleFeatureClick('family')">
+                        <span class="text-2xl">👥</span>
+                        <span class="text-xs font-medium text-gray-700">家庭账本</span>
+                    </button>
+
+                    <!-- Multi-Identity -->
+                    <button id="hub-feature-identity"
+                            class="bg-white rounded-xl shadow-sm p-4 flex flex-col items-center gap-2 press-scale active:bg-gray-50 feature-lockable"
+                            onclick="handleFeatureClick('identity')">
+                        <span class="text-2xl">🏷️</span>
+                        <span class="text-xs font-medium text-gray-700">多身份</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== MANUAL ENTRY CARD ===== -->
+            <div id="hub-manual-entry"
+                 class="mx-4 mt-4 bg-white rounded-xl shadow-sm p-4 flex items-center gap-3 press-scale active:bg-gray-50 cursor-pointer"
+                 onclick="navigateTo('../06-manual-input-and-category-management-Prototype/06.1-ManualEntry.html')">
+                <span id="hub-manual-entry-icon" class="text-xl">✏️</span>
+                <div class="flex-1">
+                    <h3 id="hub-manual-entry-title" class="text-sm font-semibold text-gray-900">记一笔</h3>
+                    <p id="hub-manual-entry-subtitle" class="text-xs text-gray-400 mt-0.5">AI 没捕到的，手动补上</p>
+                </div>
+                <svg class="text-gray-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+
+            <!-- ===== TOOL LIST ===== -->
+            <div id="hub-tool-list" class="mx-4 mt-6 bg-white rounded-xl shadow-sm overflow-hidden">
+                <!-- Import Data -->
+                <button id="hub-tool-import"
+                        class="w-full flex items-center gap-3 px-4 py-3.5 active:bg-gray-50 border-b border-gray-100"
+                        onclick="navigateTo('../01-dannys-zero-input-first-experience-Prototype/01.5-BillImport.html')">
+                    <span class="text-lg">📂</span>
+                    <span class="flex-1 text-sm text-gray-700 text-left">导入数据</span>
+                    <svg class="text-gray-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+                <!-- Category Management -->
+                <button id="hub-tool-category"
+                        class="w-full flex items-center gap-3 px-4 py-3.5 active:bg-gray-50"
+                        onclick="navigateTo('../06-manual-input-and-category-management-Prototype/06.2-CategoryManagement.html')">
+                    <span class="text-lg">📋</span>
+                    <span class="flex-1 text-sm text-gray-700 text-left">分类管理</span>
+                    <svg class="text-gray-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+            </div>
+
+            <!-- ===== MENU LIST ===== -->
+            <div id="hub-menu-list" class="mx-4 mt-4 bg-white rounded-xl shadow-sm overflow-hidden">
+                <!-- Settings -->
+                <button id="hub-menu-settings"
+                        class="w-full flex items-center gap-3 px-4 py-3.5 active:bg-gray-50 border-b border-gray-100"
+                        onclick="navigateTo('08.1-Settings.html')">
+                    <span class="text-lg">⚙️</span>
+                    <span class="flex-1 text-sm text-gray-700 text-left">设置</span>
+                    <svg class="text-gray-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+                <!-- Help -->
+                <button id="hub-menu-help"
+                        class="w-full flex items-center gap-3 px-4 py-3.5 active:bg-gray-50 border-b border-gray-100"
+                        onclick="showToast('帮助与反馈页（原型外）')">
+                    <span class="text-lg">❓</span>
+                    <span class="flex-1 text-sm text-gray-700 text-left">帮助与反馈</span>
+                    <svg class="text-gray-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+                <!-- About -->
+                <button id="hub-menu-about"
+                        class="w-full flex items-center gap-3 px-4 py-3.5 active:bg-gray-50"
+                        onclick="showToast('关于了然（原型外）')">
+                    <span class="text-lg">ℹ️</span>
+                    <span class="flex-1 text-sm text-gray-700 text-left">关于</span>
+                    <svg class="text-gray-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+            </div>
+
+            <div class="h-8"></div>
+        </div>
+
+        <!-- ===== BOTTOM TAB BAR ===== -->
+        <div id="hub-tab-bar" class="tab-bar bg-white fixed bottom-0 left-0 right-0 z-30 safe-bottom">
+            <div class="flex justify-around py-2">
+                <button class="flex flex-col items-center gap-0.5 px-4 py-1" onclick="navigateTo('../01-dannys-zero-input-first-experience-Prototype/01.7-Dashboard.html')">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+                    <span class="text-[10px] text-gray-400">首页</span>
+                </button>
+                <button class="flex flex-col items-center gap-0.5 px-4 py-1" onclick="navigateTo('../03-lilys-spending-mirror-Prototype/03.1-TransactionList.html')">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+                    <span class="text-[10px] text-gray-400">交易</span>
+                </button>
+                <button class="flex flex-col items-center gap-0.5 px-4 py-1" onclick="navigateTo('../07-ai-butler-intelligence-Prototype/07.1-AIChat.html')">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>
+                    <span class="text-[10px] text-gray-400">AI</span>
+                </button>
+                <button class="flex flex-col items-center gap-0.5 px-4 py-1">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1A6B5A" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span class="text-[10px] text-liaoran-600 font-semibold">我的</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-sm px-4 py-2 rounded-full z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+    <!-- STATE TOGGLE (prototype only) -->
+    <button onclick="cycleState()" class="fixed top-3 right-3 bg-gray-100 text-xs text-gray-500 px-3 py-1.5 rounded-full z-40 active:bg-gray-200">
+        <span id="state-label">Trial</span> ↔
+    </button>
+
+    <script>
+        // ===== STATE MANAGEMENT =====
+        const STATES = ['free', 'trial', 'active', 'expired'];
+        let stateIdx = 1; // Start with Trial
+
+        const MEMBERSHIP_CONFIG = {
+            free:    { label: '免费版',              badgeClass: 'membership-free' },
+            trial:   { label: '体验会员 · 到期 4/15', badgeClass: 'membership-trial' },
+            active:  { label: '尊享会员',             badgeClass: 'membership-active' },
+            expired: { label: '会员已过期',            badgeClass: 'membership-expired' },
+        };
+
+        function cycleState() {
+            stateIdx = (stateIdx + 1) % STATES.length;
+            const state = STATES[stateIdx];
+            document.getElementById('state-label').textContent = state.charAt(0).toUpperCase() + state.slice(1);
+            applyState(state);
+        }
+
+        function applyState(state) {
+            const badge = document.getElementById('hub-profile-membership');
+            const config = MEMBERSHIP_CONFIG[state];
+
+            // Update badge
+            badge.className = 'inline-block mt-1.5 text-xs font-medium px-2.5 py-0.5 rounded-full ' + config.badgeClass;
+            badge.textContent = config.label;
+
+            // Update feature lock states
+            const lockableFeatures = document.querySelectorAll('.feature-lockable');
+            const isLocked = (state === 'free' || state === 'expired');
+
+            lockableFeatures.forEach(el => {
+                if (isLocked) {
+                    el.classList.add('lock-overlay');
+                    el.style.opacity = '0.85';
+                } else {
+                    el.classList.remove('lock-overlay');
+                    el.style.opacity = '1';
+                }
+            });
+        }
+
+        function handleFeatureClick(feature) {
+            const state = STATES[stateIdx];
+            if (state === 'free' || state === 'expired') {
+                showToast('此功能需开通会员');
+                navigateTo('../02-dannys-family-shared-ledger-Prototype/02.1-Subscription.html');
+            } else {
+                const targets = {
+                    family: '../02-dannys-family-shared-ledger-Prototype/02.2-SharedFamilyLedger.html',
+                    identity: '../05-meis-multi-identity-accounting-Prototype/05.1-IdentityManagement.html'
+                };
+                navigateTo(targets[feature] || '#');
+            }
+        }
+
+        // ===== NAVIGATION =====
+        function navigateTo(url) {
+            if (url.startsWith('#')) {
+                showToast('导航至: ' + url.replace('#', ''));
+            } else {
+                window.location.href = url;
+            }
+        }
+
+        // ===== TOAST =====
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.style.opacity = '1';
+            setTimeout(() => { toast.style.opacity = '0'; }, 2000);
+        }
+
+        // Initialize state
+        applyState('trial');
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+{
+  "meta": { "scenario": "04-dannys-gift-accounting", "persona": "Danny (大强)" },
+  "annual": { "year": 2026, "given": 8600, "received": 4200, "net": 4400, "contacts": 23 },
+  "upcoming": [
+    { "id": "e1", "contact": "张三", "relation": "同事", "event": "婚礼", "date": "2026-04-18", "label": "下周六" },
+    { "id": "e2", "contact": "李叔", "relation": "长辈", "event": "六十大寿", "date": "2026-04-25", "label": "两周后" }
+  ],
+  "contacts": [
+    { "id": "c01", "name": "张三", "relation": "同事", "avatar": "张", "lastEvent": "宝宝满月 收到¥600", "lastDate": "2025-12", "net": -600, "given": 0, "received": 600 },
+    { "id": "c02", "name": "表哥王强", "relation": "亲戚", "avatar": "王", "lastEvent": "春节 送出¥800", "lastDate": "2026-02", "net": 200, "given": 2400, "received": 2200 },
+    { "id": "c03", "name": "老刘", "relation": "同事", "avatar": "刘", "lastEvent": "乔迁 送出¥600", "lastDate": "2026-01", "net": 600, "given": 1200, "received": 600 },
+    { "id": "c04", "name": "小美", "relation": "同学", "avatar": "美", "lastEvent": "婚礼 送出¥1000", "lastDate": "2025-10", "net": 1000, "given": 1000, "received": 0 },
+    { "id": "c05", "name": "赵姨", "relation": "长辈", "avatar": "赵", "lastEvent": "春节 收到¥500", "lastDate": "2026-02", "net": -200, "given": 300, "received": 500 },
+    { "id": "c06", "name": "陈哥", "relation": "朋友", "avatar": "陈", "lastEvent": "生日 送出¥500", "lastDate": "2025-11", "net": 200, "given": 700, "received": 500 },
+    { "id": "c07", "name": "周同学", "relation": "同学", "avatar": "周", "lastEvent": "婚礼 送出¥800", "lastDate": "2025-09", "net": 800, "given": 800, "received": 0 },
+    { "id": "c08", "name": "吴阿姨", "relation": "长辈", "avatar": "吴", "lastEvent": "春节 送出¥600", "lastDate": "2026-02", "net": 100, "given": 600, "received": 500 }
+  ],
+  "timeline_sample": [
+    { "date": "2026-02", "event": "春节", "dir": "out", "amount": 800, "desc": "春节红包" },
+    { "date": "2025-12", "event": "宝宝满月", "dir": "in", "amount": 600, "desc": "张三宝宝满月" },
+    { "date": "2025-10", "event": "国庆", "dir": "out", "amount": 500, "desc": "国庆聚会" },
+    { "date": "2025-06", "event": "端午", "dir": "in", "amount": 300, "desc": "端午节" }
+  ],
+  "suggestion": {
+    "contact": "张三", "relation": "同事", "event": "婚礼", "date": "2026-04-18",
+    "range_low": 600, "range_high": 800, "recommended": 800,
+    "reasoning": [
+      "上次张三宝宝满月送了你 ¥600，婚礼通常高于满月",
+      "你们是同事关系，婚礼属于高规格事件",
+      "同事婚礼常见区间 ¥500-¥1,000"
+    ],
+    "reference": "同事婚礼常见区间 ¥500 — ¥1,000"
+  },
+  "ocr_results": [
+    { "id": "o01", "name": "张建国", "amount": 600, "confidence": "high" },
+    { "id": "o02", "name": "李明", "amount": 800, "confidence": "high" },
+    { "id": "o03", "name": "王芳", "amount": 500, "confidence": "high" },
+    { "id": "o04", "name": "???建国", "amount": 600, "confidence": "low" },
+    { "id": "o05", "name": "赵六", "amount": 1000, "confidence": "high" },
+    { "id": "o06", "name": "钱七", "amount": 500, "confidence": "low" }
+  ]
+}

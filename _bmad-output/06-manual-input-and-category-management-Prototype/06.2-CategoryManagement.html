@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>06.2 Category Management - 了然</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'liaoran': {
+                            50: '#E8F5F1', 100: '#D1EBE3', 200: '#A3D7C7',
+                            300: '#75C3AB', 400: '#47AF8F', 500: '#1A6B5A',
+                            600: '#165A4B', 700: '#0F4F42', 800: '#0A3A31', 900: '#052520',
+                        }
+                    },
+                    fontFamily: { sans: ['-apple-system', 'PingFang SC', 'Noto Sans CJK SC', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body { overscroll-behavior: none; }
+        .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom, 0px)); }
+        .section-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .section-body.open { max-height: 1000px; }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+
+    <div class="h-[100dvh] flex flex-col">
+
+        <!-- TOP BAR -->
+        <div id="cat-mgmt-header" class="bg-white sticky top-0 z-20 px-4 py-3 flex items-center gap-3 border-b border-gray-100">
+            <button id="cat-mgmt-header-back" onclick="history.back()" class="w-8 h-8 flex items-center justify-center -ml-1">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <h1 id="cat-mgmt-header-title" class="text-lg font-semibold text-gray-900">分类管理</h1>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="flex-1 overflow-y-auto px-4 py-4 pb-12 space-y-4">
+
+            <!-- Accuracy Card -->
+            <div id="cat-mgmt-accuracy" class="bg-white rounded-2xl shadow-sm p-5">
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 rounded-full bg-liaoran-50 flex items-center justify-center">
+                        <span id="cat-mgmt-accuracy-pct" class="text-xl font-bold text-liaoran-600">96.2%</span>
+                    </div>
+                    <div>
+                        <p id="cat-mgmt-accuracy-label" class="text-sm font-semibold text-gray-900">AI 分类准确率</p>
+                        <p id="cat-mgmt-accuracy-total" class="text-xs text-gray-500 mt-0.5">本月 487 笔自动分类</p>
+                        <button id="cat-mgmt-accuracy-corrected" class="text-xs text-liaoran-600 underline underline-offset-2 mt-0.5" onclick="showToast('→ 交易列表: 已修正')">其中 18 笔被手动修正</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rules List -->
+            <div id="cat-mgmt-rules" class="space-y-2">
+            </div>
+
+            <!-- Create Custom Category -->
+            <button id="cat-mgmt-create-button" class="w-full py-3.5 text-sm text-liaoran-600 font-medium border-2 border-dashed border-liaoran-200 rounded-xl active:bg-liaoran-50 flex items-center justify-center gap-2" onclick="showCreateSheet()">
+                <span class="text-lg">+</span> 创建自定义分类
+            </button>
+
+            <!-- iOS Shortcuts Entry -->
+            <button id="cat-mgmt-ios-shortcuts-entry" class="w-full py-3.5 text-sm text-gray-600 bg-white rounded-xl shadow-sm active:bg-gray-50 flex items-center justify-center gap-2" onclick="navigateTo('06.3-iOSShortcuts.html')">
+                📱 iOS 快捷指令配置
+            </button>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-sm px-4 py-2 rounded-full z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+    <!-- OVERLAY -->
+    <div id="overlay" class="fixed inset-0 bg-black/40 z-40 hidden" onclick="closeSheet()"></div>
+
+    <!-- RULE EDIT BOTTOM SHEET -->
+    <div id="cat-mgmt-rule-edit" class="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl z-50 hidden shadow-xl safe-bottom" style="transform:translateY(100%);transition:transform 0.3s ease;">
+        <div class="w-10 h-1 bg-gray-200 rounded-full mx-auto mt-3"></div>
+        <h3 id="cat-mgmt-rule-edit-title" class="text-base font-semibold text-gray-900 text-center mt-3 mb-4">编辑规则</h3>
+        <div class="px-6 pb-6 space-y-4">
+            <div>
+                <p class="text-xs text-gray-400 mb-1">商户</p>
+                <p id="cat-mgmt-rule-edit-merchant" class="text-sm font-medium text-gray-900">拼多多</p>
+            </div>
+            <div>
+                <p class="text-xs text-gray-400 mb-1">当前分类</p>
+                <p id="cat-mgmt-rule-edit-current" class="text-sm text-gray-600">购物·综合</p>
+            </div>
+            <div>
+                <p class="text-xs text-gray-400 mb-1">修改为</p>
+                <select id="cat-mgmt-rule-edit-new" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-liaoran-500">
+                    <option>购物·综合</option>
+                    <option selected>购物·日用品</option>
+                    <option>购物·数码</option>
+                    <option>餐饮·外卖</option>
+                    <option>餐饮·生鲜</option>
+                    <option>交通·打车</option>
+                </select>
+            </div>
+            <label id="cat-mgmt-rule-edit-retroactive" class="flex items-center gap-3 bg-liaoran-50 rounded-xl p-3">
+                <input type="checkbox" checked class="w-5 h-5 rounded text-liaoran-500 focus:ring-liaoran-400">
+                <div>
+                    <p class="text-sm text-gray-700">同时修改历史记录</p>
+                    <p class="text-xs text-gray-500">将修改 23 笔记录</p>
+                </div>
+            </label>
+            <div class="flex gap-3 pt-2">
+                <button id="cat-mgmt-rule-edit-cancel" class="flex-1 py-2.5 text-sm text-gray-600 rounded-xl bg-gray-100 active:bg-gray-200" onclick="closeSheet()">取消</button>
+                <button id="cat-mgmt-rule-edit-confirm" class="flex-1 py-2.5 text-sm text-white font-medium rounded-xl bg-liaoran-500 active:bg-liaoran-600" onclick="confirmRuleEdit()">确认修改</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CREATE CATEGORY BOTTOM SHEET -->
+    <div id="cat-mgmt-create-sheet" class="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl z-50 hidden shadow-xl safe-bottom" style="transform:translateY(100%);transition:transform 0.3s ease;">
+        <div class="w-10 h-1 bg-gray-200 rounded-full mx-auto mt-3"></div>
+        <h3 id="cat-mgmt-create-sheet-title" class="text-base font-semibold text-gray-900 text-center mt-3 mb-4">创建自定义分类</h3>
+        <div class="px-6 pb-6 space-y-4">
+            <div>
+                <p class="text-xs text-gray-400 mb-1">分类名称</p>
+                <input id="cat-mgmt-create-sheet-name" type="text" maxlength="10" placeholder="如：宠物" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-liaoran-500">
+            </div>
+            <div>
+                <p class="text-xs text-gray-400 mb-2">选择图标</p>
+                <div id="cat-mgmt-create-sheet-icon" class="flex flex-wrap gap-2">
+                    <button class="w-10 h-10 rounded-lg bg-liaoran-50 border-2 border-liaoran-500 text-lg flex items-center justify-center icon-pick" onclick="pickIcon(this)">🐱</button>
+                    <button class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 text-lg flex items-center justify-center icon-pick" onclick="pickIcon(this)">🎵</button>
+                    <button class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 text-lg flex items-center justify-center icon-pick" onclick="pickIcon(this)">📚</button>
+                    <button class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 text-lg flex items-center justify-center icon-pick" onclick="pickIcon(this)">🏋️</button>
+                    <button class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 text-lg flex items-center justify-center icon-pick" onclick="pickIcon(this)">💰</button>
+                    <button class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 text-lg flex items-center justify-center icon-pick" onclick="pickIcon(this)">🎁</button>
+                    <button class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 text-lg flex items-center justify-center icon-pick" onclick="pickIcon(this)">🏠</button>
+                    <button class="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 text-lg flex items-center justify-center icon-pick" onclick="pickIcon(this)">✈️</button>
+                </div>
+            </div>
+            <div>
+                <p class="text-xs text-gray-400 mb-1">归属大类</p>
+                <select id="cat-mgmt-create-sheet-parent" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-liaoran-500">
+                    <option>生活·自定义</option>
+                    <option>餐饮</option>
+                    <option>交通</option>
+                    <option>购物</option>
+                    <option>娱乐</option>
+                    <option>健康</option>
+                </select>
+            </div>
+            <div class="flex gap-3 pt-2">
+                <button id="cat-mgmt-create-sheet-cancel" class="flex-1 py-2.5 text-sm text-gray-600 rounded-xl bg-gray-100 active:bg-gray-200" onclick="closeSheet()">取消</button>
+                <button id="cat-mgmt-create-sheet-confirm" class="flex-1 py-2.5 text-sm text-white font-medium rounded-xl bg-liaoran-500 active:bg-liaoran-600" onclick="confirmCreate()">创建</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== RULES DATA =====
+        const RULES = [
+            { cat: '餐饮', icon: '🍜', rules: [
+                { merchant: '瑞幸咖啡', sub: '饮品' }, { merchant: '美团外卖', sub: '外卖' },
+                { merchant: '蜜雪冰城', sub: '饮品' }, { merchant: '海底捞', sub: '堂食' },
+                { merchant: '肯德基', sub: '快餐' }, { merchant: '公司食堂', sub: '工作餐' },
+                { merchant: '菜市场', sub: '生鲜' }
+            ]},
+            { cat: '交通', icon: '🚗', rules: [
+                { merchant: '滴滴出行', sub: '打车' }, { merchant: '中国石化', sub: '加油' },
+                { merchant: '停车费', sub: '停车' }
+            ]},
+            { cat: '购物', icon: '🛒', rules: [
+                { merchant: '淘宝', sub: '综合' }, { merchant: '拼多多', sub: '综合' },
+                { merchant: '京东', sub: '数码' }
+            ]},
+            { cat: '娱乐', icon: '🎮', rules: [
+                { merchant: '腾讯视频', sub: '订阅' }, { merchant: 'Steam', sub: '游戏' }
+            ]},
+            { cat: '健康', icon: '💊', rules: [
+                { merchant: '药房', sub: '医药' }
+            ]}
+        ];
+
+        function renderRules() {
+            const container = document.getElementById('cat-mgmt-rules');
+            container.innerHTML = RULES.map((section, si) => {
+                const isOpen = si < 3;
+                return `<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <button class="w-full px-4 py-3.5 flex items-center gap-3 active:bg-gray-50" onclick="toggleSection(this)">
+                        <span class="text-lg">${section.icon}</span>
+                        <span class="flex-1 text-sm font-medium text-gray-900 text-left">${section.cat}</span>
+                        <span class="text-xs text-gray-400">(${section.rules.length})</span>
+                        <svg class="text-gray-300 transition-transform ${isOpen ? 'rotate-180' : ''}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                    <div class="section-body ${isOpen ? 'open' : ''}">
+                        <div class="border-t border-gray-100">
+                            ${section.rules.map(r => `
+                                <button class="w-full px-4 py-3 flex items-center gap-2 text-sm active:bg-gray-50 border-b border-gray-50" onclick="openRuleEdit('${r.merchant}','${section.cat}·${r.sub}')">
+                                    <span class="text-gray-500 flex-1 text-left">${r.merchant}</span>
+                                    <span class="text-gray-400">→</span>
+                                    <span class="text-gray-700 ml-1">${r.sub}</span>
+                                    <svg class="text-gray-200 ml-1" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function toggleSection(btn) {
+            const body = btn.nextElementSibling;
+            const chevron = btn.querySelector('svg');
+            body.classList.toggle('open');
+            chevron.classList.toggle('rotate-180');
+        }
+
+        // ===== RULE EDIT =====
+        function openRuleEdit(merchant, current) {
+            document.getElementById('cat-mgmt-rule-edit-merchant').textContent = merchant;
+            document.getElementById('cat-mgmt-rule-edit-current').textContent = current;
+            showSheet('cat-mgmt-rule-edit');
+        }
+
+        function confirmRuleEdit() {
+            closeSheet();
+            showToast('规则已更新');
+        }
+
+        // ===== CREATE CATEGORY =====
+        function showCreateSheet() { showSheet('cat-mgmt-create-sheet'); }
+
+        function confirmCreate() {
+            const name = document.getElementById('cat-mgmt-create-sheet-name').value.trim();
+            if (!name) { showToast('请输入分类名称'); return; }
+            closeSheet();
+            showToast('分类"' + name + '"已创建');
+        }
+
+        function pickIcon(el) {
+            document.querySelectorAll('.icon-pick').forEach(b => {
+                b.className = 'w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 text-lg flex items-center justify-center icon-pick';
+            });
+            el.className = 'w-10 h-10 rounded-lg bg-liaoran-50 border-2 border-liaoran-500 text-lg flex items-center justify-center icon-pick';
+        }
+
+        // ===== SHEETS =====
+        function showSheet(id) {
+            document.getElementById('overlay').classList.remove('hidden');
+            const sheet = document.getElementById(id);
+            sheet.classList.remove('hidden');
+            requestAnimationFrame(() => sheet.style.transform = 'translateY(0)');
+        }
+
+        function closeSheet() {
+            document.getElementById('overlay').classList.add('hidden');
+            ['cat-mgmt-rule-edit', 'cat-mgmt-create-sheet'].forEach(id => {
+                const el = document.getElementById(id);
+                el.style.transform = 'translateY(100%)';
+                setTimeout(() => el.classList.add('hidden'), 300);
+            });
+        }
+
+        function navigateTo(url) { window.location.href = url; }
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.style.opacity = '1';
+            setTimeout(() => t.style.opacity = '0', 2000);
+        }
+
+        renderRules();
+    </script>
+
+</body>
+</html>

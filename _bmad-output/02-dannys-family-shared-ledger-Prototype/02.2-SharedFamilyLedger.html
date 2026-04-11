@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>02.2 Shared Family Ledger - 了然</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'liaoran': {
+                            50: '#E8F5F1', 100: '#D1EBE3', 200: '#A3D7C7',
+                            300: '#75C3AB', 400: '#47AF8F', 500: '#1A6B5A',
+                            600: '#165A4B', 700: '#0F4F42', 800: '#0A3A31', 900: '#052520',
+                        }
+                    },
+                    fontFamily: { sans: ['-apple-system', 'PingFang SC', 'Noto Sans CJK SC', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body { overscroll-behavior: none; }
+        .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: scale(1); } }
+        @keyframes flyOut { 0% { transform: translateY(0) rotate(0); opacity: 1; } 100% { transform: translateY(-40px) rotate(-15deg); opacity: 0; } }
+        @keyframes checkDraw { from { stroke-dashoffset: 48; } to { stroke-dashoffset: 0; } }
+        .fade-in-up { animation: fadeInUp 0.4s ease-out forwards; }
+        .scale-in { animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        .fly-out { animation: flyOut 0.6s ease-out forwards; }
+        .accordion-qr { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .accordion-qr.open { max-height: 300px; }
+        .state-hidden { display: none; }
+        .toast-show { opacity: 1 !important; transform: translateY(0) !important; }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+
+    <div id="app" class="h-[100dvh] flex flex-col">
+
+        <!-- TOP BAR -->
+        <div id="ledger-topbar" class="bg-white/95 backdrop-blur sticky top-0 z-30 px-4 py-3 flex items-center">
+            <button id="ledger-topbar-back" onclick="handleBack()" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 active:bg-gray-200 -ml-1">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <h1 id="ledger-topbar-title" class="flex-1 text-center text-base font-semibold text-gray-900 -ml-9">创建家庭账本</h1>
+        </div>
+
+        <!-- SCROLLABLE CONTENT -->
+        <div class="flex-1 overflow-y-auto px-4 pb-8">
+
+            <!-- ========== CREATE STATE ========== -->
+            <div id="state-create">
+                <!-- Emotional Header -->
+                <div id="ledger-emotion" class="text-center pt-8 pb-6">
+                    <div id="ledger-emotion-icon" class="scale-in mb-4">
+                        <div class="w-20 h-20 mx-auto bg-liaoran-50 rounded-2xl flex items-center justify-center">
+                            <span class="text-4xl">👨‍👩‍👦</span>
+                        </div>
+                    </div>
+                    <h2 id="ledger-emotion-title" class="fade-in-up text-xl font-bold text-gray-900" style="animation-delay:0.1s;opacity:0">同一份账本，同一份事实</h2>
+                    <p id="ledger-emotion-subtitle" class="fade-in-up text-sm text-gray-500 mt-2" style="animation-delay:0.2s;opacity:0">讨论花销时，不再各说各的</p>
+                </div>
+
+                <!-- Name Input -->
+                <div id="ledger-name" class="bg-white rounded-2xl shadow-sm p-4 mb-4 fade-in-up" style="animation-delay:0.25s;opacity:0">
+                    <label id="ledger-name-label" class="text-sm font-medium text-gray-700 block mb-2">账本名称</label>
+                    <input id="ledger-name-input" type="text" value="我们的家庭账本" maxlength="20"
+                           class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:outline-none focus:border-liaoran-400 focus:ring-2 focus:ring-liaoran-100 transition-all"
+                           placeholder="给账本起个名字"
+                           oninput="validateName()">
+                    <p id="name-error" class="text-xs text-red-500 mt-1 hidden"></p>
+                    <p class="text-xs text-gray-400 mt-1 text-right"><span id="name-count">7</span>/20</p>
+                </div>
+
+                <!-- Privacy Card (Create) -->
+                <div id="ledger-privacy" class="bg-liaoran-50 border border-liaoran-100 rounded-2xl p-4 mb-6 fade-in-up" style="animation-delay:0.3s;opacity:0">
+                    <div class="flex items-start gap-3">
+                        <span id="ledger-privacy-icon" class="text-lg mt-0.5">🔒</span>
+                        <div>
+                            <h3 id="ledger-privacy-title" class="text-sm font-semibold text-liaoran-800 mb-2">你的隐私受保护</h3>
+                            <ul id="ledger-privacy-points" class="space-y-1.5">
+                                <li class="text-xs text-liaoran-700 flex items-start gap-2"><span class="text-liaoran-400 mt-0.5">·</span>各自的隐私消费不会共享</li>
+                                <li class="text-xs text-liaoran-700 flex items-start gap-2"><span class="text-liaoran-400 mt-0.5">·</span>只共享家庭相关的支出</li>
+                                <li class="text-xs text-liaoran-700 flex items-start gap-2"><span class="text-liaoran-400 mt-0.5">·</span>你可以随时选择哪些消费共享</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Create CTA -->
+                <div id="ledger-create-cta" class="fade-in-up" style="animation-delay:0.35s;opacity:0">
+                    <button id="ledger-create-button" onclick="createLedger()" class="w-full h-12 bg-liaoran-500 hover:bg-liaoran-600 active:bg-liaoran-700 text-white font-semibold rounded-xl shadow-lg shadow-liaoran-500/25 transition-all flex items-center justify-center gap-2">
+                        <span id="create-text">创建账本</span>
+                        <svg id="create-spinner" class="hidden w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="32" stroke-linecap="round"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ========== INVITE STATE ========== -->
+            <div id="state-invite" class="state-hidden">
+                <!-- Success -->
+                <div id="ledger-success" class="text-center pt-6 pb-4">
+                    <div id="ledger-success-icon" class="mb-3">
+                        <div class="w-14 h-14 mx-auto bg-liaoran-50 rounded-full flex items-center justify-center">
+                            <svg class="w-7 h-7 text-liaoran-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                        </div>
+                    </div>
+                    <h2 id="ledger-success-title" class="text-lg font-bold text-gray-900">账本已创建！</h2>
+                </div>
+
+                <!-- Invite Area -->
+                <div id="ledger-invite" class="bg-white rounded-2xl shadow-sm p-5 mb-4">
+                    <h3 id="ledger-invite-title" class="text-base font-semibold text-gray-900 mb-1">邀请家人加入</h3>
+                    <p id="ledger-invite-desc" class="text-sm text-gray-500 mb-5">让 Ta 也能看到这份消费数据</p>
+
+                    <!-- WeChat Share -->
+                    <button id="ledger-invite-wechat" onclick="shareWeChat()" class="w-full h-12 bg-[#07C160] hover:bg-[#06AD56] active:bg-[#059B4C] text-white font-semibold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 mb-3">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178A1.17 1.17 0 014.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178 1.17 1.17 0 01-1.162-1.178c0-.651.52-1.18 1.162-1.18zm3.97 3.258c-1.637 0-3.116.461-4.313 1.217-1.61 1.016-2.702 2.687-2.702 4.59 0 .604.123 1.184.345 1.727.678 1.66 2.194 2.904 4.048 3.39.464.121.946.2 1.444.24.213.017.43.026.648.026.535 0 1.053-.063 1.55-.18l.295-.073a.67.67 0 01.556.076l1.378.807a.251.251 0 00.128.042.227.227 0 00.224-.227c0-.055-.022-.11-.037-.163l-.283-1.072a.456.456 0 01.164-.512c1.33-.98 2.18-2.423 2.18-4.054 0-3.076-2.81-5.834-5.825-5.834zm-2.591 3.04c.498 0 .9.41.9.914a.907.907 0 01-.9.912.907.907 0 01-.9-.912c0-.505.403-.914.9-.914zm4.508 0c.498 0 .9.41.9.914a.907.907 0 01-.9.912.907.907 0 01-.9-.912c0-.505.403-.914.9-.914z"/></svg>
+                        微信分享邀请
+                    </button>
+
+                    <!-- Copy Link -->
+                    <button id="ledger-invite-copy" onclick="copyLink()" class="w-full h-11 border border-gray-200 hover:bg-gray-50 active:bg-gray-100 text-gray-700 font-medium rounded-xl transition-all flex items-center justify-center gap-2 mb-3">
+                        <span>📋</span> 复制邀请链接
+                    </button>
+
+                    <!-- QR Code Toggle -->
+                    <button id="ledger-invite-qr" onclick="toggleQR()" class="w-full h-11 border border-gray-200 hover:bg-gray-50 active:bg-gray-100 text-gray-700 font-medium rounded-xl transition-all flex items-center justify-center gap-2">
+                        <span>▣</span> <span id="qr-toggle-text">展示二维码</span>
+                    </button>
+
+                    <!-- QR Code Area -->
+                    <div id="ledger-qr" class="accordion-qr">
+                        <div class="pt-5 pb-2 text-center">
+                            <div id="ledger-qr-image" class="w-44 h-44 mx-auto bg-white border-4 border-white shadow-md rounded-xl flex items-center justify-center">
+                                <div class="w-36 h-36 bg-gray-100 rounded-lg flex flex-col items-center justify-center gap-2">
+                                    <div class="grid grid-cols-5 gap-0.5 w-24 h-24">
+                                        <script>document.write(Array(25).fill(0).map(()=>`<div class="bg-gray-${Math.random()>0.4?'800':'200'} rounded-[1px]"></div>`).join(''))</script>
+                                    </div>
+                                    <div class="w-6 h-6 bg-liaoran-500 rounded-md flex items-center justify-center">
+                                        <span class="text-white text-[8px] font-bold">了</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p id="ledger-qr-hint" class="text-xs text-gray-400 mt-3">让对方用微信扫一扫</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Privacy Card (Invite) -->
+                <div class="bg-liaoran-50 border border-liaoran-100 rounded-2xl p-4 mb-4">
+                    <div class="flex items-start gap-3">
+                        <span class="text-lg mt-0.5">🔒</span>
+                        <div>
+                            <h3 class="text-sm font-semibold text-liaoran-800 mb-2">对方会看到什么？</h3>
+                            <ul class="space-y-1.5">
+                                <li class="text-xs text-liaoran-700 flex items-start gap-2"><span class="text-liaoran-400 mt-0.5">·</span>家庭共享的消费汇总</li>
+                                <li class="text-xs text-liaoran-700 flex items-start gap-2"><span class="text-liaoran-400 mt-0.5">·</span>你选择共享的交易明细</li>
+                                <li class="text-xs text-liaoran-700 flex items-start gap-2"><span class="text-liaoran-400 mt-0.5">·</span>你的隐私消费对方不可见</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skip Link -->
+                <div id="ledger-skip" class="text-center py-4">
+                    <button id="ledger-skip-link" onclick="goToTagging()" class="text-sm text-gray-400 hover:text-liaoran-500 transition-colors">
+                        稍后邀请，先设置受益人 >
+                    </button>
+                </div>
+            </div>
+
+            <!-- ========== WAITING STATE ========== -->
+            <div id="state-waiting" class="state-hidden">
+                <div class="text-center pt-10 pb-6">
+                    <div id="ledger-waiting-icon" class="mb-4">
+                        <div class="w-16 h-16 mx-auto bg-blue-50 rounded-full flex items-center justify-center">
+                            <span class="text-3xl">📨</span>
+                        </div>
+                    </div>
+                    <h2 id="ledger-waiting-title" class="text-xl font-bold text-gray-900 mb-2">邀请已发送！</h2>
+                    <p id="ledger-waiting-subtitle" class="text-sm text-gray-500">等待对方接受邀请</p>
+                </div>
+
+                <!-- Prompt Card -->
+                <div id="ledger-waiting-prompt" class="bg-white rounded-2xl shadow-sm p-5 mb-5">
+                    <p class="text-sm text-gray-600 leading-relaxed">
+                        对方加入后，你们就能一起看到家庭消费了。
+                    </p>
+                    <p class="text-sm text-gray-600 leading-relaxed mt-3">
+                        先去标注"为谁花的"，让共享账本更有价值。
+                    </p>
+                </div>
+
+                <!-- Go to Tagging CTA -->
+                <button id="ledger-waiting-cta" onclick="goToTagging()" class="w-full h-12 bg-liaoran-500 hover:bg-liaoran-600 active:bg-liaoran-700 text-white font-semibold rounded-xl shadow-lg shadow-liaoran-500/25 transition-all mb-3">
+                    去标注受益人
+                </button>
+
+                <!-- Resend -->
+                <button id="ledger-waiting-resend" onclick="resendInvite()" class="w-full h-11 border border-gray-200 hover:bg-gray-50 text-gray-600 font-medium rounded-xl transition-all">
+                    再次发送邀请
+                </button>
+            </div>
+
+        </div><!-- end scrollable -->
+
+        <!-- TOAST -->
+        <div id="toast" class="fixed top-16 left-4 right-4 z-50 bg-liaoran-50 border border-liaoran-200 text-liaoran-800 text-sm rounded-xl px-4 py-3 shadow-lg opacity-0 -translate-y-2 transition-all duration-300 pointer-events-none text-center">
+            <span id="toast-text"></span>
+        </div>
+
+        <!-- CONFIRM DIALOG -->
+        <div id="confirm-dialog" class="fixed inset-0 z-50 bg-black/40 flex items-end justify-center opacity-0 pointer-events-none transition-opacity duration-200">
+            <div class="bg-white w-full max-w-md rounded-t-2xl p-6 safe-bottom transform translate-y-4 transition-transform duration-200">
+                <h3 class="text-base font-semibold text-gray-900 mb-2">确定离开？</h3>
+                <p class="text-sm text-gray-500 mb-6">账本尚未创建，离开后需要重新设置</p>
+                <div class="flex gap-3">
+                    <button onclick="closeDialog()" class="flex-1 h-11 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50">继续创建</button>
+                    <button onclick="confirmLeave()" class="flex-1 h-11 bg-gray-100 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-200">离开</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+<script>
+let currentState = 'create'; // create | invite | waiting
+let qrOpen = false;
+
+function validateName() {
+    const input = document.getElementById('ledger-name-input');
+    const count = document.getElementById('name-count');
+    const error = document.getElementById('name-error');
+    const btn = document.getElementById('ledger-create-button');
+    count.textContent = input.value.length;
+    if (input.value.trim() === '') {
+        btn.classList.add('opacity-50'); btn.disabled = true;
+        error.textContent = '请输入账本名称'; error.classList.remove('hidden');
+    } else if (input.value.length > 20) {
+        error.textContent = '账本名称不能超过20个字'; error.classList.remove('hidden');
+    } else {
+        btn.classList.remove('opacity-50'); btn.disabled = false;
+        error.classList.add('hidden');
+    }
+}
+
+function createLedger() {
+    const btn = document.getElementById('ledger-create-button');
+    if (btn.disabled) return;
+    btn.disabled = true; btn.classList.add('opacity-80');
+    document.getElementById('create-text').textContent = '创建中...';
+    document.getElementById('create-spinner').classList.remove('hidden');
+
+    setTimeout(() => {
+        switchState('invite');
+    }, 1200);
+}
+
+function switchState(state) {
+    currentState = state;
+    document.getElementById('state-create').classList.toggle('state-hidden', state !== 'create');
+    document.getElementById('state-invite').classList.toggle('state-hidden', state !== 'invite');
+    document.getElementById('state-waiting').classList.toggle('state-hidden', state !== 'waiting');
+
+    const title = document.getElementById('ledger-topbar-title');
+    title.textContent = state === 'create' ? '创建家庭账本' : '家庭账本';
+}
+
+function shareWeChat() {
+    showToast('正在调起微信...');
+    setTimeout(() => { switchState('waiting'); }, 800);
+}
+
+function copyLink() {
+    navigator.clipboard?.writeText('https://liaoran.app/invite/abc123').then(() => {
+        showToast('已复制到剪贴板');
+    }).catch(() => {
+        showToast('已复制到剪贴板');
+    });
+}
+
+function toggleQR() {
+    qrOpen = !qrOpen;
+    document.getElementById('ledger-qr').classList.toggle('open', qrOpen);
+    document.getElementById('qr-toggle-text').textContent = qrOpen ? '收起二维码' : '展示二维码';
+}
+
+function resendInvite() { switchState('invite'); }
+
+function goToTagging() { window.location.href = '02.3-BeneficiaryTagging.html'; }
+
+function handleBack() {
+    if (currentState === 'create') {
+        const dialog = document.getElementById('confirm-dialog');
+        dialog.classList.remove('opacity-0', 'pointer-events-none');
+        dialog.querySelector('div > div').classList.remove('translate-y-4');
+    } else {
+        window.location.href = '../01-dannys-zero-input-first-experience-Prototype/01.7-Dashboard.html';
+    }
+}
+
+function closeDialog() {
+    const dialog = document.getElementById('confirm-dialog');
+    dialog.classList.add('opacity-0', 'pointer-events-none');
+    dialog.querySelector('div > div').classList.add('translate-y-4');
+}
+
+function confirmLeave() {
+    window.location.href = '../01-dannys-zero-input-first-experience-Prototype/01.7-Dashboard.html';
+}
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toast-text').textContent = msg;
+    t.classList.add('toast-show');
+    setTimeout(() => { t.classList.remove('toast-show'); }, 2000);
+}
+</script>
+
+</body>
+</html>

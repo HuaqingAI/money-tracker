@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>05.1 Identity Management - 了然</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'liaoran': {
+                            50: '#E8F5F1', 100: '#D1EBE3', 200: '#A3D7C7',
+                            300: '#75C3AB', 400: '#47AF8F', 500: '#1A6B5A',
+                            600: '#165A4B', 700: '#0F4F42', 800: '#0A3A31', 900: '#052520',
+                        }
+                    },
+                    fontFamily: { sans: ['-apple-system', 'PingFang SC', 'Noto Sans CJK SC', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body { overscroll-behavior: none; }
+        .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom, 0px)); }
+        .tab-bar { box-shadow: 0 -1px 0 rgba(0,0,0,0.06); }
+        .type-chip { padding: 8px 16px; border-radius: 12px; font-size: 14px; border: 1.5px solid #E5E7EB; color: #6B7280; transition: all 0.15s; }
+        .type-chip.selected { border-color: #1A6B5A; background: #E8F5F1; color: #1A6B5A; font-weight: 600; }
+        .icon-pick { width: 44px; height: 44px; border-radius: 12px; font-size: 22px; display: flex; align-items: center; justify-content: center; border: 1.5px solid #E5E7EB; }
+        .icon-pick.selected { border-color: #1A6B5A; background: #E8F5F1; }
+        .rule-card { transition: opacity 0.3s; }
+        .rule-confirmed { opacity: 0.6; }
+        .progress-fill { transition: width 0.5s ease-out; }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+
+    <div id="app" class="h-[100dvh] flex flex-col">
+
+        <!-- TOP BAR -->
+        <div id="identity-topbar" class="bg-white sticky top-0 z-20 px-4 py-3 flex items-center gap-3 border-b border-gray-100">
+            <button id="identity-topbar-back" onclick="goBack()" class="w-8 h-8 flex items-center justify-center -ml-1">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <h1 id="identity-topbar-title" class="flex-1 text-lg font-semibold text-gray-900">身份管理</h1>
+            <span id="identity-topbar-step" class="text-xs text-gray-400 hidden"></span>
+            <button id="identity-topbar-add" class="w-8 h-8 flex items-center justify-center hidden" onclick="showView('create1')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A6B5A" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+        </div>
+
+        <!-- ===== VIEW A: IDENTITY LIST ===== -->
+        <div id="view-list" class="flex-1 overflow-y-auto px-4 py-4 pb-24 space-y-4 hidden">
+            <!-- Default Identity -->
+            <div id="identity-card-default" class="bg-white rounded-2xl shadow-sm p-5 active:bg-gray-50 cursor-pointer" onclick="showToast('→ 主业损益表')">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="text-2xl">👩‍💻</span>
+                    <div class="flex-1">
+                        <h3 class="text-base font-semibold text-gray-900">打工人小美</h3>
+                        <p class="text-xs text-gray-400">设计公司 · 主业收入</p>
+                    </div>
+                    <svg class="text-gray-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+                <div class="flex gap-4 text-sm">
+                    <div><span class="text-gray-400">支出</span> <span class="font-medium text-gray-700">¥4,200</span></div>
+                    <div><span class="text-gray-400">收入</span> <span class="font-medium text-gray-700">¥9,000</span></div>
+                </div>
+            </div>
+
+            <!-- Side Hustle Identity -->
+            <div id="identity-card-sidehustle" class="bg-white rounded-2xl shadow-sm p-5 active:bg-gray-50 cursor-pointer border-l-4 border-liaoran-400" onclick="navigateTo('05.2-IdentityPnL.html')">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="text-2xl">👩‍💼</span>
+                    <div class="flex-1">
+                        <h3 class="text-base font-semibold text-gray-900">老板小美</h3>
+                        <p class="text-xs text-gray-400">小红书带货 · 副业</p>
+                    </div>
+                    <svg class="text-gray-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+                <div class="flex gap-4 text-sm mb-2">
+                    <div><span class="text-gray-400">支出</span> <span class="font-medium text-gray-700">¥6,153</span></div>
+                    <div><span class="text-gray-400">收入</span> <span class="font-medium text-gray-700">¥9,000</span></div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-gray-400">净利润</span>
+                    <span id="identity-card-sidehustle-profit" class="text-sm font-bold text-green-600">¥2,847</span>
+                </div>
+            </div>
+
+            <!-- AI Hint -->
+            <div id="identity-ai-hint" class="bg-liaoran-50 rounded-xl p-4 border border-liaoran-100">
+                <p class="text-sm text-gray-700">💡 "对了，平台佣金算进副业成本了吗？"</p>
+                <button class="text-xs text-liaoran-600 font-medium mt-1 underline underline-offset-2" onclick="navigateTo('05.2-IdentityPnL.html')">去看看 ></button>
+            </div>
+        </div>
+
+        <!-- ===== VIEW B: EMPTY STATE ===== -->
+        <div id="view-empty" class="flex-1 flex flex-col items-center justify-center px-8 text-center hidden">
+            <div id="identity-empty-illustration" class="text-6xl mb-6">🎭</div>
+            <h2 id="identity-empty-title" class="text-lg font-semibold text-gray-900 mb-2">你有不同的"财务角色"吗？</h2>
+            <p id="identity-empty-subtitle" class="text-sm text-gray-500 leading-relaxed mb-8">白天上班、晚上带货？<br>把副业收支分开算，<br>看清每个身份的真实状况</p>
+            <button id="identity-empty-cta" class="w-full py-3.5 text-sm text-white font-medium bg-liaoran-500 rounded-xl active:bg-liaoran-600" onclick="showView('create1')">创建第一个副业身份</button>
+            <p id="identity-empty-hint" class="text-xs text-gray-400 mt-4">也可以创建"自由职业""投资"等身份</p>
+        </div>
+
+        <!-- ===== VIEW C: CREATE STEP 1 ===== -->
+        <div id="view-create1" class="flex-1 overflow-y-auto px-4 py-6 pb-12 space-y-6 hidden">
+            <p class="text-sm text-gray-600">给你的副业身份起个名字</p>
+
+            <div>
+                <p class="text-xs text-gray-400 mb-1.5">身份名称</p>
+                <input id="identity-create-name" type="text" maxlength="12" placeholder="如：老板小美" value="老板小美" class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-liaoran-500 focus:ring-1 focus:ring-liaoran-500">
+            </div>
+
+            <div>
+                <p class="text-xs text-gray-400 mb-1.5">简短描述（可选）</p>
+                <input id="identity-create-desc" type="text" maxlength="20" placeholder="如：小红书美妆带货" value="小红书美妆带货" class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-liaoran-500">
+            </div>
+
+            <div>
+                <p class="text-xs text-gray-400 mb-2">选择图标</p>
+                <div id="identity-create-icon" class="flex flex-wrap gap-2">
+                    <button class="icon-pick" onclick="pickIcon(this)">👩‍💼</button>
+                    <button class="icon-pick selected" onclick="pickIcon(this)">🏪</button>
+                    <button class="icon-pick" onclick="pickIcon(this)">💼</button>
+                    <button class="icon-pick" onclick="pickIcon(this)">🎨</button>
+                    <button class="icon-pick" onclick="pickIcon(this)">📦</button>
+                    <button class="icon-pick" onclick="pickIcon(this)">🛍</button>
+                    <button class="icon-pick" onclick="pickIcon(this)">📱</button>
+                    <button class="icon-pick" onclick="pickIcon(this)">✨</button>
+                </div>
+            </div>
+
+            <div>
+                <p class="text-xs text-gray-400 mb-2">身份类型</p>
+                <div id="identity-create-type" class="flex flex-wrap gap-2">
+                    <button class="type-chip selected" onclick="pickType(this)">副业</button>
+                    <button class="type-chip" onclick="pickType(this)">自由职业</button>
+                    <button class="type-chip" onclick="pickType(this)">投资</button>
+                    <button class="type-chip" onclick="pickType(this)">其他</button>
+                </div>
+            </div>
+
+            <button id="identity-create-next" class="w-full py-3.5 text-sm text-white font-medium bg-liaoran-500 rounded-xl active:bg-liaoran-600 mt-4" onclick="startAnalysis()">下一步</button>
+        </div>
+
+        <!-- ===== VIEW D: AI RULE CONFIRMATION ===== -->
+        <div id="view-rules" class="flex-1 overflow-y-auto px-4 py-4 pb-12 space-y-4 hidden">
+            <div>
+                <p class="text-sm text-gray-700">AI 分析了你近 3 个月的交易</p>
+                <p class="text-xs text-gray-400 mt-0.5">以下消费可能属于"老板小美"</p>
+            </div>
+
+            <!-- Rule Cards -->
+            <div id="identity-rule-cards" class="space-y-3"></div>
+
+            <!-- Action Bar -->
+            <div id="identity-rules-action" class="bg-white rounded-2xl shadow-sm p-5 border border-liaoran-100">
+                <div class="flex justify-between text-xs text-gray-500 mb-2">
+                    <span id="rules-progress-text">已确认 0/4 条规则</span>
+                    <span id="rules-coverage-text">覆盖 0/54 笔交易</span>
+                </div>
+                <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden mb-4">
+                    <div id="rules-progress-bar" class="progress-fill h-full bg-liaoran-500 rounded-full" style="width:0%"></div>
+                </div>
+                <button id="identity-rules-action-cta" class="w-full py-3 text-sm text-white font-medium bg-liaoran-500 rounded-xl active:bg-liaoran-600 disabled:opacity-40 disabled:pointer-events-none" disabled onclick="goToPnL()">全部确认，看损益表</button>
+                <div class="mt-3 text-center">
+                    <span class="text-xs text-gray-400">还有 7 笔 AI 不太确定</span>
+                    <button class="text-xs text-liaoran-600 font-medium ml-1 underline underline-offset-2" onclick="showView('remaining')">去看看 ></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== VIEW E: REMAINING TRANSACTIONS ===== -->
+        <div id="view-remaining" class="flex-1 overflow-y-auto px-4 py-4 pb-12 space-y-3 hidden">
+            <div class="bg-liaoran-50 rounded-xl p-4 border border-liaoran-100">
+                <p class="text-sm text-gray-700">💡 这几笔 AI 拿不准，帮忙看看是不是副业？</p>
+            </div>
+
+            <div id="remaining-cards" class="space-y-3"></div>
+
+            <div class="pt-2">
+                <button class="w-full py-3 text-sm text-white font-medium bg-liaoran-500 rounded-xl active:bg-liaoran-600" onclick="goToPnL()">完成，看损益表</button>
+                <p class="text-center text-xs text-gray-400 mt-2 cursor-pointer" onclick="goToPnL()">跳过剩余，以后再归属</p>
+            </div>
+        </div>
+
+        <!-- BOTTOM TAB BAR -->
+        <div class="tab-bar bg-white fixed bottom-0 left-0 right-0 z-30 safe-bottom">
+            <div class="flex justify-around py-2">
+                <button class="flex flex-col items-center gap-0.5 px-4 py-1" onclick="navigateTo('../01-dannys-zero-input-first-experience-Prototype/01.7-Dashboard.html')">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+                    <span class="text-[10px] text-gray-400">首页</span>
+                </button>
+                <button class="flex flex-col items-center gap-0.5 px-4 py-1" onclick="navigateTo('../03-lilys-spending-mirror-Prototype/03.1-TransactionList.html')">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+                    <span class="text-[10px] text-gray-400">交易</span>
+                </button>
+                <button class="flex flex-col items-center gap-0.5 px-4 py-1" onclick="navigateTo('../07-ai-butler-intelligence-Prototype/07.1-AIChat.html')">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>
+                    <span class="text-[10px] text-gray-400">AI</span>
+                </button>
+                <button class="flex flex-col items-center gap-0.5 px-4 py-1">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1A6B5A" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span class="text-[10px] text-liaoran-600 font-semibold">我的</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-sm px-4 py-2 rounded-full z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+    <script>
+        // ===== VIEW MANAGEMENT =====
+        const VIEWS = ['list','empty','create1','rules','remaining'];
+        let currentView = 'empty';
+
+        function showView(view) {
+            currentView = view;
+            VIEWS.forEach(v => document.getElementById('view-' + v).classList.toggle('hidden', v !== view));
+            // Update topbar
+            const title = document.getElementById('identity-topbar-title');
+            const step = document.getElementById('identity-topbar-step');
+            const addBtn = document.getElementById('identity-topbar-add');
+            step.classList.add('hidden');
+            addBtn.classList.add('hidden');
+
+            if (view === 'list') { title.textContent = '身份管理'; addBtn.classList.remove('hidden'); }
+            else if (view === 'empty') { title.textContent = '身份管理'; }
+            else if (view === 'create1') { title.textContent = '创建身份'; step.textContent = '步骤 1/2'; step.classList.remove('hidden'); }
+            else if (view === 'rules') { title.textContent = '创建身份'; step.textContent = '步骤 2/2'; step.classList.remove('hidden'); }
+            else if (view === 'remaining') { title.textContent = '不确定的交易 (7笔)'; }
+        }
+
+        function goBack() {
+            if (currentView === 'remaining') showView('rules');
+            else if (currentView === 'rules') showView('create1');
+            else if (currentView === 'create1') showView('empty');
+            else history.back();
+        }
+
+        // ===== ICON / TYPE PICKERS =====
+        function pickIcon(el) {
+            document.querySelectorAll('.icon-pick').forEach(b => b.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+        function pickType(el) {
+            document.querySelectorAll('.type-chip').forEach(b => b.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+
+        // ===== AI ANALYSIS =====
+        function startAnalysis() {
+            showView('rules');
+            renderRuleCards();
+        }
+
+        // ===== RULE CARDS =====
+        const RULES = [
+            { icon:'📱', title:'小红书平台消费', merchants:'小红书、薯店 等', count:18, amount:'¥3,200', type:'副业支出' },
+            { icon:'📦', title:'快递发货', merchants:'韵达、中通、圆通 等', count:22, amount:'¥880', type:'副业支出' },
+            { icon:'🏭', title:'1688 进货', merchants:'1688.com 等', count:8, amount:'¥4,600', type:'副业支出' },
+            { icon:'💰', title:'小红书带货收入', merchants:'薯店结算、品牌合作 等', count:6, amount:'¥9,000', type:'副业收入' }
+        ];
+        let confirmedRules = new Set();
+        const TOTAL_TXNS = 54;
+
+        function renderRuleCards() {
+            document.getElementById('identity-rule-cards').innerHTML = RULES.map((r, i) => {
+                const isConfirmed = confirmedRules.has(i);
+                return `<div id="identity-rule-${i}" class="rule-card bg-white rounded-xl shadow-sm overflow-hidden ${isConfirmed ? 'rule-confirmed' : ''}">
+                    <div class="p-4">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="text-xl">${r.icon}</span>
+                            <div class="flex-1">
+                                <h4 class="text-sm font-semibold text-gray-900">${r.title}</h4>
+                                <p class="text-xs text-gray-400">${r.merchants}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+                            <span>${r.count} 笔 · 共 ${r.amount}</span>
+                            <span class="px-2 py-0.5 rounded-full ${r.type === '副业收入' ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-600'}">${r.type}</span>
+                        </div>
+                        <div class="flex gap-2">
+                            ${isConfirmed
+                                ? `<button class="flex-1 py-2 text-xs rounded-lg bg-gray-100 text-gray-400">已确认 ✓</button>
+                                   <button class="py-2 px-3 text-xs rounded-lg border border-gray-200 text-gray-400" onclick="undoRule(${i})">撤销</button>`
+                                : `<button class="flex-1 py-2 text-xs rounded-lg bg-liaoran-500 text-white active:bg-liaoran-600" onclick="confirmRule(${i})">确认 ✓</button>
+                                   <button class="flex-1 py-2 text-xs rounded-lg border border-gray-200 text-gray-500 active:bg-gray-50" onclick="excludeRule(${i})">不是副业</button>`
+                            }
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+            updateProgress();
+        }
+
+        function confirmRule(i) { confirmedRules.add(i); renderRuleCards(); }
+        function undoRule(i) { confirmedRules.delete(i); renderRuleCards(); }
+        function excludeRule(i) { RULES.splice(i, 1); confirmedRules.clear(); renderRuleCards(); showToast('已排除'); }
+
+        function updateProgress() {
+            const confirmed = confirmedRules.size;
+            const total = RULES.length;
+            const covered = RULES.filter((_, i) => confirmedRules.has(i)).reduce((s, r) => s + r.count, 0);
+            document.getElementById('rules-progress-text').textContent = `已确认 ${confirmed}/${total} 条规则`;
+            document.getElementById('rules-coverage-text').textContent = `覆盖 ${covered}/${TOTAL_TXNS} 笔交易`;
+            document.getElementById('rules-progress-bar').style.width = (total > 0 ? confirmed / total * 100 : 0) + '%';
+            const cta = document.getElementById('identity-rules-action-cta');
+            cta.disabled = confirmed < total;
+            cta.textContent = confirmed >= total ? '完成！看损益表' : '全部确认，看损益表';
+        }
+
+        // ===== REMAINING TRANSACTIONS =====
+        const UNCERTAIN = [
+            { merchant:'丝芙兰', amount:'¥289', cat:'购物·美妆', date:'4月5日' },
+            { merchant:'得物', amount:'¥168', cat:'购物·综合', date:'4月3日' },
+            { merchant:'名创优品', amount:'¥59', cat:'购物·日用', date:'4月1日' },
+            { merchant:'闲鱼', amount:'¥120', cat:'购物·二手', date:'3月28日' },
+            { merchant:'微信转账-张三', amount:'¥500', cat:'转账', date:'3月25日' },
+            { merchant:'拼多多', amount:'¥89', cat:'购物·综合', date:'3月22日' },
+            { merchant:'淘宝-某美妆店', amount:'¥156', cat:'购物·美妆', date:'3月20日' }
+        ];
+
+        function renderRemaining() {
+            document.getElementById('remaining-cards').innerHTML = UNCERTAIN.map((t, i) =>
+                `<div class="bg-white rounded-xl shadow-sm p-4">
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm font-medium text-gray-900">${t.merchant}</span>
+                        <span class="text-sm font-semibold text-gray-900">${t.amount}</span>
+                    </div>
+                    <p class="text-xs text-gray-400 mb-3">${t.cat} · ${t.date}</p>
+                    <div class="flex gap-2">
+                        <button class="flex-1 py-2 text-xs rounded-lg border border-orange-200 text-orange-600 active:bg-orange-50" onclick="assignTxn(this,'expense')">副业支出</button>
+                        <button class="flex-1 py-2 text-xs rounded-lg border border-green-200 text-green-600 active:bg-green-50" onclick="assignTxn(this,'income')">副业收入</button>
+                        <button class="flex-1 py-2 text-xs rounded-lg border border-gray-200 text-gray-500 active:bg-gray-50" onclick="assignTxn(this,'personal')">不是副业</button>
+                    </div>
+                </div>`
+            ).join('');
+        }
+
+        function assignTxn(btn, type) {
+            const card = btn.closest('.bg-white');
+            card.style.opacity = '0.4';
+            card.style.pointerEvents = 'none';
+            const labels = { expense:'副业支出', income:'副业收入', personal:'不是副业' };
+            showToast('已标记为' + labels[type]);
+        }
+
+        // ===== NAVIGATION =====
+        function goToPnL() { navigateTo('05.2-IdentityPnL.html'); }
+        function navigateTo(url) { window.location.href = url; }
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.style.opacity = '1';
+            setTimeout(() => t.style.opacity = '0', 2000);
+        }
+
+        // ===== INIT =====
+        // Start with empty state (prototype toggle)
+        showView('empty');
+        renderRemaining();
+    </script>
+
+    <!-- STATE TOGGLE -->
+    <button onclick="toggleDemoState()" class="fixed top-3 right-3 bg-gray-100 text-xs text-gray-500 px-3 py-1.5 rounded-full z-40 active:bg-gray-200">
+        <span id="state-label">Empty</span> ↔
+    </button>
+    <script>
+        let demoState = 'empty';
+        function toggleDemoState() {
+            demoState = demoState === 'empty' ? 'list' : 'empty';
+            document.getElementById('state-label').textContent = demoState === 'empty' ? 'Empty' : 'List';
+            showView(demoState);
+        }
+    </script>
+
+</body>
+</html>

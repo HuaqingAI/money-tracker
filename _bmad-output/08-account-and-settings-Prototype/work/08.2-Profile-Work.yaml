@@ -1,0 +1,18 @@
+page: 08.2-Profile
+view: Profile / Account 个人资料
+spec: C-UX-Scenarios/08-account-and-settings/08.2-profile-account/08.2-profile-account.md
+status: building
+
+sections:
+  - id: S1
+    name: Top Bar + Avatar Area
+    objects: [prof-topbar, prof-topbar-back, prof-topbar-title, prof-avatar, prof-avatar-image, prof-avatar-hint, prof-avatar-name]
+    status: pending
+  - id: S2
+    name: Basic Info + Account Security
+    objects: [prof-group-basic, prof-item-nickname, prof-item-nickname-sheet, prof-item-gender, prof-item-birthday, prof-group-security, prof-item-phone, prof-item-wechat, prof-item-wechat-confirm, prof-item-password]
+    status: pending
+  - id: S3
+    name: Membership Card (4 states) + Delete Account
+    objects: [prof-group-membership, prof-membership-card, prof-membership-plan, prof-membership-expiry, prof-membership-cta, prof-group-actions, prof-item-delete, prof-delete-flow]
+    status: pending

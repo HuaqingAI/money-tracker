@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>03.3 Trend Chart - 了然</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: {
+            colors: { 'liaoran': { 50:'#E8F5F1',100:'#D1EBE3',200:'#A3D7C7',300:'#75C3AB',400:'#47AF8F',500:'#1A6B5A',600:'#165A4B',700:'#0F4F42',800:'#0A3A31',900:'#052520' } },
+            fontFamily: { sans: ['-apple-system','PingFang SC','Noto Sans CJK SC','sans-serif'] }
+        }}}
+    </script>
+    <style>
+        html,body{overscroll-behavior:none}
+        .safe-bottom{padding-bottom:calc(env(safe-area-inset-bottom,0px)+16px)}
+        .chip{transition:all .15s ease-out}
+        .chip.active{background:#1A6B5A;color:#fff;border-color:#1A6B5A}
+        .time-tab.active{color:#1A6B5A;border-bottom:2px solid #1A6B5A;font-weight:600}
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+<div class="h-[100dvh] flex flex-col">
+
+    <!-- TOP BAR -->
+    <div id="trend-topbar" class="bg-white sticky top-0 z-20 px-4 py-3 flex items-center">
+        <button id="trend-topbar-back" onclick="history.back()" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 -ml-1">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <h1 id="trend-topbar-title" class="flex-1 text-center text-base font-semibold text-gray-900 -ml-9">消费趋势</h1>
+    </div>
+
+    <div class="flex-1 overflow-y-auto pb-8">
+
+        <!-- TIME RANGE -->
+        <div id="trend-time-range" class="bg-white flex border-b border-gray-100">
+            <button id="trend-time-range-3m" onclick="setRange('3m')" class="time-tab active flex-1 py-2.5 text-sm text-center text-gray-500 border-b-2 border-transparent">近3月</button>
+            <button id="trend-time-range-6m" onclick="setRange('6m')" class="time-tab flex-1 py-2.5 text-sm text-center text-gray-500 border-b-2 border-transparent">近6月</button>
+            <button id="trend-time-range-12m" onclick="setRange('12m')" class="time-tab flex-1 py-2.5 text-sm text-center text-gray-500 border-b-2 border-transparent">近12月</button>
+        </div>
+
+        <!-- TOTAL CHART -->
+        <div id="trend-total-chart" class="bg-white px-5 pt-5 pb-4">
+            <p class="text-xs text-gray-400 mb-1">总支出趋势</p>
+            <div id="trend-total-chart-area" class="relative h-40 mt-2">
+                <!-- SVG Line Chart -->
+                <svg viewBox="0 0 300 120" class="w-full h-full">
+                    <defs>
+                        <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#47AF8F" stop-opacity="0.3"/>
+                            <stop offset="100%" stop-color="#47AF8F" stop-opacity="0"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Grid lines -->
+                    <line x1="40" y1="10" x2="280" y2="10" stroke="#f3f4f6" stroke-width="0.5"/>
+                    <line x1="40" y1="40" x2="280" y2="40" stroke="#f3f4f6" stroke-width="0.5"/>
+                    <line x1="40" y1="70" x2="280" y2="70" stroke="#f3f4f6" stroke-width="0.5"/>
+                    <line x1="40" y1="100" x2="280" y2="100" stroke="#f3f4f6" stroke-width="0.5"/>
+                    <!-- Y labels -->
+                    <text x="35" y="14" text-anchor="end" fill="#9ca3af" font-size="8">¥15k</text>
+                    <text x="35" y="44" text-anchor="end" fill="#9ca3af" font-size="8">¥12k</text>
+                    <text x="35" y="74" text-anchor="end" fill="#9ca3af" font-size="8">¥9k</text>
+                    <text x="35" y="104" text-anchor="end" fill="#9ca3af" font-size="8">¥6k</text>
+                    <!-- Area fill -->
+                    <path d="M80,58 L160,10 L240,30 L240,100 L80,100 Z" fill="url(#areaGrad)"/>
+                    <!-- Line -->
+                    <polyline points="80,58 160,10 240,30" fill="none" stroke="#1A6B5A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <!-- Data points -->
+                    <circle cx="80" cy="58" r="4" fill="#fff" stroke="#1A6B5A" stroke-width="2"/>
+                    <circle cx="160" cy="10" r="4" fill="#fff" stroke="#1A6B5A" stroke-width="2"/>
+                    <circle cx="240" cy="30" r="5" fill="#1A6B5A" stroke="#fff" stroke-width="2"/>
+                    <!-- Labels -->
+                    <text x="80" y="115" text-anchor="middle" fill="#9ca3af" font-size="9">1月</text>
+                    <text x="160" y="115" text-anchor="middle" fill="#9ca3af" font-size="9">2月</text>
+                    <text x="240" y="115" text-anchor="middle" fill="#1A6B5A" font-size="9" font-weight="600">3月</text>
+                    <!-- Value labels -->
+                    <text x="80" y="52" text-anchor="middle" fill="#6b7280" font-size="8">¥11.8k</text>
+                    <text x="160" y="6" text-anchor="middle" fill="#6b7280" font-size="8">¥14.2k</text>
+                    <text x="240" y="24" text-anchor="middle" fill="#1A6B5A" font-size="9" font-weight="600">¥12.7k</text>
+                </svg>
+            </div>
+        </div>
+
+        <!-- CATEGORY FILTER -->
+        <div id="trend-category-filter" class="bg-white px-4 py-2.5 border-t border-gray-50 overflow-x-auto flex gap-2" style="-webkit-overflow-scrolling:touch">
+            <button onclick="selectCat('all')" class="chip active flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full border border-gray-200 text-gray-600">全部</button>
+            <button onclick="selectCat('food')" class="chip flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full border border-gray-200 text-gray-600">🍜 餐饮</button>
+            <button onclick="selectCat('shop')" class="chip flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full border border-gray-200 text-gray-600">🛒 购物</button>
+            <button onclick="selectCat('transport')" class="chip flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full border border-gray-200 text-gray-600">🚗 交通</button>
+            <button onclick="selectCat('fun')" class="chip flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full border border-gray-200 text-gray-600">🎮 娱乐</button>
+        </div>
+
+        <!-- MOM CHANGE CARDS -->
+        <div id="trend-mom-cards" class="px-4 mt-5">
+            <h3 id="trend-mom-header" class="text-sm font-semibold text-gray-900 mb-3 px-1">环比变化 · 3月 vs 2月</h3>
+            <div class="space-y-2" id="mom-list"></div>
+        </div>
+
+        <!-- MONTHLY BAR CHART -->
+        <div id="trend-monthly-bar" class="px-4 mt-6">
+            <h3 id="trend-monthly-bar-header" class="text-sm font-semibold text-gray-900 mb-3 px-1">月度对比</h3>
+            <div class="bg-white rounded-2xl shadow-sm p-4 space-y-3" id="bar-chart"></div>
+        </div>
+
+        <!-- RADAR CTA -->
+        <div id="trend-radar-cta" class="mx-4 mt-6 mb-4">
+            <button onclick="window.location.href='03.4-SpendingRadar.html'" class="w-full rounded-2xl p-5 text-white text-left relative overflow-hidden" style="background:linear-gradient(135deg,#0F4F42 0%,#1A6B5A 50%,#47AF8F 100%)">
+                <div class="absolute inset-0 opacity-10" style="background-image:radial-gradient(circle at 80% 30%,white 1px,transparent 1px);background-size:20px 20px"></div>
+                <div class="relative">
+                    <p id="trend-radar-cta-title" class="text-base font-bold">看看你的消费雷达</p>
+                    <p id="trend-radar-cta-subtitle" class="text-sm text-white/70 mt-1">6维消费画像 · 消费人格标签 · 社交分享</p>
+                </div>
+                <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+const MOM = [
+    {cat:'餐饮',icon:'🍜',prev:2100,curr:2850,pct:36,dir:'up',reason:'外卖频次增加，3月加班较多',color:'#F59E0B'},
+    {cat:'购物',icon:'🛒',prev:3200,curr:2580,pct:-19,dir:'down',reason:'换季采购减少',color:'#EC4899'},
+    {cat:'娱乐',icon:'🎮',prev:450,curr:560,pct:24,dir:'up',reason:'新增电影和游戏消费',color:'#10B981'},
+    {cat:'交通',icon:'🚗',prev:880,curr:980,pct:11,dir:'up',reason:'打车次数略增',color:'#3B82F6'},
+    {cat:'健康',icon:'💊',prev:600,curr:420,pct:-30,dir:'down',reason:'体检为2月一次性支出',color:'#EF4444'},
+];
+const BARS = [{m:'1月',v:11800},{m:'2月',v:14200},{m:'3月',v:12700}];
+const maxBar = Math.max(...BARS.map(b=>b.v));
+
+function init() {
+    renderMoM();
+    renderBars();
+}
+
+function renderMoM() {
+    document.getElementById('mom-list').innerHTML = MOM.map(m => {
+        const arrow = m.dir==='up' ? '↑' : '↓';
+        const arrowColor = m.dir==='up' ? 'text-orange-500' : 'text-cyan-500';
+        return `<div class="bg-white rounded-xl shadow-sm p-4 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style="background:${m.color}15">${m.icon}</div>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                    <span class="text-sm font-medium text-gray-900">${m.cat}</span>
+                    <span class="${arrowColor} text-xs font-bold">${arrow}${Math.abs(m.pct)}%</span>
+                </div>
+                <p class="text-xs text-gray-400 mt-0.5 truncate">${m.reason}</p>
+            </div>
+            <div class="text-right flex-shrink-0">
+                <p class="text-sm font-semibold text-gray-900">¥${m.curr.toLocaleString()}</p>
+                <p class="text-[10px] text-gray-400">← ¥${m.prev.toLocaleString()}</p>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function renderBars() {
+    document.getElementById('bar-chart').innerHTML = BARS.map(b => {
+        const pct = (b.v/maxBar*100).toFixed(0);
+        const isCurrent = b.m === '3月';
+        return `<div class="flex items-center gap-3">
+            <span class="text-xs ${isCurrent?'text-liaoran-600 font-semibold':'text-gray-400'} w-8">${b.m}</span>
+            <div class="flex-1 h-6 bg-gray-100 rounded-full overflow-hidden">
+                <div class="h-full rounded-full transition-all duration-500 ${isCurrent?'bg-liaoran-500':'bg-liaoran-200'}" style="width:${pct}%"></div>
+            </div>
+            <span class="text-xs ${isCurrent?'text-gray-900 font-semibold':'text-gray-500'} w-14 text-right">¥${(b.v/1000).toFixed(1)}k</span>
+        </div>`;
+    }).join('');
+}
+
+function setRange(r) {
+    document.querySelectorAll('.time-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('trend-time-range-'+r).classList.add('active');
+}
+
+function selectCat(id) {
+    document.querySelectorAll('#trend-category-filter .chip').forEach(c => c.classList.remove('active'));
+    event.target.classList.add('active');
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

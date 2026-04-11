@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>05.2 Identity P&L - 了然</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'liaoran': {
+                            50: '#E8F5F1', 100: '#D1EBE3', 200: '#A3D7C7',
+                            300: '#75C3AB', 400: '#47AF8F', 500: '#1A6B5A',
+                            600: '#165A4B', 700: '#0F4F42', 800: '#0A3A31', 900: '#052520',
+                        }
+                    },
+                    fontFamily: { sans: ['-apple-system', 'PingFang SC', 'Noto Sans CJK SC', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body { overscroll-behavior: none; }
+        .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom, 0px)); }
+        .cost-bar { transition: width 0.8s ease-out; }
+        .hero-num { font-variant-numeric: tabular-nums; }
+        .chart-line { stroke-dasharray: 500; stroke-dashoffset: 500; animation: draw 1.5s ease forwards; }
+        @keyframes draw { to { stroke-dashoffset: 0; } }
+        @keyframes countUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-in { animation: countUp 0.6s ease-out forwards; }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+
+    <div class="h-[100dvh] flex flex-col">
+
+        <!-- TOP BAR -->
+        <div id="pnl-topbar" class="bg-white sticky top-0 z-20 px-4 py-3 flex items-center gap-3 border-b border-gray-100">
+            <button id="pnl-topbar-back" onclick="navigateTo('05.1-IdentityManagement.html')" class="w-8 h-8 flex items-center justify-center -ml-1">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <div class="flex items-center gap-2 flex-1">
+                <span class="text-lg">👩‍💼</span>
+                <h1 id="pnl-topbar-identity" class="text-base font-semibold text-gray-900">老板小美</h1>
+            </div>
+            <button id="pnl-topbar-month" class="text-sm text-liaoran-600 font-medium px-3 py-1 rounded-lg bg-liaoran-50 active:bg-liaoran-100" onclick="showToast('月份选择器（原型简化）')">4月 ▾</button>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="flex-1 overflow-y-auto px-4 py-4 pb-12 space-y-5">
+
+            <!-- ===== HERO P&L CARD ===== -->
+            <div id="pnl-hero" class="bg-gradient-to-br from-liaoran-700 to-liaoran-500 rounded-2xl p-6 text-white shadow-lg">
+                <p id="pnl-hero-label" class="text-sm text-white/70">本月损益</p>
+                <div class="mt-2 mb-1">
+                    <p class="text-xs text-white/60">净利润</p>
+                    <p id="pnl-hero-profit" class="text-[40px] font-bold hero-num tracking-tight animate-in">¥2,847</p>
+                </div>
+                <p id="pnl-hero-change" class="text-sm text-green-300">▲ 比上月多 ¥340</p>
+
+                <div class="flex gap-6 mt-5">
+                    <div>
+                        <p class="text-xs text-white/60">收入</p>
+                        <p id="pnl-hero-income" class="text-lg font-semibold">¥9,000</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-white/60">支出</p>
+                        <p id="pnl-hero-expense" class="text-lg font-semibold">¥6,153</p>
+                    </div>
+                </div>
+
+                <!-- Margin Bar -->
+                <div class="mt-4">
+                    <div class="w-full h-2 bg-white/20 rounded-full overflow-hidden">
+                        <div id="pnl-hero-margin" class="h-full bg-green-400 rounded-full" style="width:31.6%"></div>
+                    </div>
+                    <p class="text-xs text-white/60 mt-1">利润率 31.6%</p>
+                </div>
+            </div>
+
+            <!-- ===== INCOME SECTION ===== -->
+            <div>
+                <h3 id="pnl-income-header" class="text-sm font-semibold text-gray-700 mb-3">收入明细</h3>
+                <div id="pnl-income-list" class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <button class="w-full flex items-center gap-3 px-4 py-3.5 active:bg-gray-50 border-b border-gray-100" onclick="navigateTo('../03-lilys-spending-mirror-Prototype/03.1-TransactionList.html')">
+                        <span class="text-lg">💰</span>
+                        <span class="flex-1 text-sm text-gray-700 text-left">薯店结算</span>
+                        <span class="text-sm font-semibold text-gray-900">¥5,400</span>
+                    </button>
+                    <button class="w-full flex items-center gap-3 px-4 py-3.5 active:bg-gray-50 border-b border-gray-100" onclick="navigateTo('../03-lilys-spending-mirror-Prototype/03.1-TransactionList.html')">
+                        <span class="text-lg">🤝</span>
+                        <span class="flex-1 text-sm text-gray-700 text-left">品牌合作</span>
+                        <span class="text-sm font-semibold text-gray-900">¥3,200</span>
+                    </button>
+                    <button class="w-full flex items-center gap-3 px-4 py-3.5 active:bg-gray-50" onclick="navigateTo('../03-lilys-spending-mirror-Prototype/03.1-TransactionList.html')">
+                        <span class="text-lg">🎁</span>
+                        <span class="flex-1 text-sm text-gray-700 text-left">样品佣金</span>
+                        <span class="text-sm font-semibold text-gray-900">¥400</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== COST SECTION ===== -->
+            <div>
+                <h3 id="pnl-cost-header" class="text-sm font-semibold text-gray-700 mb-3">成本明细</h3>
+                <div id="pnl-cost-list" class="bg-white rounded-xl shadow-sm p-4 space-y-3">
+                    <div class="space-y-3" id="cost-items"></div>
+
+                    <!-- AI Insight -->
+                    <div id="pnl-cost-insight" class="bg-orange-50 rounded-xl p-3 mt-3 border border-orange-100">
+                        <p class="text-xs text-orange-700 leading-relaxed">💡 广告投流占总成本 32%，但 ROI 仅 2.7（行业平均 4.0+）。考虑优化投流策略或增加自然流量占比</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== TIME VALUE SECTION ===== -->
+            <div>
+                <h3 id="pnl-time-header" class="text-sm font-semibold text-gray-700 mb-3">时间价值</h3>
+                <div class="bg-white rounded-xl shadow-sm p-5">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-lg">⏱</span>
+                        <div>
+                            <p id="pnl-time-hours" class="text-sm text-gray-700">本月投入约 <span class="font-semibold">124</span> 小时</p>
+                            <p class="text-xs text-gray-400 mt-0.5 cursor-pointer underline underline-offset-2" onclick="showToast('调整时间输入（原型外）')">基于交易时间推算 · 点击调整</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 mb-4">
+                        <div class="flex-1 bg-liaoran-50 rounded-xl p-3 text-center">
+                            <p class="text-xs text-gray-500">副业时薪</p>
+                            <p id="pnl-time-rate-side" class="text-2xl font-bold text-liaoran-600 mt-1">¥23</p>
+                            <p class="text-[10px] text-gray-400">/小时</p>
+                        </div>
+                        <div class="flex-1 bg-gray-50 rounded-xl p-3 text-center">
+                            <p class="text-xs text-gray-500">主业时薪约</p>
+                            <p id="pnl-time-rate-main" class="text-2xl font-bold text-gray-600 mt-1">¥51</p>
+                            <p class="text-[10px] text-gray-400">/小时</p>
+                        </div>
+                    </div>
+
+                    <p id="pnl-time-rate-compare" class="text-xs text-gray-500 text-center">副业时薪约为主业的 45%</p>
+
+                    <!-- AI Insight -->
+                    <div id="pnl-time-insight" class="bg-liaoran-50 rounded-xl p-3 mt-3 border border-liaoran-100">
+                        <p class="text-xs text-liaoran-700 leading-relaxed">💡 如果减少无效投流，时薪可提升至 ¥31（节省的投流时间约 20 小时/月）</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== TREND SECTION ===== -->
+            <div>
+                <h3 id="pnl-trend-header" class="text-sm font-semibold text-gray-700 mb-3">月度趋势</h3>
+                <div id="pnl-trend" class="bg-white rounded-xl shadow-sm p-4">
+                    <svg id="pnl-trend-chart" viewBox="0 0 300 140" class="w-full">
+                        <!-- Grid -->
+                        <line x1="30" y1="10" x2="30" y2="110" stroke="#E5E7EB" stroke-width="0.5"/>
+                        <line x1="30" y1="110" x2="280" y2="110" stroke="#E5E7EB" stroke-width="1"/>
+                        <line x1="30" y1="60" x2="280" y2="60" stroke="#E5E7EB" stroke-width="0.5" stroke-dasharray="3"/>
+                        <line x1="30" y1="10" x2="280" y2="10" stroke="#E5E7EB" stroke-width="0.5" stroke-dasharray="3"/>
+
+                        <!-- X labels -->
+                        <text x="75" y="128" text-anchor="middle" class="text-[9px]" fill="#9CA3AF">1月</text>
+                        <text x="140" y="128" text-anchor="middle" class="text-[9px]" fill="#9CA3AF">2月</text>
+                        <text x="210" y="128" text-anchor="middle" class="text-[9px]" fill="#9CA3AF">3月</text>
+                        <text x="270" y="128" text-anchor="middle" class="text-[9px]" fill="#9CA3AF">4月</text>
+
+                        <!-- Profit line (green, bold) -->
+                        <polyline points="75,78 140,68 210,50 270,38" fill="none" stroke="#1A6B5A" stroke-width="2.5" stroke-linecap="round" class="chart-line"/>
+                        <circle cx="75" cy="78" r="3.5" fill="#1A6B5A"/>
+                        <circle cx="140" cy="68" r="3.5" fill="#1A6B5A"/>
+                        <circle cx="210" cy="50" r="3.5" fill="#1A6B5A"/>
+                        <circle cx="270" cy="38" r="4" fill="#1A6B5A" stroke="white" stroke-width="2"/>
+
+                        <!-- Income line (dashed) -->
+                        <polyline points="75,50 140,38 210,22 270,15" fill="none" stroke="#9CA3AF" stroke-width="1" stroke-dasharray="4" opacity="0.6"/>
+
+                        <!-- Expense line (dashed) -->
+                        <polyline points="75,65 140,58 210,48 270,45" fill="none" stroke="#F59E0B" stroke-width="1" stroke-dasharray="4" opacity="0.6"/>
+                    </svg>
+                    <div id="pnl-trend-legend" class="flex justify-center gap-4 mt-2 text-[10px] text-gray-400">
+                        <span>● 净利润</span>
+                        <span class="opacity-60">- - 收入</span>
+                        <span class="text-amber-400 opacity-60">- - 支出</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== ATTRIBUTION SECTION ===== -->
+            <div>
+                <h3 id="pnl-attribution-header" class="text-sm font-semibold text-gray-700 mb-3">归属概览</h3>
+                <div id="pnl-attribution-card" class="bg-white rounded-xl shadow-sm p-4">
+                    <div class="flex justify-between text-sm mb-2">
+                        <span id="pnl-attribution-assigned" class="text-gray-700">54 笔交易已归属</span>
+                        <span id="pnl-attribution-pending" class="text-orange-500">7 笔待确认</span>
+                    </div>
+                    <button id="pnl-attribution-adjust" class="text-xs text-liaoran-600 font-medium underline underline-offset-2" onclick="navigateTo('05.1-IdentityManagement.html')">调整归属规则 ></button>
+                </div>
+            </div>
+
+            <!-- ===== FULL-TIME TEASER ===== -->
+            <div id="pnl-fulltime-card" class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-5 border border-purple-100">
+                <div class="flex items-start gap-3">
+                    <span class="text-2xl">🔮</span>
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2">
+                            <h4 id="pnl-fulltime-title" class="text-sm font-semibold text-gray-900">全职可行性评估</h4>
+                            <span id="pnl-fulltime-tag" class="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-600">即将推出</span>
+                        </div>
+                        <p id="pnl-fulltime-desc" class="text-xs text-gray-500 mt-1">连续 3 个月副业收入超过主业，将解锁深度分析</p>
+                        <div class="flex items-center gap-2 mt-3">
+                            <div class="flex gap-1">
+                                <div class="w-3 h-3 rounded-full bg-purple-400"></div>
+                                <div class="w-3 h-3 rounded-full bg-purple-400"></div>
+                                <div class="w-3 h-3 rounded-full bg-gray-200"></div>
+                            </div>
+                            <span id="pnl-fulltime-progress" class="text-[10px] text-purple-600">2/3 个月达标</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-sm px-4 py-2 rounded-full z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+    <script>
+        // ===== COST ITEMS =====
+        const COSTS = [
+            { icon:'📱', name:'广告投流', amount:2000, pct:32.5, color:'#F59E0B' },
+            { icon:'📦', name:'样品采购', amount:1600, pct:26.0, color:'#EC4899' },
+            { icon:'🚚', name:'快递物流', amount:880, pct:14.3, color:'#3B82F6' },
+            { icon:'📋', name:'平台佣金', amount:873, pct:14.2, color:'#8B5CF6' },
+            { icon:'🔄', name:'售后退款', amount:800, pct:13.0, color:'#EF4444' }
+        ];
+
+        function renderCosts() {
+            document.getElementById('cost-items').innerHTML = COSTS.map(c =>
+                `<div class="flex items-center gap-3">
+                    <span class="text-lg">${c.icon}</span>
+                    <div class="flex-1">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-gray-700">${c.name}</span>
+                            <span class="font-medium text-gray-900">¥${c.amount.toLocaleString()}</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                            <div class="cost-bar h-full rounded-full" style="width:${c.pct}%;background:${c.color}"></div>
+                        </div>
+                    </div>
+                    <span class="text-[10px] text-gray-400 w-10 text-right">${c.pct}%</span>
+                </div>`
+            ).join('');
+        }
+
+        function navigateTo(url) { window.location.href = url; }
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.style.opacity = '1';
+            setTimeout(() => t.style.opacity = '0', 2000);
+        }
+
+        renderCosts();
+    </script>
+
+</body>
+</html>

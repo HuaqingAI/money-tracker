@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>02.3 Beneficiary Tagging - 了然</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'liaoran': {
+                            50: '#E8F5F1', 100: '#D1EBE3', 200: '#A3D7C7',
+                            300: '#75C3AB', 400: '#47AF8F', 500: '#1A6B5A',
+                            600: '#165A4B', 700: '#0F4F42', 800: '#0A3A31', 900: '#052520',
+                        }
+                    },
+                    fontFamily: { sans: ['-apple-system', 'PingFang SC', 'Noto Sans CJK SC', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body { overscroll-behavior: none; }
+        .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .fade-in-up { animation: fadeInUp 0.35s ease-out forwards; }
+        .tag-panel { max-height: 0; overflow: hidden; transition: max-height 0.25s ease-out, opacity 0.25s; opacity: 0; }
+        .tag-panel.open { max-height: 120px; opacity: 1; }
+        .detail-panel { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .detail-panel.open { max-height: 300px; }
+        .state-hidden { display: none; }
+        .chip { transition: all 0.15s ease-out; }
+        .chip.selected { transform: scale(1.05); }
+        .rule-card { transition: all 0.3s ease-out; }
+        .rule-card.confirmed { border-color: #D1EBE3; background: #FAFFFE; }
+        .progress-fill { transition: width 0.5s ease-out; }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+
+    <div id="app" class="h-[100dvh] flex flex-col">
+
+        <!-- TOP BAR -->
+        <div id="tag-topbar" class="bg-white/95 backdrop-blur sticky top-0 z-30 px-4 py-3 flex items-center justify-between">
+            <button id="tag-topbar-back" onclick="handleBack()" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 -ml-1">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <h1 id="tag-topbar-title" class="text-base font-semibold text-gray-900">为谁花的</h1>
+            <button id="tag-topbar-done" onclick="finishTagging()" class="text-sm font-semibold text-liaoran-500 hover:text-liaoran-600 px-2 py-1">完成</button>
+        </div>
+
+        <!-- SCROLLABLE CONTENT -->
+        <div class="flex-1 overflow-y-auto pb-48">
+
+            <!-- ========== PHASE 1: RULE CONFIRMATION ========== -->
+            <div id="phase-1">
+                <!-- Header -->
+                <div id="tag-header" class="px-5 pt-5 pb-3">
+                    <h2 id="tag-header-title" class="text-lg font-bold text-gray-900">AI 已识别你的消费模式</h2>
+                    <p id="tag-header-subtitle" class="text-sm text-gray-500 mt-1">确认以下规则即可，无需逐笔标注</p>
+                </div>
+
+                <!-- Rule Cards -->
+                <div id="tag-rules" class="px-4 space-y-3">
+                    <!-- Rendered by JS -->
+                </div>
+
+                <!-- Remaining Prompt -->
+                <div id="tag-remaining-prompt" class="mx-4 mt-4 hidden">
+                    <button id="tag-remaining-link" onclick="goToPhase2()" class="w-full bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 text-left flex items-center justify-between">
+                        <div>
+                            <p id="tag-remaining-text" class="text-sm text-amber-800 font-medium">还有 <span id="remaining-count">5</span> 笔 AI 不太确定</p>
+                            <p class="text-xs text-amber-600 mt-0.5">帮忙标注一下？</p>
+                        </div>
+                        <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ========== PHASE 2: REMAINING TRANSACTIONS ========== -->
+            <div id="phase-2" class="state-hidden">
+                <!-- Banner -->
+                <div id="tag-p2-banner" class="mx-4 mt-4 bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 mb-4">
+                    <p class="text-sm text-amber-800 flex items-center gap-2"><span>💡</span>这几笔 AI 不太确定，帮忙标注一下？</p>
+                </div>
+
+                <!-- Transaction Cards -->
+                <div id="tag-p2-list" class="px-4 space-y-3">
+                    <!-- Rendered by JS -->
+                </div>
+
+                <!-- Phase 2 Actions -->
+                <div id="tag-p2-action" class="px-4 mt-6">
+                    <button id="tag-p2-action-cta" onclick="finishTagging()" class="w-full h-12 bg-liaoran-500 hover:bg-liaoran-600 active:bg-liaoran-700 text-white font-semibold rounded-xl shadow-lg shadow-liaoran-500/25 transition-all">
+                        完成标注
+                    </button>
+                    <button id="tag-p2-action-skip" onclick="finishTagging()" class="w-full py-3 text-sm text-gray-400 hover:text-gray-500 text-center">
+                        跳过剩余，以后再标注
+                    </button>
+                </div>
+            </div>
+
+        </div><!-- end scrollable -->
+
+        <!-- BOTTOM ACTION BAR (Phase 1) -->
+        <div id="tag-action" class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur border-t border-gray-100 px-5 pt-3 safe-bottom z-20">
+            <!-- Progress -->
+            <div id="tag-action-rule-progress" class="mb-3">
+                <div class="flex justify-between text-xs text-gray-500 mb-1.5">
+                    <span>已确认 <span id="confirmed-count" class="font-semibold text-liaoran-600">0</span>/<span id="total-rules">6</span> 条规则</span>
+                    <span>覆盖 <span id="covered-txn" class="font-semibold text-liaoran-600">0</span>/<span id="total-txn">47</span> 笔交易</span>
+                </div>
+                <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="progress-fill h-full bg-liaoran-400 rounded-full" style="width:0%"></div>
+                </div>
+            </div>
+
+            <!-- Confirm All -->
+            <div id="tag-action-bar">
+                <button id="tag-action-confirm-all" onclick="showConfirmAllDialog()" class="w-full h-11 bg-liaoran-500 hover:bg-liaoran-600 active:bg-liaoran-700 text-white font-medium rounded-xl transition-all text-sm">
+                    全部确认 AI 建议
+                </button>
+            </div>
+        </div>
+
+        <!-- CONFIRM ALL DIALOG -->
+        <div id="tag-action-confirm-all-dialog" class="fixed inset-0 z-50 bg-black/40 flex items-end justify-center opacity-0 pointer-events-none transition-opacity duration-200">
+            <div class="bg-white w-full max-w-md rounded-t-2xl p-6 safe-bottom transform translate-y-4 transition-transform duration-200">
+                <h3 class="text-base font-semibold text-gray-900 mb-2">确认全部 AI 建议？</h3>
+                <p class="text-sm text-gray-500 mb-1">将一次性确认所有 <span id="dialog-rule-count">6</span> 条规则</p>
+                <p class="text-xs text-gray-400 mb-5">确认后仍可逐条撤销修改</p>
+                <div class="flex gap-3">
+                    <button onclick="closeConfirmAllDialog()" class="flex-1 h-11 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50">取消</button>
+                    <button onclick="confirmAll()" class="flex-1 h-11 bg-liaoran-500 text-white rounded-xl text-sm font-semibold hover:bg-liaoran-600">全部确认</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOAST -->
+        <div id="toast" class="fixed top-16 left-4 right-4 z-50 bg-liaoran-50 border border-liaoran-200 text-liaoran-800 text-sm rounded-xl px-4 py-3 shadow-lg opacity-0 -translate-y-2 transition-all duration-300 pointer-events-none text-center">
+            <span id="toast-text"></span>
+        </div>
+
+    </div>
+
+<script>
+// === DEMO DATA: AI RULES ===
+const TAGS = [
+    { id: 'self', label: '为自己', icon: '👤', color: '#3B82F6', bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700' },
+    { id: 'spouse', label: '为配偶', icon: '💑', color: '#EC4899', bg: 'bg-pink-50', border: 'border-pink-200', text: 'text-pink-700' },
+    { id: 'child', label: '为孩子', icon: '👶', color: '#F59E0B', bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-700' },
+    { id: 'family', label: '为家庭', icon: '🏠', color: '#10B981', bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-700' },
+];
+
+const RULES = [
+    { icon: '🍽', title: '工作日午餐外卖', merchants: '美团外卖、饿了么 等', count: 12, amount: 384, suggested: 'self', confidence: 0.92 },
+    { icon: '🚗', title: '通勤交通', merchants: '滴滴出行、地铁 等', count: 8, amount: 224, suggested: 'self', confidence: 0.90 },
+    { icon: '🛒', title: '超市采购（>80元）', merchants: '盒马鲜生、永辉 等', count: 6, amount: 936, suggested: 'family', confidence: 0.88 },
+    { icon: '👶', title: '母婴育儿用品', merchants: '宝宝树、孩子王 等', count: 4, amount: 356, suggested: 'child', confidence: 0.95 },
+    { icon: '🏠', title: '房贷水电物业', merchants: '房贷月供、电费、物业费', count: 3, amount: 7200, suggested: 'family', confidence: 0.98 },
+    { icon: '🎮', title: '游戏娱乐', merchants: 'Steam、腾讯视频 等', count: 5, amount: 248, suggested: 'self', confidence: 0.85 },
+];
+
+const REMAINING = [
+    { id: 'r1', merchant: '丝芙兰', amount: 289, category: '购物 · 美妆', date: '03-15', tagged: null },
+    { id: 'r2', merchant: '京东', amount: 168, category: '购物 · 综合', date: '03-08', tagged: null },
+    { id: 'r3', merchant: '海底捞', amount: 186, category: '餐饮 · 火锅', date: '03-22', tagged: null },
+    { id: 'r4', merchant: '大众点评', amount: 98, category: '餐饮 · 其他', date: '03-18', tagged: null },
+    { id: 'r5', merchant: '淘宝', amount: 359, category: '购物 · 服饰', date: '03-25', tagged: null },
+];
+
+let ruleStates = RULES.map(() => ({ confirmed: false, tag: null, expanded: false, tagPanelOpen: false }));
+let currentPhase = 1;
+const totalTxn = RULES.reduce((s, r) => s + r.count, 0) + REMAINING.length;
+
+// === RENDER ===
+function init() {
+    document.getElementById('total-rules').textContent = RULES.length;
+    document.getElementById('total-txn').textContent = totalTxn;
+    document.getElementById('dialog-rule-count').textContent = RULES.length;
+    document.getElementById('remaining-count').textContent = REMAINING.length;
+    renderRules();
+    updateProgress();
+}
+
+function renderRules() {
+    const container = document.getElementById('tag-rules');
+    container.innerHTML = RULES.map((rule, i) => {
+        const state = ruleStates[i];
+        const sugTag = TAGS.find(t => t.id === rule.suggested);
+        const confirmedTag = state.tag ? TAGS.find(t => t.id === state.tag) : sugTag;
+
+        if (state.confirmed) {
+            return `<div id="tag-rule-${i}" class="rule-card confirmed bg-white border rounded-2xl p-4" style="animation-delay:${i*0.05}s">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3 flex-1 min-w-0">
+                        <span class="text-lg flex-shrink-0">${rule.icon}</span>
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2">
+                                <h3 class="text-sm font-semibold text-gray-900 truncate">${rule.title}</h3>
+                                <span class="flex-shrink-0 w-4 h-4 bg-liaoran-100 rounded-full flex items-center justify-center"><svg class="w-2.5 h-2.5 text-liaoran-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-0.5">${rule.count} 笔 · ¥${rule.amount.toLocaleString()} → <span class="${confirmedTag.text} font-medium">${confirmedTag.label}</span></p>
+                        </div>
+                    </div>
+                    <button onclick="undoRule(${i})" class="text-xs text-gray-400 hover:text-gray-600 px-2 py-1 flex-shrink-0">撤销</button>
+                </div>
+            </div>`;
+        }
+
+        return `<div id="tag-rule-${i}" class="rule-card bg-white border border-gray-100 rounded-2xl p-4 shadow-sm fade-in-up" style="animation-delay:${i*0.05}s;opacity:0">
+            <div class="flex items-start gap-3">
+                <span id="tag-rule-${i}-icon" class="text-lg mt-0.5 flex-shrink-0">${rule.icon}</span>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between">
+                        <h3 id="tag-rule-${i}-title" class="text-sm font-semibold text-gray-900">${rule.title}</h3>
+                        <button onclick="toggleDetail(${i})" class="w-6 h-6 flex items-center justify-center">
+                            <svg class="w-4 h-4 text-gray-300 transition-transform duration-200 ${state.expanded?'rotate-180':''}" id="chevron-rule-${i}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+                        </button>
+                    </div>
+                    <p id="tag-rule-${i}-merchants" class="text-xs text-gray-400 mt-0.5">${rule.merchants}</p>
+                    <p id="tag-rule-${i}-stats" class="text-xs text-gray-500 mt-1">${rule.count} 笔 · 共 ¥${rule.amount.toLocaleString()}</p>
+
+                    <!-- Detail Panel -->
+                    <div id="detail-rule-${i}" class="detail-panel ${state.expanded?'open':''}">
+                        <div class="mt-2 pt-2 border-t border-gray-50 text-xs text-gray-400">匹配商户：${rule.merchants}（置信度 ${Math.round(rule.confidence*100)}%）</div>
+                    </div>
+
+                    <!-- AI Suggestion -->
+                    <div id="tag-rule-${i}-suggestion" class="mt-3 flex items-center gap-2">
+                        <span class="text-xs text-gray-400">AI 建议:</span>
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 ${sugTag.bg} ${sugTag.border} border rounded-full text-xs ${sugTag.text} font-medium">${sugTag.icon} ${sugTag.label}</span>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="mt-3 flex gap-2">
+                        <button id="tag-rule-${i}-confirm" onclick="confirmRule(${i})" class="flex-1 h-9 bg-liaoran-50 hover:bg-liaoran-100 text-liaoran-700 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-1">
+                            确认 ✓
+                        </button>
+                        <button id="tag-rule-${i}-modify" onclick="toggleTagPanel(${i})" class="flex-1 h-9 border border-gray-200 hover:bg-gray-50 text-gray-600 text-sm font-medium rounded-lg transition-all">
+                            修改为...
+                        </button>
+                    </div>
+
+                    <!-- Tag Selection Panel -->
+                    <div id="tag-rule-${i}-tag-panel" class="tag-panel ${state.tagPanelOpen?'open':''}">
+                        <div class="mt-3 pt-3 border-t border-gray-50">
+                            <p class="text-xs text-gray-400 mb-2">选择正确的标签：</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                ${TAGS.map(t => `<button onclick="selectTag(${i},'${t.id}')" class="chip h-9 ${t.bg} ${t.border} border rounded-lg text-xs ${t.text} font-medium flex items-center justify-center gap-1 hover:opacity-80">${t.icon} ${t.label}</button>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function renderPhase2() {
+    const container = document.getElementById('tag-p2-list');
+    container.innerHTML = REMAINING.map(txn => {
+        return `<div id="tag-p2-card-${txn.id}" class="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
+            <div class="flex justify-between items-start mb-3">
+                <div>
+                    <p id="tag-p2-card-${txn.id}-merchant" class="text-sm font-semibold text-gray-900">${txn.merchant}</p>
+                    <p class="text-xs text-gray-400 mt-0.5"><span id="tag-p2-card-${txn.id}-category">${txn.category}</span> · <span id="tag-p2-card-${txn.id}-date">${txn.date}</span></p>
+                </div>
+                <p id="tag-p2-card-${txn.id}-amount" class="text-sm font-semibold text-gray-700">¥${txn.amount}</p>
+            </div>
+            <div id="tag-p2-card-${txn.id}-tags" class="grid grid-cols-4 gap-2">
+                ${TAGS.map(t => `<button onclick="tagTransaction('${txn.id}','${t.id}',this)" class="chip h-8 border ${txn.tagged===t.id ? t.bg+' '+t.border+' '+t.text+' selected' : 'border-gray-200 text-gray-500 hover:bg-gray-50'} rounded-lg text-xs font-medium flex items-center justify-center gap-0.5 transition-all">${t.icon}<span class="hidden sm:inline"> ${t.label.slice(1)}</span></button>`).join('')}
+            </div>
+        </div>`;
+    }).join('');
+}
+
+// === INTERACTIONS ===
+function confirmRule(i) {
+    ruleStates[i].confirmed = true;
+    ruleStates[i].tag = ruleStates[i].tag || RULES[i].suggested;
+    renderRules();
+    updateProgress();
+    checkAllConfirmed();
+}
+
+function undoRule(i) {
+    ruleStates[i].confirmed = false;
+    ruleStates[i].tag = null;
+    ruleStates[i].tagPanelOpen = false;
+    renderRules();
+    updateProgress();
+}
+
+function selectTag(i, tagId) {
+    ruleStates[i].tag = tagId;
+    ruleStates[i].confirmed = true;
+    ruleStates[i].tagPanelOpen = false;
+    renderRules();
+    updateProgress();
+    checkAllConfirmed();
+}
+
+function toggleTagPanel(i) {
+    ruleStates[i].tagPanelOpen = !ruleStates[i].tagPanelOpen;
+    const panel = document.getElementById(`tag-rule-${i}-tag-panel`);
+    panel.classList.toggle('open', ruleStates[i].tagPanelOpen);
+}
+
+function toggleDetail(i) {
+    ruleStates[i].expanded = !ruleStates[i].expanded;
+    document.getElementById(`detail-rule-${i}`).classList.toggle('open', ruleStates[i].expanded);
+    document.getElementById(`chevron-rule-${i}`).classList.toggle('rotate-180', ruleStates[i].expanded);
+}
+
+function tagTransaction(txnId, tagId, btn) {
+    const txn = REMAINING.find(t => t.id === txnId);
+    txn.tagged = tagId;
+    // Re-render just this card's tags
+    const container = document.getElementById(`tag-p2-card-${txnId}-tags`);
+    container.innerHTML = TAGS.map(t => `<button onclick="tagTransaction('${txnId}','${t.id}',this)" class="chip h-8 border ${txn.tagged===t.id ? t.bg+' '+t.border+' '+t.text+' selected' : 'border-gray-200 text-gray-500 hover:bg-gray-50'} rounded-lg text-xs font-medium flex items-center justify-center gap-0.5 transition-all">${t.icon}<span class="hidden sm:inline"> ${t.label.slice(1)}</span></button>`).join('');
+}
+
+function updateProgress() {
+    const confirmed = ruleStates.filter(s => s.confirmed).length;
+    const coveredTxn = ruleStates.reduce((s, state, i) => s + (state.confirmed ? RULES[i].count : 0), 0);
+    document.getElementById('confirmed-count').textContent = confirmed;
+    document.getElementById('covered-txn').textContent = coveredTxn;
+    const pct = Math.round((coveredTxn / totalTxn) * 100);
+    document.getElementById('progress-bar').style.width = pct + '%';
+}
+
+function checkAllConfirmed() {
+    const allConfirmed = ruleStates.every(s => s.confirmed);
+    if (allConfirmed) {
+        document.getElementById('tag-remaining-prompt').classList.remove('hidden');
+        document.getElementById('tag-action-confirm-all').textContent = '全部已确认 ✓';
+        document.getElementById('tag-action-confirm-all').classList.add('bg-liaoran-100', 'text-liaoran-700');
+        document.getElementById('tag-action-confirm-all').classList.remove('bg-liaoran-500', 'text-white');
+    }
+}
+
+function showConfirmAllDialog() {
+    if (ruleStates.every(s => s.confirmed)) return;
+    const d = document.getElementById('tag-action-confirm-all-dialog');
+    d.classList.remove('opacity-0', 'pointer-events-none');
+    d.querySelector('div > div').classList.remove('translate-y-4');
+}
+
+function closeConfirmAllDialog() {
+    const d = document.getElementById('tag-action-confirm-all-dialog');
+    d.classList.add('opacity-0', 'pointer-events-none');
+    d.querySelector('div > div').classList.add('translate-y-4');
+}
+
+function confirmAll() {
+    ruleStates.forEach((s, i) => { s.confirmed = true; s.tag = s.tag || RULES[i].suggested; });
+    closeConfirmAllDialog();
+    renderRules();
+    updateProgress();
+    checkAllConfirmed();
+    showToast('已确认全部规则');
+}
+
+function goToPhase2() {
+    currentPhase = 2;
+    document.getElementById('phase-1').classList.add('state-hidden');
+    document.getElementById('phase-2').classList.remove('state-hidden');
+    document.getElementById('tag-action').classList.add('state-hidden');
+    document.getElementById('tag-topbar-title').textContent = `剩余交易 (${REMAINING.length}笔)`;
+    renderPhase2();
+}
+
+function handleBack() {
+    if (currentPhase === 2) {
+        currentPhase = 1;
+        document.getElementById('phase-2').classList.add('state-hidden');
+        document.getElementById('phase-1').classList.remove('state-hidden');
+        document.getElementById('tag-action').classList.remove('state-hidden');
+        document.getElementById('tag-topbar-title').textContent = '为谁花的';
+    } else {
+        window.location.href = '02.2-SharedFamilyLedger.html';
+    }
+}
+
+function finishTagging() {
+    showToast('标注已保存');
+    setTimeout(() => {
+        window.location.href = '../01-dannys-zero-input-first-experience-Prototype/01.7-Dashboard.html';
+    }, 800);
+}
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toast-text').textContent = msg;
+    t.classList.remove('opacity-0', '-translate-y-2');
+    t.classList.add('opacity-100', 'translate-y-0');
+    setTimeout(() => { t.classList.add('opacity-0', '-translate-y-2'); t.classList.remove('opacity-100', 'translate-y-0'); }, 2000);
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+{
+  "meta": {
+    "scenario": "06-manual-input-and-category-management",
+    "created": "2026-04-11",
+    "language": "zh-CN",
+    "currency": "CNY",
+    "amounts_in_cents": true,
+    "extends": "01-dannys-zero-input-first-experience (same user/family)"
+  },
+  "user": {
+    "id": "usr_danny_001",
+    "name": "大强"
+  },
+  "ai_accuracy": {
+    "percent": 96.2,
+    "total_auto": 487,
+    "manual_corrected": 18
+  },
+  "category_rules": [
+    {
+      "category": "餐饮", "icon": "🍜", "rules": [
+        { "merchant": "瑞幸咖啡", "sub": "饮品" },
+        { "merchant": "美团外卖", "sub": "外卖" },
+        { "merchant": "蜜雪冰城", "sub": "饮品" },
+        { "merchant": "海底捞", "sub": "堂食" },
+        { "merchant": "肯德基", "sub": "快餐" },
+        { "merchant": "公司食堂", "sub": "工作餐" },
+        { "merchant": "菜市场", "sub": "生鲜" }
+      ]
+    },
+    {
+      "category": "交通", "icon": "🚗", "rules": [
+        { "merchant": "滴滴出行", "sub": "打车" },
+        { "merchant": "中国石化", "sub": "加油" },
+        { "merchant": "停车费", "sub": "停车" }
+      ]
+    },
+    {
+      "category": "购物", "icon": "🛒", "rules": [
+        { "merchant": "淘宝", "sub": "综合" },
+        { "merchant": "拼多多", "sub": "综合" },
+        { "merchant": "京东", "sub": "数码" }
+      ]
+    },
+    {
+      "category": "娱乐", "icon": "🎮", "rules": [
+        { "merchant": "腾讯视频", "sub": "订阅" },
+        { "merchant": "Steam", "sub": "游戏" }
+      ]
+    },
+    {
+      "category": "健康", "icon": "💊", "rules": [
+        { "merchant": "药房", "sub": "医药" }
+      ]
+    }
+  ],
+  "frequent_categories": [
+    { "icon": "🍜", "name": "餐饮", "sub": "外卖" },
+    { "icon": "🍜", "name": "餐饮", "sub": "生鲜" },
+    { "icon": "🚗", "name": "交通", "sub": "打车" },
+    { "icon": "🛒", "name": "购物", "sub": "日用品" }
+  ],
+  "manual_entry_defaults": {
+    "date": "2026-04-11",
+    "category_ai_suggestion": { "icon": "🍜", "name": "食品", "sub": "生鲜" }
+  }
+}

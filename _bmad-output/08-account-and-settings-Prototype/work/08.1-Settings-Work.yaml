@@ -1,0 +1,18 @@
+page: 08.1-Settings
+view: Settings 设置
+spec: C-UX-Scenarios/08-account-and-settings/08.1-settings/08.1-settings.md
+status: building
+
+sections:
+  - id: S1
+    name: Top Bar + Data & Privacy Group (Accordion)
+    objects: [set-topbar, set-topbar-back, set-topbar-title, set-group-privacy, set-group-privacy-header, set-item-security, set-item-security-detail, set-item-notification-perm, set-item-export, set-item-cache]
+    status: pending
+  - id: S2
+    name: Notification Preferences Group
+    objects: [set-group-notification, set-group-notification-header, set-notif-insights, set-notif-report, set-notif-gift, set-notif-update]
+    status: pending
+  - id: S3
+    name: General + About + Logout
+    objects: [set-group-general, set-item-language, set-item-currency, set-item-darkmode, set-group-about, set-item-about, set-item-terms, set-item-privacy-policy, set-item-feedback, set-logout, set-logout-button, set-logout-confirm, set-version]
+    status: pending

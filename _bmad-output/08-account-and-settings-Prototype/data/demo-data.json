@@ -1,0 +1,119 @@
+{
+  "meta": {
+    "scenario": "08-account-and-settings",
+    "created": "2026-04-11",
+    "language": "zh-CN",
+    "currency": "CNY",
+    "amounts_in_cents": true,
+    "extends": "01-dannys-zero-input-first-experience (same user/family)"
+  },
+  "user": {
+    "id": "usr_danny_001",
+    "name": "大强",
+    "real_name": "张大强",
+    "phone": "138****6789",
+    "phone_full": "13812346789",
+    "wechat_nickname": "Danny强",
+    "wechat_bindied": true,
+    "email": null,
+    "avatar": null,
+    "gender": "male",
+    "birth_year": 1996,
+    "city": "杭州",
+    "registered_at": "2026-01-15T10:00:00Z",
+    "last_login": "2026-04-11T14:00:00Z"
+  },
+  "membership": {
+    "tier": "premium_trial",
+    "tier_label": "高级版试用",
+    "trial_started": "2026-01-15",
+    "trial_ends": "2026-04-15",
+    "days_remaining": 4,
+    "features_unlocked": [
+      "family_shared_ledger",
+      "beneficiary_tagging",
+      "ai_chat_unlimited",
+      "insights_full",
+      "optimization_suggestions",
+      "simulation_comparison",
+      "multi_identity",
+      "spending_radar"
+    ],
+    "visual_state": "trial"
+  },
+  "hub_features": {
+    "grid_items": [
+      { "id": "gift_accounting", "label": "人情账", "icon": "🎁", "locked": false, "badge": null, "target": "04.1" },
+      { "id": "multi_identity", "label": "多身份", "icon": "👤", "locked": false, "badge": null, "target": "05.1" },
+      { "id": "category_mgmt", "label": "分类管理", "icon": "📂", "locked": false, "badge": "3", "target": "06.2" },
+      { "id": "manual_entry", "label": "记一笔", "icon": "✏️", "locked": false, "badge": null, "target": "06.1" },
+      { "id": "bill_import", "label": "账单导入", "icon": "📥", "locked": false, "badge": null, "target": "01.5" },
+      { "id": "spending_radar", "label": "消费雷达", "icon": "📊", "locked": false, "badge": "new", "target": "03.4" }
+    ],
+    "menu_items": [
+      { "id": "settings", "label": "设置", "icon": "⚙️", "target": "08.1" },
+      { "id": "help", "label": "帮助与反馈", "icon": "❓", "target": null },
+      { "id": "about", "label": "关于了然", "icon": "ℹ️", "target": null }
+    ]
+  },
+  "settings": {
+    "sections": [
+      {
+        "id": "data_security",
+        "label": "数据安全",
+        "priority": 1,
+        "items": [
+          { "id": "encryption", "label": "数据加密", "value": "AES-256 端到端加密", "type": "info_expandable" },
+          { "id": "storage", "label": "数据存储", "value": "本地优先 + 云端加密备份", "type": "info_expandable" },
+          { "id": "privacy_policy", "label": "隐私政策", "type": "link" },
+          { "id": "data_export", "label": "导出我的数据", "type": "action" }
+        ]
+      },
+      {
+        "id": "notifications",
+        "label": "通知管理",
+        "priority": 2,
+        "items": [
+          { "id": "insight_push", "label": "洞察推送", "value": true, "type": "toggle" },
+          { "id": "import_complete", "label": "导入完成通知", "value": true, "type": "toggle" },
+          { "id": "family_activity", "label": "家庭账本动态", "value": true, "type": "toggle" },
+          { "id": "push_time", "label": "推送时段", "value": "20:00-21:00", "type": "picker" }
+        ]
+      },
+      {
+        "id": "permissions",
+        "label": "权限管理",
+        "priority": 3,
+        "items": [
+          { "id": "notification_access", "label": "通知读取权限", "value": "已授权", "type": "status_link" },
+          { "id": "camera", "label": "相机权限", "value": "未授权", "type": "status_link" },
+          { "id": "storage_access", "label": "存储权限", "value": "已授权", "type": "status_link" }
+        ]
+      },
+      {
+        "id": "general",
+        "label": "通用",
+        "priority": 4,
+        "items": [
+          { "id": "currency", "label": "默认货币", "value": "CNY ¥", "type": "picker" },
+          { "id": "month_start", "label": "月度起始日", "value": "1日", "type": "picker" },
+          { "id": "cache_clear", "label": "清除缓存", "value": "23.5 MB", "type": "action" }
+        ]
+      }
+    ]
+  },
+  "profile": {
+    "display_name": "大强",
+    "avatar_placeholder": "强",
+    "phone_masked": "138****6789",
+    "wechat_bound": true,
+    "wechat_name": "Danny强",
+    "account_status": "active",
+    "deactivation_steps": 6,
+    "compliance": {
+      "law": "个人信息保护法",
+      "deletion_period_days": 15,
+      "verification_layers": 3
+    }
+  }
+}

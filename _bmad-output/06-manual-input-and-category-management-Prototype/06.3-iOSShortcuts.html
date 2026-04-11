@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>06.3 iOS Shortcuts - 了然</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'liaoran': {
+                            50: '#E8F5F1', 100: '#D1EBE3', 200: '#A3D7C7',
+                            300: '#75C3AB', 400: '#47AF8F', 500: '#1A6B5A',
+                            600: '#165A4B', 700: '#0F4F42', 800: '#0A3A31', 900: '#052520',
+                        }
+                    },
+                    fontFamily: { sans: ['-apple-system', 'PingFang SC', 'Noto Sans CJK SC', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body { overscroll-behavior: none; }
+        .tab-active { color: #1A6B5A; background: #E8F5F1; font-weight: 600; }
+        .tab-inactive { color: #6B7280; background: #F3F4F6; }
+        .step-num { width: 28px; height: 28px; border-radius: 50%; background: #E8F5F1; color: #1A6B5A; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+
+    <div class="h-[100dvh] flex flex-col">
+
+        <!-- TOP BAR -->
+        <div class="bg-white sticky top-0 z-20 px-4 py-3 flex items-center gap-3 border-b border-gray-100">
+            <button onclick="history.back()" class="w-8 h-8 flex items-center justify-center -ml-1">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <h1 class="text-lg font-semibold text-gray-900">快速触发记账</h1>
+        </div>
+
+        <!-- TABS -->
+        <div class="flex gap-2 px-4 py-3 bg-white">
+            <button id="tab-voice" class="flex-1 py-2 text-sm rounded-lg tab-active" onclick="switchTab('voice')">🎤 语音</button>
+            <button id="tab-button" class="flex-1 py-2 text-sm rounded-lg tab-inactive" onclick="switchTab('button')">📲 按键</button>
+            <button id="tab-screenshot" class="flex-1 py-2 text-sm rounded-lg tab-inactive" onclick="switchTab('screenshot')">📸 截屏</button>
+        </div>
+
+        <!-- ===== VOICE TAB ===== -->
+        <div id="view-voice" class="flex-1 overflow-y-auto px-4 py-4 pb-12 space-y-4">
+            <!-- Hero -->
+            <div class="bg-liaoran-50 rounded-2xl p-6 text-center">
+                <p class="text-2xl mb-2">🎤</p>
+                <p class="text-lg font-semibold text-gray-900">"嘿Siri，记一笔午饭38块"</p>
+                <p class="text-sm text-gray-500 mt-2">适合：开车、做饭时</p>
+            </div>
+
+            <!-- Presets -->
+            <div>
+                <h3 class="text-sm font-semibold text-gray-700 mb-3">预设指令</h3>
+                <div class="space-y-2">
+                    <div class="bg-white rounded-xl shadow-sm p-4 flex items-center gap-3">
+                        <span class="text-lg">📱</span>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-gray-900">语音记账</p>
+                            <p class="text-xs text-gray-400">"记一笔{描述}{金额}"</p>
+                        </div>
+                        <button class="text-xs px-3 py-1.5 rounded-full bg-liaoran-500 text-white active:bg-liaoran-600" onclick="showToast('添加到 Siri（原型外）')">添加到Siri</button>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm p-4 flex items-center gap-3">
+                        <span class="text-lg">📱</span>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-gray-900">快速记固定消费</p>
+                            <p class="text-xs text-gray-400">"记通勤打车"</p>
+                        </div>
+                        <button class="text-xs px-3 py-1.5 rounded-full bg-liaoran-500 text-white active:bg-liaoran-600" onclick="showToast('添加到 Siri（原型外）')">添加到Siri</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Steps -->
+            <div>
+                <h3 class="text-sm font-semibold text-gray-700 mb-3">设置步骤</h3>
+                <div class="space-y-3">
+                    <div class="flex gap-3 items-start">
+                        <div class="step-num">1</div>
+                        <p class="text-sm text-gray-700 pt-0.5">点击上方"添加到Siri"按钮</p>
+                    </div>
+                    <div class="flex gap-3 items-start">
+                        <div class="step-num">2</div>
+                        <p class="text-sm text-gray-700 pt-0.5">录制你的触发词（如"记一笔"）</p>
+                    </div>
+                    <div class="flex gap-3 items-start">
+                        <div class="step-num">3</div>
+                        <p class="text-sm text-gray-700 pt-0.5">试一试！对 Siri 说你的触发词</p>
+                    </div>
+                </div>
+            </div>
+
+            <button class="w-full py-3 text-sm text-white font-medium bg-liaoran-500 rounded-xl active:bg-liaoran-600" onclick="showToast('开始测试（原型外）')">开始测试</button>
+        </div>
+
+        <!-- ===== BUTTON TAB ===== -->
+        <div id="view-button" class="flex-1 overflow-y-auto px-4 py-4 pb-12 space-y-4 hidden">
+            <div class="bg-liaoran-50 rounded-2xl p-6 text-center">
+                <p class="text-2xl mb-2">📲</p>
+                <p class="text-lg font-semibold text-gray-900">双击手机背面</p>
+                <p class="text-sm text-gray-500 mt-1">直接弹出记账</p>
+                <p class="text-sm text-gray-500">适合：地铁、会议后</p>
+            </div>
+
+            <div>
+                <h3 class="text-sm font-semibold text-gray-700 mb-3">设置步骤</h3>
+                <div class="space-y-3">
+                    <div class="flex gap-3 items-start">
+                        <div class="step-num">1</div>
+                        <div>
+                            <p class="text-sm text-gray-700">安装"快速记账"快捷指令</p>
+                            <button class="mt-1.5 text-xs px-3 py-1.5 rounded-full bg-liaoran-500 text-white active:bg-liaoran-600" onclick="showToast('安装快捷指令（原型外）')">安装</button>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 items-start">
+                        <div class="step-num">2</div>
+                        <div>
+                            <p class="text-sm text-gray-700">打开 iOS 设置</p>
+                            <p class="text-xs text-gray-500 mt-0.5">辅助功能 → 触控 → 背面轻点 → 双击 → 选择"快速记账"</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 items-start">
+                        <div class="step-num">3</div>
+                        <p class="text-sm text-gray-700 pt-0.5">试一试！双击手机背面</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Button Note -->
+            <div class="bg-gray-100 rounded-xl p-4">
+                <p class="text-sm text-gray-700">iPhone 15 Pro 用户？</p>
+                <p class="text-xs text-gray-500 mt-1">也可以绑定到 Action Button</p>
+                <button class="mt-2 text-xs text-liaoran-600 underline underline-offset-2" onclick="showToast('Action Button 教程（原型外）')">查看教程</button>
+            </div>
+
+            <button class="w-full py-3 text-sm text-white font-medium bg-liaoran-500 rounded-xl active:bg-liaoran-600" onclick="showToast('开始测试（原型外）')">开始测试</button>
+        </div>
+
+        <!-- ===== SCREENSHOT TAB ===== -->
+        <div id="view-screenshot" class="flex-1 overflow-y-auto px-4 py-4 pb-12 space-y-4 hidden">
+            <div class="bg-liaoran-50 rounded-2xl p-6 text-center">
+                <p class="text-2xl mb-2">📸</p>
+                <p class="text-lg font-semibold text-gray-900">截屏支付页</p>
+                <p class="text-sm text-gray-500 mt-1">自动识别金额</p>
+                <p class="text-sm text-gray-500">适合：刚付完款</p>
+            </div>
+
+            <div>
+                <h3 class="text-sm font-semibold text-gray-700 mb-3">使用方法</h3>
+                <div class="space-y-3">
+                    <div class="flex gap-3 items-start">
+                        <div class="step-num">1</div>
+                        <p class="text-sm text-gray-700 pt-0.5">付款后截屏</p>
+                    </div>
+                    <div class="flex gap-3 items-start">
+                        <div class="step-num">2</div>
+                        <p class="text-sm text-gray-700 pt-0.5">点分享 → 选择"了然"</p>
+                    </div>
+                    <div class="flex gap-3 items-start">
+                        <div class="step-num">3</div>
+                        <p class="text-sm text-gray-700 pt-0.5">确认识别结果，保存</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-green-50 rounded-xl p-4 flex items-start gap-3">
+                <span class="text-lg">✅</span>
+                <div>
+                    <p class="text-sm font-medium text-green-800">无需额外配置</p>
+                    <p class="text-xs text-green-600 mt-0.5">App 安装后自动出现在系统分享菜单中</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-sm px-4 py-2 rounded-full z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+    <script>
+        function switchTab(tab) {
+            ['voice','button','screenshot'].forEach(t => {
+                document.getElementById('view-' + t).classList.toggle('hidden', t !== tab);
+                document.getElementById('tab-' + t).className = 'flex-1 py-2 text-sm rounded-lg ' + (t === tab ? 'tab-active' : 'tab-inactive');
+            });
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.style.opacity = '1';
+            setTimeout(() => t.style.opacity = '0', 2000);
+        }
+    </script>
+
+</body>
+</html>

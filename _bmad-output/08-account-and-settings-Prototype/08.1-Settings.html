@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>08.1 Settings - 了然</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'liaoran': {
+                            50: '#E8F5F1', 100: '#D1EBE3', 200: '#A3D7C7',
+                            300: '#75C3AB', 400: '#47AF8F', 500: '#1A6B5A',
+                            600: '#165A4B', 700: '#0F4F42', 800: '#0A3A31', 900: '#052520',
+                        }
+                    },
+                    fontFamily: { sans: ['-apple-system', 'PingFang SC', 'Noto Sans CJK SC', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body { overscroll-behavior: none; }
+        .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom, 0px)); }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.35s ease-out; }
+        .accordion-content.open { max-height: 600px; }
+        .accordion-chevron { transition: transform 0.25s ease; }
+        .accordion-chevron.open { transform: rotate(90deg); }
+        .toggle-track { width: 44px; height: 24px; border-radius: 12px; transition: background 0.2s; cursor: pointer; position: relative; }
+        .toggle-track.on { background: #1A6B5A; }
+        .toggle-track.off { background: #D1D5DB; }
+        .toggle-thumb { width: 20px; height: 20px; border-radius: 50%; background: white; position: absolute; top: 2px; transition: left 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+        .toggle-track.on .toggle-thumb { left: 22px; }
+        .toggle-track.off .toggle-thumb { left: 2px; }
+        .toggle-track.disabled { opacity: 0.4; pointer-events: none; }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+
+    <div class="h-[100dvh] flex flex-col">
+
+        <!-- ===== TOP BAR (fixed) ===== -->
+        <div id="set-topbar" class="bg-white sticky top-0 z-20 px-4 py-3 flex items-center gap-3 border-b border-gray-100">
+            <button id="set-topbar-back" onclick="navigateTo('08.0-MyHub.html')" class="w-8 h-8 flex items-center justify-center -ml-1">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <h1 id="set-topbar-title" class="text-lg font-semibold text-gray-900">设置</h1>
+        </div>
+
+        <!-- SCROLLABLE CONTENT -->
+        <div class="flex-1 overflow-y-auto pb-12">
+
+            <!-- ===== GROUP 1: 数据与隐私 ===== -->
+            <div class="px-4 pt-6 pb-2">
+                <h3 id="set-group-privacy-header" class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-1 mb-2">数据与隐私</h3>
+            </div>
+            <div id="set-group-privacy" class="mx-4 bg-white rounded-xl shadow-sm overflow-hidden">
+
+                <!-- Data Security (Accordion) -->
+                <button id="set-item-security" class="w-full flex items-center gap-3 px-4 py-3.5 active:bg-gray-50 border-b border-gray-100" onclick="toggleAccordion()">
+                    <span class="text-lg">🔒</span>
+                    <span class="flex-1 text-sm text-gray-700 text-left">数据安全说明</span>
+                    <svg id="security-chevron" class="accordion-chevron text-gray-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+
+                <!-- Security Detail Panel (Accordion Content) -->
+                <div id="set-item-security-detail" class="accordion-content">
+                    <div class="px-4 py-4 space-y-4 bg-liaoran-50/30">
+                        <div class="flex gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-liaoran-100 flex items-center justify-center flex-shrink-0">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A6B5A" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">加密存储</p>
+                                <p class="text-xs text-gray-500 mt-0.5">所有财务数据使用 AES-256 加密存储，即使设备丢失也无法被读取</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-liaoran-100 flex items-center justify-center flex-shrink-0">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A6B5A" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">传输加密</p>
+                                <p class="text-xs text-gray-500 mt-0.5">数据传输全程 HTTPS/TLS 加密，防止中间人窃取</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-liaoran-100 flex items-center justify-center flex-shrink-0">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A6B5A" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">最小化采集</p>
+                                <p class="text-xs text-gray-500 mt-0.5">只提取交易金额、商户名和时间，不存储通知原文</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-liaoran-100 flex items-center justify-center flex-shrink-0">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A6B5A" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">你的数据你做主</p>
+                                <p class="text-xs text-gray-500 mt-0.5">随时可导出全部数据，也可注销账户永久删除所有记录</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notification Permission -->
+                <button id="set-item-notification-perm" class="w-full flex items-center gap-3 px-4 py-3.5 active:bg-gray-50 border-b border-gray-100" onclick="toggleNotifPerm()">
+                    <span class="text-lg">🔔</span>
+                    <span class="flex-1 text-sm text-gray-700 text-left">通知权限管理</span>
+                    <span id="notif-perm-badge" class="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-medium">已开启</span>
+                    <svg class="text-gray-300 ml-1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+
+                <!-- Data Export -->
+                <button id="set-item-export" class="w-full flex items-center gap-3 px-4 py-3.5 active:bg-gray-50 border-b border-gray-100" onclick="showToast('数据导出页（原型外）')">
+                    <span class="text-lg">📂</span>
+                    <span class="flex-1 text-sm text-gray-700 text-left">数据导出</span>
+                    <svg class="text-gray-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+
+                <!-- Clear Cache -->
+                <button id="set-item-cache" class="w-full flex items-center gap-3 px-4 py-3.5 active:bg-gray-50" onclick="confirmClearCache()">
+                    <span class="text-lg">🗑️</span>
+                    <span class="flex-1 text-sm text-gray-700 text-left">清除本地缓存</span>
+                    <span id="cache-size" class="text-xs text-gray-400">23.5 MB</span>
+                </button>
+            </div>
+
+            <!-- ===== GROUP 2: 通知偏好 ===== -->
+            <div class="px-4 pt-6 pb-2">
+                <h3 id="set-group-notification-header" class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-1 mb-2">通知偏好</h3>
+            </div>
+            <div id="set-group-notification" class="mx-4 bg-white rounded-xl shadow-sm overflow-hidden">
+                <!-- AI Insights -->
+                <div id="set-notif-insights" class="flex items-center gap-3 px-4 py-3.5 border-b border-gray-100">
+                    <span class="text-lg">💡</span>
+                    <div class="flex-1">
+                        <p class="text-sm text-gray-700">AI 洞察推送</p>
+                        <p class="text-xs text-gray-400 mt-0.5">消费异常、趋势变化等智能发现</p>
+                    </div>
+                    <div class="toggle-track on" onclick="toggleSwitch(this)"><div class="toggle-thumb"></div></div>
+                </div>
+                <!-- Report -->
+                <div id="set-notif-report" class="flex items-center gap-3 px-4 py-3.5 border-b border-gray-100">
+                    <span class="text-lg">📊</span>
+                    <div class="flex-1">
+                        <p class="text-sm text-gray-700">周报 / 月报提醒</p>
+                        <p class="text-xs text-gray-400 mt-0.5">新报表生成时提醒查看</p>
+                    </div>
+                    <div class="toggle-track on" onclick="toggleSwitch(this)"><div class="toggle-thumb"></div></div>
+                </div>
+                <!-- Gift Reminder (member only) -->
+                <div id="set-notif-gift" class="flex items-center gap-3 px-4 py-3.5 border-b border-gray-100">
+                    <span class="text-lg">🎁</span>
+                    <div class="flex-1">
+                        <p class="text-sm text-gray-700">人情提醒</p>
+                        <p class="text-xs text-gray-400 mt-0.5">即将到来的人情事件和回礼建议</p>
+                    </div>
+                    <div class="toggle-track on" onclick="toggleSwitch(this)"><div class="toggle-thumb"></div></div>
+                </div>
+                <!-- Product Update -->
+                <div id="set-notif-update" class="flex items-center gap-3 px-4 py-3.5">
+                    <span class="text-lg">📢</span>
+                    <div class="flex-1">
+                        <p class="text-sm text-gray-700">产品更新</p>
+                        <p class="text-xs text-gray-400 mt-0.5">新功能上线、版本更新通知</p>
+                    </div>
+                    <div class="toggle-track off" onclick="toggleSwitch(this)"><div class="toggle-thumb"></div></div>
+                </div>
+            </div>
+
+            <!-- ===== GROUP 3: 通用 ===== -->
+            <div class="px-4 pt-6 pb-2">
+                <h3 id="set-group-general-header" class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-1 mb-2">通用</h3>
+            </div>
+            <div id="set-group-general" class="mx-4 bg-white rounded-xl shadow-sm overflow-hidden">
+                <!-- Language -->
+                <button id="set-item-language" class="w-full flex items-center gap-3 px-4 py-3.5 active:bg-gray-50 border-b border-gray-100" onclick="showBottomSheet('language')">
+                    <span class="text-lg">🌐</span>
+                    <span class="flex-1 text-sm text-gray-700 text-left">语言</span>
+                    <span class="text-sm text-gray-400">简体中文</span>
+                    <svg class="text-gray-300 ml-1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+                <!-- Currency -->
+                <button id="set-item-currency" class="w-full flex items-center gap-3 px-4 py-3.5 active:bg-gray-50 border-b border-gray-100" onclick="showBottomSheet('currency')">
+                    <span class="text-lg">💰</span>
+                    <span class="flex-1 text-sm text-gray-700 text-left">默认货币</span>
+                    <span class="text-sm text-gray-400">CNY ¥</span>
+                    <svg class="text-gray-300 ml-1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+                <!-- Dark Mode -->
+                <button id="set-item-darkmode" class="w-full flex items-center gap-3 px-4 py-3.5 active:bg-gray-50" onclick="cycleDarkMode()">
+                    <span class="text-lg">🌓</span>
+                    <span class="flex-1 text-sm text-gray-700 text-left">深色模式</span>
+                    <span id="darkmode-label" class="text-sm text-gray-400">跟随系统</span>
+                </button>
+            </div>
+
+            <!-- ===== GROUP 4: 关于 ===== -->
+            <div class="px-4 pt-6 pb-2">
+                <h3 id="set-group-about-header" class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-1 mb-2">关于</h3>
+            </div>
+            <div id="set-group-about" class="mx-4 bg-white rounded-xl shadow-sm overflow-hidden">
+                <button id="set-item-about" class="w-full flex items-center gap-3 px-4 py-3.5 active:bg-gray-50 border-b border-gray-100" onclick="showToast('关于我们（原型外）')">
+                    <span class="text-lg">ℹ️</span>
+                    <span class="flex-1 text-sm text-gray-700 text-left">关于我们</span>
+                    <svg class="text-gray-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+                <button id="set-item-terms" class="w-full flex items-center gap-3 px-4 py-3.5 active:bg-gray-50 border-b border-gray-100" onclick="showToast('用户协议 WebView（原型外）')">
+                    <span class="text-lg">📜</span>
+                    <span class="flex-1 text-sm text-gray-700 text-left">用户协议</span>
+                    <svg class="text-gray-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+                <button id="set-item-privacy-policy" class="w-full flex items-center gap-3 px-4 py-3.5 active:bg-gray-50 border-b border-gray-100" onclick="showToast('隐私政策 WebView（原型外）')">
+                    <span class="text-lg">🔏</span>
+                    <span class="flex-1 text-sm text-gray-700 text-left">隐私政策</span>
+                    <svg class="text-gray-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+                <button id="set-item-feedback" class="w-full flex items-center gap-3 px-4 py-3.5 active:bg-gray-50" onclick="showToast('意见反馈页（原型外）')">
+                    <span class="text-lg">💬</span>
+                    <span class="flex-1 text-sm text-gray-700 text-left">意见反馈</span>
+                    <svg class="text-gray-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+            </div>
+
+            <!-- ===== LOGOUT ===== -->
+            <div id="set-logout" class="mx-4 mt-8">
+                <button id="set-logout-button" class="w-full py-3 text-red-500 text-sm font-medium rounded-xl bg-white shadow-sm active:bg-red-50" onclick="confirmLogout()">
+                    退出登录
+                </button>
+            </div>
+
+            <!-- Version -->
+            <p id="set-version" class="text-center text-xs text-gray-300 mt-4 mb-8">版本 1.0.0</p>
+
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-sm px-4 py-2 rounded-full z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+    <!-- OVERLAY (for dialogs & sheets) -->
+    <div id="overlay" class="fixed inset-0 bg-black/40 z-40 hidden" onclick="closeOverlay()"></div>
+
+    <!-- LOGOUT CONFIRM DIALOG -->
+    <div id="set-logout-confirm" class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl w-72 p-6 z-50 hidden shadow-xl">
+        <h3 class="text-base font-semibold text-gray-900 text-center">确认退出登录？</h3>
+        <p class="text-sm text-gray-500 text-center mt-2">退出后需重新登录才能使用</p>
+        <div class="flex gap-3 mt-5">
+            <button class="flex-1 py-2.5 text-sm text-gray-600 rounded-xl bg-gray-100 active:bg-gray-200" onclick="closeOverlay()">取消</button>
+            <button class="flex-1 py-2.5 text-sm text-white font-medium rounded-xl bg-red-500 active:bg-red-600" onclick="doLogout()">退出</button>
+        </div>
+    </div>
+
+    <!-- CACHE CONFIRM DIALOG -->
+    <div id="cache-confirm" class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl w-72 p-6 z-50 hidden shadow-xl">
+        <h3 class="text-base font-semibold text-gray-900 text-center">清除本地缓存？</h3>
+        <p class="text-sm text-gray-500 text-center mt-2">仅清除图片和临时文件，不会删除你的数据</p>
+        <div class="flex gap-3 mt-5">
+            <button class="flex-1 py-2.5 text-sm text-gray-600 rounded-xl bg-gray-100 active:bg-gray-200" onclick="closeOverlay()">取消</button>
+            <button class="flex-1 py-2.5 text-sm text-white font-medium rounded-xl bg-liaoran-500 active:bg-liaoran-600" onclick="doClearCache()">确认</button>
+        </div>
+    </div>
+
+    <!-- BOTTOM SHEET (Language / Currency) -->
+    <div id="bottom-sheet" class="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl z-50 hidden transition-transform duration-300 translate-y-full shadow-xl">
+        <div class="w-10 h-1 bg-gray-200 rounded-full mx-auto mt-3"></div>
+        <h3 id="sheet-title" class="text-base font-semibold text-gray-900 text-center mt-3 mb-2"></h3>
+        <div id="sheet-options" class="px-4 pb-8 safe-bottom"></div>
+    </div>
+
+    <script>
+        // ===== ACCORDION =====
+        function toggleAccordion() {
+            const detail = document.getElementById('set-item-security-detail');
+            const chevron = document.getElementById('security-chevron');
+            detail.classList.toggle('open');
+            chevron.classList.toggle('open');
+        }
+
+        // ===== TOGGLE SWITCH =====
+        function toggleSwitch(el) {
+            if (el.classList.contains('disabled')) return;
+            const isOn = el.classList.contains('on');
+            el.classList.toggle('on', !isOn);
+            el.classList.toggle('off', isOn);
+        }
+
+        // ===== NOTIFICATION PERMISSION STATE =====
+        let notifPermOn = true;
+        function toggleNotifPerm() {
+            notifPermOn = !notifPermOn;
+            const badge = document.getElementById('notif-perm-badge');
+            const toggles = document.querySelectorAll('#set-group-notification .toggle-track');
+            if (notifPermOn) {
+                badge.textContent = '已开启';
+                badge.className = 'text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-medium';
+                toggles.forEach(t => t.classList.remove('disabled'));
+            } else {
+                badge.textContent = '未开启';
+                badge.className = 'text-xs px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 font-medium';
+                toggles.forEach(t => t.classList.add('disabled'));
+            }
+        }
+
+        // ===== DARK MODE CYCLE =====
+        const DARK_MODES = ['跟随系统', '关闭', '开启'];
+        let darkModeIdx = 0;
+        function cycleDarkMode() {
+            darkModeIdx = (darkModeIdx + 1) % DARK_MODES.length;
+            document.getElementById('darkmode-label').textContent = DARK_MODES[darkModeIdx];
+            showToast('深色模式: ' + DARK_MODES[darkModeIdx]);
+        }
+
+        // ===== BOTTOM SHEET =====
+        const SHEET_DATA = {
+            language: {
+                title: '选择语言',
+                options: ['简体中文', 'English'],
+                current: '简体中文'
+            },
+            currency: {
+                title: '选择货币',
+                options: ['CNY ¥', 'USD $', 'EUR €', 'HKD HK$', 'JPY ¥'],
+                current: 'CNY ¥'
+            }
+        };
+
+        function showBottomSheet(type) {
+            const data = SHEET_DATA[type];
+            const sheet = document.getElementById('bottom-sheet');
+            document.getElementById('sheet-title').textContent = data.title;
+            document.getElementById('sheet-options').innerHTML = data.options.map(opt => {
+                const isActive = opt === data.current;
+                return `<button class="w-full py-3.5 text-sm text-left px-2 border-b border-gray-50 flex items-center justify-between active:bg-gray-50 ${isActive ? 'text-liaoran-600 font-medium' : 'text-gray-700'}"
+                    onclick="selectSheetOption('${type}', '${opt}')">
+                    ${opt}
+                    ${isActive ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A6B5A" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>' : ''}
+                </button>`;
+            }).join('');
+            document.getElementById('overlay').classList.remove('hidden');
+            sheet.classList.remove('hidden');
+            requestAnimationFrame(() => { sheet.style.transform = 'translateY(0)'; });
+        }
+
+        function selectSheetOption(type, value) {
+            SHEET_DATA[type].current = value;
+            // Update the button detail text
+            const btn = document.getElementById(type === 'language' ? 'set-item-language' : 'set-item-currency');
+            btn.querySelector('.text-gray-400').textContent = value;
+            closeOverlay();
+            if (type === 'language' && value === 'English') {
+                showToast('切换语言将重启 APP');
+            }
+        }
+
+        // ===== DIALOGS =====
+        function confirmLogout() {
+            document.getElementById('overlay').classList.remove('hidden');
+            document.getElementById('set-logout-confirm').classList.remove('hidden');
+        }
+
+        function doLogout() {
+            closeOverlay();
+            showToast('已退出登录 → 跳转 Welcome');
+        }
+
+        function confirmClearCache() {
+            document.getElementById('overlay').classList.remove('hidden');
+            document.getElementById('cache-confirm').classList.remove('hidden');
+        }
+
+        function doClearCache() {
+            closeOverlay();
+            document.getElementById('cache-size').textContent = '0 MB';
+            showToast('缓存已清除');
+        }
+
+        function closeOverlay() {
+            document.getElementById('overlay').classList.add('hidden');
+            document.getElementById('set-logout-confirm').classList.add('hidden');
+            document.getElementById('cache-confirm').classList.add('hidden');
+            const sheet = document.getElementById('bottom-sheet');
+            sheet.style.transform = 'translateY(100%)';
+            setTimeout(() => sheet.classList.add('hidden'), 300);
+        }
+
+        // ===== NAVIGATION =====
+        function navigateTo(url) { window.location.href = url; }
+
+        // ===== TOAST =====
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.style.opacity = '1';
+            setTimeout(() => { toast.style.opacity = '0'; }, 2000);
+        }
+    </script>
+
+</body>
+</html>

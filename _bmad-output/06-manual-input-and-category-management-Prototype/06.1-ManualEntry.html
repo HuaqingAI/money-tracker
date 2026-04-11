@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>06.1 Manual Entry - 了然</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'liaoran': {
+                            50: '#E8F5F1', 100: '#D1EBE3', 200: '#A3D7C7',
+                            300: '#75C3AB', 400: '#47AF8F', 500: '#1A6B5A',
+                            600: '#165A4B', 700: '#0F4F42', 800: '#0A3A31', 900: '#052520',
+                        }
+                    },
+                    fontFamily: { sans: ['-apple-system', 'PingFang SC', 'Noto Sans CJK SC', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body { overscroll-behavior: none; }
+        .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom, 0px)); }
+        .mode-active { color: #1A6B5A; background: #E8F5F1; font-weight: 600; }
+        .mode-inactive { color: #6B7280; background: #F3F4F6; }
+        .key-btn { min-height: 48px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 500; border-radius: 12px; background: white; color: #1F2937; transition: background 0.1s; }
+        .key-btn:active { background: #E5E7EB; }
+        .key-fn { background: #F3F4F6; color: #6B7280; font-size: 14px; }
+        .key-save { background: #1A6B5A; color: white; font-weight: 600; }
+        .key-save:active { background: #0F4F42; }
+        @keyframes pulse-ring { 0% { transform: scale(0.9); opacity: 1; } 100% { transform: scale(1.4); opacity: 0; } }
+        .voice-ring { animation: pulse-ring 1.2s ease-out infinite; }
+        .voice-recording .voice-btn-inner { background: #EF4444; }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+
+    <!-- Modal overlay -->
+    <div class="h-[100dvh] flex flex-col bg-white">
+
+        <!-- ===== HEADER ===== -->
+        <div id="manual-entry-header" class="px-4 py-3 flex items-center justify-between border-b border-gray-100">
+            <button id="manual-entry-header-close" onclick="closeModal()" class="w-8 h-8 flex items-center justify-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+            <h1 id="manual-entry-header-title" class="text-base font-semibold text-gray-900">记一笔</h1>
+            <div class="w-8"></div>
+        </div>
+
+        <!-- ===== MODE TABS ===== -->
+        <div id="manual-entry-modes" class="flex gap-2 px-4 py-3">
+            <button id="manual-entry-modes-voice" class="flex-1 py-2 text-sm rounded-lg mode-inactive" onclick="switchMode('voice')">🎤 语音</button>
+            <button id="manual-entry-modes-form" class="flex-1 py-2 text-sm rounded-lg mode-active" onclick="switchMode('form')">📝 表单</button>
+            <button id="manual-entry-modes-screenshot" class="flex-1 py-2 text-sm rounded-lg mode-inactive" onclick="switchMode('screenshot')">📸 截图</button>
+        </div>
+
+        <!-- ===== FORM MODE ===== -->
+        <div id="view-form" class="flex-1 flex flex-col">
+            <!-- Amount Display -->
+            <div class="px-6 py-6 text-center">
+                <p class="text-xs text-gray-400 mb-1">金额</p>
+                <div class="flex items-baseline justify-center gap-1">
+                    <span class="text-2xl text-gray-400">¥</span>
+                    <span id="manual-entry-form-amount" class="text-5xl font-bold text-gray-900 tracking-tight">0</span>
+                </div>
+            </div>
+
+            <!-- Category / Date / Note -->
+            <div class="px-4 space-y-1">
+                <button id="manual-entry-form-category" class="w-full flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl active:bg-gray-100" onclick="showCategoryPicker()">
+                    <span id="cat-icon" class="text-lg">🍜</span>
+                    <span id="cat-label" class="flex-1 text-sm text-gray-700 text-left">食品·生鲜</span>
+                    <span class="text-xs text-liaoran-500 bg-liaoran-50 px-2 py-0.5 rounded-full">AI推荐</span>
+                    <svg class="text-gray-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+                <button id="manual-entry-form-date" class="w-full flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl active:bg-gray-100" onclick="showToast('日期选择器（原型简化）')">
+                    <span class="text-lg">📅</span>
+                    <span class="flex-1 text-sm text-gray-700 text-left">今天 4月11日</span>
+                    <svg class="text-gray-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+                <div class="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl">
+                    <span class="text-lg">📝</span>
+                    <input id="manual-entry-form-note" type="text" placeholder="备注（选填）" class="flex-1 text-sm bg-transparent focus:outline-none text-gray-700 placeholder-gray-400">
+                </div>
+            </div>
+
+            <!-- Spacer -->
+            <div class="flex-1"></div>
+
+            <!-- Custom Numeric Keypad -->
+            <div id="manual-entry-form-keypad" class="bg-gray-100 px-3 py-3 grid grid-cols-4 gap-2 safe-bottom">
+                <button class="key-btn" onclick="keyInput('1')">1</button>
+                <button class="key-btn" onclick="keyInput('2')">2</button>
+                <button class="key-btn" onclick="keyInput('3')">3</button>
+                <button class="key-btn key-fn" onclick="keyInput('del')">⌫</button>
+                <button class="key-btn" onclick="keyInput('4')">4</button>
+                <button class="key-btn" onclick="keyInput('5')">5</button>
+                <button class="key-btn" onclick="keyInput('6')">6</button>
+                <button class="key-btn key-fn text-xs" onclick="keyInput('.')">.</button>
+                <button class="key-btn" onclick="keyInput('7')">7</button>
+                <button class="key-btn" onclick="keyInput('8')">8</button>
+                <button class="key-btn" onclick="keyInput('9')">9</button>
+                <button id="manual-entry-form-save" class="key-btn key-save row-span-1" onclick="saveEntry()">保存</button>
+                <button class="key-btn col-span-2" onclick="keyInput('0')">0</button>
+                <button class="key-btn key-fn text-xs" onclick="keyInput('00')">00</button>
+            </div>
+        </div>
+
+        <!-- ===== VOICE MODE ===== -->
+        <div id="view-voice" class="flex-1 flex flex-col items-center justify-center px-6 hidden">
+            <!-- Voice Button -->
+            <div id="manual-entry-voice" class="relative mb-6">
+                <div class="voice-ring absolute inset-0 rounded-full bg-liaoran-200 hidden" id="voice-ring"></div>
+                <button id="manual-entry-voice-button"
+                    class="voice-btn-inner relative w-24 h-24 rounded-full bg-liaoran-500 flex items-center justify-center shadow-lg active:scale-95 transition-transform z-10"
+                    onmousedown="startRecording()" onmouseup="stopRecording()" ontouchstart="startRecording()" ontouchend="stopRecording()">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                </button>
+            </div>
+            <p id="manual-entry-voice-hint" class="text-sm text-gray-500 mb-8">按住说话，松开识别</p>
+            <p class="text-xs text-gray-400">试试说：菜市场50块</p>
+
+            <!-- Voice Result (hidden initially) -->
+            <div id="manual-entry-voice-result" class="w-full mt-6 hidden">
+                <div class="bg-liaoran-50 rounded-2xl p-5 border border-liaoran-100">
+                    <p id="manual-entry-voice-result-text" class="text-sm text-gray-600 mb-3">"菜市场50块"</p>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs text-gray-400">金额</span>
+                        <span id="manual-entry-voice-result-amount" class="text-lg font-bold text-gray-900">¥50.00</span>
+                    </div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs text-gray-400">分类</span>
+                        <span id="manual-entry-voice-result-category" class="text-sm text-gray-700">🍜 食品·生鲜</span>
+                    </div>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-xs text-gray-400">日期</span>
+                        <span id="manual-entry-voice-result-date" class="text-sm text-gray-700">今天</span>
+                    </div>
+                    <div class="flex gap-3">
+                        <button id="manual-entry-voice-result-edit" class="flex-1 py-2.5 text-sm text-gray-600 rounded-xl border border-gray-200 active:bg-gray-50" onclick="switchMode('form'); setAmount('50')">修改</button>
+                        <button id="manual-entry-voice-result-save" class="flex-1 py-2.5 text-sm text-white font-medium rounded-xl bg-liaoran-500 active:bg-liaoran-600" onclick="saveEntry()">保存</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Voice Error (hidden) -->
+            <div id="manual-voice-error" class="w-full mt-6 hidden text-center">
+                <p class="text-sm text-gray-500 mb-3">没听清，再说一次？</p>
+                <button id="manual-voice-error-retry" class="text-sm text-liaoran-600 font-medium underline underline-offset-2" onclick="retryVoice()">再试一次</button>
+            </div>
+        </div>
+
+        <!-- ===== SCREENSHOT MODE ===== -->
+        <div id="view-screenshot" class="flex-1 flex flex-col px-4 py-6 hidden">
+            <!-- Picker -->
+            <div id="manual-entry-screenshot" class="flex-1">
+                <button id="manual-entry-screenshot-picker" class="w-full py-16 border-2 border-dashed border-gray-300 rounded-2xl flex flex-col items-center gap-3 active:bg-gray-50" onclick="simulateScreenshot()">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    <p class="text-sm text-gray-500">拍照或选择截图</p>
+                    <p class="text-xs text-gray-400">支持支付宝/微信支付截图</p>
+                </button>
+
+                <!-- Screenshot Error (hidden) -->
+                <div id="manual-screenshot-error" class="hidden text-center py-12">
+                    <p class="text-3xl mb-3">🤔</p>
+                    <p class="text-sm text-gray-600 mb-2">未识别到消费信息</p>
+                    <p class="text-xs text-gray-400 mb-4">试试手动输入？</p>
+                    <button id="manual-screenshot-error-manual" class="text-sm text-liaoran-600 font-medium underline underline-offset-2" onclick="switchMode('form')">手动输入</button>
+                </div>
+
+                <!-- Screenshot Results (hidden) -->
+                <div id="manual-entry-screenshot-results" class="hidden mt-4">
+                    <p id="manual-entry-screenshot-results-header" class="text-sm font-medium text-gray-700 mb-3">识别到 3 笔消费：</p>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-3 bg-white rounded-xl p-4 shadow-sm">
+                            <input type="checkbox" checked class="w-5 h-5 rounded text-liaoran-500 focus:ring-liaoran-400 screenshot-check">
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">瑞幸咖啡</p>
+                                <p class="text-xs text-gray-400">🍜 餐饮·饮品</p>
+                            </div>
+                            <span class="text-sm font-semibold text-gray-900">¥18</span>
+                        </label>
+                        <label class="flex items-center gap-3 bg-white rounded-xl p-4 shadow-sm">
+                            <input type="checkbox" checked class="w-5 h-5 rounded text-liaoran-500 focus:ring-liaoran-400 screenshot-check">
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">美团外卖</p>
+                                <p class="text-xs text-gray-400">🍜 餐饮·外卖</p>
+                            </div>
+                            <span class="text-sm font-semibold text-gray-900">¥38</span>
+                        </label>
+                        <label class="flex items-center gap-3 bg-white rounded-xl p-4 shadow-sm">
+                            <input type="checkbox" class="w-5 h-5 rounded text-liaoran-500 focus:ring-liaoran-400 screenshot-check">
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">微信转账</p>
+                                <p class="text-xs text-gray-400">❓ 未分类</p>
+                            </div>
+                            <span class="text-sm font-semibold text-gray-900">¥200</span>
+                        </label>
+                    </div>
+                    <button id="manual-entry-screenshot-save" class="w-full mt-4 py-3 text-sm text-white font-medium bg-liaoran-500 rounded-xl active:bg-liaoran-600" onclick="saveScreenshot()">
+                        保存 2 笔
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-sm px-4 py-2 rounded-full z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+    <!-- SUCCESS TOAST (special) -->
+    <div id="manual-entry-success" class="fixed bottom-24 left-4 right-4 bg-liaoran-700 text-white rounded-xl p-4 z-50 hidden shadow-lg flex items-center justify-between">
+        <span id="manual-entry-success-message" class="text-sm">已记录 ¥50 食品·生鲜</span>
+        <button class="text-xs text-liaoran-200 underline underline-offset-2 ml-3 flex-shrink-0" onclick="navigateTo('06.2-CategoryManagement.html')">调整分类</button>
+    </div>
+
+    <!-- OVERLAY -->
+    <div id="overlay" class="fixed inset-0 bg-black/40 z-40 hidden" onclick="closeCategoryPicker()"></div>
+
+    <!-- CATEGORY PICKER BOTTOM SHEET -->
+    <div id="manual-entry-category-picker" class="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl z-50 hidden shadow-xl safe-bottom max-h-[70vh] flex flex-col" style="transform:translateY(100%);transition:transform 0.3s ease;">
+        <div class="w-10 h-1 bg-gray-200 rounded-full mx-auto mt-3"></div>
+        <h3 class="text-base font-semibold text-gray-900 text-center mt-3 mb-2">选择分类</h3>
+        <input id="manual-entry-category-picker-search" type="text" placeholder="搜索分类..." class="mx-4 mb-3 px-4 py-2.5 bg-gray-100 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-liaoran-400">
+        <div class="overflow-y-auto px-4 pb-6">
+            <p class="text-xs text-gray-400 mb-2">常用</p>
+            <div id="manual-entry-category-picker-frequent" class="flex flex-wrap gap-2 mb-4">
+                <button class="px-3 py-2 text-sm bg-gray-50 rounded-lg active:bg-liaoran-50" onclick="selectCategory('🍜','餐饮·外卖')">🍜 外卖</button>
+                <button class="px-3 py-2 text-sm bg-gray-50 rounded-lg active:bg-liaoran-50" onclick="selectCategory('🍜','食品·生鲜')">🍜 生鲜</button>
+                <button class="px-3 py-2 text-sm bg-gray-50 rounded-lg active:bg-liaoran-50" onclick="selectCategory('🚗','交通·打车')">🚗 打车</button>
+                <button class="px-3 py-2 text-sm bg-gray-50 rounded-lg active:bg-liaoran-50" onclick="selectCategory('🛒','购物·日用品')">🛒 日用品</button>
+            </div>
+            <p class="text-xs text-gray-400 mb-2">全部分类</p>
+            <div id="manual-entry-category-picker-all" class="space-y-1">
+                <button class="w-full text-left px-3 py-2.5 text-sm rounded-lg active:bg-gray-50" onclick="selectCategory('🍜','餐饮·堂食')">🍜 餐饮·堂食</button>
+                <button class="w-full text-left px-3 py-2.5 text-sm rounded-lg active:bg-gray-50" onclick="selectCategory('🍜','餐饮·外卖')">🍜 餐饮·外卖</button>
+                <button class="w-full text-left px-3 py-2.5 text-sm rounded-lg active:bg-gray-50" onclick="selectCategory('🍜','餐饮·饮品')">🍜 餐饮·饮品</button>
+                <button class="w-full text-left px-3 py-2.5 text-sm rounded-lg active:bg-gray-50" onclick="selectCategory('🍜','食品·生鲜')">🍜 食品·生鲜</button>
+                <button class="w-full text-left px-3 py-2.5 text-sm rounded-lg active:bg-gray-50" onclick="selectCategory('🚗','交通·打车')">🚗 交通·打车</button>
+                <button class="w-full text-left px-3 py-2.5 text-sm rounded-lg active:bg-gray-50" onclick="selectCategory('🚗','交通·加油')">🚗 交通·加油</button>
+                <button class="w-full text-left px-3 py-2.5 text-sm rounded-lg active:bg-gray-50" onclick="selectCategory('🛒','购物·综合')">🛒 购物·综合</button>
+                <button class="w-full text-left px-3 py-2.5 text-sm rounded-lg active:bg-gray-50" onclick="selectCategory('🛒','购物·日用品')">🛒 购物·日用品</button>
+                <button class="w-full text-left px-3 py-2.5 text-sm rounded-lg active:bg-gray-50" onclick="selectCategory('🎮','娱乐·游戏')">🎮 娱乐·游戏</button>
+                <button class="w-full text-left px-3 py-2.5 text-sm rounded-lg active:bg-gray-50" onclick="selectCategory('💊','健康·医药')">💊 健康·医药</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let amount = '';
+
+        // ===== MODE SWITCHING =====
+        function switchMode(mode) {
+            ['form','voice','screenshot'].forEach(m => {
+                document.getElementById('view-' + m).classList.toggle('hidden', m !== mode);
+                document.getElementById('manual-entry-modes-' + m).className = 'flex-1 py-2 text-sm rounded-lg ' + (m === mode ? 'mode-active' : 'mode-inactive');
+            });
+        }
+
+        // ===== KEYPAD =====
+        function keyInput(key) {
+            if (key === 'del') { amount = amount.slice(0, -1); }
+            else if (key === '.') { if (!amount.includes('.')) amount += amount ? '.' : '0.'; }
+            else if (key === '00') { if (amount && !amount.endsWith('.')) amount += '00'; }
+            else {
+                if (amount.includes('.') && amount.split('.')[1].length >= 2) return;
+                amount += key;
+            }
+            document.getElementById('manual-entry-form-amount').textContent = amount || '0';
+        }
+
+        function setAmount(val) {
+            amount = val;
+            document.getElementById('manual-entry-form-amount').textContent = val;
+        }
+
+        // ===== VOICE =====
+        let recording = false;
+        function startRecording() {
+            recording = true;
+            document.getElementById('voice-ring').classList.remove('hidden');
+            document.getElementById('manual-entry-voice-hint').textContent = '正在听...';
+        }
+
+        function stopRecording() {
+            if (!recording) return;
+            recording = false;
+            document.getElementById('voice-ring').classList.add('hidden');
+            document.getElementById('manual-entry-voice-hint').textContent = '识别中...';
+            setTimeout(() => {
+                document.getElementById('manual-entry-voice-hint').textContent = '按住说话，松开识别';
+                document.getElementById('manual-entry-voice-result').classList.remove('hidden');
+                document.getElementById('manual-voice-error').classList.add('hidden');
+            }, 1200);
+        }
+
+        function retryVoice() {
+            document.getElementById('manual-voice-error').classList.add('hidden');
+            document.getElementById('manual-entry-voice-hint').textContent = '按住说话，松开识别';
+        }
+
+        // ===== SCREENSHOT =====
+        function simulateScreenshot() {
+            document.getElementById('manual-entry-screenshot-picker').classList.add('hidden');
+            document.getElementById('manual-entry-screenshot-results').classList.remove('hidden');
+            updateScreenshotCount();
+        }
+
+        function updateScreenshotCount() {
+            const checked = document.querySelectorAll('.screenshot-check:checked').length;
+            document.getElementById('manual-entry-screenshot-save').textContent = '保存 ' + checked + ' 笔';
+        }
+
+        document.addEventListener('change', e => {
+            if (e.target.classList.contains('screenshot-check')) updateScreenshotCount();
+        });
+
+        function saveScreenshot() {
+            const checked = document.querySelectorAll('.screenshot-check:checked').length;
+            showSuccessToast('已记录 ' + checked + ' 笔消费');
+        }
+
+        // ===== CATEGORY PICKER =====
+        function showCategoryPicker() {
+            document.getElementById('overlay').classList.remove('hidden');
+            const picker = document.getElementById('manual-entry-category-picker');
+            picker.classList.remove('hidden');
+            requestAnimationFrame(() => picker.style.transform = 'translateY(0)');
+        }
+
+        function closeCategoryPicker() {
+            document.getElementById('overlay').classList.add('hidden');
+            const picker = document.getElementById('manual-entry-category-picker');
+            picker.style.transform = 'translateY(100%)';
+            setTimeout(() => picker.classList.add('hidden'), 300);
+        }
+
+        function selectCategory(icon, label) {
+            document.getElementById('cat-icon').textContent = icon;
+            document.getElementById('cat-label').textContent = label;
+            closeCategoryPicker();
+        }
+
+        // ===== SAVE =====
+        function saveEntry() {
+            const amt = amount || '50';
+            const cat = document.getElementById('cat-label').textContent;
+            showSuccessToast('已记录 ¥' + amt + ' ' + cat);
+        }
+
+        function showSuccessToast(msg) {
+            const el = document.getElementById('manual-entry-success');
+            document.getElementById('manual-entry-success-message').textContent = msg;
+            el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 4000);
+        }
+
+        // ===== NAV =====
+        function closeModal() { history.back(); }
+        function navigateTo(url) { window.location.href = url; }
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.style.opacity = '1';
+            setTimeout(() => t.style.opacity = '0', 2000);
+        }
+    </script>
+
+</body>
+</html>

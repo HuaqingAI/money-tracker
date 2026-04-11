@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>03.1 Transaction List - 了然</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: {
+                colors: { 'liaoran': { 50:'#E8F5F1',100:'#D1EBE3',200:'#A3D7C7',300:'#75C3AB',400:'#47AF8F',500:'#1A6B5A',600:'#165A4B',700:'#0F4F42',800:'#0A3A31',900:'#052520' } },
+                fontFamily: { sans: ['-apple-system','PingFang SC','Noto Sans CJK SC','sans-serif'] }
+            }}
+        }
+    </script>
+    <style>
+        html,body{overscroll-behavior:none}
+        .safe-bottom{padding-bottom:calc(env(safe-area-inset-bottom,0px))}
+        .chip{transition:all .15s ease-out}
+        .chip.active{background:#1A6B5A;color:#fff;border-color:#1A6B5A}
+        .tab-bar{box-shadow:0 -1px 0 rgba(0,0,0,.06)}
+        .search-overlay{transition:opacity .2s,transform .2s}
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+<div class="h-[100dvh] flex flex-col">
+
+    <!-- HEADER -->
+    <div id="txn-list-header" class="bg-white sticky top-0 z-20 px-4 py-3 flex items-center justify-between">
+        <button id="txn-list-header-back" onclick="history.back()" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 -ml-1">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <h1 id="txn-list-header-title" class="text-base font-semibold text-gray-900">交易</h1>
+        <button id="txn-list-header-search" onclick="toggleSearch()" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        </button>
+    </div>
+
+    <!-- MONTHLY SUMMARY -->
+    <div id="txn-list-summary" class="bg-white px-5 pb-3 flex items-center justify-between border-b border-gray-100">
+        <div>
+            <span id="txn-list-summary-month" class="text-sm text-gray-500">3月</span>
+            <span id="txn-list-summary-amount" class="text-lg font-bold text-gray-900 ml-2">¥12,700</span>
+        </div>
+        <button id="txn-list-summary-switcher" onclick="switchMonth()" class="text-xs text-gray-400 border border-gray-200 rounded-lg px-2.5 py-1 hover:bg-gray-50">
+            <span id="summary-month-text">3月</span> ▾
+        </button>
+    </div>
+
+    <!-- CATEGORY FILTERS -->
+    <div id="txn-list-filters" class="bg-white px-4 py-2.5 border-b border-gray-50 overflow-x-auto flex gap-2 no-scrollbar" style="-webkit-overflow-scrolling:touch">
+        <button id="txn-list-filters-all" onclick="filterCategory('all')" class="chip active flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full border">全部</button>
+    </div>
+
+    <!-- SCROLLABLE LIST -->
+    <div class="flex-1 overflow-y-auto pb-24" id="txn-list-items">
+        <!-- Rendered by JS -->
+    </div>
+
+    <!-- SEARCH OVERLAY -->
+    <div id="txn-list-search" class="search-overlay fixed inset-0 z-30 bg-white opacity-0 pointer-events-none -translate-y-2">
+        <div class="px-4 pt-3 pb-2 flex items-center gap-2">
+            <button onclick="toggleSearch()" class="w-9 h-9 flex items-center justify-center flex-shrink-0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <div class="flex-1 relative">
+                <input id="txn-list-search-input" type="text" placeholder="搜索商户、金额、备注..." class="w-full h-10 bg-gray-100 rounded-xl pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-liaoran-200" oninput="doSearch(this.value)">
+                <svg class="absolute left-3 top-2.5 w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            </div>
+        </div>
+        <div id="search-results" class="px-4 overflow-y-auto" style="height:calc(100dvh - 60px)">
+            <p id="txn-list-search-count" class="text-xs text-gray-400 py-2 hidden"></p>
+            <div id="search-list"></div>
+        </div>
+    </div>
+
+    <!-- FAB -->
+    <button id="txn-list-fab" onclick="window.location.href='../06-manual-input-and-category-management-Prototype/06.1-ManualEntry.html'" class="fixed right-5 z-20 w-14 h-14 rounded-full bg-liaoran-500 text-white shadow-xl shadow-liaoran-500/30 flex items-center justify-center active:bg-liaoran-700" style="bottom:calc(72px + env(safe-area-inset-bottom,0px))">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+
+    <!-- TAB BAR -->
+    <div id="txn-list-tabbar" class="tab-bar bg-white flex items-center justify-around px-2 safe-bottom sticky bottom-0 z-20" style="padding-top:8px;padding-bottom:8px">
+        <button onclick="window.location.href='../01-dannys-zero-input-first-experience-Prototype/01.7-Dashboard.html'" class="flex flex-col items-center gap-0.5 w-16">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+            <span class="text-[10px] text-gray-400">首页</span>
+        </button>
+        <button class="flex flex-col items-center gap-0.5 w-16">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="#1A6B5A" stroke="#1A6B5A" stroke-width="1.5"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="2" y1="9" x2="22" y2="9"/><line x1="8" y1="3" x2="8" y2="9"/></svg>
+            <span class="text-[10px] font-medium text-liaoran-600">交易</span>
+        </button>
+        <div class="w-16"></div>
+        <button onclick="window.location.href='../07-ai-butler-intelligence-Prototype/07.1-AIChat.html'" class="flex flex-col items-center gap-0.5 w-16">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            <span class="text-[10px] text-gray-400">AI</span>
+        </button>
+        <button onclick="window.location.href='../08-account-and-settings-Prototype/08.0-MyHub.html'" class="flex flex-col items-center gap-0.5 w-16">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span class="text-[10px] text-gray-400">我的</span>
+        </button>
+    </div>
+</div>
+
+<script>
+const TXN = [
+    {id:'t01',date:'2026-03-31',merchant:'瑞幸咖啡',amount:18,cat:'餐饮',sub:'饮品',icon:'☕'},
+    {id:'t02',date:'2026-03-31',merchant:'美团外卖',amount:32,cat:'餐饮',sub:'外卖',icon:'🍱'},
+    {id:'t03',date:'2026-03-30',merchant:'蜜雪冰城',amount:8,cat:'餐饮',sub:'饮品',icon:'🧋'},
+    {id:'t04',date:'2026-03-30',merchant:'淘宝-女装',amount:129,cat:'购物',sub:'服饰',icon:'👗'},
+    {id:'t05',date:'2026-03-30',merchant:'滴滴出行',amount:23,cat:'交通',sub:'打车',icon:'🚗'},
+    {id:'t06',date:'2026-03-29',merchant:'盒马鲜生',amount:86,cat:'购物',sub:'生鲜',icon:'🥬'},
+    {id:'t07',date:'2026-03-29',merchant:'瑞幸咖啡',amount:18,cat:'餐饮',sub:'饮品',icon:'☕'},
+    {id:'t08',date:'2026-03-28',merchant:'京东-数码',amount:299,cat:'购物',sub:'数码',icon:'📱'},
+    {id:'t09',date:'2026-03-28',merchant:'地铁',amount:4,cat:'交通',sub:'公共交通',icon:'🚇'},
+    {id:'t10',date:'2026-03-28',merchant:'美团外卖',amount:28,cat:'餐饮',sub:'外卖',icon:'🍱'},
+    {id:'t11',date:'2026-03-27',merchant:'星巴克',amount:38,cat:'餐饮',sub:'饮品',icon:'☕'},
+    {id:'t12',date:'2026-03-27',merchant:'优衣库',amount:199,cat:'购物',sub:'服饰',icon:'👕'},
+    {id:'t13',date:'2026-03-26',merchant:'电影票',amount:76,cat:'娱乐',sub:'电影',icon:'🎬'},
+    {id:'t14',date:'2026-03-26',merchant:'瑞幸咖啡',amount:18,cat:'餐饮',sub:'饮品',icon:'☕'},
+    {id:'t15',date:'2026-03-25',merchant:'拼多多',amount:45,cat:'购物',sub:'日用',icon:'🛒'},
+];
+const CATS = [{id:'all',name:'全部'},{id:'餐饮',name:'餐饮',icon:'🍜'},{id:'购物',name:'购物',icon:'🛒'},{id:'交通',name:'交通',icon:'🚗'},{id:'娱乐',name:'娱乐',icon:'🎮'},{id:'居住',name:'居住',icon:'🏠'},{id:'健康',name:'健康',icon:'💊'}];
+let activeFilter = 'all';
+
+function init() {
+    renderFilters();
+    renderList(TXN);
+}
+
+function renderFilters() {
+    const c = document.getElementById('txn-list-filters');
+    c.innerHTML = CATS.map(cat =>
+        `<button id="txn-list-filters-${cat.id}" onclick="filterCategory('${cat.id}')" class="chip flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-full border border-gray-200 text-gray-600 ${activeFilter===cat.id?'active':''}">${cat.icon||''} ${cat.name}</button>`
+    ).join('');
+}
+
+function filterCategory(id) {
+    activeFilter = id;
+    renderFilters();
+    const filtered = id === 'all' ? TXN : TXN.filter(t => t.cat === id);
+    renderList(filtered);
+    const total = filtered.reduce((s,t) => s+t.amount, 0);
+    document.getElementById('txn-list-summary-amount').textContent = '¥' + total.toLocaleString();
+}
+
+function renderList(txns) {
+    const container = document.getElementById('txn-list-items');
+    if (!txns.length) { container.innerHTML = '<div class="text-center py-16"><p class="text-gray-400 text-sm">暂无交易记录</p></div>'; return; }
+    const grouped = {};
+    txns.forEach(t => { (grouped[t.date] = grouped[t.date]||[]).push(t); });
+    const dateLabels = {'2026-03-31':'今天 3/31','2026-03-30':'昨天 3/30','2026-03-29':'周六 3/29','2026-03-28':'周五 3/28','2026-03-27':'周四 3/27','2026-03-26':'周三 3/26','2026-03-25':'周二 3/25'};
+    container.innerHTML = Object.entries(grouped).map(([date, items]) => {
+        const dayTotal = items.reduce((s,t) => s+t.amount, 0);
+        return `<div class="sticky top-0 z-10 bg-gray-50/95 backdrop-blur px-5 py-2 flex justify-between">
+            <span class="text-xs text-gray-400 font-medium">${dateLabels[date]||date}</span>
+            <span class="text-xs text-gray-400">-¥${dayTotal}</span>
+        </div>` + items.map(t => `
+        <button id="txn-list-item-${t.id}" onclick="window.location.href='03.2-TransactionDetail.html?id=${t.id}'" class="w-full flex items-center gap-3 px-5 py-3 bg-white active:bg-gray-50 border-b border-gray-50">
+            <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-lg flex-shrink-0">${t.icon}</div>
+            <div class="flex-1 min-w-0 text-left">
+                <p class="text-sm font-medium text-gray-900 truncate">${t.merchant}</p>
+                <p class="text-xs text-gray-400 mt-0.5">${t.cat} · ${t.sub}</p>
+            </div>
+            <span class="text-sm font-semibold text-gray-700 flex-shrink-0">-¥${t.amount}</span>
+        </button>`).join('');
+    }).join('');
+}
+
+let searchOpen = false;
+function toggleSearch() {
+    searchOpen = !searchOpen;
+    const el = document.getElementById('txn-list-search');
+    el.classList.toggle('opacity-0', !searchOpen);
+    el.classList.toggle('pointer-events-none', !searchOpen);
+    el.classList.toggle('-translate-y-2', !searchOpen);
+    if (searchOpen) document.getElementById('txn-list-search-input').focus();
+}
+
+function doSearch(q) {
+    const results = TXN.filter(t => t.merchant.includes(q) || t.cat.includes(q) || String(t.amount).includes(q));
+    const countEl = document.getElementById('txn-list-search-count');
+    const listEl = document.getElementById('search-list');
+    if (!q) { countEl.classList.add('hidden'); listEl.innerHTML = '<p class="text-sm text-gray-400 text-center py-8">输入关键词搜索交易</p>'; return; }
+    countEl.classList.remove('hidden');
+    const total = results.reduce((s,t) => s+t.amount, 0);
+    countEl.textContent = `找到 ${results.length} 笔，共 ¥${total}`;
+    listEl.innerHTML = results.map(t => `
+        <button onclick="window.location.href='03.2-TransactionDetail.html?id=${t.id}'" class="w-full flex items-center gap-3 py-3 active:bg-gray-50 border-b border-gray-50">
+            <div class="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-base">${t.icon}</div>
+            <div class="flex-1 text-left"><p class="text-sm text-gray-900">${t.merchant}</p><p class="text-xs text-gray-400">${t.date.slice(5)}</p></div>
+            <span class="text-sm font-semibold text-gray-700">-¥${t.amount}</span>
+        </button>`).join('') || '<p class="text-sm text-gray-400 text-center py-8">没有找到相关交易</p>';
+}
+
+function switchMonth() { /* prototype: no-op */ }
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

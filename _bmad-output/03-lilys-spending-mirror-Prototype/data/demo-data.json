@@ -1,0 +1,66 @@
+{
+  "meta": {
+    "scenario": "03-lilys-spending-mirror",
+    "created": "2026-04-11",
+    "language": "zh-CN",
+    "currency": "CNY",
+    "amounts_in_cents": false,
+    "persona": "Lily (小丽)"
+  },
+  "transactions": [
+    { "id": "t01", "date": "2026-03-31", "merchant": "瑞幸咖啡", "amount": 18, "category": "餐饮", "subcategory": "饮品", "icon": "☕", "channel": "支付宝", "ai_confidence": 0.98 },
+    { "id": "t02", "date": "2026-03-31", "merchant": "美团外卖", "amount": 32, "category": "餐饮", "subcategory": "外卖", "icon": "🍱", "channel": "微信支付", "ai_confidence": 0.95 },
+    { "id": "t03", "date": "2026-03-30", "merchant": "蜜雪冰城", "amount": 8, "category": "餐饮", "subcategory": "饮品", "icon": "🧋", "channel": "支付宝", "ai_confidence": 0.97 },
+    { "id": "t04", "date": "2026-03-30", "merchant": "淘宝-女装", "amount": 129, "category": "购物", "subcategory": "服饰", "icon": "👗", "channel": "支付宝", "ai_confidence": 0.88 },
+    { "id": "t05", "date": "2026-03-30", "merchant": "滴滴出行", "amount": 23, "category": "交通", "subcategory": "打车", "icon": "🚗", "channel": "微信支付", "ai_confidence": 0.96 },
+    { "id": "t06", "date": "2026-03-29", "merchant": "盒马鲜生", "amount": 86, "category": "购物", "subcategory": "生鲜", "icon": "🥬", "channel": "支付宝", "ai_confidence": 0.92 },
+    { "id": "t07", "date": "2026-03-29", "merchant": "瑞幸咖啡", "amount": 18, "category": "餐饮", "subcategory": "饮品", "icon": "☕", "channel": "支付宝", "ai_confidence": 0.98 },
+    { "id": "t08", "date": "2026-03-28", "merchant": "京东-数码", "amount": 299, "category": "购物", "subcategory": "数码", "icon": "📱", "channel": "微信支付", "ai_confidence": 0.90 },
+    { "id": "t09", "date": "2026-03-28", "merchant": "地铁", "amount": 4, "category": "交通", "subcategory": "公共交通", "icon": "🚇", "channel": "支付宝", "ai_confidence": 0.99 },
+    { "id": "t10", "date": "2026-03-28", "merchant": "美团外卖", "amount": 28, "category": "餐饮", "subcategory": "外卖", "icon": "🍱", "channel": "微信支付", "ai_confidence": 0.95 },
+    { "id": "t11", "date": "2026-03-27", "merchant": "星巴克", "amount": 38, "category": "餐饮", "subcategory": "饮品", "icon": "☕", "channel": "微信支付", "ai_confidence": 0.97 },
+    { "id": "t12", "date": "2026-03-27", "merchant": "优衣库", "amount": 199, "category": "购物", "subcategory": "服饰", "icon": "👕", "channel": "支付宝", "ai_confidence": 0.93 },
+    { "id": "t13", "date": "2026-03-26", "merchant": "电影票", "amount": 76, "category": "娱乐", "subcategory": "电影", "icon": "🎬", "channel": "支付宝", "ai_confidence": 0.94 },
+    { "id": "t14", "date": "2026-03-26", "merchant": "瑞幸咖啡", "amount": 18, "category": "餐饮", "subcategory": "饮品", "icon": "☕", "channel": "支付宝", "ai_confidence": 0.98 },
+    { "id": "t15", "date": "2026-03-25", "merchant": "拼多多", "amount": 45, "category": "购物", "subcategory": "日用", "icon": "🛒", "channel": "微信支付", "ai_confidence": 0.85 }
+  ],
+  "categories": [
+    { "id": "food", "name": "餐饮", "icon": "🍜", "color": "#F59E0B", "amount": 2850, "count": 28, "pct": 22 },
+    { "id": "shopping", "name": "购物", "icon": "🛒", "color": "#EC4899", "amount": 2580, "count": 15, "pct": 20 },
+    { "id": "housing", "name": "居住", "icon": "🏠", "color": "#8B5CF6", "amount": 4200, "count": 3, "pct": 33 },
+    { "id": "transport", "name": "交通", "icon": "🚗", "color": "#3B82F6", "amount": 980, "count": 12, "pct": 8 },
+    { "id": "entertainment", "name": "娱乐", "icon": "🎮", "color": "#10B981", "amount": 560, "count": 5, "pct": 4 },
+    { "id": "health", "name": "健康", "icon": "💊", "color": "#EF4444", "amount": 420, "count": 3, "pct": 3 }
+  ],
+  "trend": {
+    "months": [
+      { "month": "2026-01", "label": "1月", "total": 11800 },
+      { "month": "2026-02", "label": "2月", "total": 14200 },
+      { "month": "2026-03", "label": "3月", "total": 12700 }
+    ],
+    "mom_changes": [
+      { "category": "餐饮", "icon": "🍜", "prev": 2100, "curr": 2850, "pct": 36, "direction": "up", "reason": "外卖频次增加，3月加班较多" },
+      { "category": "购物", "icon": "🛒", "prev": 3200, "curr": 2580, "pct": -19, "direction": "down", "reason": "换季采购减少" },
+      { "category": "交通", "icon": "🚗", "prev": 880, "curr": 980, "pct": 11, "direction": "up", "reason": "打车次数略增" },
+      { "category": "娱乐", "icon": "🎮", "prev": 450, "curr": 560, "pct": 24, "direction": "up", "reason": "新增电影和游戏消费" },
+      { "category": "健康", "icon": "💊", "prev": 600, "curr": 420, "pct": -30, "direction": "down", "reason": "体检为2月一次性支出" }
+    ]
+  },
+  "radar": {
+    "dimensions": [
+      { "name": "餐饮", "icon": "🍜", "score": 78, "amount": 2850, "insight": "外卖占68%，最爱瑞幸", "top": ["瑞幸咖啡 ¥216", "美团外卖 ¥896", "星巴克 ¥152"] },
+      { "name": "购物", "icon": "🛒", "score": 55, "amount": 2580, "insight": "服饰占45%，换季采购为主", "top": ["淘宝 ¥645", "优衣库 ¥398", "京东 ¥299"] },
+      { "name": "居住", "icon": "🏠", "score": 65, "amount": 4200, "insight": "房租+水电，固定支出", "top": ["房租 ¥3500", "电费 ¥180", "物业 ¥520"] },
+      { "name": "交通", "icon": "🚗", "score": 42, "amount": 980, "insight": "地铁为主，偶尔打车", "top": ["地铁 ¥520", "滴滴 ¥368", "共享单车 ¥92"] },
+      { "name": "娱乐", "icon": "🎮", "score": 38, "amount": 560, "insight": "电影+视频会员", "top": ["电影票 ¥228", "腾讯视频 ¥25", "网易云 ¥15"] },
+      { "name": "健康", "icon": "💊", "score": 28, "amount": 420, "insight": "药房为主，偶尔体检", "top": ["药房 ¥280", "体检 ¥140"] }
+    ],
+    "consumer_label": "外卖达人",
+    "consumer_label_desc": "你的外卖消费占餐饮的68%，远超同龄人平均",
+    "fun_insights": [
+      { "emoji": "☕", "title": "咖啡续命选手", "desc": "本月喝了12杯咖啡，平均1.5天一杯" },
+      { "emoji": "🌙", "title": "夜猫子外卖王", "desc": "78%的外卖发生在晚上8点后" },
+      { "emoji": "👗", "title": "换季囤货达人", "desc": "3月服饰消费是2月的2.3倍" }
+    ]
+  }
+}

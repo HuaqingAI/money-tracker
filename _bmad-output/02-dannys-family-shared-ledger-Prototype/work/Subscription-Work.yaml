@@ -1,0 +1,22 @@
+view: Subscription
+file: 02.1-Subscription.html
+spec: 02.1-subscription.md
+status: in_progress
+
+sections:
+  - name: Top Bar + Gift Hero
+    objects: [sub-topbar, sub-topbar-back, sub-topbar-title, sub-hero, sub-hero-gift, sub-hero-headline, sub-hero-subheadline]
+    status: pending
+
+  - name: Feature Showcase
+    objects: [sub-features, sub-features-title, sub-features-free, sub-features-divider, sub-features-member-core, sub-features-member-advanced, sub-features-advanced-toggle]
+    status: pending
+
+  - name: Trust Signals + CTA
+    objects: [sub-trust, sub-trust-free, sub-trust-expiry, sub-trust-privacy, sub-cta, sub-cta-button, sub-cta-badge, sub-cta-skip]
+    status: pending
+
+  - name: Success Overlay + States
+    objects: [sub-success, sub-success-icon, sub-success-title, sub-success-detail, sub-success-message, sub-success-cta, sub-success-later]
+    states: [default, claiming, claim-success, claim-failed, already-claimed]
+    status: pending

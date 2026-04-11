@@ -1,0 +1,52 @@
+page: 08.0-MyHub
+view: My Hub 我的
+spec: C-UX-Scenarios/08-account-and-settings/08.0-my-hub/08.0-my-hub.md
+status: building
+
+sections:
+  - id: S1
+    name: Page Shell + Profile Card
+    objects:
+      - hub-profile-card
+      - hub-profile-avatar
+      - hub-profile-name
+      - hub-profile-subtitle
+      - hub-profile-membership
+      - hub-profile-chevron
+    states: [Free, Trial, Active, Expired]
+    status: pending
+
+  - id: S2
+    name: Feature Grid + Manual Entry
+    objects:
+      - hub-feature-grid
+      - hub-feature-grid-header
+      - hub-feature-gift
+      - hub-feature-family
+      - hub-feature-identity
+      - hub-manual-entry
+      - hub-manual-entry-icon
+      - hub-manual-entry-title
+      - hub-manual-entry-subtitle
+    states: [unlocked, locked]
+    status: pending
+
+  - id: S3
+    name: Tool List + Menu List + Tab Bar
+    objects:
+      - hub-tool-list
+      - hub-tool-import
+      - hub-tool-category
+      - hub-menu-list
+      - hub-menu-settings
+      - hub-menu-help
+      - hub-menu-about
+      - hub-tab-bar
+    states: [default]
+    status: pending
+
+  - id: S4
+    name: State Toggle + Interactivity
+    objects: []
+    description: Prototype state switcher (Free/Trial/Active/Expired), tap animations, navigation links
+    status: pending

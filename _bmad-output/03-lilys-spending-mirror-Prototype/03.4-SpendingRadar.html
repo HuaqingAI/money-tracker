@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>03.4 Spending Radar - 了然</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: {
+            colors: { 'liaoran': { 50:'#E8F5F1',100:'#D1EBE3',200:'#A3D7C7',300:'#75C3AB',400:'#47AF8F',500:'#1A6B5A',600:'#165A4B',700:'#0F4F42',800:'#0A3A31',900:'#052520' } },
+            fontFamily: { sans: ['-apple-system','PingFang SC','Noto Sans CJK SC','sans-serif'] }
+        }}}
+    </script>
+    <style>
+        html,body{overscroll-behavior:none}
+        .safe-bottom{padding-bottom:calc(env(safe-area-inset-bottom,0px)+16px)}
+        .sheet{transition:transform .3s ease-out,opacity .3s}
+        .sheet.open{transform:translateY(0)!important;opacity:1!important}
+        .dim-card{transition:all .2s ease-out}
+        .dim-detail{max-height:0;overflow:hidden;transition:max-height .3s ease-out}
+        .dim-detail.open{max-height:200px}
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+<div class="h-[100dvh] flex flex-col">
+
+    <!-- TOP BAR -->
+    <div id="radar-topbar" class="bg-white sticky top-0 z-20 px-4 py-3 flex items-center justify-between">
+        <button id="radar-topbar-back" onclick="history.back()" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 -ml-1">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <h1 id="radar-topbar-title" class="text-base font-semibold text-gray-900">消费雷达</h1>
+        <button id="radar-topbar-share" onclick="openShareSheet()" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto pb-24">
+
+        <!-- MONTH SWITCHER -->
+        <div id="radar-month-switcher" class="bg-white px-6 py-3 flex items-center justify-center gap-6 border-b border-gray-100">
+            <button id="radar-month-prev" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <span id="radar-month-label" class="text-sm font-semibold text-gray-900">2026年3月</span>
+            <button id="radar-month-next" class="w-8 h-8 flex items-center justify-center text-gray-300" disabled>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+        </div>
+
+        <!-- RADAR CHART HERO -->
+        <div id="radar-chart-hero" class="bg-white px-4 pt-6 pb-4">
+            <div id="radar-chart-main" class="relative mx-auto" style="width:280px;height:280px">
+                <svg viewBox="0 0 280 280" class="w-full h-full">
+                    <!-- Grid rings -->
+                    <polygon points="140,40 227,90 227,190 140,240 53,190 53,90" fill="none" stroke="#f3f4f6" stroke-width="0.5"/>
+                    <polygon points="140,65 209,102.5 209,177.5 140,215 71,177.5 71,102.5" fill="none" stroke="#f3f4f6" stroke-width="0.5"/>
+                    <polygon points="140,90 191,115 191,165 140,190 89,165 89,115" fill="none" stroke="#f3f4f6" stroke-width="0.5"/>
+                    <!-- Axes -->
+                    <line x1="140" y1="40" x2="140" y2="240" stroke="#f3f4f6" stroke-width="0.5"/>
+                    <line x1="53" y1="90" x2="227" y2="190" stroke="#f3f4f6" stroke-width="0.5"/>
+                    <line x1="53" y1="190" x2="227" y2="90" stroke="#f3f4f6" stroke-width="0.5"/>
+                    <!-- Data polygon -->
+                    <polygon points="140,56 213,105 205,178 140,210 72,155 68,98" fill="#1A6B5A" fill-opacity="0.15" stroke="#1A6B5A" stroke-width="2" stroke-linejoin="round"/>
+                    <!-- Data points -->
+                    <circle cx="140" cy="56" r="4" fill="#1A6B5A"/>
+                    <circle cx="213" cy="105" r="4" fill="#1A6B5A"/>
+                    <circle cx="205" cy="178" r="4" fill="#1A6B5A"/>
+                    <circle cx="140" cy="210" r="4" fill="#1A6B5A"/>
+                    <circle cx="72" cy="155" r="4" fill="#1A6B5A"/>
+                    <circle cx="68" cy="98" r="4" fill="#1A6B5A"/>
+                    <!-- Dimension labels -->
+                    <text x="140" y="30" text-anchor="middle" fill="#374151" font-size="11" font-weight="600">🍜 餐饮</text>
+                    <text x="240" y="92" text-anchor="start" fill="#374151" font-size="11">🛒 购物</text>
+                    <text x="240" y="195" text-anchor="start" fill="#374151" font-size="11">🏠 居住</text>
+                    <text x="140" y="260" text-anchor="middle" fill="#374151" font-size="11">🚗 交通</text>
+                    <text x="35" y="195" text-anchor="end" fill="#374151" font-size="11">🎮 娱乐</text>
+                    <text x="35" y="92" text-anchor="end" fill="#374151" font-size="11">💊 健康</text>
+                </svg>
+            </div>
+            <!-- Consumer Label -->
+            <div id="radar-consumer-label" class="text-center mt-2">
+                <span class="inline-flex items-center gap-1.5 bg-amber-50 border border-amber-200 text-amber-700 text-sm font-semibold px-4 py-1.5 rounded-full">
+                    ☕ 外卖达人
+                </span>
+                <p class="text-xs text-gray-400 mt-2">你的外卖消费占餐饮的68%，远超同龄人平均</p>
+            </div>
+        </div>
+
+        <!-- DIMENSION DETAILS -->
+        <div id="radar-dimensions" class="px-4 mt-4">
+            <h3 id="radar-dimensions-header" class="text-sm font-semibold text-gray-900 mb-3 px-1">维度详情</h3>
+            <div class="space-y-2" id="dim-list"></div>
+        </div>
+
+        <!-- FUN INSIGHTS -->
+        <div id="radar-fun-insights" class="px-4 mt-6">
+            <h3 id="radar-fun-insights-header" class="text-sm font-semibold text-gray-900 mb-3 px-1">趣味洞察</h3>
+            <div class="space-y-2" id="fun-list"></div>
+        </div>
+
+    </div>
+
+    <!-- SHARE BAR -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur border-t border-gray-100 px-5 pt-3 safe-bottom z-20">
+        <button id="radar-share-button" onclick="openShareSheet()" class="w-full h-12 bg-liaoran-500 hover:bg-liaoran-600 active:bg-liaoran-700 text-white font-semibold rounded-xl shadow-lg shadow-liaoran-500/25 transition-all flex items-center justify-center gap-2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            分享我的消费雷达
+        </button>
+    </div>
+
+    <!-- SHARE SHEET -->
+    <div id="share-bg" class="fixed inset-0 z-40 bg-black/40 opacity-0 pointer-events-none transition-opacity" onclick="closeShareSheet()"></div>
+    <div id="share-sheet" class="sheet fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl safe-bottom opacity-0 translate-y-full pointer-events-none">
+        <div class="px-5 pt-5 pb-3">
+            <h3 class="text-base font-semibold text-center mb-4">分享到</h3>
+            <!-- Preview Card -->
+            <div id="radar-share-preview" class="bg-gradient-to-br from-liaoran-700 to-liaoran-500 rounded-2xl p-5 text-white text-center mb-5">
+                <p class="text-lg font-bold">☕ 外卖达人</p>
+                <p class="text-xs text-white/70 mt-1">2026年3月消费雷达</p>
+                <div class="mt-3 text-xs text-white/60">了然 · 零记账的AI财务管家</div>
+            </div>
+            <!-- Share Channels -->
+            <div class="grid grid-cols-4 gap-4 pb-4">
+                <button id="radar-share-wechat" onclick="doShare('wechat')" class="flex flex-col items-center gap-1.5">
+                    <div class="w-12 h-12 rounded-full bg-[#07C160] flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348z"/></svg>
+                    </div>
+                    <span class="text-[10px] text-gray-600">微信好友</span>
+                </button>
+                <button id="radar-share-moments" onclick="doShare('moments')" class="flex flex-col items-center gap-1.5">
+                    <div class="w-12 h-12 rounded-full bg-[#07C160] flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+                    </div>
+                    <span class="text-[10px] text-gray-600">朋友圈</span>
+                </button>
+                <button id="radar-share-xhs" onclick="doShare('xhs')" class="flex flex-col items-center gap-1.5">
+                    <div class="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center">
+                        <span class="text-white text-xs font-bold">小红书</span>
+                    </div>
+                    <span class="text-[10px] text-gray-600">小红书</span>
+                </button>
+                <button id="radar-share-save" onclick="doShare('save')" class="flex flex-col items-center gap-1.5">
+                    <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    </div>
+                    <span class="text-[10px] text-gray-600">保存图片</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="fixed top-16 left-4 right-4 z-50 bg-liaoran-50 border border-liaoran-200 text-liaoran-800 text-sm rounded-xl px-4 py-3 shadow-lg opacity-0 -translate-y-2 transition-all duration-300 pointer-events-none text-center">
+        <span id="toast-text"></span>
+    </div>
+</div>
+
+<script>
+const DIMS = [
+    {name:'餐饮',icon:'🍜',score:78,amount:2850,insight:'外卖占68%，最爱瑞幸',top:['瑞幸咖啡 ¥216','美团外卖 ¥896','星巴克 ¥152'],color:'#F59E0B'},
+    {name:'居住',icon:'🏠',score:65,amount:4200,insight:'房租+水电，固定支出',top:['房租 ¥3,500','物业 ¥520','电费 ¥180'],color:'#8B5CF6'},
+    {name:'购物',icon:'🛒',score:55,amount:2580,insight:'服饰占45%，换季采购为主',top:['淘宝 ¥645','优衣库 ¥398','京东 ¥299'],color:'#EC4899'},
+    {name:'交通',icon:'🚗',score:42,amount:980,insight:'地铁为主，偶尔打车',top:['地铁 ¥520','滴滴 ¥368','共享单车 ¥92'],color:'#3B82F6'},
+    {name:'娱乐',icon:'🎮',score:38,amount:560,insight:'电影+视频会员',top:['电影票 ¥228','腾讯视频 ¥25','网易云 ¥15'],color:'#10B981'},
+    {name:'健康',icon:'💊',score:28,amount:420,insight:'药房为主，偶尔体检',top:['药房 ¥280','体检 ¥140'],color:'#EF4444'},
+];
+const FUN = [
+    {emoji:'☕',title:'咖啡续命选手',desc:'本月喝了12杯咖啡，平均1.5天一杯'},
+    {emoji:'🌙',title:'夜猫子外卖王',desc:'78%的外卖发生在晚上8点后'},
+    {emoji:'👗',title:'换季囤货达人',desc:'3月服饰消费是2月的2.3倍'},
+];
+let expandedDim = -1;
+
+function init() {
+    renderDims();
+    renderFun();
+}
+
+function renderDims() {
+    document.getElementById('dim-list').innerHTML = DIMS.map((d,i) => `
+        <div class="dim-card bg-white rounded-xl shadow-sm overflow-hidden">
+            <button onclick="toggleDim(${i})" class="w-full flex items-center gap-3 p-4 active:bg-gray-50">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0" style="background:${d.color}15">${d.icon}</div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-sm font-medium text-gray-900">${d.name}</span>
+                        <span class="text-sm font-bold" style="color:${d.color}">${d.score}分</span>
+                    </div>
+                    <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div class="h-full rounded-full transition-all duration-500" style="width:${d.score}%;background:${d.color}"></div>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1.5">${d.insight}</p>
+                </div>
+                <svg class="w-4 h-4 text-gray-300 flex-shrink-0 transition-transform ${expandedDim===i?'rotate-180':''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="dim-detail ${expandedDim===i?'open':''}">
+                <div class="px-4 pb-4 pt-0 border-t border-gray-50">
+                    <p class="text-xs text-gray-400 mb-2 pt-2">Top 消费</p>
+                    ${d.top.map(t => `<div class="flex justify-between py-1"><span class="text-xs text-gray-600">${t.split(' ')[0]}</span><span class="text-xs text-gray-500 font-medium">${t.split(' ')[1]}</span></div>`).join('')}
+                    <p class="text-xs text-gray-400 mt-2">¥${d.amount.toLocaleString()} · 占总支出 ${Math.round(d.amount/127)}%</p>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderFun() {
+    document.getElementById('fun-list').innerHTML = FUN.map((f,i) => `
+        <div class="bg-white rounded-xl shadow-sm p-4 flex items-start gap-3">
+            <span class="text-2xl flex-shrink-0">${f.emoji}</span>
+            <div>
+                <p class="text-sm font-semibold text-gray-900">${f.title}</p>
+                <p class="text-xs text-gray-500 mt-0.5">${f.desc}</p>
+            </div>
+        </div>
+    `).join('');
+}
+
+function toggleDim(i) {
+    expandedDim = expandedDim === i ? -1 : i;
+    renderDims();
+}
+
+function openShareSheet() {
+    document.getElementById('share-bg').classList.remove('opacity-0','pointer-events-none');
+    const s = document.getElementById('share-sheet');
+    s.classList.remove('pointer-events-none');
+    s.classList.add('open');
+}
+function closeShareSheet() {
+    document.getElementById('share-bg').classList.add('opacity-0','pointer-events-none');
+    const s = document.getElementById('share-sheet');
+    s.classList.add('pointer-events-none');
+    s.classList.remove('open');
+}
+function doShare(ch) {
+    closeShareSheet();
+    const msgs = {wechat:'已分享到微信',moments:'已分享到朋友圈',xhs:'已分享到小红书',save:'已保存到相册'};
+    showToast(msgs[ch]);
+}
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toast-text').textContent = msg;
+    t.classList.remove('opacity-0','-translate-y-2');
+    t.classList.add('opacity-100','translate-y-0');
+    setTimeout(() => { t.classList.add('opacity-0','-translate-y-2'); t.classList.remove('opacity-100','translate-y-0'); }, 2000);
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

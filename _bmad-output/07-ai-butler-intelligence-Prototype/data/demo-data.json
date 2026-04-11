@@ -1,0 +1,194 @@
+{
+  "meta": {
+    "scenario": "07-ai-butler-intelligence",
+    "created": "2026-04-11",
+    "language": "zh-CN",
+    "currency": "CNY",
+    "amounts_in_cents": true,
+    "extends": "01-dannys-zero-input-first-experience (same user/family)"
+  },
+  "user": {
+    "id": "usr_danny_001",
+    "name": "大强",
+    "phone": "138****6789",
+    "wechat_nickname": "Danny强",
+    "avatar": null,
+    "membership": {
+      "tier": "premium_trial",
+      "trial_started": "2026-01-15",
+      "trial_ends": "2026-04-15",
+      "ai_chat_free_used": 3,
+      "ai_chat_free_limit": 3
+    }
+  },
+  "ai_chat": {
+    "conversations": [
+      {
+        "id": "chat_001",
+        "timestamp": "2026-04-11T14:32:00Z",
+        "user_message": "如果每月少吃4次外卖能省多少？",
+        "ai_response": {
+          "type": "data_card",
+          "summary": "根据您过去3个月的外卖数据，每月减少4次外卖预计可节省约 ¥680/月，一年约 ¥8,160。",
+          "data_card": {
+            "title": "外卖消费模拟",
+            "current_monthly": 285000,
+            "simulated_monthly": 217000,
+            "monthly_saving": 68000,
+            "annual_saving": 816000,
+            "data_anchors": [
+              { "label": "3月外卖总额", "amount_cents": 285000, "link": "transaction_list?category=餐饮&sub=外卖&month=2026-03" },
+              { "label": "平均单次外卖", "amount_cents": 17000, "link": "transaction_list?category=餐饮&sub=外卖&month=2026-03" }
+            ]
+          },
+          "action_buttons": [
+            { "label": "查看外卖明细", "action": "navigate", "target": "03.1?filter=外卖" },
+            { "label": "开始模拟", "action": "navigate", "target": "07.4?preset=外卖减4次" }
+          ],
+          "followup": ["如果改成自己做饭呢？", "外卖里哪家最贵？"]
+        }
+      },
+      {
+        "id": "chat_002",
+        "timestamp": "2026-04-10T20:15:00Z",
+        "user_message": "这个月花了多少？",
+        "ai_response": {
+          "type": "data_card",
+          "summary": "截至4月11日，本月已支出 ¥6,280，预计月底约 ¥14,200（基于历史趋势）。",
+          "data_card": {
+            "title": "4月消费概览",
+            "current_spent": 628000,
+            "projected_total": 1420000,
+            "vs_last_month": "+2.3%",
+            "top_category": "餐饮 ¥2,150"
+          }
+        }
+      }
+    ]
+  },
+  "insights_feed": {
+    "items": [
+      {
+        "id": "insight_001",
+        "type": "spending_pattern",
+        "title": "外卖频率上升",
+        "body": "3月外卖次数比2月多了6次，增加 ¥240。周三和周五是外卖高峰日。",
+        "generated_at": "2026-04-11T20:00:00Z",
+        "is_read": false,
+        "is_premium": false,
+        "feedback": null
+      },
+      {
+        "id": "insight_002",
+        "type": "saving_opportunity",
+        "title": "视频会员重复订阅",
+        "body": "您同时订阅了腾讯视频(¥25/月)和爱奇艺(¥22/月)，过去30天爱奇艺使用0次。",
+        "generated_at": "2026-04-10T20:00:00Z",
+        "is_read": true,
+        "is_premium": false,
+        "feedback": "helpful"
+      },
+      {
+        "id": "insight_003",
+        "type": "trend_alert",
+        "title": "购物支出连续3月上升",
+        "body": "1月 ¥1,084 → 2月 ¥784 → 3月 ¥1,258，3月环比 +60.5%。主要来自京东。",
+        "generated_at": "2026-04-09T20:00:00Z",
+        "is_read": true,
+        "is_premium": true,
+        "blurred": true,
+        "feedback": null
+      },
+      {
+        "id": "insight_004",
+        "type": "achievement",
+        "title": "交通支出控制得不错",
+        "body": "3月交通 ¥980，比2月少 ¥100。加油频率从每周1.5次降到1次。",
+        "generated_at": "2026-04-08T20:00:00Z",
+        "is_read": true,
+        "is_premium": false,
+        "feedback": "helpful"
+      }
+    ],
+    "schedule": {
+      "frequency": "1-2条/天",
+      "push_window": "20:00-21:00",
+      "dedup_window_days": 7
+    }
+  },
+  "optimization_suggestions": {
+    "items": [
+      {
+        "id": "opt_001",
+        "title": "取消爱奇艺订阅",
+        "category": "订阅优化",
+        "monthly_saving_cents": 2200,
+        "annual_saving_cents": 26400,
+        "confidence": "high",
+        "reasoning": "过去60天使用次数为0，腾讯视频已覆盖您的观看需求。",
+        "status": "pending",
+        "cta": "查看取消方式"
+      },
+      {
+        "id": "opt_002",
+        "title": "减少周中外卖",
+        "category": "餐饮优化",
+        "monthly_saving_cents": 34000,
+        "annual_saving_cents": 408000,
+        "confidence": "medium",
+        "reasoning": "周三和周五外卖占总外卖的58%，平均单价 ¥42，高于周末 ¥35。",
+        "status": "adopted",
+        "adopted_at": "2026-04-05",
+        "progress": { "target_reduction": 4, "actual_reduction": 2, "month": "2026-04" }
+      },
+      {
+        "id": "opt_003",
+        "title": "油价低谷加油",
+        "category": "交通优化",
+        "monthly_saving_cents": 5000,
+        "annual_saving_cents": 60000,
+        "confidence": "low",
+        "reasoning": "周二和周三油价平均低 ¥0.15/升，按每次加满50升计算。",
+        "status": "dismissed",
+        "dismissed_reason": "暂不考虑"
+      }
+    ],
+    "total_potential_monthly_cents": 41200,
+    "total_potential_annual_cents": 494400,
+    "min_threshold_cents": 5000
+  },
+  "simulation": {
+    "presets": [
+      {
+        "id": "sim_takeout",
+        "label": "减少外卖",
+        "category": "餐饮",
+        "current_monthly_cents": 285000,
+        "slider_min_cents": 100000,
+        "slider_max_cents": 285000,
+        "slider_step_cents": 10000
+      },
+      {
+        "id": "sim_shopping",
+        "label": "控制购物",
+        "category": "购物",
+        "current_monthly_cents": 125800,
+        "slider_min_cents": 50000,
+        "slider_max_cents": 125800,
+        "slider_step_cents": 10000
+      }
+    ],
+    "peer_comparison": {
+      "user_profile": "30岁已婚男性，二线城市",
+      "percentile": 62,
+      "percentile_label": "超过62%的同类用户",
+      "peer_avg_monthly_cents": 1280000,
+      "categories": [
+        { "name": "餐饮", "user_cents": 285000, "peer_avg_cents": 220000, "percentile": 72 },
+        { "name": "交通", "user_cents": 98000, "peer_avg_cents": 110000, "percentile": 45 },
+        { "name": "购物", "user_cents": 125800, "peer_avg_cents": 95000, "percentile": 68 },
+        { "name": "娱乐", "user_cents": 56000, "peer_avg_cents": 65000, "percentile": 42 }
+      ]
+    }
+  }
+}

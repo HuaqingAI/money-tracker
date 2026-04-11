@@ -323,28 +323,28 @@ All 8 scenarios, 30 pages specified (29 + 08.0 Hub).
 | 01-dannys-zero-input-first-experience | 01.6 | Import Processing | **built** | 2026-04-11 |
 | 01-dannys-zero-input-first-experience | 01.7 | Dashboard | **built** | 2026-04-11 |
 | 01-dannys-zero-input-first-experience | 01.8 | Monthly Report | **built** | 2026-04-11 |
-| 02-dannys-family-shared-ledger | 02.1 | Subscription | **specified** | 2026-04-11 |
-| 02-dannys-family-shared-ledger | 02.2 | Shared Family Ledger | **specified** | 2026-04-11 |
-| 02-dannys-family-shared-ledger | 02.3 | Beneficiary Tagging | **specified** | 2026-04-11 |
-| 03-lilys-spending-mirror | 03.1 | Transaction List | **specified** | 2026-04-11 |
-| 03-lilys-spending-mirror | 03.2 | Transaction Detail | **specified** | 2026-04-11 |
-| 03-lilys-spending-mirror | 03.3 | Trend Chart | **specified** | 2026-04-11 |
-| 03-lilys-spending-mirror | 03.4 | Spending Radar | **specified** | 2026-04-11 |
-| 04-dannys-gift-accounting | 04.1 | Gift Management | **specified** | 2026-04-11 |
-| 04-dannys-gift-accounting | 04.1a | Gift Book Import (NEW) | **specified** | 2026-04-11 |
-| 04-dannys-gift-accounting | 04.2 | Gift Smart Suggestion | **specified** | 2026-04-11 |
-| 05-meis-multi-identity-accounting | 05.1 | Identity Management | **specified** | 2026-04-11 |
-| 05-meis-multi-identity-accounting | 05.2 | Identity P&L | **specified** | 2026-04-11 |
-| 06-manual-input-and-category-management | 06.1 | Manual Entry | **specified** | 2026-04-11 |
-| 06-manual-input-and-category-management | 06.2 | Category Management | **specified** | 2026-04-11 |
-| 06-manual-input-and-category-management | 06.3 | iOS Shortcuts Guide | **phase2-lite** | 2026-04-11 |
-| 07-ai-butler-intelligence | 07.1 | AI Chat | **specified** | 2026-04-11 |
-| 07-ai-butler-intelligence | 07.2 | Insights Feed | **specified** | 2026-04-11 |
-| 07-ai-butler-intelligence | 07.3 | Optimization Suggestions | **specified** | 2026-04-11 |
-| 07-ai-butler-intelligence | 07.4 | Simulation Comparison | **specified** | 2026-04-11 |
-| 08-account-and-settings | 08.0 | My Hub (NEW) | **specified** | 2026-04-11 |
-| 08-account-and-settings | 08.1 | Settings | **specified** (updated) | 2026-04-11 |
-| 08-account-and-settings | 08.2 | Profile / Account | **specified** | 2026-04-11 |
+| 02-dannys-family-shared-ledger | 02.1 | Subscription | **built** | 2026-04-11 |
+| 02-dannys-family-shared-ledger | 02.2 | Shared Family Ledger | **built** | 2026-04-11 |
+| 02-dannys-family-shared-ledger | 02.3 | Beneficiary Tagging | **built** | 2026-04-11 |
+| 03-lilys-spending-mirror | 03.1 | Transaction List | **built** | 2026-04-11 |
+| 03-lilys-spending-mirror | 03.2 | Transaction Detail | **built** | 2026-04-11 |
+| 03-lilys-spending-mirror | 03.3 | Trend Chart | **built** | 2026-04-11 |
+| 03-lilys-spending-mirror | 03.4 | Spending Radar | **built** | 2026-04-11 |
+| 04-dannys-gift-accounting | 04.1 | Gift Management | **built** | 2026-04-11 |
+| 04-dannys-gift-accounting | 04.1a | Gift Book Import (NEW) | **built** | 2026-04-11 |
+| 04-dannys-gift-accounting | 04.2 | Gift Smart Suggestion | **built** | 2026-04-11 |
+| 05-meis-multi-identity-accounting | 05.1 | Identity Management | **built** | 2026-04-11 |
+| 05-meis-multi-identity-accounting | 05.2 | Identity P&L | **built** | 2026-04-11 |
+| 06-manual-input-and-category-management | 06.1 | Manual Entry | **built** | 2026-04-11 |
+| 06-manual-input-and-category-management | 06.2 | Category Management | **built** | 2026-04-11 |
+| 06-manual-input-and-category-management | 06.3 | iOS Shortcuts Guide | **built** | 2026-04-11 |
+| 07-ai-butler-intelligence | 07.1 | AI Chat | **built** | 2026-04-11 |
+| 07-ai-butler-intelligence | 07.2 | Insights Feed | **built** | 2026-04-11 |
+| 07-ai-butler-intelligence | 07.3 | Optimization Suggestions | **built** | 2026-04-11 |
+| 07-ai-butler-intelligence | 07.4 | Simulation Comparison | **built** | 2026-04-11 |
+| 08-account-and-settings | 08.0 | My Hub (NEW) | **built** | 2026-04-11 |
+| 08-account-and-settings | 08.1 | Settings | **built** | 2026-04-11 |
+| 08-account-and-settings | 08.2 | Profile / Account | **built** | 2026-04-11 |
 
 **Scenario 01 Complete** -- 大强的零记账初体验全部 8 个页面规格设计完成 (2026-04-10)
 **Scenario 02 Complete** -- 大强的家庭共享账本全部 3 个页面规格设计完成 (2026-04-11)

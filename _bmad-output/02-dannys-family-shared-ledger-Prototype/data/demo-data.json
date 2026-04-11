@@ -1,0 +1,117 @@
+{
+  "meta": {
+    "scenario": "02-dannys-family-shared-ledger",
+    "created": "2026-04-11",
+    "language": "zh-CN",
+    "currency": "CNY",
+    "amounts_in_cents": true,
+    "extends": "01-dannys-zero-input-first-experience"
+  },
+  "user": {
+    "id": "usr_danny_001",
+    "name": "大强",
+    "phone": "138****6789",
+    "wechat_nickname": "Danny强",
+    "avatar": null,
+    "membership": {
+      "status": "free",
+      "trial_eligible": true,
+      "trial_duration_days": 30
+    },
+    "usage_days": 14,
+    "created_at": "2026-03-28T10:00:00Z"
+  },
+  "family": {
+    "spouse": {
+      "id": "usr_fang_002",
+      "name": "小芳",
+      "wechat_nickname": "芳芳",
+      "phone": "139****1234",
+      "avatar": null,
+      "role": "shared_ledger_member",
+      "status": "pending_invite"
+    },
+    "children": [
+      { "name": "壮壮", "age": 5, "tag": "child" }
+    ]
+  },
+  "subscription": {
+    "plans": {
+      "trial": {
+        "name": "全功能体验",
+        "duration_days": 30,
+        "price_cents": 0,
+        "features": [
+          "家庭共享账本",
+          "受益人标注",
+          "消费趋势分析",
+          "AI智能洞察",
+          "消费雷达图"
+        ]
+      },
+      "monthly": {
+        "name": "月度会员",
+        "price_cents": 1280,
+        "features_same_as": "trial"
+      },
+      "yearly": {
+        "name": "年度会员",
+        "price_cents": 12800,
+        "monthly_equivalent_cents": 1067,
+        "features_same_as": "trial"
+      }
+    }
+  },
+  "shared_ledger": {
+    "id": "ledger_family_001",
+    "name": "大强的家",
+    "created_by": "usr_danny_001",
+    "members": [
+      { "user_id": "usr_danny_001", "role": "owner", "joined_at": null },
+      { "user_id": "usr_fang_002", "role": "member", "status": "pending", "invited_at": null }
+    ],
+    "invite": {
+      "method": "wechat",
+      "link": "https://liaoran.app/invite/abc123",
+      "qr_code": true,
+      "expires_hours": 72
+    }
+  },
+  "beneficiary_tagging": {
+    "tags": [
+      { "id": "self", "label": "为自己", "icon": "👤", "color": "#3B82F6" },
+      { "id": "spouse", "label": "为配偶", "icon": "💑", "color": "#EC4899" },
+      { "id": "child", "label": "为孩子", "icon": "👶", "color": "#F59E0B" },
+      { "id": "family", "label": "为家庭", "icon": "🏠", "color": "#10B981" }
+    ],
+    "ai_rules": [
+      { "rule": "房贷/水电/物业 → 为家庭", "confidence": 0.95, "affected_count": 12 },
+      { "rule": "公司食堂/通勤 → 为自己", "confidence": 0.92, "affected_count": 45 },
+      { "rule": "母婴/童装/玩具 → 为孩子", "confidence": 0.88, "affected_count": 8 },
+      { "rule": "美容/女装 → 为配偶", "confidence": 0.75, "affected_count": 5 }
+    ],
+    "sample_transactions": [
+      { "desc": "房贷还款", "amount_cents": 850000, "suggested_tag": "family", "confidence": 0.98 },
+      { "desc": "美团外卖-公司", "amount_cents": 4500, "suggested_tag": "self", "confidence": 0.90 },
+      { "desc": "海底捞", "amount_cents": 18600, "suggested_tag": "family", "confidence": 0.85 },
+      { "desc": "巧虎早教", "amount_cents": 29900, "suggested_tag": "child", "confidence": 0.95 },
+      { "desc": "京东-乐高积木", "amount_cents": 25800, "suggested_tag": "child", "confidence": 0.88 },
+      { "desc": "屈臣氏", "amount_cents": 15600, "suggested_tag": "spouse", "confidence": 0.72 },
+      { "desc": "中国石化加油", "amount_cents": 40000, "suggested_tag": "self", "confidence": 0.82 },
+      { "desc": "物业费", "amount_cents": 28000, "suggested_tag": "family", "confidence": 0.96 },
+      { "desc": "Steam游戏", "amount_cents": 19800, "suggested_tag": "self", "confidence": 0.94 },
+      { "desc": "小芳-淘宝女装", "amount_cents": 35900, "suggested_tag": "spouse", "confidence": 0.80 }
+    ],
+    "stats": {
+      "total_transactions": 287,
+      "ai_auto_tagged": 245,
+      "needs_review": 42,
+      "by_beneficiary": {
+        "self": { "count": 98, "amount_cents": 856000 },
+        "spouse": { "count": 35, "amount_cents": 425000 },
+        "child": { "count": 22, "amount_cents": 318000 },
+        "family": { "count": 90, "amount_cents": 1636600 }
+      }
+    }
+  }
+}

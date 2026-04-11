@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>04.1 Gift Management - 了然</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: {
+            colors: { 'liaoran': { 50:'#E8F5F1',100:'#D1EBE3',200:'#A3D7C7',300:'#75C3AB',400:'#47AF8F',500:'#1A6B5A',600:'#165A4B',700:'#0F4F42',800:'#0A3A31',900:'#052520' } },
+            fontFamily: { sans: ['-apple-system','PingFang SC','Noto Sans CJK SC','sans-serif'] }
+        }}}
+    </script>
+    <style>
+        html,body{overscroll-behavior:none}
+        .safe-bottom{padding-bottom:calc(env(safe-area-inset-bottom,0px)+16px)}
+        .sheet{transition:transform .3s ease-out,opacity .3s}.sheet.open{transform:translateY(0)!important;opacity:1!important}
+        .chip{transition:all .15s}.chip.active{background:#1A6B5A;color:#fff;border-color:#1A6B5A}
+        .state-hidden{display:none}
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+<div class="h-[100dvh] flex flex-col">
+
+    <!-- HEADER -->
+    <div id="gift-mgmt-header" class="bg-white sticky top-0 z-20 px-4 py-3 flex items-center justify-between">
+        <button onclick="handleBack()" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 -ml-1">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <h1 id="gift-mgmt-title" class="text-base font-semibold text-gray-900">人情账</h1>
+        <button onclick="openAddSheet()" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 text-liaoran-500">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="bg-white px-4 pb-3">
+        <div class="relative">
+            <input id="gift-mgmt-search" type="text" placeholder="搜索姓名、关系、备注..." class="w-full h-10 bg-gray-100 rounded-xl pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-liaoran-200" oninput="doSearch(this.value)">
+            <svg class="absolute left-3 top-2.5 w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        </div>
+    </div>
+
+    <div class="flex-1 overflow-y-auto pb-8">
+
+        <!-- MAIN LIST VIEW -->
+        <div id="view-list">
+            <!-- ANNUAL SUMMARY -->
+            <div id="gift-mgmt-annual" class="mx-4 mt-2 rounded-2xl p-5 text-white relative overflow-hidden" style="background:linear-gradient(135deg,#0F4F42 0%,#1A6B5A 50%,#47AF8F 100%)">
+                <div class="absolute inset-0 opacity-10" style="background-image:radial-gradient(circle at 80% 20%,white 1px,transparent 1px);background-size:20px 20px"></div>
+                <div class="relative">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-sm text-white/70">2026年人情往来</span>
+                        <span class="text-xs text-white/50">23人</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="bg-white/10 backdrop-blur rounded-xl p-3 text-center">
+                            <p class="text-[10px] text-white/60">送出</p>
+                            <p class="text-base font-bold">¥8,600</p>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur rounded-xl p-3 text-center">
+                            <p class="text-[10px] text-white/60">收到</p>
+                            <p class="text-base font-bold">¥4,200</p>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur rounded-xl p-3 text-center">
+                            <p class="text-[10px] text-white/60">净支出</p>
+                            <p class="text-base font-bold">¥4,400</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- UPCOMING -->
+            <div id="gift-mgmt-upcoming" class="mx-4 mt-5">
+                <h3 class="text-sm font-semibold text-gray-900 mb-2 px-1">即将到来</h3>
+                <div class="space-y-2" id="upcoming-list"></div>
+            </div>
+
+            <!-- CONTACTS -->
+            <div id="gift-mgmt-contacts" class="mx-4 mt-5">
+                <h3 class="text-sm font-semibold text-gray-900 mb-2 px-1">往来记录</h3>
+                <div class="space-y-1.5" id="contact-list"></div>
+            </div>
+        </div>
+
+        <!-- DETAIL VIEW -->
+        <div id="view-detail" class="state-hidden px-4">
+            <div id="detail-header" class="text-center pt-4 pb-3">
+                <div id="detail-avatar" class="w-16 h-16 mx-auto rounded-full bg-liaoran-100 flex items-center justify-center text-2xl font-bold text-liaoran-700 mb-2"></div>
+                <h2 id="detail-name" class="text-lg font-bold text-gray-900"></h2>
+                <p id="detail-relation" class="text-xs text-gray-400 mt-0.5"></p>
+            </div>
+            <div class="grid grid-cols-3 gap-3 mb-5">
+                <div class="bg-white rounded-xl p-3 shadow-sm text-center"><p class="text-[10px] text-gray-400">送出</p><p id="detail-given" class="text-sm font-bold text-gray-900"></p></div>
+                <div class="bg-white rounded-xl p-3 shadow-sm text-center"><p class="text-[10px] text-gray-400">收到</p><p id="detail-received" class="text-sm font-bold text-gray-900"></p></div>
+                <div class="bg-white rounded-xl p-3 shadow-sm text-center"><p class="text-[10px] text-gray-400">净额</p><p id="detail-net" class="text-sm font-bold"></p></div>
+            </div>
+            <!-- AI CTA -->
+            <button onclick="window.location.href='04.2-GiftSuggestion.html'" class="w-full bg-liaoran-50 border border-liaoran-200 rounded-xl p-3 flex items-center justify-between mb-4 active:bg-liaoran-100">
+                <div class="flex items-center gap-2"><span class="bg-liaoran-500 text-white text-[9px] font-bold w-5 h-5 rounded-full flex items-center justify-center">AI</span><span class="text-sm text-liaoran-700 font-medium">获取随礼建议</span></div>
+                <svg class="w-4 h-4 text-liaoran-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+            <!-- Timeline -->
+            <h3 class="text-sm font-semibold text-gray-900 mb-3">往来记录</h3>
+            <div id="detail-timeline" class="space-y-3"></div>
+        </div>
+    </div>
+
+    <!-- ADD SHEET -->
+    <div id="add-bg" class="fixed inset-0 z-40 bg-black/40 opacity-0 pointer-events-none transition-opacity" onclick="closeAddSheet()"></div>
+    <div id="add-sheet" class="sheet fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl safe-bottom opacity-0 translate-y-full pointer-events-none">
+        <div class="px-5 pt-5 pb-4">
+            <h3 class="text-base font-semibold text-center mb-5">添加记录</h3>
+            <div class="space-y-3">
+                <button onclick="closeAddSheet()" class="w-full h-12 bg-liaoran-50 hover:bg-liaoran-100 text-liaoran-700 font-medium rounded-xl flex items-center justify-center gap-2 transition-colors">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    手动记录
+                </button>
+                <button onclick="closeAddSheet();window.location.href='04.1a-GiftBookImport.html'" class="w-full h-12 border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium rounded-xl flex items-center justify-center gap-2 transition-colors">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                    拍照导入人情簿
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="fixed top-16 left-4 right-4 z-50 bg-liaoran-50 border border-liaoran-200 text-liaoran-800 text-sm rounded-xl px-4 py-3 shadow-lg opacity-0 -translate-y-2 transition-all duration-300 pointer-events-none text-center"><span id="toast-text"></span></div>
+</div>
+
+<script>
+const UPCOMING = [
+    {id:'e1',contact:'张三',relation:'同事',event:'婚礼',date:'4月18日',label:'下周六',color:'#EC4899'},
+    {id:'e2',contact:'李叔',relation:'长辈',event:'六十大寿',date:'4月25日',label:'两周后',color:'#F59E0B'},
+];
+const CONTACTS = [
+    {id:'c01',name:'张三',relation:'同事',avatar:'张',lastEvent:'宝宝满月 收到¥600',net:-600,given:0,received:600},
+    {id:'c02',name:'表哥王强',relation:'亲戚',avatar:'王',lastEvent:'春节 送出¥800',net:200,given:2400,received:2200},
+    {id:'c03',name:'老刘',relation:'同事',avatar:'刘',lastEvent:'乔迁 送出¥600',net:600,given:1200,received:600},
+    {id:'c04',name:'小美',relation:'同学',avatar:'美',lastEvent:'婚礼 送出¥1000',net:1000,given:1000,received:0},
+    {id:'c05',name:'赵姨',relation:'长辈',avatar:'赵',lastEvent:'春节 收到¥500',net:-200,given:300,received:500},
+    {id:'c06',name:'陈哥',relation:'朋友',avatar:'陈',lastEvent:'生日 送出¥500',net:200,given:700,received:500},
+    {id:'c07',name:'周同学',relation:'同学',avatar:'周',lastEvent:'婚礼 送出¥800',net:800,given:800,received:0},
+    {id:'c08',name:'吴阿姨',relation:'长辈',avatar:'吴',lastEvent:'春节 送出¥600',net:100,given:600,received:500},
+];
+const TIMELINE = [
+    {date:'2026-02',event:'春节',dir:'out',amount:800,desc:'春节红包'},
+    {date:'2025-12',event:'宝宝满月',dir:'in',amount:600,desc:'张三宝宝满月'},
+    {date:'2025-10',event:'国庆',dir:'out',amount:500,desc:'国庆聚会'},
+    {date:'2025-06',event:'端午',dir:'in',amount:300,desc:'端午节'},
+];
+
+function init() { renderUpcoming(); renderContacts(CONTACTS); }
+
+function renderUpcoming() {
+    document.getElementById('upcoming-list').innerHTML = UPCOMING.map(e => `
+        <button onclick="window.location.href='04.2-GiftSuggestion.html'" class="w-full bg-white rounded-xl shadow-sm p-4 flex items-center gap-3 active:bg-gray-50">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold flex-shrink-0" style="background:${e.color}">${e.event.charAt(0)}</div>
+            <div class="flex-1 min-w-0 text-left">
+                <p class="text-sm font-medium text-gray-900">${e.contact} · ${e.event}</p>
+                <p class="text-xs text-gray-400 mt-0.5">${e.date} · ${e.label}</p>
+            </div>
+            <span class="text-xs text-liaoran-500 font-medium flex-shrink-0">获取建议</span>
+        </button>`).join('');
+}
+
+function renderContacts(list) {
+    document.getElementById('contact-list').innerHTML = list.map(c => {
+        const netColor = 'text-gray-700';
+        const netSign = c.net > 0 ? '净出' : c.net < 0 ? '净收' : '';
+        return `<button onclick="showDetail('${c.id}')" class="w-full bg-white rounded-xl shadow-sm p-3.5 flex items-center gap-3 active:bg-gray-50">
+            <div class="w-10 h-10 rounded-full bg-liaoran-100 flex items-center justify-center text-sm font-bold text-liaoran-700 flex-shrink-0">${c.avatar}</div>
+            <div class="flex-1 min-w-0 text-left">
+                <div class="flex items-center gap-2"><span class="text-sm font-medium text-gray-900">${c.name}</span><span class="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">${c.relation}</span></div>
+                <p class="text-xs text-gray-400 mt-0.5 truncate">${c.lastEvent}</p>
+            </div>
+            <span class="text-sm font-semibold ${netColor} flex-shrink-0">${netSign} ¥${Math.abs(c.net).toLocaleString()}</span>
+        </button>`;
+    }).join('');
+}
+
+function showDetail(id) {
+    const c = CONTACTS.find(x => x.id === id);
+    if (!c) return;
+    document.getElementById('view-list').classList.add('state-hidden');
+    document.getElementById('view-detail').classList.remove('state-hidden');
+    document.getElementById('gift-mgmt-title').textContent = c.name;
+    document.getElementById('detail-avatar').textContent = c.avatar;
+    document.getElementById('detail-name').textContent = c.name;
+    document.getElementById('detail-relation').textContent = c.relation;
+    document.getElementById('detail-given').textContent = '¥' + c.given.toLocaleString();
+    document.getElementById('detail-received').textContent = '¥' + c.received.toLocaleString();
+    const netEl = document.getElementById('detail-net');
+    netEl.textContent = (c.net>0?'+':'') + '¥' + Math.abs(c.net).toLocaleString();
+    netEl.className = 'text-sm font-bold ' + (c.net>0?'text-orange-500':c.net<0?'text-cyan-500':'text-gray-400');
+    renderTimeline();
+}
+
+function renderTimeline() {
+    document.getElementById('detail-timeline').innerHTML = TIMELINE.map(t => {
+        const isOut = t.dir === 'out';
+        return `<div class="flex gap-3">
+            <div class="flex flex-col items-center"><div class="w-2.5 h-2.5 rounded-full ${isOut?'bg-orange-400':'bg-cyan-400'} mt-1.5"></div><div class="w-0.5 flex-1 bg-gray-100 mt-1"></div></div>
+            <div class="flex-1 pb-4">
+                <div class="flex justify-between"><span class="text-sm font-medium text-gray-900">${t.event}</span><span class="text-sm font-semibold ${isOut?'text-orange-500':'text-cyan-500'}">${isOut?'-':'+'} ¥${t.amount}</span></div>
+                <p class="text-xs text-gray-400 mt-0.5">${t.date} · ${t.desc}</p>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function handleBack() {
+    if (!document.getElementById('view-detail').classList.contains('state-hidden')) {
+        document.getElementById('view-detail').classList.add('state-hidden');
+        document.getElementById('view-list').classList.remove('state-hidden');
+        document.getElementById('gift-mgmt-title').textContent = '人情账';
+    } else {
+        window.location.href = '../01-dannys-zero-input-first-experience-Prototype/01.7-Dashboard.html';
+    }
+}
+
+function doSearch(q) {
+    if (!q) { renderContacts(CONTACTS); return; }
+    const filtered = CONTACTS.filter(c => c.name.includes(q) || c.relation.includes(q));
+    if (filtered.length === 0) {
+        document.getElementById('contact-list').innerHTML = '<div class="text-center py-8"><p class="text-sm text-gray-400">没有找到相关联系人</p></div>';
+    } else {
+        renderContacts(filtered);
+    }
+}
+
+function openAddSheet() { document.getElementById('add-bg').classList.remove('opacity-0','pointer-events-none'); const s=document.getElementById('add-sheet'); s.classList.remove('pointer-events-none'); s.classList.add('open'); }
+function closeAddSheet() { document.getElementById('add-bg').classList.add('opacity-0','pointer-events-none'); const s=document.getElementById('add-sheet'); s.classList.add('pointer-events-none'); s.classList.remove('open'); }
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

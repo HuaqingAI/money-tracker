@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>08.2 Profile - 了然</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'liaoran': {
+                            50: '#E8F5F1', 100: '#D1EBE3', 200: '#A3D7C7',
+                            300: '#75C3AB', 400: '#47AF8F', 500: '#1A6B5A',
+                            600: '#165A4B', 700: '#0F4F42', 800: '#0A3A31', 900: '#052520',
+                        }
+                    },
+                    fontFamily: { sans: ['-apple-system', 'PingFang SC', 'Noto Sans CJK SC', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body { overscroll-behavior: none; }
+        .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom, 0px)); }
+        .membership-card-free { background: #F3F4F6; }
+        .membership-card-trial { background: linear-gradient(135deg, #1A6B5A 0%, #47AF8F 100%); color: white; }
+        .membership-card-active { background: linear-gradient(135deg, #B8860B 0%, #F5C842 50%, #D4A537 100%); color: #5C3A00; }
+        .membership-card-expired { background: #F9FAFB; border: 1.5px dashed #D1D5DB; }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+
+    <div class="h-[100dvh] flex flex-col">
+
+        <!-- ===== TOP BAR (fixed) ===== -->
+        <div id="prof-topbar" class="bg-white sticky top-0 z-20 px-4 py-3 flex items-center gap-3 border-b border-gray-100">
+            <button id="prof-topbar-back" onclick="navigateTo('08.0-MyHub.html')" class="w-8 h-8 flex items-center justify-center -ml-1">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <h1 id="prof-topbar-title" class="text-lg font-semibold text-gray-900">个人资料</h1>
+        </div>
+
+        <!-- SCROLLABLE CONTENT -->
+        <div class="flex-1 overflow-y-auto pb-12">
+
+            <!-- ===== AVATAR AREA ===== -->
+            <div id="prof-avatar" class="flex flex-col items-center pt-8 pb-6">
+                <!-- Avatar Image (editable) -->
+                <div class="relative cursor-pointer" onclick="showAvatarSheet()">
+                    <div id="prof-avatar-image"
+                         class="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold text-white"
+                         style="background: linear-gradient(135deg, #1A6B5A, #47AF8F);">
+                        强
+                    </div>
+                    <!-- Camera overlay -->
+                    <div class="absolute -bottom-0.5 -right-0.5 w-7 h-7 bg-white rounded-full shadow-md flex items-center justify-center">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    </div>
+                </div>
+                <p id="prof-avatar-hint" class="text-xs text-gray-400 mt-2">点击修改头像</p>
+                <h2 id="prof-avatar-name" class="text-xl font-bold text-gray-900 mt-2">大强</h2>
+            </div>
+
+            <!-- ===== BASIC INFO ===== -->
+            <div class="px-4 pb-2">
+                <h3 id="prof-group-basic-header" class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-1 mb-2">基本信息</h3>
+            </div>
+            <div id="prof-group-basic" class="mx-4 bg-white rounded-xl shadow-sm overflow-hidden">
+                <!-- Nickname -->
+                <button id="prof-item-nickname" class="w-full flex items-center gap-3 px-4 py-3.5 active:bg-gray-50 border-b border-gray-100" onclick="showEditSheet('nickname')">
+                    <span class="flex-1 text-sm text-gray-700 text-left">昵称</span>
+                    <span id="nickname-value" class="text-sm text-gray-400">大强</span>
+                    <svg class="text-gray-300 ml-1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+                <!-- Gender -->
+                <button id="prof-item-gender" class="w-full flex items-center gap-3 px-4 py-3.5 active:bg-gray-50 border-b border-gray-100" onclick="showSelectSheet('gender')">
+                    <span class="flex-1 text-sm text-gray-700 text-left">性别</span>
+                    <span id="gender-value" class="text-sm text-gray-400">男</span>
+                    <svg class="text-gray-300 ml-1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+                <!-- Birthday -->
+                <button id="prof-item-birthday" class="w-full flex items-center gap-3 px-4 py-3.5 active:bg-gray-50" onclick="showSelectSheet('birthday')">
+                    <span class="flex-1 text-sm text-gray-700 text-left">生日</span>
+                    <span id="birthday-value" class="text-sm text-gray-400">1996-03-15</span>
+                    <svg class="text-gray-300 ml-1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+            </div>
+
+            <!-- ===== ACCOUNT SECURITY ===== -->
+            <div class="px-4 pt-6 pb-2">
+                <h3 id="prof-group-security-header" class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-1 mb-2">账户安全</h3>
+            </div>
+            <div id="prof-group-security" class="mx-4 bg-white rounded-xl shadow-sm overflow-hidden">
+                <!-- Phone -->
+                <button id="prof-item-phone" class="w-full flex items-center gap-3 px-4 py-3.5 active:bg-gray-50 border-b border-gray-100" onclick="showToast('换绑手机号流程（原型外）')">
+                    <span class="flex-1 text-sm text-gray-700 text-left">手机号</span>
+                    <span class="text-sm text-gray-400">138****6789</span>
+                    <svg class="text-gray-300 ml-1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+                <!-- WeChat -->
+                <button id="prof-item-wechat" class="w-full flex items-center gap-3 px-4 py-3.5 active:bg-gray-50 border-b border-gray-100" onclick="toggleWechatBind()">
+                    <span class="flex-1 text-sm text-gray-700 text-left">微信</span>
+                    <span id="wechat-status" class="text-sm text-green-600">已绑定</span>
+                    <svg class="text-gray-300 ml-1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+                <!-- Change Password -->
+                <button id="prof-item-password" class="w-full flex items-center gap-3 px-4 py-3.5 active:bg-gray-50" onclick="showToast('修改密码流程（原型外）')">
+                    <span class="flex-1 text-sm text-gray-700 text-left">修改密码</span>
+                    <svg class="text-gray-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+            </div>
+
+            <!-- ===== MEMBERSHIP STATUS ===== -->
+            <div class="px-4 pt-6 pb-2">
+                <h3 id="prof-group-membership-header" class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-1 mb-2">会员状态</h3>
+            </div>
+            <div id="prof-membership-card" class="mx-4 rounded-xl p-5 shadow-sm membership-card-trial">
+                <p id="prof-membership-plan" class="text-base font-semibold">全功能体验</p>
+                <p id="prof-membership-expiry" class="text-sm mt-1 opacity-80">有效期至 2026-04-15</p>
+                <button id="prof-membership-cta" class="mt-3 text-sm font-medium underline underline-offset-2 opacity-90 active:opacity-70" onclick="showToast('查看会员功能')">
+                    查看会员功能 >
+                </button>
+            </div>
+
+            <!-- ===== ACCOUNT ACTIONS ===== -->
+            <div class="mx-4 mt-8 mb-8">
+                <button id="prof-item-delete" class="w-full flex items-center gap-3 px-4 py-3.5 bg-white rounded-xl shadow-sm active:bg-red-50" onclick="showDeleteFlow()">
+                    <span class="text-lg">🗑️</span>
+                    <span class="text-sm text-red-500 font-medium">注销账户</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-sm px-4 py-2 rounded-full z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+    <!-- OVERLAY -->
+    <div id="overlay" class="fixed inset-0 bg-black/40 z-40 hidden" onclick="closeOverlay()"></div>
+
+    <!-- BOTTOM SHEET (multi-purpose) -->
+    <div id="bottom-sheet" class="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl z-50 hidden shadow-xl safe-bottom" style="transform: translateY(100%); transition: transform 0.3s ease;">
+        <div class="w-10 h-1 bg-gray-200 rounded-full mx-auto mt-3"></div>
+        <h3 id="sheet-title" class="text-base font-semibold text-gray-900 text-center mt-3 mb-2"></h3>
+        <div id="sheet-content" class="px-4 pb-8"></div>
+    </div>
+
+    <!-- WECHAT UNBIND CONFIRM -->
+    <div id="prof-item-wechat-confirm" class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl w-72 p-6 z-50 hidden shadow-xl">
+        <h3 class="text-base font-semibold text-gray-900 text-center">确认解绑微信？</h3>
+        <p class="text-sm text-gray-500 text-center mt-2">解绑后将无法使用微信登录本 APP</p>
+        <div class="flex gap-3 mt-5">
+            <button class="flex-1 py-2.5 text-sm text-gray-600 rounded-xl bg-gray-100 active:bg-gray-200" onclick="closeOverlay()">取消</button>
+            <button class="flex-1 py-2.5 text-sm text-white font-medium rounded-xl bg-red-500 active:bg-red-600" onclick="doWechatUnbind()">解绑</button>
+        </div>
+    </div>
+
+    <!-- DELETE ACCOUNT FLOW (Step 1) -->
+    <div id="prof-delete-flow" class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl w-80 z-50 hidden shadow-xl overflow-hidden">
+        <!-- Steps indicator -->
+        <div class="bg-red-50 px-6 pt-5 pb-4">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="text-lg">⚠️</span>
+                <h3 class="text-base font-semibold text-red-700">注销账户</h3>
+            </div>
+            <div class="flex gap-1 mb-3">
+                <div id="del-step-1" class="h-1 flex-1 rounded-full bg-red-400"></div>
+                <div id="del-step-2" class="h-1 flex-1 rounded-full bg-gray-200"></div>
+                <div id="del-step-3" class="h-1 flex-1 rounded-full bg-gray-200"></div>
+                <div id="del-step-4" class="h-1 flex-1 rounded-full bg-gray-200"></div>
+                <div id="del-step-5" class="h-1 flex-1 rounded-full bg-gray-200"></div>
+                <div id="del-step-6" class="h-1 flex-1 rounded-full bg-gray-200"></div>
+            </div>
+        </div>
+        <div id="del-content" class="px-6 py-4">
+            <p class="text-sm text-gray-700 leading-relaxed">注销账户将永久删除以下数据：</p>
+            <ul class="text-sm text-gray-600 mt-2 space-y-1.5 list-disc list-inside">
+                <li>所有交易记录和分类数据</li>
+                <li>AI 分析结果和洞察历史</li>
+                <li>共享家庭账本</li>
+                <li>人情账和受益人标注</li>
+            </ul>
+            <p class="text-xs text-red-500 font-medium mt-3">此操作不可撤销。</p>
+        </div>
+        <div class="px-6 pb-5 flex gap-3">
+            <button class="flex-1 py-2.5 text-sm text-gray-600 rounded-xl bg-gray-100 active:bg-gray-200" onclick="closeOverlay()">取消</button>
+            <button id="del-next-btn" class="flex-1 py-2.5 text-sm text-white font-medium rounded-xl bg-red-500 active:bg-red-600" onclick="nextDeleteStep()">继续</button>
+        </div>
+    </div>
+
+    <!-- STATE TOGGLE (prototype only) -->
+    <button onclick="cycleMembership()" class="fixed top-3 right-3 bg-gray-100 text-xs text-gray-500 px-3 py-1.5 rounded-full z-40 active:bg-gray-200">
+        <span id="state-label">Trial</span> ↔
+    </button>
+
+    <script>
+        // ===== MEMBERSHIP STATE MANAGEMENT =====
+        const STATES = ['free', 'trial', 'active', 'expired'];
+        let stateIdx = 1;
+
+        const CARD_CONFIG = {
+            free:    { plan: '基础版', expiry: '', cta: '领取免费会员体验 >', cardClass: 'membership-card-free', textClass: 'text-gray-700' },
+            trial:   { plan: '全功能体验', expiry: '有效期至 2026-04-15', cta: '查看会员功能 >', cardClass: 'membership-card-trial', textClass: 'text-white' },
+            active:  { plan: '尊享年卡', expiry: '有效期至 2027-01-15', cta: '管理会员 >', cardClass: 'membership-card-active', textClass: 'text-amber-900' },
+            expired: { plan: '已过期', expiry: '续费解锁全部功能', cta: '续费 >', cardClass: 'membership-card-expired', textClass: 'text-gray-600' },
+        };
+
+        function cycleMembership() {
+            stateIdx = (stateIdx + 1) % STATES.length;
+            const state = STATES[stateIdx];
+            document.getElementById('state-label').textContent = state.charAt(0).toUpperCase() + state.slice(1);
+            applyMembershipState(state);
+        }
+
+        function applyMembershipState(state) {
+            const config = CARD_CONFIG[state];
+            const card = document.getElementById('prof-membership-card');
+            card.className = 'mx-4 rounded-xl p-5 shadow-sm ' + config.cardClass;
+            document.getElementById('prof-membership-plan').textContent = config.plan;
+            document.getElementById('prof-membership-plan').className = 'text-base font-semibold ' + config.textClass;
+            document.getElementById('prof-membership-expiry').textContent = config.expiry;
+            document.getElementById('prof-membership-expiry').className = 'text-sm mt-1 opacity-80 ' + config.textClass;
+            document.getElementById('prof-membership-cta').textContent = config.cta;
+            document.getElementById('prof-membership-cta').className = 'mt-3 text-sm font-medium underline underline-offset-2 opacity-90 active:opacity-70 ' + config.textClass;
+            // Show/hide expiry
+            document.getElementById('prof-membership-expiry').style.display = config.expiry ? '' : 'none';
+        }
+
+        // ===== AVATAR SHEET =====
+        function showAvatarSheet() {
+            showSheet('修改头像', `
+                <button class="w-full py-3.5 text-sm text-gray-700 border-b border-gray-50 active:bg-gray-50 text-left px-2" onclick="showToast('打开相机（原型外）'); closeOverlay();">拍照</button>
+                <button class="w-full py-3.5 text-sm text-gray-700 border-b border-gray-50 active:bg-gray-50 text-left px-2" onclick="showToast('打开相册（原型外）'); closeOverlay();">从相册选择</button>
+                <button class="w-full py-3.5 text-sm text-gray-700 active:bg-gray-50 text-left px-2" onclick="showToast('查看大图'); closeOverlay();">查看大图</button>
+            `);
+        }
+
+        // ===== EDIT SHEETS =====
+        function showEditSheet(field) {
+            const current = document.getElementById('nickname-value').textContent;
+            showSheet('修改昵称', `
+                <div class="mb-4">
+                    <input id="edit-input" type="text" value="${current}" maxlength="20"
+                           class="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-liaoran-500 focus:ring-1 focus:ring-liaoran-500"
+                           placeholder="输入新昵称">
+                    <p class="text-xs text-gray-400 mt-1.5 px-1">1-20 个字符</p>
+                </div>
+                <button class="w-full py-3 text-sm text-white font-medium bg-liaoran-500 rounded-xl active:bg-liaoran-600"
+                        onclick="saveNickname()">保存</button>
+            `);
+            setTimeout(() => { document.getElementById('edit-input')?.focus(); }, 400);
+        }
+
+        function saveNickname() {
+            const val = document.getElementById('edit-input').value.trim();
+            if (val.length === 0) { showToast('昵称不能为空'); return; }
+            document.getElementById('nickname-value').textContent = val;
+            document.getElementById('prof-avatar-name').textContent = val;
+            // Update avatar letter
+            document.getElementById('prof-avatar-image').textContent = val.charAt(val.length - 1);
+            closeOverlay();
+            showToast('已更新');
+        }
+
+        function showSelectSheet(field) {
+            if (field === 'gender') {
+                const current = document.getElementById('gender-value').textContent;
+                const options = ['男', '女', '不愿透露'];
+                showSheet('选择性别', options.map(opt => {
+                    const isActive = opt === current;
+                    return `<button class="w-full py-3.5 text-sm text-left px-2 border-b border-gray-50 flex items-center justify-between active:bg-gray-50 ${isActive ? 'text-liaoran-600 font-medium' : 'text-gray-700'}"
+                        onclick="document.getElementById('gender-value').textContent='${opt}'; closeOverlay(); showToast('已更新');">
+                        ${opt}
+                        ${isActive ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A6B5A" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>' : ''}
+                    </button>`;
+                }).join(''));
+            } else if (field === 'birthday') {
+                showSheet('选择生日', `
+                    <div class="mb-4">
+                        <input id="date-input" type="date" value="1996-03-15"
+                               class="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-liaoran-500">
+                    </div>
+                    <button class="w-full py-3 text-sm text-white font-medium bg-liaoran-500 rounded-xl active:bg-liaoran-600"
+                            onclick="document.getElementById('birthday-value').textContent=document.getElementById('date-input').value; closeOverlay(); showToast('已更新');">确认</button>
+                `);
+            }
+        }
+
+        // ===== WECHAT BIND/UNBIND =====
+        let wechatBound = true;
+        function toggleWechatBind() {
+            if (wechatBound) {
+                document.getElementById('overlay').classList.remove('hidden');
+                document.getElementById('prof-item-wechat-confirm').classList.remove('hidden');
+            } else {
+                wechatBound = true;
+                document.getElementById('wechat-status').textContent = '已绑定';
+                document.getElementById('wechat-status').className = 'text-sm text-green-600';
+                showToast('微信绑定成功');
+            }
+        }
+
+        function doWechatUnbind() {
+            wechatBound = false;
+            document.getElementById('wechat-status').textContent = '未绑定';
+            document.getElementById('wechat-status').className = 'text-sm text-gray-400';
+            closeOverlay();
+            showToast('已解绑');
+        }
+
+        // ===== DELETE ACCOUNT FLOW =====
+        let deleteStep = 1;
+        function showDeleteFlow() {
+            deleteStep = 1;
+            updateDeleteStepIndicator();
+            document.getElementById('del-content').innerHTML = `
+                <p class="text-sm text-gray-700 leading-relaxed">注销账户将永久删除以下数据：</p>
+                <ul class="text-sm text-gray-600 mt-2 space-y-1.5 list-disc list-inside">
+                    <li>所有交易记录和分类数据</li>
+                    <li>AI 分析结果和洞察历史</li>
+                    <li>共享家庭账本</li>
+                    <li>人情账和受益人标注</li>
+                </ul>
+                <p class="text-xs text-red-500 font-medium mt-3">此操作不可撤销。</p>
+            `;
+            document.getElementById('del-next-btn').textContent = '继续';
+            document.getElementById('overlay').classList.remove('hidden');
+            document.getElementById('prof-delete-flow').classList.remove('hidden');
+        }
+
+        function nextDeleteStep() {
+            deleteStep++;
+            updateDeleteStepIndicator();
+
+            if (deleteStep === 2) {
+                document.getElementById('del-content').innerHTML = `
+                    <p class="text-sm text-gray-700 leading-relaxed mb-4">注销前建议先导出你的数据</p>
+                    <button class="w-full py-3 text-sm text-liaoran-600 font-medium border border-liaoran-200 rounded-xl mb-2 active:bg-liaoran-50" onclick="showToast('导出我的数据（原型外）')">
+                        📂 导出我的数据
+                    </button>
+                `;
+                document.getElementById('del-next-btn').textContent = '继续注销';
+            } else if (deleteStep === 3) {
+                document.getElementById('del-content').innerHTML = `
+                    <p class="text-sm text-gray-700 mb-4">请验证你的身份</p>
+                    <div class="flex gap-2 items-center bg-gray-50 rounded-xl p-4">
+                        <span class="text-lg">📱</span>
+                        <div class="flex-1">
+                            <p class="text-sm text-gray-700">短信验证码已发送至</p>
+                            <p class="text-sm font-medium text-gray-900">138****6789</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2 mt-3">
+                        <input type="text" maxlength="6" placeholder="输入验证码"
+                               class="flex-1 px-4 py-3 text-sm border border-gray-200 rounded-xl text-center tracking-widest focus:outline-none focus:border-red-400">
+                    </div>
+                `;
+                document.getElementById('del-next-btn').textContent = '验证';
+            } else if (deleteStep === 4) {
+                document.getElementById('del-content').innerHTML = `
+                    <p class="text-sm text-gray-700 mb-3">请输入「确认注销」以完成操作</p>
+                    <input id="confirm-delete-input" type="text" placeholder="确认注销"
+                           class="w-full px-4 py-3 text-sm border border-red-200 rounded-xl text-center focus:outline-none focus:border-red-400 focus:ring-1 focus:ring-red-400">
+                `;
+                document.getElementById('del-next-btn').textContent = '确认注销';
+                document.getElementById('del-next-btn').onclick = function() {
+                    const val = document.getElementById('confirm-delete-input')?.value;
+                    if (val === '确认注销') {
+                        nextDeleteStep();
+                    } else {
+                        showToast('请输入"确认注销"');
+                    }
+                };
+            } else if (deleteStep === 5) {
+                document.getElementById('del-content').innerHTML = `
+                    <div class="text-center py-4">
+                        <div class="w-12 h-12 mx-auto mb-3 rounded-full border-4 border-gray-200 border-t-red-400 animate-spin"></div>
+                        <p class="text-sm text-gray-700">正在处理注销请求...</p>
+                        <p class="text-xs text-gray-400 mt-1">请勿关闭页面</p>
+                    </div>
+                `;
+                document.getElementById('del-next-btn').style.display = 'none';
+                document.querySelector('#prof-delete-flow .flex.gap-3:last-child button:first-child').style.display = 'none';
+                setTimeout(() => nextDeleteStep(), 2000);
+            } else if (deleteStep === 6) {
+                document.getElementById('del-content').innerHTML = `
+                    <div class="text-center py-4">
+                        <p class="text-3xl mb-3">👋</p>
+                        <p class="text-sm font-medium text-gray-900">账户已注销</p>
+                        <p class="text-xs text-gray-500 mt-1">感谢你使用过了然</p>
+                        <p class="text-xs text-gray-400 mt-3">数据将在 15 个工作日内永久删除</p>
+                    </div>
+                `;
+                document.getElementById('del-next-btn').style.display = '';
+                document.getElementById('del-next-btn').textContent = '返回首页';
+                document.getElementById('del-next-btn').onclick = function() { closeOverlay(); window.location.href='../01-dannys-zero-input-first-experience-Prototype/01.1-Welcome.html'; };
+            }
+        }
+
+        function updateDeleteStepIndicator() {
+            for (let i = 1; i <= 6; i++) {
+                const el = document.getElementById('del-step-' + i);
+                el.className = 'h-1 flex-1 rounded-full ' + (i <= deleteStep ? 'bg-red-400' : 'bg-gray-200');
+            }
+        }
+
+        // ===== BOTTOM SHEET =====
+        function showSheet(title, contentHtml) {
+            document.getElementById('sheet-title').textContent = title;
+            document.getElementById('sheet-content').innerHTML = contentHtml;
+            document.getElementById('overlay').classList.remove('hidden');
+            const sheet = document.getElementById('bottom-sheet');
+            sheet.classList.remove('hidden');
+            requestAnimationFrame(() => { sheet.style.transform = 'translateY(0)'; });
+        }
+
+        function closeOverlay() {
+            document.getElementById('overlay').classList.add('hidden');
+            document.getElementById('prof-item-wechat-confirm').classList.add('hidden');
+            document.getElementById('prof-delete-flow').classList.add('hidden');
+            const sheet = document.getElementById('bottom-sheet');
+            sheet.style.transform = 'translateY(100%)';
+            setTimeout(() => sheet.classList.add('hidden'), 300);
+        }
+
+        // ===== NAVIGATION & TOAST =====
+        function navigateTo(url) { window.location.href = url; }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.style.opacity = '1';
+            setTimeout(() => { toast.style.opacity = '0'; }, 2000);
+        }
+
+        // Initialize
+        applyMembershipState('trial');
+    </script>
+
+</body>
+</html>

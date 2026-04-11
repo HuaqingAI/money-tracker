@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>02.1 Subscription - 了然</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'liaoran': {
+                            50: '#E8F5F1', 100: '#D1EBE3', 200: '#A3D7C7',
+                            300: '#75C3AB', 400: '#47AF8F', 500: '#1A6B5A',
+                            600: '#165A4B', 700: '#0F4F42', 800: '#0A3A31', 900: '#052520',
+                        }
+                    },
+                    fontFamily: { sans: ['-apple-system', 'PingFang SC', 'Noto Sans CJK SC', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body { overscroll-behavior: none; }
+        .safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        @keyframes confetti { 0% { opacity: 1; transform: scale(0) rotate(0deg); } 50% { opacity: 1; transform: scale(1.2) rotate(180deg); } 100% { opacity: 0; transform: scale(0.8) rotate(360deg) translateY(-30px); } }
+        .fade-in-up { animation: fadeInUp 0.5s ease-out forwards; }
+        .scale-in { animation: scaleIn 0.4s ease-out forwards; }
+        .float-anim { animation: float 3s ease-in-out infinite; }
+        .stagger-1 { animation-delay: 0.1s; opacity: 0; }
+        .stagger-2 { animation-delay: 0.2s; opacity: 0; }
+        .stagger-3 { animation-delay: 0.3s; opacity: 0; }
+        .stagger-4 { animation-delay: 0.4s; opacity: 0; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, opacity 0.3s ease-out; opacity: 0; }
+        .accordion-content.open { max-height: 200px; opacity: 1; }
+        .overlay { transition: opacity 0.3s ease-out; }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+
+    <div id="app" class="h-[100dvh] flex flex-col relative">
+
+        <!-- TOP BAR (sticky) -->
+        <div id="sub-topbar" class="bg-white/95 backdrop-blur sticky top-0 z-30 px-4 py-3 flex items-center">
+            <button id="sub-topbar-back" onclick="goBack()" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 active:bg-gray-200 -ml-1">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <h1 id="sub-topbar-title" class="flex-1 text-center text-base font-semibold text-gray-900 -ml-9">会员体验</h1>
+        </div>
+
+        <!-- SCROLLABLE CONTENT -->
+        <div class="flex-1 overflow-y-auto pb-36">
+
+            <!-- GIFT HERO -->
+            <div id="sub-hero" class="mx-4 mt-2 rounded-2xl p-6 text-white relative overflow-hidden"
+                 style="background: linear-gradient(135deg, #0F4F42 0%, #1A6B5A 40%, #47AF8F 100%);">
+                <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 70% 30%, white 1px, transparent 1px); background-size: 20px 20px;"></div>
+                <div class="relative text-center">
+                    <!-- Gift Icon -->
+                    <div id="sub-hero-gift" class="scale-in float-anim inline-block mb-4">
+                        <div class="w-20 h-20 mx-auto bg-white/20 backdrop-blur rounded-2xl flex items-center justify-center">
+                            <span class="text-4xl">🎁</span>
+                        </div>
+                    </div>
+                    <!-- Headline -->
+                    <h2 id="sub-hero-headline" class="fade-in-up stagger-1 text-2xl font-bold leading-tight">
+                        送你 <span id="hero-trial-days">30</span> 天<br>全功能会员体验
+                    </h2>
+                    <!-- Subheadline -->
+                    <p id="sub-hero-subheadline" class="fade-in-up stagger-2 text-sm text-white/80 mt-3">
+                        你已经用零记账管理了 <span id="hero-days-used">14</span> 天，现在解锁全部功能
+                    </p>
+                </div>
+            </div>
+
+            <!-- FEATURE SHOWCASE -->
+            <div id="sub-features" class="mx-4 mt-5 fade-in-up stagger-3">
+                <h3 id="sub-features-title" class="text-base font-semibold text-gray-900 mb-3 px-1">你将解锁的功能</h3>
+
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <!-- Free Features -->
+                    <div id="sub-features-free" class="px-4 pt-4 pb-2">
+<!-- PLACEHOLDER_FEATURES_FREE -->
+                    </div>
+
+                    <!-- Divider -->
+                    <div id="sub-features-divider" class="mx-4 flex items-center gap-3 py-2">
+                        <div class="flex-1 h-px bg-gradient-to-r from-transparent via-liaoran-200 to-transparent"></div>
+                        <span class="text-xs text-liaoran-500 font-medium whitespace-nowrap">以下为会员功能</span>
+                        <div class="flex-1 h-px bg-gradient-to-r from-transparent via-liaoran-200 to-transparent"></div>
+                    </div>
+
+                    <!-- Member Core Features -->
+                    <div id="sub-features-member-core" class="px-4 pb-2">
+<!-- PLACEHOLDER_FEATURES_CORE -->
+                    </div>
+
+                    <!-- Advanced Toggle -->
+                    <div class="px-4 pb-4">
+                        <button id="sub-features-advanced-toggle" onclick="toggleAdvanced()" class="w-full flex items-center justify-between py-3 px-3 rounded-xl bg-liaoran-50/50 hover:bg-liaoran-50 transition-colors">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm">🤖</span>
+                                <span class="text-sm font-medium text-liaoran-700" id="advanced-toggle-text">AI 财务管家（5项功能）</span>
+                            </div>
+                            <svg id="advanced-chevron" class="w-4 h-4 text-liaoran-400 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                        </button>
+
+                        <!-- Advanced Features (collapsed by default) -->
+                        <div id="sub-features-member-advanced" class="accordion-content">
+<!-- PLACEHOLDER_FEATURES_ADVANCED -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TRUST SIGNALS -->
+            <div id="sub-trust" class="mx-4 mt-5 space-y-3 fade-in-up stagger-4">
+<!-- PLACEHOLDER_TRUST -->
+            </div>
+
+        </div><!-- end scrollable -->
+
+        <!-- STICKY CTA AREA -->
+        <div id="sub-cta" class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur border-t border-gray-100 px-6 pt-3 safe-bottom z-20">
+            <p id="sub-cta-badge" class="text-xs text-gray-400 text-center mb-2">
+                <span id="cta-trial-days">30</span> 天全功能体验 · 到期自动回到免费版
+            </p>
+            <button id="sub-cta-button" onclick="claimMembership()" class="w-full h-12 bg-liaoran-500 hover:bg-liaoran-600 active:bg-liaoran-700 text-white font-semibold rounded-xl shadow-lg shadow-liaoran-500/25 transition-all duration-200 flex items-center justify-center gap-2">
+                <span id="cta-text">免费领取</span>
+                <svg id="cta-spinner" class="hidden w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="32" stroke-linecap="round"/></svg>
+            </button>
+            <button id="sub-cta-skip" onclick="goBack()" class="w-full py-3 text-sm text-gray-400 hover:text-gray-500 transition-colors">
+                先不了，继续基础版
+            </button>
+        </div>
+
+        <!-- SUCCESS OVERLAY -->
+        <div id="sub-success" class="overlay fixed inset-0 z-50 bg-white flex flex-col items-center justify-center px-8 opacity-0 pointer-events-none">
+            <!-- Confetti particles -->
+            <div id="confetti-container" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+
+            <div class="relative text-center">
+                <div id="sub-success-icon" class="scale-in mb-6">
+                    <div class="w-20 h-20 mx-auto bg-liaoran-50 rounded-full flex items-center justify-center">
+                        <svg class="w-10 h-10 text-liaoran-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                    </div>
+                </div>
+                <h2 id="sub-success-title" class="text-2xl font-bold text-gray-900 mb-2">已领取，开始体验</h2>
+                <p id="sub-success-detail" class="text-sm text-gray-500 mb-2">
+                    全功能会员体验 · 有效期至 <span id="success-expiry-date"></span>
+                </p>
+                <p id="sub-success-message" class="text-sm text-gray-600 mt-6 mb-8">
+                    现在去创建家庭共享账本，邀请家人一起看账
+                </p>
+                <button id="sub-success-cta" onclick="goToFamilyLedger()" class="w-full h-12 bg-liaoran-500 hover:bg-liaoran-600 active:bg-liaoran-700 text-white font-semibold rounded-xl shadow-lg shadow-liaoran-500/25 transition-all">
+                    创建家庭账本
+                </button>
+                <button id="sub-success-later" onclick="goToDashboard()" class="w-full py-3 mt-2 text-sm text-gray-400 hover:text-gray-500 transition-colors">
+                    稍后再设置
+                </button>
+            </div>
+        </div>
+
+        <!-- ERROR TOAST -->
+        <div id="error-toast" class="fixed top-16 left-4 right-4 z-50 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 shadow-lg opacity-0 pointer-events-none transition-all duration-300 -translate-y-2">
+            <span id="error-toast-text">网络异常，请稍后重试</span>
+        </div>
+
+    </div>
+
+<script>
+// === DEMO DATA ===
+const DEMO = {
+    trial_days: 30,
+    days_used: 14,
+    entry_source: 'dashboard',
+    is_member: false
+};
+
+// === FREE FEATURES ===
+const FREE_FEATURES = [
+    { icon: '✓', name: '账单自动导入', tag: 'F1' },
+    { icon: '✓', name: 'AI 智能分类', tag: 'F2' },
+    { icon: '✓', name: '月度消费报表', tag: 'F3' },
+];
+
+// === MEMBER CORE FEATURES ===
+const CORE_FEATURES = [
+    { icon: '★', name: '共享家庭账本', detail: '邀请家人共同查看消费数据，各自隐私消费不共享，用同一份数字讨论家庭开支', tag: 'F5' },
+    { icon: '★', name: '受益人标注', detail: '为每笔消费标注"为谁花"——为孩子、为家庭、个人，AI自动建议标签', tag: 'F4' },
+    { icon: '★', name: '消费习惯雷达', detail: '可视化你的消费模式，发现隐性支出习惯，对比同类人群', tag: 'F8' },
+    { icon: '★', name: '人情账管理', detail: '记录人情往来，查历史随礼，AI智能建议回礼金额', tag: 'F7' },
+];
+
+// === ADVANCED FEATURES ===
+const ADVANCED_FEATURES = [
+    { icon: '✦', name: 'AI 对话', detail: '用自然语言问财务问题——"上个月外卖花了多少？""跟去年比怎么样？"' },
+    { icon: '✦', name: '主动洞察推送', detail: 'AI自动发现消费异常和趋势变化，主动推送提醒' },
+    { icon: '✦', name: '优化建议', detail: '基于消费数据给出个性化省钱建议' },
+    { icon: '✦', name: '消费模拟', detail: '"如果每月外卖减少500，一年能多存多少？"——可视化模拟' },
+    { icon: '✦', name: '同类对比', detail: '和同城市、同收入水平的匿名用户对比消费结构' },
+];
+
+// === TRUST SIGNALS ===
+const TRUST_ITEMS = [
+    { icon: '🔓', text: '完全免费，无需绑定银行卡或支付方式' },
+    { icon: '⏰', text: '体验到期后自动回到免费版，不会产生任何费用' },
+    { icon: '🔒', text: '共享账本中的隐私消费仍只有你能看到' },
+];
+
+// === RENDER ===
+function init() {
+    document.getElementById('hero-trial-days').textContent = DEMO.trial_days;
+    document.getElementById('hero-days-used').textContent = DEMO.days_used;
+    document.getElementById('cta-trial-days').textContent = DEMO.trial_days;
+
+    renderFreeFeatures();
+    renderCoreFeatures();
+    renderAdvancedFeatures();
+    renderTrustSignals();
+}
+
+function renderFreeFeatures() {
+    const el = document.getElementById('sub-features-free');
+    el.innerHTML = FREE_FEATURES.map(f => `
+        <div class="flex items-center gap-3 py-2">
+            <span class="w-5 h-5 rounded-full bg-liaoran-100 text-liaoran-600 text-xs flex items-center justify-center font-bold">${f.icon}</span>
+            <span class="text-sm text-gray-500">${f.name}</span>
+        </div>
+    `).join('');
+}
+
+function renderCoreFeatures() {
+    const el = document.getElementById('sub-features-member-core');
+    el.innerHTML = CORE_FEATURES.map((f, i) => `
+        <div class="border-b border-gray-50 last:border-0">
+            <button onclick="toggleFeature('core-${i}')" class="w-full flex items-center gap-3 py-3 text-left">
+                <span class="w-5 h-5 rounded-full bg-amber-100 text-amber-600 text-xs flex items-center justify-center">${f.icon}</span>
+                <span class="flex-1 text-sm font-medium text-gray-900">${f.name}</span>
+                <svg class="w-4 h-4 text-gray-300 transition-transform duration-200" id="chevron-core-${i}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div id="detail-core-${i}" class="accordion-content">
+                <p class="text-xs text-gray-500 pb-3 pl-8 leading-relaxed">${f.detail}</p>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderAdvancedFeatures() {
+    const el = document.getElementById('sub-features-member-advanced');
+    el.innerHTML = '<div class="pt-2">' + ADVANCED_FEATURES.map((f, i) => `
+        <div class="border-b border-gray-50 last:border-0">
+            <button onclick="toggleFeature('adv-${i}')" class="w-full flex items-center gap-3 py-3 text-left">
+                <span class="w-5 h-5 rounded-full bg-purple-100 text-purple-600 text-xs flex items-center justify-center">${f.icon}</span>
+                <span class="flex-1 text-sm font-medium text-gray-900">${f.name}</span>
+                <svg class="w-4 h-4 text-gray-300 transition-transform duration-200" id="chevron-adv-${i}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div id="detail-adv-${i}" class="accordion-content">
+                <p class="text-xs text-gray-500 pb-3 pl-8 leading-relaxed">${f.detail}</p>
+            </div>
+        </div>
+    `).join('') + '</div>';
+}
+
+function renderTrustSignals() {
+    const el = document.getElementById('sub-trust');
+    el.innerHTML = TRUST_ITEMS.map(t => `
+        <div class="flex items-start gap-3 bg-white rounded-xl px-4 py-3 shadow-sm">
+            <span class="text-lg mt-0.5 flex-shrink-0">${t.icon}</span>
+            <span class="text-sm text-gray-600 leading-relaxed">${t.text}</span>
+        </div>
+    `).join('');
+}
+
+// === INTERACTIONS ===
+let advancedOpen = false;
+
+function toggleFeature(id) {
+    const detail = document.getElementById('detail-' + id);
+    const chevron = document.getElementById('chevron-' + id);
+    if (detail.classList.contains('open')) {
+        detail.classList.remove('open');
+        chevron.style.transform = 'rotate(0deg)';
+    } else {
+        detail.classList.add('open');
+        chevron.style.transform = 'rotate(180deg)';
+    }
+}
+
+function toggleAdvanced() {
+    advancedOpen = !advancedOpen;
+    const content = document.getElementById('sub-features-member-advanced');
+    const chevron = document.getElementById('advanced-chevron');
+    const text = document.getElementById('advanced-toggle-text');
+    if (advancedOpen) {
+        content.classList.add('open');
+        content.style.maxHeight = content.scrollHeight + 'px';
+        chevron.style.transform = 'rotate(90deg)';
+        text.textContent = '收起';
+    } else {
+        content.classList.remove('open');
+        content.style.maxHeight = '0';
+        chevron.style.transform = 'rotate(0deg)';
+        text.textContent = 'AI 财务管家（5项功能）';
+    }
+}
+
+// === CLAIM FLOW ===
+let claiming = false;
+
+function claimMembership() {
+    if (claiming) return;
+    claiming = true;
+
+    const btn = document.getElementById('sub-cta-button');
+    const text = document.getElementById('cta-text');
+    const spinner = document.getElementById('cta-spinner');
+
+    btn.classList.add('opacity-80');
+    btn.disabled = true;
+    text.textContent = '领取中...';
+    spinner.classList.remove('hidden');
+
+    // Simulate API call
+    setTimeout(() => {
+        // Simulate slow network message
+    }, 3000);
+
+    setTimeout(() => {
+        claiming = false;
+        spinner.classList.add('hidden');
+        text.textContent = '免费领取';
+        btn.classList.remove('opacity-80');
+        btn.disabled = false;
+        showSuccess();
+    }, 1500);
+}
+
+function showSuccess() {
+    const overlay = document.getElementById('sub-success');
+    overlay.classList.remove('opacity-0', 'pointer-events-none');
+    overlay.classList.add('opacity-100');
+
+    // Calculate expiry date
+    const expiry = new Date();
+    expiry.setDate(expiry.getDate() + DEMO.trial_days);
+    document.getElementById('success-expiry-date').textContent =
+        expiry.getFullYear() + '年' + (expiry.getMonth() + 1) + '月' + expiry.getDate() + '日';
+
+    // Spawn confetti
+    spawnConfetti();
+}
+
+function spawnConfetti() {
+    const container = document.getElementById('confetti-container');
+    const colors = ['#1A6B5A', '#47AF8F', '#F59E0B', '#EC4899', '#3B82F6'];
+    for (let i = 0; i < 20; i++) {
+        const dot = document.createElement('div');
+        dot.style.cssText = `
+            position: absolute;
+            width: ${6 + Math.random() * 6}px;
+            height: ${6 + Math.random() * 6}px;
+            background: ${colors[Math.floor(Math.random() * colors.length)]};
+            border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+            left: ${10 + Math.random() * 80}%;
+            top: ${30 + Math.random() * 30}%;
+            animation: confetti ${0.6 + Math.random() * 0.8}s ease-out ${Math.random() * 0.3}s forwards;
+        `;
+        container.appendChild(dot);
+    }
+    setTimeout(() => { container.innerHTML = ''; }, 2000);
+}
+
+function showErrorToast(msg) {
+    const toast = document.getElementById('error-toast');
+    document.getElementById('error-toast-text').textContent = msg;
+    toast.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-2');
+    toast.classList.add('opacity-100', 'translate-y-0');
+    setTimeout(() => {
+        toast.classList.add('opacity-0', '-translate-y-2');
+        toast.classList.remove('opacity-100', 'translate-y-0');
+    }, 3000);
+}
+
+// === NAVIGATION ===
+function goBack() {
+    window.location.href = '../01-dannys-zero-input-first-experience-Prototype/01.7-Dashboard.html';
+}
+
+function goToFamilyLedger() {
+    window.location.href = '02.2-SharedFamilyLedger.html';
+}
+
+function goToDashboard() {
+    window.location.href = '../01-dannys-zero-input-first-experience-Prototype/01.7-Dashboard.html';
+}
+
+// Init
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>

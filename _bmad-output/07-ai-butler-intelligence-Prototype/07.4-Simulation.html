@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>07.4 Simulation - 了然</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'liaoran': {
+                            50: '#E8F5F1', 100: '#D1EBE3', 200: '#A3D7C7',
+                            300: '#75C3AB', 400: '#47AF8F', 500: '#1A6B5A',
+                            600: '#165A4B', 700: '#0F4F42', 800: '#0A3A31', 900: '#052520',
+                        }
+                    },
+                    fontFamily: { sans: ['-apple-system', 'PingFang SC', 'Noto Sans CJK SC', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body { overscroll-behavior: none; }
+        .tab-active { color: #1A6B5A; border-bottom: 2px solid #1A6B5A; font-weight: 600; }
+        .tab-inactive { color: #9CA3AF; border-bottom: 2px solid transparent; }
+        input[type="range"] { -webkit-appearance: none; width: 100%; height: 6px; border-radius: 3px; background: #E5E7EB; outline: none; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: #1A6B5A; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+        .chart-line { stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: draw 1.5s ease forwards; }
+        @keyframes draw { to { stroke-dashoffset: 0; } }
+        .peer-bar { transition: width 0.6s ease-out; }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+
+    <div class="h-[100dvh] flex flex-col">
+
+        <!-- TOP BAR -->
+        <div class="bg-white z-20 border-b border-gray-100">
+            <div class="px-4 py-3 flex items-center gap-3">
+                <button onclick="history.back()" class="w-8 h-8 flex items-center justify-center -ml-1">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <h1 class="text-lg font-semibold text-gray-900">消费模拟</h1>
+            </div>
+            <!-- Tab Switcher -->
+            <div id="sim-view-tabs" class="flex">
+                <button id="sim-tab-simulation" class="flex-1 py-2.5 text-sm text-center tab-active" onclick="switchView('simulation')">模拟</button>
+                <button id="sim-tab-comparison" class="flex-1 py-2.5 text-sm text-center tab-inactive" onclick="switchView('comparison')">同类对比</button>
+            </div>
+        </div>
+
+        <!-- ===== SIMULATION VIEW ===== -->
+        <div id="view-simulation" class="flex-1 overflow-y-auto px-4 py-4 pb-12 space-y-5">
+
+            <!-- Parameter Sliders -->
+            <div id="sim-params" class="space-y-4">
+                <h3 class="text-sm font-semibold text-gray-700">调整消费计划</h3>
+
+                <!-- Slider: Delivery -->
+                <div class="bg-white rounded-xl shadow-sm p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg">🍜</span>
+                            <span class="text-sm font-medium text-gray-700">外卖</span>
+                        </div>
+                        <span id="sim-param-savings-0" class="text-sm font-semibold text-green-600">省 ¥680/月</span>
+                    </div>
+                    <input id="sim-param-slider-0" type="range" min="1000" max="2850" value="2170" step="100" oninput="updateSimulation()">
+                    <div class="flex justify-between text-[10px] text-gray-400 mt-1">
+                        <span>¥1,000</span>
+                        <span id="slider-0-val" class="text-xs text-liaoran-600 font-medium">¥2,170/月</span>
+                        <span>¥2,850</span>
+                    </div>
+                </div>
+
+                <!-- Slider: Shopping -->
+                <div class="bg-white rounded-xl shadow-sm p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg">🛒</span>
+                            <span class="text-sm font-medium text-gray-700">购物</span>
+                        </div>
+                        <span id="sim-param-savings-1" class="text-sm font-semibold text-green-600">省 ¥0/月</span>
+                    </div>
+                    <input id="sim-param-slider-1" type="range" min="500" max="1258" value="1258" step="50" oninput="updateSimulation()">
+                    <div class="flex justify-between text-[10px] text-gray-400 mt-1">
+                        <span>¥500</span>
+                        <span id="slider-1-val" class="text-xs text-liaoran-600 font-medium">¥1,258/月</span>
+                        <span>¥1,258</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Annual Savings Headline -->
+            <div class="text-center py-2">
+                <p class="text-xs text-gray-400">年度预计节省</p>
+                <p id="sim-curve-headline" class="text-4xl font-bold text-green-600 mt-1">¥8,160</p>
+            </div>
+
+            <!-- Growth Curve Chart (SVG) -->
+            <div id="sim-curve-chart" class="bg-white rounded-2xl shadow-sm p-4">
+                <svg viewBox="0 0 320 180" class="w-full">
+                    <!-- Grid -->
+                    <line x1="40" y1="20" x2="40" y2="150" stroke="#E5E7EB" stroke-width="1"/>
+                    <line x1="40" y1="150" x2="300" y2="150" stroke="#E5E7EB" stroke-width="1"/>
+                    <line x1="40" y1="85" x2="300" y2="85" stroke="#E5E7EB" stroke-width="0.5" stroke-dasharray="4"/>
+                    <line x1="40" y1="20" x2="300" y2="20" stroke="#E5E7EB" stroke-width="0.5" stroke-dasharray="4"/>
+
+                    <!-- Y-axis labels -->
+                    <text x="35" y="155" text-anchor="end" class="text-[9px]" fill="#9CA3AF">¥0</text>
+                    <text x="35" y="90" text-anchor="end" class="text-[9px]" fill="#9CA3AF">¥4k</text>
+                    <text x="35" y="25" text-anchor="end" class="text-[9px]" fill="#9CA3AF">¥8k</text>
+
+                    <!-- X-axis labels -->
+                    <text x="83" y="168" text-anchor="middle" class="text-[9px]" fill="#9CA3AF">3月</text>
+                    <text x="170" y="168" text-anchor="middle" class="text-[9px]" fill="#9CA3AF">6月</text>
+                    <text x="257" y="168" text-anchor="middle" class="text-[9px]" fill="#9CA3AF">9月</text>
+                    <text x="300" y="168" text-anchor="middle" class="text-[9px]" fill="#9CA3AF">12月</text>
+
+                    <!-- Current trend line (gray) -->
+                    <polyline points="40,150 83,150 170,150 257,150 300,150" fill="none" stroke="#D1D5DB" stroke-width="2" stroke-linecap="round"/>
+                    <text x="305" y="153" class="text-[8px]" fill="#9CA3AF">现状</text>
+
+                    <!-- Optimized trend line (green, animated) -->
+                    <polyline id="optimized-line" points="40,150 83,130 170,100 257,55 300,30" fill="none" stroke="#1A6B5A" stroke-width="2.5" stroke-linecap="round" class="chart-line"/>
+                    <text x="305" y="33" class="text-[8px]" fill="#1A6B5A" font-weight="600">优化后</text>
+
+                    <!-- Milestone dots -->
+                    <circle cx="83" cy="130" r="4" fill="#1A6B5A" onclick="showMilestone(3, 2040)"/>
+                    <circle cx="170" cy="100" r="4" fill="#1A6B5A" onclick="showMilestone(6, 4080)"/>
+                    <circle cx="300" cy="30" r="5" fill="#1A6B5A" stroke="white" stroke-width="2" onclick="showMilestone(12, 8160)"/>
+
+                    <!-- Fill area -->
+                    <polygon points="40,150 83,130 170,100 257,55 300,30 300,150" fill="url(#greenGrad)" opacity="0.15"/>
+                    <defs>
+                        <linearGradient id="greenGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#1A6B5A"/>
+                            <stop offset="100%" stop-color="#1A6B5A" stop-opacity="0"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <p class="text-[10px] text-gray-400 text-center mt-1">点击节点查看里程碑</p>
+            </div>
+
+            <!-- Share -->
+            <button id="sim-share-btn" class="w-full py-3 text-sm text-liaoran-600 font-medium border border-liaoran-200 rounded-xl active:bg-liaoran-50" onclick="showToast('分享我的省钱计划（原型外）')">
+                分享我的省钱计划
+            </button>
+        </div>
+
+        <!-- ===== COMPARISON VIEW ===== -->
+        <div id="view-comparison" class="flex-1 overflow-y-auto px-4 py-4 pb-12 space-y-5 hidden">
+
+            <!-- Percentile Position -->
+            <div id="sim-peer-position" class="bg-white rounded-2xl shadow-sm p-5 text-center">
+                <p class="text-xs text-gray-400 mb-1">你的消费水平</p>
+                <p id="sim-peer-percentile" class="text-4xl font-bold text-liaoran-600">62<span class="text-lg">%</span></p>
+                <p id="sim-peer-label" class="text-sm text-gray-500 mt-1">超过 62% 的同类用户</p>
+                <p class="text-xs text-gray-400 mt-2">对比群体：30岁已婚男性，二线城市</p>
+            </div>
+
+            <!-- Category Comparison -->
+            <div id="sim-peer-categories" class="space-y-3">
+                <h3 class="text-sm font-semibold text-gray-700">分类对比</h3>
+
+                <!-- Category bars -->
+                <div class="bg-white rounded-xl shadow-sm p-4 space-y-4" id="peer-bars">
+                </div>
+            </div>
+
+            <!-- Disclaimer -->
+            <p id="sim-peer-disclaimer" class="text-[10px] text-gray-400 text-center px-4 leading-relaxed">
+                数据来源于匿名化的同类用户统计，仅供参考。百分位越高表示消费越高。
+            </p>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-sm px-4 py-2 rounded-full z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+    <!-- Milestone Tooltip -->
+    <div id="milestone-tip" class="fixed top-1/3 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-sm px-4 py-2 rounded-xl z-50 opacity-0 pointer-events-none transition-opacity duration-300 shadow-lg"></div>
+
+    <script>
+        // ===== SIMULATION =====
+        const PARAMS = [
+            { current: 2850, label: '外卖' },
+            { current: 1258, label: '购物' }
+        ];
+
+        function updateSimulation() {
+            let totalMonthlySaving = 0;
+            PARAMS.forEach((p, i) => {
+                const slider = document.getElementById('sim-param-slider-' + i);
+                const val = parseInt(slider.value);
+                const saving = p.current - val;
+                totalMonthlySaving += saving;
+                document.getElementById('sim-param-savings-' + i).textContent = saving > 0 ? '省 ¥' + saving + '/月' : '¥0/月';
+                document.getElementById('sim-param-savings-' + i).className = 'text-sm font-semibold ' + (saving > 0 ? 'text-green-600' : 'text-gray-400');
+                document.getElementById('slider-' + i + '-val').textContent = '¥' + val.toLocaleString() + '/月';
+            });
+
+            const annual = totalMonthlySaving * 12;
+            document.getElementById('sim-curve-headline').textContent = '¥' + annual.toLocaleString();
+
+            // Update chart line (simplified: scale Y based on annual)
+            const maxY = 8160;
+            const scale = Math.min(annual / maxY, 1.5);
+            const y3 = 150 - (20 * scale);
+            const y6 = 150 - (50 * scale);
+            const y9 = 150 - (95 * scale);
+            const y12 = 150 - (120 * scale);
+            document.getElementById('optimized-line').setAttribute('points',
+                `40,150 83,${y3} 170,${y6} 257,${y9} 300,${y12}`);
+        }
+
+        function showMilestone(month, amount) {
+            const tip = document.getElementById('milestone-tip');
+            tip.textContent = month + '个月后累计省 ¥' + amount.toLocaleString();
+            tip.style.opacity = '1';
+            setTimeout(() => tip.style.opacity = '0', 2000);
+        }
+
+        // ===== VIEW SWITCHING =====
+        function switchView(view) {
+            const isSimulation = view === 'simulation';
+            document.getElementById('view-simulation').classList.toggle('hidden', !isSimulation);
+            document.getElementById('view-comparison').classList.toggle('hidden', isSimulation);
+            document.getElementById('sim-tab-simulation').className = 'flex-1 py-2.5 text-sm text-center ' + (isSimulation ? 'tab-active' : 'tab-inactive');
+            document.getElementById('sim-tab-comparison').className = 'flex-1 py-2.5 text-sm text-center ' + (isSimulation ? 'tab-inactive' : 'tab-active');
+
+            if (!isSimulation) renderPeerBars();
+        }
+
+        // ===== PEER COMPARISON =====
+        const PEER_DATA = [
+            { name: '餐饮', user: 2850, peer: 2200, pct: 72 },
+            { name: '购物', user: 1258, peer: 950, pct: 68 },
+            { name: '交通', user: 980, peer: 1100, pct: 45 },
+            { name: '娱乐', user: 560, peer: 650, pct: 42 },
+        ];
+
+        function renderPeerBars() {
+            const container = document.getElementById('peer-bars');
+            const maxVal = Math.max(...PEER_DATA.map(d => Math.max(d.user, d.peer)));
+            container.innerHTML = PEER_DATA.map(d => {
+                const userW = (d.user / maxVal * 100).toFixed(0);
+                const peerW = (d.peer / maxVal * 100).toFixed(0);
+                const isHigher = d.user > d.peer;
+                return `<div>
+                    <div class="flex justify-between text-xs mb-1.5">
+                        <span class="font-medium text-gray-700">${d.name}</span>
+                        <span class="text-gray-400">超过 ${d.pct}%</span>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] text-gray-400 w-6">你</span>
+                            <div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
+                                <div class="peer-bar h-full rounded-full ${isHigher ? 'bg-orange-400' : 'bg-cyan-400'}" style="width:${userW}%"></div>
+                            </div>
+                            <span class="text-[10px] text-gray-500 w-12 text-right">¥${d.user.toLocaleString()}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] text-gray-400 w-6">均</span>
+                            <div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
+                                <div class="peer-bar h-full bg-gray-300 rounded-full" style="width:${peerW}%"></div>
+                            </div>
+                            <span class="text-[10px] text-gray-500 w-12 text-right">¥${d.peer.toLocaleString()}</span>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.style.opacity = '1';
+            setTimeout(() => t.style.opacity = '0', 2000);
+        }
+    </script>
+
+</body>
+</html>

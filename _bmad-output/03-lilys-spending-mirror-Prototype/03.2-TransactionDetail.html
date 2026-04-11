@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>03.2 Transaction Detail - 了然</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: {
+            colors: { 'liaoran': { 50:'#E8F5F1',100:'#D1EBE3',200:'#A3D7C7',300:'#75C3AB',400:'#47AF8F',500:'#1A6B5A',600:'#165A4B',700:'#0F4F42',800:'#0A3A31',900:'#052520' } },
+            fontFamily: { sans: ['-apple-system','PingFang SC','Noto Sans CJK SC','sans-serif'] }
+        }}}
+    </script>
+    <style>
+        html,body{overscroll-behavior:none}
+        .safe-bottom{padding-bottom:calc(env(safe-area-inset-bottom,0px)+16px)}
+        .sheet{transition:transform .3s ease-out,opacity .3s}
+        .sheet.open{transform:translateY(0)!important;opacity:1!important}
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+<div class="h-[100dvh] flex flex-col">
+
+    <!-- HEADER -->
+    <div id="txn-detail-header" class="bg-white sticky top-0 z-20 px-4 py-3 flex items-center">
+        <button id="txn-detail-header-back" onclick="history.back()" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 -ml-1">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <h1 id="txn-detail-header-title" class="flex-1 text-center text-base font-semibold text-gray-900 -ml-9">交易详情</h1>
+    </div>
+
+    <div class="flex-1 overflow-y-auto pb-8">
+
+        <!-- HERO -->
+        <div id="txn-detail-hero" class="bg-white px-6 pt-6 pb-5 text-center border-b border-gray-100">
+            <div class="w-16 h-16 mx-auto bg-amber-50 rounded-2xl flex items-center justify-center text-3xl mb-3">☕</div>
+            <h2 id="txn-detail-merchant" class="text-lg font-bold text-gray-900">瑞幸咖啡</h2>
+            <p id="txn-detail-amount" class="text-3xl font-bold text-gray-900 mt-2">-¥18.00</p>
+            <p id="txn-detail-time" class="text-xs text-gray-400 mt-1.5">2026-03-31 10:32 · 支付宝</p>
+        </div>
+
+        <!-- INFO ROWS -->
+        <div id="txn-detail-info" class="bg-white mt-3 divide-y divide-gray-50">
+            <button onclick="openCategorySheet()" class="w-full flex items-center justify-between px-5 py-3.5 active:bg-gray-50">
+                <span class="text-sm text-gray-500">分类</span>
+                <div class="flex items-center gap-1.5">
+                    <span id="txn-detail-category" class="text-sm text-gray-900 font-medium">餐饮 · 饮品</span>
+                    <svg class="w-4 h-4 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+            </button>
+            <div class="flex items-center justify-between px-5 py-3.5">
+                <span class="text-sm text-gray-500">支付渠道</span>
+                <span class="text-sm text-gray-900">支付宝</span>
+            </div>
+            <div class="flex items-center justify-between px-5 py-3.5">
+                <span class="text-sm text-gray-500">原始描述</span>
+                <span class="text-sm text-gray-600 text-right max-w-[200px] truncate">瑞幸咖啡门店-中关村店</span>
+            </div>
+            <div class="flex items-center justify-between px-5 py-3.5">
+                <span class="text-sm text-gray-500">数据来源</span>
+                <div class="flex items-center gap-1">
+                    <span class="text-sm text-gray-900">支付宝账单导入</span>
+                    <span class="bg-liaoran-50 text-liaoran-600 text-[10px] font-medium px-1.5 py-0.5 rounded">AI</span>
+                </div>
+            </div>
+            <button onclick="openNotesSheet()" class="w-full flex items-center justify-between px-5 py-3.5 active:bg-gray-50">
+                <span class="text-sm text-gray-500">备注</span>
+                <div class="flex items-center gap-1.5">
+                    <span id="notes-display" class="text-sm text-gray-400">添加备注</span>
+                    <svg class="w-4 h-4 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+            </button>
+        </div>
+
+        <!-- INSIGHTS -->
+        <div id="txn-detail-insights" class="mt-3 px-4 space-y-3">
+            <h3 class="text-sm font-semibold text-gray-900 px-1">消费洞察</h3>
+            <!-- Brand Card -->
+            <button onclick="window.location.href='03.3-TrendChart.html'" class="w-full bg-white rounded-2xl p-4 shadow-sm text-left active:bg-gray-50">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-gray-400">瑞幸咖啡 · 本月</p>
+                        <p class="text-base font-bold text-gray-900 mt-0.5">12 笔 · ¥216</p>
+                        <p class="text-xs text-gray-500 mt-1">平均每杯 ¥18 · 约1.5天一杯</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs text-liaoran-500 font-medium">查看趋势 ></span>
+                    </div>
+                </div>
+            </button>
+            <!-- Category Card -->
+            <button onclick="window.location.href='03.3-TrendChart.html'" class="w-full bg-white rounded-2xl p-4 shadow-sm text-left active:bg-gray-50">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-gray-400">餐饮 · 本月</p>
+                        <p class="text-base font-bold text-gray-900 mt-0.5">28 笔 · ¥2,850</p>
+                        <p class="text-xs text-gray-500 mt-1">占总支出 22% · 环比 +36%</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs text-liaoran-500 font-medium">查看趋势 ></span>
+                    </div>
+                </div>
+            </button>
+        </div>
+
+        <!-- DELETE -->
+        <div class="mt-6 px-4">
+            <button id="txn-detail-delete-button" onclick="showDeleteConfirm()" class="w-full h-11 border border-red-200 text-red-500 text-sm font-medium rounded-xl hover:bg-red-50 transition-colors">
+                删除此交易
+            </button>
+        </div>
+    </div>
+
+    <!-- CATEGORY SHEET -->
+    <div id="category-sheet-bg" class="fixed inset-0 z-40 bg-black/40 opacity-0 pointer-events-none transition-opacity" onclick="closeCategorySheet()"></div>
+    <div id="category-sheet" class="sheet fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl max-h-[60vh] overflow-y-auto safe-bottom opacity-0 translate-y-full pointer-events-none">
+        <div class="sticky top-0 bg-white px-5 pt-4 pb-2 border-b border-gray-100 flex justify-between items-center">
+            <h3 class="text-base font-semibold">选择分类</h3>
+            <button onclick="closeCategorySheet()" class="text-sm text-gray-400">取消</button>
+        </div>
+        <div class="px-5 py-3 space-y-1">
+            <button onclick="selectCategory('餐饮 · 饮品')" class="w-full flex items-center gap-3 py-2.5 active:bg-gray-50 rounded-lg px-2"><span class="text-lg">🍜</span><span class="text-sm font-medium">餐饮</span></button>
+            <div class="pl-10 space-y-0.5">
+                <button onclick="selectCategory('餐饮 · 外卖')" class="w-full text-left text-sm text-gray-600 py-2 px-2 rounded-lg active:bg-gray-50">外卖</button>
+                <button onclick="selectCategory('餐饮 · 饮品')" class="w-full text-left text-sm text-liaoran-600 font-medium py-2 px-2 rounded-lg bg-liaoran-50">饮品 ✓</button>
+                <button onclick="selectCategory('餐饮 · 堂食')" class="w-full text-left text-sm text-gray-600 py-2 px-2 rounded-lg active:bg-gray-50">堂食</button>
+            </div>
+            <button onclick="selectCategory('购物 · 综合')" class="w-full flex items-center gap-3 py-2.5 active:bg-gray-50 rounded-lg px-2"><span class="text-lg">🛒</span><span class="text-sm font-medium">购物</span></button>
+            <button onclick="selectCategory('交通 · 打车')" class="w-full flex items-center gap-3 py-2.5 active:bg-gray-50 rounded-lg px-2"><span class="text-lg">🚗</span><span class="text-sm font-medium">交通</span></button>
+            <button onclick="selectCategory('娱乐 · 综合')" class="w-full flex items-center gap-3 py-2.5 active:bg-gray-50 rounded-lg px-2"><span class="text-lg">🎮</span><span class="text-sm font-medium">娱乐</span></button>
+            <button onclick="selectCategory('居住 · 综合')" class="w-full flex items-center gap-3 py-2.5 active:bg-gray-50 rounded-lg px-2"><span class="text-lg">🏠</span><span class="text-sm font-medium">居住</span></button>
+            <button onclick="selectCategory('健康 · 综合')" class="w-full flex items-center gap-3 py-2.5 active:bg-gray-50 rounded-lg px-2"><span class="text-lg">💊</span><span class="text-sm font-medium">健康</span></button>
+        </div>
+    </div>
+
+    <!-- NOTES SHEET -->
+    <div id="notes-sheet-bg" class="fixed inset-0 z-40 bg-black/40 opacity-0 pointer-events-none transition-opacity" onclick="closeNotesSheet()"></div>
+    <div id="notes-sheet" class="sheet fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl safe-bottom opacity-0 translate-y-full pointer-events-none">
+        <div class="px-5 pt-4 pb-2 flex justify-between items-center">
+            <h3 class="text-base font-semibold">添加备注</h3>
+            <button onclick="saveNotes()" class="text-sm text-liaoran-500 font-semibold">保存</button>
+        </div>
+        <div class="px-5 pb-4">
+            <textarea id="notes-input" class="w-full h-24 bg-gray-50 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-liaoran-200 resize-none" placeholder="添加备注..."></textarea>
+        </div>
+    </div>
+
+    <!-- DELETE CONFIRM -->
+    <div id="delete-dialog" class="fixed inset-0 z-50 bg-black/40 flex items-end justify-center opacity-0 pointer-events-none transition-opacity">
+        <div class="bg-white w-full max-w-md rounded-t-2xl p-6 safe-bottom">
+            <h3 class="text-base font-semibold text-gray-900 mb-2">确定删除？</h3>
+            <p class="text-sm text-gray-500 mb-5">删除后无法恢复</p>
+            <div class="flex gap-3">
+                <button onclick="closeDeleteConfirm()" class="flex-1 h-11 border border-gray-200 rounded-xl text-sm font-medium text-gray-700">取消</button>
+                <button onclick="doDelete()" class="flex-1 h-11 bg-red-500 text-white rounded-xl text-sm font-semibold">删除</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openCategorySheet() {
+    document.getElementById('category-sheet-bg').classList.remove('opacity-0','pointer-events-none');
+    const s = document.getElementById('category-sheet');
+    s.classList.remove('pointer-events-none');
+    s.classList.add('open');
+}
+function closeCategorySheet() {
+    document.getElementById('category-sheet-bg').classList.add('opacity-0','pointer-events-none');
+    const s = document.getElementById('category-sheet');
+    s.classList.add('pointer-events-none');
+    s.classList.remove('open');
+}
+function selectCategory(cat) {
+    document.getElementById('txn-detail-category').textContent = cat;
+    closeCategorySheet();
+}
+function openNotesSheet() {
+    document.getElementById('notes-sheet-bg').classList.remove('opacity-0','pointer-events-none');
+    const s = document.getElementById('notes-sheet');
+    s.classList.remove('pointer-events-none');
+    s.classList.add('open');
+    document.getElementById('notes-input').focus();
+}
+function closeNotesSheet() {
+    document.getElementById('notes-sheet-bg').classList.add('opacity-0','pointer-events-none');
+    const s = document.getElementById('notes-sheet');
+    s.classList.add('pointer-events-none');
+    s.classList.remove('open');
+}
+function saveNotes() {
+    const v = document.getElementById('notes-input').value.trim();
+    document.getElementById('notes-display').textContent = v || '添加备注';
+    document.getElementById('notes-display').classList.toggle('text-gray-400', !v);
+    document.getElementById('notes-display').classList.toggle('text-gray-900', !!v);
+    closeNotesSheet();
+}
+function showDeleteConfirm() { document.getElementById('delete-dialog').classList.remove('opacity-0','pointer-events-none'); }
+function closeDeleteConfirm() { document.getElementById('delete-dialog').classList.add('opacity-0','pointer-events-none'); }
+function doDelete() { closeDeleteConfirm(); history.back(); }
+</script>
+</body>
+</html>

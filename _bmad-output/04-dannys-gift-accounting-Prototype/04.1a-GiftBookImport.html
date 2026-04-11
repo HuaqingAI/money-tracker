@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>04.1a Gift Book Import - 了然</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: {
+            colors: { 'liaoran': { 50:'#E8F5F1',100:'#D1EBE3',200:'#A3D7C7',300:'#75C3AB',400:'#47AF8F',500:'#1A6B5A',600:'#165A4B',700:'#0F4F42',800:'#0A3A31',900:'#052520' } },
+            fontFamily: { sans: ['-apple-system','PingFang SC','Noto Sans CJK SC','sans-serif'] }
+        }}}
+    </script>
+    <style>
+        html,body{overscroll-behavior:none}
+        .safe-bottom{padding-bottom:calc(env(safe-area-inset-bottom,0px)+16px)}
+        .step{display:none}.step.active{display:flex;flex-direction:column;flex:1}
+        .chip{transition:all .15s}.chip.active{background:#1A6B5A;color:#fff;border-color:#1A6B5A}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+        .pulse{animation:pulse 1.5s ease-in-out infinite}
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+<div class="h-[100dvh] flex flex-col">
+
+    <!-- HEADER -->
+    <div class="bg-white sticky top-0 z-20 px-4 py-3 flex items-center justify-between">
+        <button onclick="goBack()" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 -ml-1">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <h1 id="step-title" class="text-base font-semibold text-gray-900">拍照导入</h1>
+        <div class="w-9"></div>
+    </div>
+
+    <!-- STEP INDICATOR -->
+    <div class="bg-white px-6 pb-3 flex gap-1.5">
+        <div id="ind-1" class="flex-1 h-1 rounded-full bg-liaoran-500"></div>
+        <div id="ind-2" class="flex-1 h-1 rounded-full bg-gray-200"></div>
+        <div id="ind-3" class="flex-1 h-1 rounded-full bg-gray-200"></div>
+        <div id="ind-4" class="flex-1 h-1 rounded-full bg-gray-200"></div>
+        <div id="ind-5" class="flex-1 h-1 rounded-full bg-gray-200"></div>
+    </div>
+
+    <!-- STEP 1: CAPTURE -->
+    <div id="step-1" class="step active flex-1">
+        <div class="flex-1 bg-gray-900 relative flex items-center justify-center">
+            <div class="border-2 border-dashed border-white/40 rounded-xl w-[85%] h-[70%] flex items-center justify-center">
+                <div class="text-center text-white/60">
+                    <svg class="w-12 h-12 mx-auto mb-3 opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                    <p class="text-sm">将人情簿对准框内</p>
+                    <p class="text-xs mt-1 text-white/40">保持光线充足，文字清晰可见</p>
+                </div>
+            </div>
+            <!-- Photo count badge -->
+            <div id="photo-badge" class="absolute top-4 right-4 bg-liaoran-500 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center hidden">0</div>
+        </div>
+        <div class="bg-gray-900 px-6 py-5 flex items-center justify-between safe-bottom">
+            <button onclick="addFromAlbum()" class="text-white/70 text-xs">选相册</button>
+            <button onclick="takePhoto()" class="w-16 h-16 rounded-full border-4 border-white bg-white/20 active:bg-white/40 transition-colors"></button>
+            <button id="start-ocr-btn" onclick="goToStep(2)" class="text-liaoran-400 text-xs font-semibold hidden">开始识别</button>
+        </div>
+    </div>
+
+    <!-- STEP 2: PROCESSING -->
+    <div id="step-2" class="step">
+        <div class="flex-1 flex flex-col items-center justify-center px-8">
+            <div class="flex gap-2 mb-6" id="photo-thumbs"></div>
+            <div class="w-16 h-16 bg-liaoran-50 rounded-2xl flex items-center justify-center mb-4">
+                <span class="text-3xl pulse">🔍</span>
+            </div>
+            <p class="text-base font-semibold text-gray-900">AI 正在识别...</p>
+            <p id="ocr-progress-text" class="text-sm text-gray-500 mt-2">已识别 0 / ~50 条</p>
+            <div class="w-48 h-1.5 bg-gray-100 rounded-full overflow-hidden mt-4">
+                <div id="ocr-progress-bar" class="h-full bg-liaoran-500 rounded-full transition-all duration-500" style="width:0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 3: REVIEW -->
+    <div id="step-3" class="step">
+        <div class="flex-1 overflow-y-auto">
+            <div class="px-4 py-3">
+                <div class="flex items-center justify-between mb-3">
+                    <p class="text-sm text-gray-500">识别结果 · <span id="review-count">52</span> 条</p>
+                    <button id="issue-jump" onclick="scrollToIssue()" class="text-xs text-amber-600 font-medium bg-amber-50 px-2.5 py-1 rounded-full">⚠️ 3 条需要确认</button>
+                </div>
+                <div class="space-y-1.5" id="review-list"></div>
+            </div>
+        </div>
+        <div class="bg-white border-t border-gray-100 px-5 pt-3 safe-bottom">
+            <button onclick="goToStep(4)" class="w-full h-12 bg-liaoran-500 hover:bg-liaoran-600 text-white font-semibold rounded-xl shadow-lg shadow-liaoran-500/25">确认并继续</button>
+        </div>
+    </div>
+
+    <!-- STEP 4: EVENT INFO -->
+    <div id="step-4" class="step">
+        <div class="flex-1 overflow-y-auto px-4 py-4">
+            <h3 class="text-base font-semibold text-gray-900 mb-4">这些记录属于哪个事件？</h3>
+            <!-- Event Type -->
+            <label class="text-sm text-gray-500 mb-2 block">事件类型</label>
+            <div class="flex flex-wrap gap-2 mb-2" id="event-chips">
+                <!-- Rendered by JS -->
+            </div>
+            <!-- Custom event name input (hidden by default) -->
+            <div id="custom-event-row" class="mb-5 hidden">
+                <input id="custom-event-input" type="text" placeholder="输入事件名称，如：开业庆典" class="w-full h-11 bg-white border border-liaoran-300 rounded-xl px-4 text-sm focus:outline-none focus:ring-2 focus:ring-liaoran-200" oninput="updateCustomEvent(this.value)">
+                <p class="text-xs text-gray-400 mt-1">保存后下次可直接选择</p>
+            </div>
+            <!-- Date -->
+            <label class="text-sm text-gray-500 mb-2 block">事件日期</label>
+            <input type="date" value="2025-08-15" class="w-full h-11 bg-white border border-gray-200 rounded-xl px-4 text-sm mb-5 focus:outline-none focus:ring-2 focus:ring-liaoran-200">
+            <!-- Direction -->
+            <label class="text-sm text-gray-500 mb-2 block">方向</label>
+            <div class="flex gap-3 mb-5">
+                <button id="dir-in" onclick="setDir('in')" class="flex-1 h-11 bg-cyan-50 border-2 border-cyan-300 text-cyan-700 font-medium rounded-xl text-sm">收到</button>
+                <button id="dir-out" onclick="setDir('out')" class="flex-1 h-11 bg-white border border-gray-200 text-gray-500 font-medium rounded-xl text-sm">送出</button>
+            </div>
+            <!-- Description -->
+            <label class="text-sm text-gray-500 mb-2 block">备注（可选）</label>
+            <input type="text" placeholder="例如：儿子满月宴" value="儿子满月宴" class="w-full h-11 bg-white border border-gray-200 rounded-xl px-4 text-sm focus:outline-none focus:ring-2 focus:ring-liaoran-200">
+        </div>
+        <div class="bg-white border-t border-gray-100 px-5 pt-3 safe-bottom">
+            <button onclick="goToStep(5)" class="w-full h-12 bg-liaoran-500 hover:bg-liaoran-600 text-white font-semibold rounded-xl shadow-lg shadow-liaoran-500/25">确认导入</button>
+        </div>
+    </div>
+
+    <!-- STEP 5: SUCCESS -->
+    <div id="step-5" class="step">
+        <div class="flex-1 flex flex-col items-center justify-center px-8">
+            <div class="w-20 h-20 bg-liaoran-50 rounded-full flex items-center justify-center mb-5">
+                <svg class="w-10 h-10 text-liaoran-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            </div>
+            <h2 class="text-xl font-bold text-gray-900 mb-2">导入完成！</h2>
+            <div class="text-sm text-gray-500 space-y-1 text-center">
+                <p>共识别 <span class="font-semibold text-gray-900">52</span> 条记录</p>
+                <p>涉及 <span class="font-semibold text-gray-900">52</span> 位联系人</p>
+                <p>总金额 <span class="font-semibold text-gray-900">¥31,800</span></p>
+                <p>事件：儿子满月宴 · 2025-08-15</p>
+            </div>
+        </div>
+        <div class="px-5 safe-bottom space-y-3">
+            <button onclick="window.location.href='04.1-GiftManagement.html'" class="w-full h-12 bg-liaoran-500 hover:bg-liaoran-600 text-white font-semibold rounded-xl shadow-lg shadow-liaoran-500/25">查看人情账</button>
+            <button onclick="goToStep(1);resetCapture()" class="w-full h-11 border border-gray-200 text-gray-600 font-medium rounded-xl">继续导入</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentStep = 1;
+let photoCount = 0;
+const TITLES = {1:'拍照导入',2:'识别中',3:'确认结果',4:'事件信息',5:'导入完成'};
+
+const OCR = [
+    {id:'o01',name:'张建国',amount:600,conf:'high',checked:true},
+    {id:'o02',name:'李明',amount:800,conf:'high',checked:true},
+    {id:'o03',name:'王芳',amount:500,conf:'high',checked:true},
+    {id:'o04',name:'???建国',amount:600,conf:'low',checked:true},
+    {id:'o05',name:'赵六',amount:1000,conf:'high',checked:true},
+    {id:'o06',name:'钱七',amount:500,conf:'low',checked:true},
+    {id:'o07',name:'孙八',amount:600,conf:'high',checked:true},
+    {id:'o08',name:'周九',amount:800,conf:'high',checked:true},
+    {id:'o09',name:'吴十',amount:600,conf:'high',checked:true},
+    {id:'o10',name:'郑十一',amount:500,conf:'low',checked:true},
+];
+
+function goToStep(n) {
+    document.getElementById('step-'+currentStep).classList.remove('active');
+    document.getElementById('step-'+n).classList.add('active');
+    currentStep = n;
+    document.getElementById('step-title').textContent = TITLES[n];
+    for (let i=1;i<=5;i++) document.getElementById('ind-'+i).className = 'flex-1 h-1 rounded-full ' + (i<=n?'bg-liaoran-500':'bg-gray-200');
+    if (n===2) simulateOCR();
+    if (n===3) renderReview();
+    if (n===4) initStep4();
+    if (n===5) saveCustomEventIfNeeded();
+}
+
+function goBack() {
+    if (currentStep > 1 && currentStep < 5) goToStep(currentStep-1);
+    else window.location.href = '04.1-GiftManagement.html';
+}
+
+function takePhoto() {
+    photoCount++;
+    document.getElementById('photo-badge').textContent = photoCount;
+    document.getElementById('photo-badge').classList.remove('hidden');
+    document.getElementById('start-ocr-btn').classList.remove('hidden');
+}
+
+function addFromAlbum() { photoCount += 3; takePhoto(); photoCount -= 3; }
+
+function resetCapture() { photoCount = 0; document.getElementById('photo-badge').classList.add('hidden'); document.getElementById('start-ocr-btn').classList.add('hidden'); }
+
+function simulateOCR() {
+    document.getElementById('photo-thumbs').innerHTML = Array(Math.min(photoCount,3)).fill(0).map(()=>'<div class="w-12 h-12 bg-gray-700 rounded-lg"></div>').join('');
+    let progress = 0;
+    const iv = setInterval(() => {
+        progress += 15;
+        if (progress > 100) { clearInterval(iv); setTimeout(()=>goToStep(3),300); return; }
+        document.getElementById('ocr-progress-bar').style.width = progress+'%';
+        document.getElementById('ocr-progress-text').textContent = `已识别 ${Math.round(progress/2)} / ~50 条`;
+    }, 400);
+}
+
+function renderReview() {
+    document.getElementById('review-list').innerHTML = OCR.map((r,i) => {
+        const badge = r.conf==='high' ? '<span class="text-[10px] text-liaoran-600 bg-liaoran-50 px-1.5 py-0.5 rounded">✅</span>' : '<span class="text-[10px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">⚠️ 确认</span>';
+        const checked = r.checked ? 'checked' : '';
+        const dimClass = r.checked ? '' : 'opacity-40';
+        // Low confidence: editable name and amount
+        const nameHtml = r.conf==='low'
+            ? `<input type="text" value="${r.name}" onchange="editOcrName(${i},this.value)" class="text-sm font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1 w-24 focus:outline-none focus:ring-2 focus:ring-amber-300">`
+            : `<span class="text-sm font-medium text-gray-900">${r.name}</span>`;
+        const amountHtml = r.conf==='low'
+            ? `<input type="number" value="${r.amount}" onchange="editOcrAmount(${i},this.value)" class="text-sm font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1 w-20 text-right focus:outline-none focus:ring-2 focus:ring-amber-300">`
+            : `<span class="text-sm font-semibold text-gray-700">¥${r.amount}</span>`;
+        return `<div class="flex items-center gap-3 bg-white rounded-xl p-3 shadow-sm ${r.conf==='low'?'border border-amber-200':''} ${dimClass}" id="ocr-row-${i}">
+            <input type="checkbox" ${checked} onchange="toggleOcrRow(${i})" class="w-4 h-4 rounded accent-liaoran-500 flex-shrink-0">
+            ${nameHtml}
+            <div class="flex-1"></div>
+            ${amountHtml}
+            ${badge}
+        </div>`;
+    }).join('');
+    updateReviewCount();
+}
+
+function toggleOcrRow(i) {
+    OCR[i].checked = !OCR[i].checked;
+    const row = document.getElementById('ocr-row-'+i);
+    row.classList.toggle('opacity-40', !OCR[i].checked);
+    updateReviewCount();
+}
+
+function editOcrName(i, val) {
+    OCR[i].name = val;
+    if (val && !val.includes('?')) { OCR[i].conf = 'high'; renderReview(); }
+}
+
+function editOcrAmount(i, val) {
+    OCR[i].amount = parseInt(val) || 0;
+    if (val && parseInt(val) > 0) { OCR[i].conf = 'high'; renderReview(); }
+}
+
+function updateReviewCount() {
+    const active = OCR.filter(r => r.checked).length;
+    const issues = OCR.filter(r => r.conf === 'low' && r.checked).length;
+    document.getElementById('review-count').textContent = active;
+    const issueBtn = document.getElementById('issue-jump');
+    if (issues > 0) {
+        issueBtn.textContent = `⚠️ ${issues} 条需要确认`;
+        issueBtn.classList.remove('hidden');
+    } else {
+        issueBtn.textContent = '✅ 全部确认';
+        issueBtn.classList.remove('hidden');
+        issueBtn.className = 'text-xs text-liaoran-600 font-medium bg-liaoran-50 px-2.5 py-1 rounded-full';
+    }
+}
+
+function scrollToIssue() {
+    const el = document.querySelector('[class*="border-amber"]');
+    if (el) el.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+// === EVENT TYPE MANAGEMENT ===
+const DEFAULT_EVENTS = ['婚礼','满月','生日','乔迁','丧事','春节','升学'];
+let customEvents = JSON.parse(localStorage.getItem('liaoran_custom_events') || '[]');
+let selectedEventType = '满月';
+
+function renderEventChips() {
+    const all = [...DEFAULT_EVENTS, ...customEvents, '其他'];
+    document.getElementById('event-chips').innerHTML = all.map(e =>
+        `<button onclick="selectEvent(this,'${e}')" class="chip text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-600 ${selectedEventType===e?'active':''}">${e}</button>`
+    ).join('');
+}
+
+function selectEvent(btn, type) {
+    selectedEventType = type;
+    document.querySelectorAll('#event-chips .chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    const customRow = document.getElementById('custom-event-row');
+    if (type === '其他') {
+        customRow.classList.remove('hidden');
+        document.getElementById('custom-event-input').focus();
+    } else {
+        customRow.classList.add('hidden');
+    }
+}
+
+function updateCustomEvent(val) {
+    // Will be saved on confirm
+}
+
+function saveCustomEventIfNeeded() {
+    if (selectedEventType === '其他') {
+        const name = document.getElementById('custom-event-input').value.trim();
+        if (name && !DEFAULT_EVENTS.includes(name) && !customEvents.includes(name)) {
+            customEvents.push(name);
+            localStorage.setItem('liaoran_custom_events', JSON.stringify(customEvents));
+        }
+        selectedEventType = name || '其他';
+    }
+}
+
+// Init event chips on step 4
+function initStep4() { renderEventChips(); }
+
+function setDir(d) {
+    document.getElementById('dir-in').className = 'flex-1 h-11 font-medium rounded-xl text-sm ' + (d==='in'?'bg-cyan-50 border-2 border-cyan-300 text-cyan-700':'bg-white border border-gray-200 text-gray-500');
+    document.getElementById('dir-out').className = 'flex-1 h-11 font-medium rounded-xl text-sm ' + (d==='out'?'bg-orange-50 border-2 border-orange-300 text-orange-700':'bg-white border border-gray-200 text-gray-500');
+}
+</script>
+</body>
+</html>
