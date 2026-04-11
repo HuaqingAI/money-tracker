@@ -1,0 +1,61 @@
+page_number: "01.1"
+page_name: "Welcome"
+view_id: "V1"
+scenario: "01-dannys-zero-input-first-experience"
+spec_path: "_bmad-output/C-UX-Scenarios/01-dannys-zero-input-first-experience/01.1-welcome/01.1-welcome.md"
+created: "2026-04-11"
+confirmed_by: "Sue"
+
+device:
+  type: "mobile-only"
+  viewports:
+    - name: "iPhone SE"
+      width: 375
+      height: 667
+    - name: "iPhone 14 Pro"
+      width: 393
+      height: 852
+    - name: "iPhone 14 Pro Max"
+      width: 428
+      height: 926
+  touch_optimized: true
+  hover_interactions: false
+
+design:
+  fidelity: "design-system"
+  brand_direction: "沉稳信任系（深青/蓝）"
+  typography: "system-default"
+  language: "zh-CN"
+
+sections:
+  - id: "S1"
+    name: "页面结构与静态内容"
+    description: "全页布局 + 品牌区 + 插画占位 + 价值主张文案 + CTA按钮 + 基础设计token定义"
+    status: "complete"
+    completed: "2026-04-11"
+    objects:
+      - "welcome-brand"
+      - "welcome-brand-logo"
+      - "welcome-brand-name"
+      - "welcome-hero"
+      - "welcome-value"
+      - "welcome-value-headline"
+      - "welcome-value-subheadline"
+      - "welcome-cta"
+      - "welcome-cta-button"
+    notes: "同时定义基础设计token（品牌色、字体、间距），作为后续页面的基础"
+
+  - id: "S2"
+    name: "入场动画与交互"
+    description: "渐进式入场动画序列 + 按钮点击反馈 + 页面过渡效果 + 减少动效适配"
+    status: "complete"
+    completed: "2026-04-11"
+    objects: []
+    notes: "叠加在S1静态页面之上的动效层"
+    interactions:
+      - "Logo淡入(0.3s)"
+      - "标题上滑入(+0.2s)"
+      - "副标题淡入(+0.4s)"
+      - "按钮淡入(+0.6s)"
+      - "按钮点击缩放 + 页面左滑过渡"
+      - "prefers-reduced-motion 适配"

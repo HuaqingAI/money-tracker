@@ -315,14 +315,14 @@ All 8 scenarios, 30 pages specified (29 + 08.0 Hub).
 
 | Scenario | Page | Page Name | Status | Date |
 |----------|------|-----------|--------|------|
-| 01-dannys-zero-input-first-experience | 01.1 | Welcome | **specified** | 2026-04-10 |
-| 01-dannys-zero-input-first-experience | 01.2 | Onboarding | **specified** | 2026-04-10 |
-| 01-dannys-zero-input-first-experience | 01.3 | Registration / Login | **specified** | 2026-04-10 |
-| 01-dannys-zero-input-first-experience | 01.4 | Permission | **specified** | 2026-04-10 |
-| 01-dannys-zero-input-first-experience | 01.5 | Bill Import | **specified** | 2026-04-10 |
-| 01-dannys-zero-input-first-experience | 01.6 | Import Processing | **specified** | 2026-04-10 |
-| 01-dannys-zero-input-first-experience | 01.7 | Dashboard | **specified** | 2026-04-10 |
-| 01-dannys-zero-input-first-experience | 01.8 | Monthly Report | **specified** | 2026-04-10 |
+| 01-dannys-zero-input-first-experience | 01.1 | Welcome | **built** | 2026-04-11 |
+| 01-dannys-zero-input-first-experience | 01.2 | Onboarding | **built** | 2026-04-11 |
+| 01-dannys-zero-input-first-experience | 01.3 | Registration / Login | **built** | 2026-04-11 |
+| 01-dannys-zero-input-first-experience | 01.4 | Permission | **built** | 2026-04-11 |
+| 01-dannys-zero-input-first-experience | 01.5 | Bill Import | **built** | 2026-04-11 |
+| 01-dannys-zero-input-first-experience | 01.6 | Import Processing | **built** | 2026-04-11 |
+| 01-dannys-zero-input-first-experience | 01.7 | Dashboard | **built** | 2026-04-11 |
+| 01-dannys-zero-input-first-experience | 01.8 | Monthly Report | **built** | 2026-04-11 |
 | 02-dannys-family-shared-ledger | 02.1 | Subscription | **specified** | 2026-04-11 |
 | 02-dannys-family-shared-ledger | 02.2 | Shared Family Ledger | **specified** | 2026-04-11 |
 | 02-dannys-family-shared-ledger | 02.3 | Beneficiary Tagging | **specified** | 2026-04-11 |

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>01.3 Registration - 了然</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'liaoran': {
+                            50: '#E8F5F1', 100: '#D1EBE3', 200: '#A3D7C7',
+                            300: '#75C3AB', 400: '#47AF8F', 500: '#1A6B5A',
+                            600: '#165A4B', 700: '#0F4F42', 800: '#0A3A31', 900: '#052520',
+                        },
+                        'wechat': '#07C160',
+                    },
+                    fontFamily: { sans: ['-apple-system', 'PingFang SC', 'Noto Sans CJK SC', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body { overscroll-behavior: none; }
+        .safe-bottom { padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
+        /* Code input cells */
+        .code-cell { width: 44px; height: 52px; text-align: center; font-size: 22px; font-weight: 600;
+            border: 1.5px solid #D1D5DB; border-radius: 10px; outline: none; caret-color: #1A6B5A; }
+        .code-cell:focus { border-color: #1A6B5A; box-shadow: 0 0 0 2px rgba(26,107,90,0.15); }
+        /* Tab segment control */
+        .tab-active { background: white; color: #1A1A2E; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .tab-inactive { background: transparent; color: #9CA3AF; }
+        /* Shake animation */
+        @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-6px)} 40%,80%{transform:translateX(6px)} }
+        .shake { animation: shake 0.4s ease; }
+        /* Backdrop */
+        .backdrop { background: rgba(0,0,0,0.4); }
+        /* Slide up */
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .slide-up { animation: slideUp 0.3s ease-out; }
+        @media (prefers-reduced-motion: reduce) { .slide-up { animation: none; } .shake { animation: none; } }
+    </style>
+</head>
+<body class="font-sans bg-white">
+    <div class="h-[100dvh] overflow-hidden flex flex-col" style="background: linear-gradient(180deg, #E8F5F1 0%, #FFFFFF 35%);">
+
+        <!-- TOP BAR -->
+        <div id="reg-topbar" class="flex items-center px-4 py-3">
+            <button id="reg-topbar-back" onclick="window.location.href='01.2-Onboarding.html'"
+                    class="w-9 h-9 rounded-full bg-white/70 flex items-center justify-center text-gray-600 active:bg-white/90">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+        </div>
+
+        <!-- BRAND HEADER -->
+        <div id="reg-brand" class="flex flex-col items-center pt-2 pb-6">
+            <div id="reg-brand-logo"
+                 class="w-14 h-14 rounded-2xl bg-liaoran-500 flex items-center justify-center shadow-md shadow-liaoran-500/20">
+                <svg width="30" height="30" viewBox="0 0 36 36"><text x="50%" y="54%" dominant-baseline="middle"
+                    text-anchor="middle" font-family="PingFang SC" font-size="20" font-weight="600" fill="white">了</text></svg>
+            </div>
+            <p id="reg-brand-reassurance" class="mt-3 text-sm text-gray-500">几秒搞定，马上体验</p>
+        </div>
+
+        <!-- LOGIN METHOD TABS -->
+        <div id="reg-method" class="flex mx-8 mb-6 bg-gray-100 rounded-xl p-1">
+            <button id="reg-method-tab-wechat" onclick="switchTab('wechat')"
+                    class="flex-1 py-2.5 text-center text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-1.5 tab-active">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05a6.127 6.127 0 01-.253-1.736c0-3.54 3.258-6.41 7.272-6.41.256 0 .507.017.756.04C16.456 4.818 12.96 2.187 8.691 2.187zm-2.87 4.795a1.1 1.1 0 11-.001 2.2 1.1 1.1 0 010-2.2zm5.742 0a1.1 1.1 0 110 2.2 1.1 1.1 0 010-2.2z"/><path d="M23.503 15.587c0-3.282-3.26-5.942-7.281-5.942-4.022 0-7.282 2.66-7.282 5.942 0 3.283 3.26 5.943 7.282 5.943a8.86 8.86 0 002.401-.335.746.746 0 01.614.083l1.442.844a.262.262 0 00.135.044.237.237 0 00.233-.237c0-.058-.023-.115-.038-.17l-.297-1.126a.477.477 0 01.172-.536c1.527-1.12 2.619-2.79 2.619-4.51zm-9.883-.91a.906.906 0 110-1.812.906.906 0 010 1.812zm5.204 0a.906.906 0 110-1.811.906.906 0 010 1.811z"/></svg>
+                微信登录
+            </button>
+            <button id="reg-method-tab-phone" onclick="switchTab('phone')"
+                    class="flex-1 py-2.5 text-center text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-1.5 tab-inactive">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                手机号登录
+            </button>
+        </div>
+
+        <!-- CONTENT AREA -->
+        <div class="flex-1 px-8">
+
+            <!-- WECHAT LOGIN AREA -->
+            <div id="reg-wechat" class="flex flex-col items-center pt-6">
+                <div class="w-full bg-white rounded-2xl p-6 shadow-sm border border-gray-100/80">
+                    <button id="reg-wechat-button" onclick="handleWechatLogin()"
+                            class="w-full py-4 bg-wechat text-white text-base font-semibold rounded-xl
+                                   active:opacity-90 transition-opacity flex items-center justify-center gap-2.5 shadow-sm shadow-wechat/20">
+                        <span id="reg-wechat-button-text" class="flex items-center gap-2">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05a6.127 6.127 0 01-.253-1.736c0-3.54 3.258-6.41 7.272-6.41.256 0 .507.017.756.04C16.456 4.818 12.96 2.187 8.691 2.187zm-2.87 4.795a1.1 1.1 0 11-.001 2.2 1.1 1.1 0 010-2.2zm5.742 0a1.1 1.1 0 110 2.2 1.1 1.1 0 010-2.2z"/><path d="M23.503 15.587c0-3.282-3.26-5.942-7.281-5.942-4.022 0-7.282 2.66-7.282 5.942 0 3.283 3.26 5.943 7.282 5.943a8.86 8.86 0 002.401-.335.746.746 0 01.614.083l1.442.844a.262.262 0 00.135.044.237.237 0 00.233-.237c0-.058-.023-.115-.038-.17l-.297-1.126a.477.477 0 01.172-.536c1.527-1.12 2.619-2.79 2.619-4.51zm-9.883-.91a.906.906 0 110-1.812.906.906 0 010 1.812zm5.204 0a.906.906 0 110-1.811.906.906 0 010 1.811z"/></svg>
+                            微信一键登录
+                        </span>
+                        <svg id="reg-wechat-spinner" class="hidden animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                        </svg>
+                    </button>
+                    <p id="reg-wechat-hint" class="mt-3 text-xs text-gray-400 text-center">将获取您的微信昵称和头像</p>
+                </div>
+            </div>
+
+            <!-- PHONE LOGIN AREA (hidden by default) -->
+            <div id="reg-phone" class="hidden flex flex-col gap-4">
+                <!-- Phone input -->
+                <div class="flex items-center border border-gray-300 rounded-xl overflow-hidden">
+                    <span class="pl-4 pr-2 text-gray-500 text-base font-medium">+86</span>
+                    <input id="reg-phone-input" type="tel" inputmode="numeric" maxlength="11"
+                           placeholder="请输入手机号" oninput="onPhoneInput()"
+                           class="flex-1 py-4 pr-4 text-base outline-none bg-transparent"/>
+                </div>
+                <p id="phone-error" class="hidden text-sm text-red-500 -mt-2 ml-1"></p>
+
+                <!-- Get code button -->
+                <button id="reg-phone-get-code" onclick="handleGetCode()" disabled
+                        class="w-full py-4 border-2 border-liaoran-500 text-liaoran-500 text-base font-semibold
+                               rounded-xl transition-all disabled:border-gray-300 disabled:text-gray-300">
+                    获取验证码
+                </button>
+
+                <!-- Code input (hidden until code sent) -->
+                <div id="code-section" class="hidden">
+                    <div id="reg-phone-code-input" class="flex justify-between gap-2 mt-2">
+                        <input class="code-cell" type="tel" inputmode="numeric" maxlength="1" data-idx="0" oninput="onCodeInput(this)" onkeydown="onCodeKeydown(event,this)"/>
+                        <input class="code-cell" type="tel" inputmode="numeric" maxlength="1" data-idx="1" oninput="onCodeInput(this)" onkeydown="onCodeKeydown(event,this)"/>
+                        <input class="code-cell" type="tel" inputmode="numeric" maxlength="1" data-idx="2" oninput="onCodeInput(this)" onkeydown="onCodeKeydown(event,this)"/>
+                        <input class="code-cell" type="tel" inputmode="numeric" maxlength="1" data-idx="3" oninput="onCodeInput(this)" onkeydown="onCodeKeydown(event,this)"/>
+                        <input class="code-cell" type="tel" inputmode="numeric" maxlength="1" data-idx="4" oninput="onCodeInput(this)" onkeydown="onCodeKeydown(event,this)"/>
+                        <input class="code-cell" type="tel" inputmode="numeric" maxlength="1" data-idx="5" oninput="onCodeInput(this)" onkeydown="onCodeKeydown(event,this)"/>
+                    </div>
+                    <p id="code-error" class="hidden text-sm text-red-500 mt-2 ml-1"></p>
+
+                    <button id="reg-phone-submit" onclick="handlePhoneSubmit()" disabled
+                            class="w-full py-4 mt-4 bg-liaoran-500 text-white text-lg font-semibold rounded-xl
+                                   transition-all disabled:bg-gray-300 flex items-center justify-center gap-2">
+                        <span id="submit-text">登录 / 注册</span>
+                        <svg id="submit-spinner" class="hidden animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- AGREEMENT -->
+        <div id="reg-agreement" class="px-8 py-4 safe-bottom">
+            <div class="flex items-center justify-center gap-1.5 mb-3">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                <span class="text-xs text-gray-400">数据加密保护，安全可靠</span>
+            </div>
+            <label class="flex items-start gap-2 text-xs text-gray-400 justify-center">
+                <input id="reg-agreement-checkbox" type="checkbox" class="mt-0.5 accent-liaoran-500"/>
+                <span>我已阅读并同意
+                    <a id="reg-agreement-terms-link" href="#" onclick="event.preventDefault();alert('用户协议（待编写）')" class="text-liaoran-500">《用户协议》</a>和<a id="reg-agreement-privacy-link" href="#" onclick="event.preventDefault();alert('隐私政策（待编写）')" class="text-liaoran-500">《隐私政策》</a>
+                </span>
+            </label>
+        </div>
+
+    </div>
+
+    <!-- AGREEMENT POPUP (hidden) -->
+    <div id="reg-agreement-popup" class="hidden fixed inset-0 backdrop z-50 flex items-end justify-center"
+         onclick="if(event.target===this)closePopup()">
+        <div class="bg-white w-full max-w-md rounded-t-2xl p-6 slide-up">
+            <h2 id="reg-agreement-popup-title" class="text-lg font-bold text-gray-900 mb-3">服务协议与隐私保护</h2>
+            <p id="reg-agreement-popup-body" class="text-sm text-gray-500 mb-4 leading-relaxed">
+                为了更好地保护您的权益，请阅读并同意<a id="reg-agreement-popup-terms" href="#" onclick="event.preventDefault();alert('用户协议')" class="text-liaoran-500">《用户协议》</a>和<a id="reg-agreement-popup-privacy" href="#" onclick="event.preventDefault();alert('隐私政策')" class="text-liaoran-500">《隐私政策》</a>
+            </p>
+            <button id="reg-agreement-popup-agree" onclick="agreeAndContinue()"
+                    class="w-full py-3.5 bg-liaoran-500 text-white font-semibold rounded-xl mb-3">同意并继续</button>
+            <button id="reg-agreement-popup-disagree" onclick="closePopup()"
+                    class="w-full py-3 text-gray-400 text-sm">不同意</button>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="hidden fixed top-16 left-1/2 -translate-x-1/2 px-5 py-3 rounded-xl shadow-lg text-sm font-medium z-50"></div>
+
+    <script>
+        let activeTab = 'wechat';
+        let countdown = 0;
+        let countdownTimer = null;
+        let pendingAction = null;
+
+        // Tab switching
+        function switchTab(tab) {
+            activeTab = tab;
+            const wt = document.getElementById('reg-method-tab-wechat');
+            const pt = document.getElementById('reg-method-tab-phone');
+            const wa = document.getElementById('reg-wechat');
+            const pa = document.getElementById('reg-phone');
+            wt.classList.remove('tab-active','tab-inactive');
+            pt.classList.remove('tab-active','tab-inactive');
+            if (tab === 'wechat') {
+                wt.classList.add('tab-active'); pt.classList.add('tab-inactive');
+                wa.classList.remove('hidden'); pa.classList.add('hidden');
+            } else {
+                pt.classList.add('tab-active'); wt.classList.add('tab-inactive');
+                pa.classList.remove('hidden'); wa.classList.add('hidden');
+                document.getElementById('reg-phone-input').focus();
+            }
+        }
+
+        // Phone input validation
+        function onPhoneInput() {
+            const v = document.getElementById('reg-phone-input').value.replace(/\D/g,'');
+            document.getElementById('reg-phone-input').value = v;
+            const valid = /^1[3-9]\d{9}$/.test(v);
+            document.getElementById('reg-phone-get-code').disabled = !valid || countdown > 0;
+            document.getElementById('phone-error').classList.add('hidden');
+        }
+
+        // Agreement check
+        function checkAgreement(action) {
+            if (document.getElementById('reg-agreement-checkbox').checked) return true;
+            pendingAction = action;
+            document.getElementById('reg-agreement-popup').classList.remove('hidden');
+            return false;
+        }
+        function agreeAndContinue() {
+            document.getElementById('reg-agreement-checkbox').checked = true;
+            closePopup();
+            if (pendingAction === 'wechat') doWechatLogin();
+            else if (pendingAction === 'getcode') doGetCode();
+        }
+        function closePopup() {
+            document.getElementById('reg-agreement-popup').classList.add('hidden');
+            pendingAction = null;
+        }
+
+        // WeChat login
+        function handleWechatLogin() {
+            if (!checkAgreement('wechat')) return;
+            doWechatLogin();
+        }
+        function doWechatLogin() {
+            const btn = document.getElementById('reg-wechat-button');
+            const btnText = document.getElementById('reg-wechat-button-text');
+            btn.disabled = true;
+            btnText.innerHTML = '授权中...';
+            document.getElementById('reg-wechat-spinner').classList.remove('hidden');
+            setTimeout(() => {
+                btn.disabled = false;
+                btnText.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05a6.127 6.127 0 01-.253-1.736c0-3.54 3.258-6.41 7.272-6.41.256 0 .507.017.756.04C16.456 4.818 12.96 2.187 8.691 2.187zm-2.87 4.795a1.1 1.1 0 11-.001 2.2 1.1 1.1 0 010-2.2zm5.742 0a1.1 1.1 0 110 2.2 1.1 1.1 0 010-2.2z"/><path d="M23.503 15.587c0-3.282-3.26-5.942-7.281-5.942-4.022 0-7.282 2.66-7.282 5.942 0 3.283 3.26 5.943 7.282 5.943a8.86 8.86 0 002.401-.335.746.746 0 01.614.083l1.442.844a.262.262 0 00.135.044.237.237 0 00.233-.237c0-.058-.023-.115-.038-.17l-.297-1.126a.477.477 0 01.172-.536c1.527-1.12 2.619-2.79 2.619-4.51zm-9.883-.91a.906.906 0 110-1.812.906.906 0 010 1.812zm5.204 0a.906.906 0 110-1.811.906.906 0 010 1.811z"/></svg> 微信一键登录';
+                document.getElementById('reg-wechat-spinner').classList.add('hidden');
+                showToast('登录成功，正在进入...', 'success');
+                setTimeout(() => { window.location.href = '01.4-Permission.html'; }, 1200);
+            }, 1500);
+        }
+
+        // Get code
+        function handleGetCode() {
+            if (!checkAgreement('getcode')) return;
+            doGetCode();
+        }
+        function doGetCode() {
+            const phone = document.getElementById('reg-phone-input').value;
+            if (!/^1[3-9]\d{9}$/.test(phone)) {
+                showFieldError('phone-error', '请输入正确的手机号'); return;
+            }
+            // Show code section
+            document.getElementById('code-section').classList.remove('hidden');
+            document.querySelector('.code-cell').focus();
+            // Start countdown
+            countdown = 60;
+            updateCountdown();
+            countdownTimer = setInterval(() => {
+                countdown--;
+                if (countdown <= 0) { clearInterval(countdownTimer); }
+                updateCountdown();
+            }, 1000);
+            showToast('验证码已发送', 'success');
+        }
+        function updateCountdown() {
+            const btn = document.getElementById('reg-phone-get-code');
+            if (countdown > 0) {
+                btn.textContent = `重新获取(${countdown}s)`;
+                btn.disabled = true;
+            } else {
+                btn.textContent = '获取验证码';
+                btn.disabled = false;
+            }
+        }
+
+        // Code input
+        function onCodeInput(el) {
+            el.value = el.value.replace(/\D/g,'').slice(0,1);
+            if (el.value && el.dataset.idx < 5) {
+                el.nextElementSibling?.focus();
+            }
+            checkCodeComplete();
+        }
+        function onCodeKeydown(e, el) {
+            if (e.key === 'Backspace' && !el.value && el.dataset.idx > 0) {
+                el.previousElementSibling?.focus();
+            }
+        }
+        function checkCodeComplete() {
+            const cells = document.querySelectorAll('.code-cell');
+            const code = Array.from(cells).map(c => c.value).join('');
+            document.getElementById('reg-phone-submit').disabled = code.length < 6;
+            if (code.length === 6) handlePhoneSubmit();
+        }
+
+        // Phone submit
+        function handlePhoneSubmit() {
+            const cells = document.querySelectorAll('.code-cell');
+            const code = Array.from(cells).map(c => c.value).join('');
+            if (code.length < 6) return;
+            const btn = document.getElementById('reg-phone-submit');
+            btn.disabled = true;
+            document.getElementById('submit-text').textContent = '验证中...';
+            document.getElementById('submit-spinner').classList.remove('hidden');
+            // Mock: simulate verification (code "000000" = error, anything else = success)
+            setTimeout(() => {
+                if (code === '000000') {
+                    document.getElementById('submit-spinner').classList.add('hidden');
+                    document.getElementById('submit-text').textContent = '登录 / 注册';
+                    btn.disabled = false;
+                    showFieldError('code-error', '验证码错误，请重新输入');
+                    document.getElementById('reg-phone-code-input').classList.add('shake');
+                    setTimeout(() => document.getElementById('reg-phone-code-input').classList.remove('shake'), 500);
+                    cells.forEach(c => c.value = '');
+                    cells[0].focus();
+                } else {
+                    showToast('登录成功，正在进入...', 'success');
+                    setTimeout(() => { window.location.href = '01.4-Permission.html'; }, 1200);
+                }
+            }, 1500);
+        }
+
+        // Helpers
+        function showFieldError(id, msg) {
+            const el = document.getElementById(id);
+            el.textContent = msg; el.classList.remove('hidden');
+        }
+        function showToast(msg, type) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'fixed top-16 left-1/2 -translate-x-1/2 px-5 py-3 rounded-xl shadow-lg text-sm font-medium z-50 '
+                + (type === 'success' ? 'bg-liaoran-500 text-white' : 'bg-red-500 text-white');
+            setTimeout(() => { t.className += ' hidden'; }, 2500);
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,19 @@
+page_number: "01.3"
+page_name: "Registration"
+view_id: "V3"
+scenario: "01-dannys-zero-input-first-experience"
+created: "2026-04-11"
+confirmed_by: "Sue (auto)"
+
+sections:
+  - id: "S1"
+    name: "页面结构与双Tab登录表单"
+    description: "返回按钮 + 品牌Header + 微信/手机号Tab + 微信登录区 + 手机号输入区 + 验证码 + 协议区 + Tab切换逻辑"
+    status: "pending"
+    objects_count: 20
+
+  - id: "S2"
+    name: "协议弹窗与交互逻辑"
+    description: "协议确认弹窗 + 表单验证 + 验证码倒计时 + Mock登录流程 + Loading/Error状态"
+    status: "pending"
+    objects_count: 7

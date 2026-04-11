@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>01.6 Import Processing - 了然</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'liaoran': {
+                            50: '#E8F5F1', 100: '#D1EBE3', 200: '#A3D7C7',
+                            300: '#75C3AB', 400: '#47AF8F', 500: '#1A6B5A',
+                            600: '#165A4B', 700: '#0F4F42', 800: '#0A3A31', 900: '#052520',
+                        }
+                    },
+                    fontFamily: { sans: ['-apple-system', 'PingFang SC', 'Noto Sans CJK SC', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body { overscroll-behavior: none; }
+        @keyframes pulse { 0%,100%{transform:scale(1);opacity:0.9} 50%{transform:scale(1.06);opacity:1} }
+        @keyframes ripple { 0%{transform:scale(0.8);opacity:0.4} 100%{transform:scale(2.2);opacity:0} }
+        @keyframes flyIn { 0%{transform:translateY(60px);opacity:0} 40%{transform:translateY(0);opacity:1} 80%{opacity:1} 100%{transform:translateY(-20px);opacity:0} }
+        @keyframes bubbleIn { 0%{transform:scale(0);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+        @keyframes feedIn { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+        @keyframes checkDraw { 0%{stroke-dashoffset:30} 100%{stroke-dashoffset:0} }
+        @keyframes celebrateIn { 0%{transform:scale(0);opacity:0} 60%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+        @keyframes tagPop { 0%{transform:scale(0)} 70%{transform:scale(1.1)} 100%{transform:scale(1)} }
+        .ai-brain { animation: pulse 1.5s ease-in-out infinite; }
+        .ripple-ring { animation: ripple 2s ease-out infinite; }
+        .fly-label { animation: flyIn 1.6s ease-out forwards; }
+        .bubble-enter { animation: bubbleIn 0.4s ease-out forwards; }
+        .feed-enter { animation: feedIn 0.3s ease-out forwards; }
+        .progress-fill { transition: width 0.5s ease; }
+        .celebrate-icon { animation: celebrateIn 0.5s ease-out forwards; }
+        .tag-pop { animation: tagPop 0.3s ease-out forwards; }
+        /* Backdrop */
+        .backdrop { background: rgba(0,0,0,0.4); }
+        @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+        .slide-up { animation: slideUp 0.3s ease-out; }
+        @media (prefers-reduced-motion:reduce) {
+            .ai-brain,.ripple-ring,.fly-label,.bubble-enter,.feed-enter,.celebrate-icon,.tag-pop,.slide-up { animation:none; opacity:1; }
+        }
+    </style>
+</head>
+<body class="font-sans bg-white">
+    <!-- PROCESSING VIEW -->
+    <div id="processing-view" class="h-[100dvh] overflow-hidden flex flex-col px-6" style="padding-top: calc(32px + env(safe-area-inset-top, 0px));">
+
+        <!-- ANIMATION STAGE (~50vh) -->
+        <div id="processing-animation-stage" class="flex-1 flex items-center justify-center relative" style="min-height:45vh;">
+            <!-- Ripple rings -->
+            <div class="absolute w-32 h-32 rounded-full border-2 border-liaoran-200 ripple-ring"></div>
+            <div class="absolute w-32 h-32 rounded-full border-2 border-liaoran-200 ripple-ring" style="animation-delay:0.7s"></div>
+            <!-- AI Brain -->
+            <div id="processing-ai-brain" class="ai-brain w-24 h-24 rounded-full bg-gradient-to-br from-liaoran-400 to-liaoran-600 flex items-center justify-center shadow-xl shadow-liaoran-500/30 z-10">
+                <span class="text-white text-2xl font-bold">AI</span>
+            </div>
+            <!-- Category Bubbles (positioned absolutely, added by JS) -->
+            <div id="processing-category-bubbles" class="absolute inset-0"></div>
+            <!-- Flying Labels (added by JS) -->
+            <div id="processing-flying-labels" class="absolute bottom-4 left-0 right-0 flex justify-center"></div>
+        </div>
+
+        <!-- PROGRESS TRACKER -->
+        <div id="processing-progress" class="py-4 text-center">
+            <p id="processing-progress-counter" class="text-lg font-medium text-gray-900">正在识别 <span id="counter-current">0</span>/<span id="counter-total">287</span> 笔交易...</p>
+            <div class="w-full h-1.5 bg-gray-200 rounded-full mt-3 overflow-hidden">
+                <div id="processing-progress-bar" class="progress-fill h-full bg-gradient-to-r from-liaoran-400 to-liaoran-500 rounded-full" style="width:0%"></div>
+            </div>
+            <p id="processing-progress-hint" class="text-xs text-gray-400 mt-2">通常需要 10-20 秒</p>
+        </div>
+
+        <!-- LIVE FEED -->
+        <div id="processing-livefeed" class="pb-8" style="min-height:30vh;">
+            <p id="processing-livefeed-header" class="text-sm font-semibold text-gray-900 mb-2">最新识别</p>
+            <div id="processing-livefeed-items" class="space-y-1.5 overflow-hidden" style="max-height:140px;"></div>
+        </div>
+    </div>
+
+    <!-- COMPLETION VIEW (hidden) -->
+    <div id="processing-completion" class="hidden h-[100dvh] overflow-hidden flex flex-col items-center justify-center px-8">
+        <div id="processing-completion-icon" class="celebrate-icon w-16 h-16 rounded-full bg-liaoran-500 flex items-center justify-center">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-dasharray="30" stroke-dashoffset="0" style="animation:checkDraw 0.6s ease-out 0.3s both"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <div id="processing-completion-summary" class="text-center mt-6">
+            <p class="text-2xl font-bold text-gray-900">已识别 <span id="result-count">276</span> 笔交易</p>
+            <p class="text-lg font-medium text-liaoran-500 mt-1">覆盖率 96.2%</p>
+        </div>
+        <div id="processing-completion-categories" class="flex flex-wrap justify-center gap-2 mt-6"></div>
+        <p id="processing-completion-transition" class="text-sm text-gray-400 mt-8">即将为你展示消费全貌...</p>
+    </div>
+
+    <!-- BACK DIALOG (hidden) -->
+    <div id="processing-back-dialog" class="hidden fixed inset-0 backdrop z-50 flex items-end justify-center" onclick="if(event.target===this)closeBackDialog()">
+        <div class="bg-white w-full max-w-md rounded-t-2xl p-6 slide-up">
+            <h3 id="processing-back-dialog-title" class="text-base font-semibold text-gray-900 mb-2">AI 正在处理中</h3>
+            <p id="processing-back-dialog-body" class="text-sm text-gray-500 mb-5">离开后可在首页查看处理进度</p>
+            <button id="processing-back-dialog-cancel" onclick="closeBackDialog()"
+                    class="w-full py-3.5 bg-liaoran-500 text-white font-semibold rounded-xl mb-3">继续等待</button>
+            <button id="processing-back-dialog-confirm" onclick="window.location.href='01.7-Dashboard.html'"
+                    class="w-full py-3 text-gray-400 text-sm">去首页</button>
+        </div>
+    </div>
+
+    <script>
+        const TOTAL = 287;
+        const CATEGORIES = [
+            { name:'餐饮', icon:'🍜', color:'#F59E0B', count:0 },
+            { name:'交通', icon:'🚗', color:'#3B82F6', count:0 },
+            { name:'购物', icon:'🛒', color:'#EC4899', count:0 },
+            { name:'居住', icon:'🏠', color:'#8B5CF6', count:0 },
+            { name:'娱乐', icon:'🎮', color:'#10B981', count:0 },
+            { name:'健康', icon:'💊', color:'#EF4444', count:0 },
+        ];
+        const TRANSACTIONS = [
+            {m:'美团外卖',a:'28.50',c:0},{m:'滴滴出行',a:'15.00',c:1},{m:'淘宝',a:'199.00',c:2},
+            {m:'中国石化',a:'400.00',c:1},{m:'海底捞',a:'186.00',c:0},{m:'京东',a:'658.00',c:2},
+            {m:'腾讯视频',a:'25.00',c:4},{m:'药房',a:'120.00',c:5},{m:'超市',a:'45.00',c:2},
+            {m:'公司食堂',a:'15.00',c:0},{m:'停车费',a:'180.00',c:1},{m:'拼多多',a:'89.00',c:2},
+            {m:'电影票',a:'76.00',c:4},{m:'房贷',a:'8500.00',c:3},{m:'Steam',a:'198.00',c:4},
+        ];
+        const BUBBLE_POS = [
+            {x:-70,y:-60},{x:70,y:-50},{x:-80,y:30},{x:75,y:40},{x:-30,y:75},{x:40,y:-80}
+        ];
+
+        let current = 0, txIdx = 0, bubbleShown = new Set(), completed = false;
+
+        // Bubble positions
+        function addBubble(catIdx) {
+            if (bubbleShown.has(catIdx)) return;
+            bubbleShown.add(catIdx);
+            const cat = CATEGORIES[catIdx];
+            const pos = BUBBLE_POS[catIdx];
+            const container = document.getElementById('processing-category-bubbles');
+            const el = document.createElement('div');
+            el.className = 'bubble-enter absolute flex flex-col items-center';
+            el.style.cssText = `left:calc(50% + ${pos.x}px - 20px); top:calc(50% + ${pos.y}px - 20px);`;
+            el.innerHTML = `<span class="w-10 h-10 rounded-full flex items-center justify-center text-lg" style="background:${cat.color}20;border:2px solid ${cat.color}">${cat.icon}</span>
+                <span class="text-[10px] font-medium mt-0.5" style="color:${cat.color}">${cat.name}</span>`;
+            container.appendChild(el);
+        }
+
+        // Flying label
+        function flyLabel(tx) {
+            const container = document.getElementById('processing-flying-labels');
+            const el = document.createElement('span');
+            el.className = 'fly-label absolute text-sm font-medium text-gray-600';
+            el.textContent = `${tx.m} ¥${tx.a}`;
+            container.innerHTML = '';
+            container.appendChild(el);
+        }
+
+        // Feed item
+        function addFeedItem(tx) {
+            const cat = CATEGORIES[tx.c];
+            const feed = document.getElementById('processing-livefeed-items');
+            const el = document.createElement('div');
+            el.className = 'feed-enter flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg';
+            el.innerHTML = `<span class="text-sm text-gray-700">${tx.m} <span class="text-gray-400">¥${tx.a}</span></span>
+                <span class="text-xs font-medium px-2 py-0.5 rounded-full" style="background:${cat.color}15;color:${cat.color}">${cat.name}</span>`;
+            feed.insertBefore(el, feed.firstChild);
+            if (feed.children.length > 4) feed.removeChild(feed.lastChild);
+        }
+
+        // Processing tick
+        function tick() {
+            if (completed) return;
+            const step = Math.floor(Math.random() * 15) + 10;
+            current = Math.min(current + step, TOTAL);
+
+            // Update counter & bar
+            document.getElementById('counter-current').textContent = current;
+            document.getElementById('processing-progress-bar').style.width = (current/TOTAL*100) + '%';
+
+            // Show transaction
+            const tx = TRANSACTIONS[txIdx % TRANSACTIONS.length];
+            txIdx++;
+            CATEGORIES[tx.c].count++;
+            addBubble(tx.c);
+            flyLabel(tx);
+            addFeedItem(tx);
+
+            if (current >= TOTAL) {
+                completed = true;
+                setTimeout(showCompletion, 800);
+            } else {
+                setTimeout(tick, 800 + Math.random() * 400);
+            }
+        }
+
+        function showCompletion() {
+            document.getElementById('processing-view').style.transition = 'opacity 0.4s';
+            document.getElementById('processing-view').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('processing-view').classList.add('hidden');
+                document.getElementById('processing-completion').classList.remove('hidden');
+                // Add category tags
+                const tagContainer = document.getElementById('processing-completion-categories');
+                const sorted = [...CATEGORIES].sort((a,b) => b.count - a.count);
+                sorted.forEach((cat, i) => {
+                    const tag = document.createElement('span');
+                    tag.className = 'tag-pop text-xs font-medium px-3 py-1.5 rounded-full';
+                    tag.style.cssText = `background:${cat.color}15;color:${cat.color};animation-delay:${i*100}ms`;
+                    tag.textContent = `${cat.icon} ${cat.name} ${cat.count * 8 + Math.floor(Math.random()*20)}笔`;
+                    tagContainer.appendChild(tag);
+                });
+                // Auto-navigate after 2.5s
+                setTimeout(() => { window.location.href = '01.7-Dashboard.html'; }, 2500);
+            }, 500);
+        }
+
+        // Back button handler
+        window.addEventListener('popstate', (e) => {
+            if (!completed) {
+                e.preventDefault();
+                document.getElementById('processing-back-dialog').classList.remove('hidden');
+            }
+        });
+        history.pushState(null, '', '');
+
+        function closeBackDialog() {
+            document.getElementById('processing-back-dialog').classList.add('hidden');
+        }
+
+        // Start processing
+        setTimeout(tick, 600);
+    </script>
+</body>
+</html>

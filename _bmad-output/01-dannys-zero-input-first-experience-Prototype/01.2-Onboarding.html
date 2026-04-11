@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>01.2 Onboarding - 了然</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'liaoran': {
+                            50: '#E8F5F1', 100: '#D1EBE3', 200: '#A3D7C7',
+                            300: '#75C3AB', 400: '#47AF8F', 500: '#1A6B5A',
+                            600: '#165A4B', 700: '#0F4F42', 800: '#0A3A31', 900: '#052520',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['-apple-system', 'PingFang SC', 'Noto Sans CJK SC', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        html, body { overscroll-behavior: none; }
+        .safe-bottom { padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+
+        /* Carousel */
+        .slides-track {
+            display: flex; width: 300%;
+            transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .slide { width: 33.333%; flex-shrink: 0; }
+
+        /* Progress dots */
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #D1D5DB; transition: all 0.2s ease; }
+        .dot.active { width: 24px; border-radius: 12px; background: #1A6B5A; }
+
+        /* Slide entrance */
+        @keyframes slideContentIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-animate { animation: slideContentIn 0.4s ease-out forwards; }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            .slides-track { transition: none; }
+            .slide-animate { animation: none; opacity: 1; }
+        }
+    </style>
+</head>
+<body class="font-sans bg-white">
+    <div class="h-[100dvh] overflow-hidden flex flex-col">
+
+        <!-- ============================================================
+             TOP BAR (fixed, above slides)
+             ============================================================ -->
+        <div id="onboarding-topbar" class="flex justify-end px-4 py-3">
+            <button id="onboarding-topbar-skip"
+                    onclick="navigateToRegistration()"
+                    class="text-sm text-gray-400 py-1 px-2">跳过</button>
+        </div>
+
+        <!-- ============================================================
+             SLIDE CONTAINER
+             ============================================================ -->
+        <div id="onboarding-slides" class="flex-1 overflow-hidden relative">
+            <div id="slides-track" class="slides-track h-full">
+
+                <!-- SLIDE 1: 零输入 -->
+                <div id="onboarding-slide-1" class="slide flex flex-col items-center justify-center px-8">
+                    <div id="onboarding-slide-1-illustration"
+                         class="w-full max-w-[260px] aspect-[4/3] bg-liaoran-50 rounded-2xl flex flex-col items-center justify-center gap-2 mb-8">
+                        <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                            <rect x="24" y="10" width="32" height="52" rx="5" stroke="#1A6B5A" stroke-width="2" fill="#E8F5F1"/>
+                            <rect x="28" y="18" width="24" height="38" rx="2" fill="white"/>
+                            <!-- Alipay card -->
+                            <rect x="4" y="22" width="22" height="12" rx="3" fill="#1A6B5A" opacity="0.8">
+                                <animateTransform attributeName="transform" type="translate" values="0,0;10,-3;20,0" dur="2.5s" repeatCount="indefinite"/>
+                            </rect>
+                            <!-- WeChat card -->
+                            <rect x="54" y="32" width="22" height="12" rx="3" fill="#47AF8F" opacity="0.7">
+                                <animateTransform attributeName="transform" type="translate" values="0,0;-10,-3;-20,0" dur="3s" repeatCount="indefinite"/>
+                            </rect>
+                            <!-- Bank card -->
+                            <rect x="10" y="44" width="18" height="10" rx="3" fill="#165A4B" opacity="0.6">
+                                <animateTransform attributeName="transform" type="translate" values="0,0;12,-2;22,0" dur="3.2s" repeatCount="indefinite"/>
+                            </rect>
+                        </svg>
+                        <span class="text-xs text-liaoran-400">插画占位</span>
+                    </div>
+                    <h1 id="onboarding-slide-1-headline" class="text-2xl font-bold text-gray-900 text-center">不用动手记一笔</h1>
+                    <p id="onboarding-slide-1-subtitle" class="mt-3 text-base text-gray-500 text-center leading-relaxed">
+                        支付宝、微信、银行、美团……自动同步<br>不用手动输入，也不会漏掉
+                    </p>
+                </div>
+
+                <!-- SLIDE 2: 自动分类 -->
+                <div id="onboarding-slide-2" class="slide flex flex-col items-center justify-center px-8">
+                    <div id="onboarding-slide-2-illustration"
+                         class="w-full max-w-[260px] aspect-[4/3] bg-liaoran-50 rounded-2xl flex flex-col items-center justify-center gap-2 mb-8">
+                        <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                            <!-- Category bubbles -->
+                            <circle cx="20" cy="30" r="14" fill="#1A6B5A" opacity="0.2"/>
+                            <text x="20" y="34" text-anchor="middle" font-size="14">🍜</text>
+                            <circle cx="50" cy="24" r="12" fill="#1A6B5A" opacity="0.15"/>
+                            <text x="50" y="28" text-anchor="middle" font-size="12">🚗</text>
+                            <circle cx="65" cy="48" r="11" fill="#1A6B5A" opacity="0.2"/>
+                            <text x="65" y="52" text-anchor="middle" font-size="12">🛒</text>
+                            <circle cx="30" cy="56" r="13" fill="#1A6B5A" opacity="0.15"/>
+                            <text x="30" y="60" text-anchor="middle" font-size="13">🏠</text>
+                            <!-- AI center -->
+                            <circle cx="42" cy="42" r="10" fill="#1A6B5A" opacity="0.9"/>
+                            <text x="42" y="46" text-anchor="middle" font-size="11" fill="white">AI</text>
+                        </svg>
+                        <span class="text-xs text-liaoran-400">插画占位</span>
+                    </div>
+                    <h1 id="onboarding-slide-2-headline" class="text-2xl font-bold text-gray-900 text-center">AI帮你分类，清晰一目了然</h1>
+                    <p id="onboarding-slide-2-subtitle" class="mt-3 text-base text-gray-500 text-center leading-relaxed">
+                        餐饮、交通、购物……AI自动识别归类<br>你只需查看，不需要整理
+                    </p>
+                </div>
+
+                <!-- SLIDE 3: AI财务管家 -->
+                <div id="onboarding-slide-3" class="slide flex flex-col items-center justify-center px-8">
+                    <div id="onboarding-slide-3-illustration"
+                         class="w-full max-w-[260px] aspect-[4/3] bg-liaoran-50 rounded-2xl flex flex-col items-center justify-center gap-2 mb-8">
+                        <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                            <!-- Dashboard mock -->
+                            <rect x="12" y="12" width="56" height="40" rx="4" fill="white" stroke="#1A6B5A" stroke-width="1.5"/>
+                            <rect x="16" y="18" width="20" height="6" rx="2" fill="#E8F5F1"/>
+                            <rect x="16" y="28" width="48" height="4" rx="1" fill="#E8F5F1"/>
+                            <rect x="16" y="36" width="36" height="4" rx="1" fill="#D1EBE3"/>
+                            <rect x="16" y="44" width="24" height="4" rx="1" fill="#E8F5F1"/>
+                            <!-- AI chat bubble -->
+                            <rect x="30" y="54" width="40" height="18" rx="8" fill="#1A6B5A"/>
+                            <text x="50" y="66" text-anchor="middle" font-size="8" fill="white">餐饮多了15%</text>
+                            <polygon points="38,72 42,72 36,78" fill="#1A6B5A"/>
+                        </svg>
+                        <span class="text-xs text-liaoran-400">插画占位</span>
+                    </div>
+                    <h1 id="onboarding-slide-3-headline" class="text-2xl font-bold text-gray-900 text-center">你的AI财务管家，已就位</h1>
+                    <p id="onboarding-slide-3-subtitle" class="mt-3 text-base text-gray-500 text-center leading-relaxed">
+                        月度报表自动生成，异常消费主动提醒<br>从今天起，有人帮你看着钱了
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ============================================================
+             PROGRESS + CTA (fixed bottom)
+             ============================================================ -->
+        <div class="px-8 safe-bottom">
+            <!-- Progress dots -->
+            <div id="onboarding-progress" class="flex justify-center gap-2 mb-6">
+                <span class="dot active" data-dot="0"></span>
+                <span class="dot" data-dot="1"></span>
+                <span class="dot" data-dot="2"></span>
+            </div>
+
+            <!-- CTA Zone -->
+            <div id="onboarding-cta">
+                <button id="onboarding-cta-next"
+                        onclick="goToSlide(currentSlide + 1)"
+                        class="w-full py-4 border-2 border-liaoran-500 text-liaoran-500 text-lg font-semibold
+                               rounded-xl active:bg-liaoran-50 transition-colors">
+                    下一步
+                </button>
+                <button id="onboarding-cta-start"
+                        onclick="navigateToRegistration()"
+                        class="hidden w-full py-4 bg-liaoran-500 text-white text-lg font-semibold
+                               rounded-xl active:bg-liaoran-700 transition-colors
+                               shadow-lg shadow-liaoran-500/25">
+                    立即体验
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 3;
+        const track = document.getElementById('slides-track');
+        const nextBtn = document.getElementById('onboarding-cta-next');
+        const startBtn = document.getElementById('onboarding-cta-start');
+        const dots = document.querySelectorAll('.dot');
+
+        function goToSlide(index) {
+            if (index < 0 || index >= totalSlides) return;
+            currentSlide = index;
+            track.style.transform = `translateX(-${currentSlide * 33.333}%)`;
+            updateUI();
+        }
+
+        function updateUI() {
+            // Progress dots
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentSlide);
+            });
+            // CTA buttons
+            if (currentSlide === 2) {
+                nextBtn.classList.add('hidden');
+                startBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                startBtn.classList.add('hidden');
+            }
+        }
+
+        function navigateToRegistration() {
+            window.location.href = '01.3-Registration.html';
+        }
+
+        // Touch swipe support
+        let touchStartX = 0;
+        let touchDelta = 0;
+        const slidesEl = document.getElementById('onboarding-slides');
+
+        slidesEl.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            track.style.transition = 'none';
+        }, { passive: true });
+
+        slidesEl.addEventListener('touchmove', (e) => {
+            touchDelta = e.touches[0].clientX - touchStartX;
+            const base = -currentSlide * 33.333;
+            const drag = (touchDelta / slidesEl.offsetWidth) * 33.333;
+            track.style.transform = `translateX(${base + drag}%)`;
+        }, { passive: true });
+
+        slidesEl.addEventListener('touchend', () => {
+            track.style.transition = 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            if (touchDelta < -50 && currentSlide < totalSlides - 1) {
+                goToSlide(currentSlide + 1);
+            } else if (touchDelta > 50 && currentSlide > 0) {
+                goToSlide(currentSlide - 1);
+            } else {
+                goToSlide(currentSlide); // snap back
+            }
+            touchDelta = 0;
+        });
+    </script>
+</body>
+</html>

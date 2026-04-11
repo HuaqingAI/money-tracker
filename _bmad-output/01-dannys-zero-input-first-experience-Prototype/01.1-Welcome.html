@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>01.1 Welcome - 了然</title>
+
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind Config (Design Tokens) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'liaoran': {
+                            50: '#E8F5F1',
+                            100: '#D1EBE3',
+                            200: '#A3D7C7',
+                            300: '#75C3AB',
+                            400: '#47AF8F',
+                            500: '#1A6B5A',
+                            600: '#165A4B',
+                            700: '#0F4F42',
+                            800: '#0A3A31',
+                            900: '#052520',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['-apple-system', 'PingFang SC', 'Noto Sans CJK SC', 'sans-serif'],
+                    },
+                    spacing: {
+                        'xs': '4px',
+                        'sm': '8px',
+                        'md': '16px',
+                        'lg': '24px',
+                        'xl': '40px',
+                        '2xl': '64px',
+                    },
+                    borderRadius: {
+                        'md': '12px',
+                        'full': '9999px',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Safe area support */
+        .safe-bottom {
+            padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+        }
+        /* Prevent overscroll */
+        html, body {
+            overscroll-behavior: none;
+        }
+
+        /* ============================================================
+           ENTRANCE ANIMATIONS
+           ============================================================ */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scalePress {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.96); }
+            100% { transform: scale(1); }
+        }
+
+        /* Initial state: hidden */
+        .anim-target { opacity: 0; }
+
+        /* Animation assignments */
+        .anim-brand    { animation: fadeIn 0.3s ease-out 0s forwards; }
+        .anim-hero     { animation: fadeIn 0.4s ease-out 0.2s forwards; }
+        .anim-headline { animation: slideUp 0.4s ease-out 0.4s forwards; }
+        .anim-sub      { animation: fadeIn 0.4s ease-out 0.6s forwards; }
+        .anim-cta      { animation: fadeIn 0.4s ease-out 0.8s forwards; }
+
+        /* Button press feedback */
+        .btn-press { animation: scalePress 0.2s ease-out; }
+
+        /* Reduced motion: skip all animations */
+        @media (prefers-reduced-motion: reduce) {
+            .anim-target { opacity: 1; }
+            .anim-brand, .anim-hero, .anim-headline, .anim-sub, .anim-cta {
+                animation: none;
+                opacity: 1;
+            }
+            .btn-press { animation: none; }
+        }
+    </style>
+</head>
+<body class="font-sans bg-white">
+    <!-- ================================================================
+         WELCOME PAGE — Single screen, no scroll
+         ================================================================ -->
+    <div id="welcome-page"
+         class="h-[100dvh] overflow-hidden flex flex-col justify-between px-6 pt-xl safe-bottom">
+
+        <!-- ============================================================
+             SECTION: Brand Identity
+             ============================================================ -->
+        <div id="welcome-brand" class="flex flex-col items-center pt-4 anim-target anim-brand">
+            <!-- Logo: 深青绿圆形 + "了" 字抽象 -->
+            <div id="welcome-brand-logo"
+                 class="w-16 h-16 rounded-full bg-liaoran-500 flex items-center justify-center shadow-lg">
+                <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle"
+                          font-family="PingFang SC, sans-serif" font-size="22" font-weight="600" fill="white">了</text>
+                </svg>
+            </div>
+            <!-- App Name -->
+            <span id="welcome-brand-name"
+                  class="mt-3 text-lg font-semibold text-liaoran-700 tracking-wide">了然</span>
+        </div>
+
+        <!-- ============================================================
+             SECTION: Hero Illustration (placeholder)
+             ============================================================ -->
+        <div id="welcome-hero"
+             class="flex-1 flex items-center justify-center my-6 anim-target anim-hero">
+            <div class="w-full max-w-[280px] aspect-[16/9] bg-liaoran-50 rounded-2xl
+                        flex flex-col items-center justify-center gap-3">
+                <!-- Placeholder: 手机 + 飘入消费卡片 -->
+                <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Phone body -->
+                    <rect x="18" y="8" width="28" height="48" rx="4" stroke="#1A6B5A" stroke-width="2" fill="#E8F5F1"/>
+                    <!-- Screen -->
+                    <rect x="21" y="14" width="22" height="36" rx="2" fill="white"/>
+                    <!-- Floating cards -->
+                    <rect x="6" y="20" width="16" height="10" rx="2" fill="#1A6B5A" opacity="0.7">
+                        <animateTransform attributeName="transform" type="translate"
+                            values="0,0; 8,-2; 16,0" dur="3s" repeatCount="indefinite"/>
+                    </rect>
+                    <rect x="42" y="30" width="16" height="10" rx="2" fill="#1A6B5A" opacity="0.5">
+                        <animateTransform attributeName="transform" type="translate"
+                            values="0,0; -8,-2; -16,0" dur="3.5s" repeatCount="indefinite"/>
+                    </rect>
+                    <!-- Checkmark on screen -->
+                    <path d="M28 32 L31 35 L37 28" stroke="#1A6B5A" stroke-width="2.5"
+                          stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="text-xs text-liaoran-400">插画占位 · Phase 6 替换</span>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             SECTION: Value Proposition
+             ============================================================ -->
+        <div id="welcome-value" class="text-center px-2">
+            <h1 id="welcome-value-headline"
+                class="text-2xl font-bold text-gray-900 leading-tight anim-target anim-headline">
+                花了多少，自动知道
+            </h1>
+            <p id="welcome-value-subheadline"
+               class="mt-3 text-base text-gray-500 leading-relaxed anim-target anim-sub">
+                连接银行卡和支付宝，消费自动归类，不用动手记
+            </p>
+        </div>
+
+        <!-- ============================================================
+             SECTION: Call to Action
+             ============================================================ -->
+        <div id="welcome-cta" class="pb-4 pt-8 anim-target anim-cta">
+            <button id="welcome-cta-button"
+                    onclick="handleCtaClick(this)"
+                    class="w-full py-4 bg-liaoran-500 text-white text-lg font-semibold
+                           rounded-xl active:bg-liaoran-700 transition-colors
+                           shadow-lg shadow-liaoran-500/25">
+                开始体验
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        function handleCtaClick(btn) {
+            btn.classList.add('btn-press');
+            btn.addEventListener('animationend', function() {
+                window.location.href = '01.2-Onboarding.html';
+            }, { once: true });
+        }
+    </script>
+</body>
+</html>

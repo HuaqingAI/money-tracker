@@ -1,0 +1,80 @@
+{
+  "meta": {
+    "scenario": "01-dannys-zero-input-first-experience",
+    "created": "2026-04-11",
+    "language": "zh-CN",
+    "currency": "CNY",
+    "amounts_in_cents": true
+  },
+  "user": {
+    "id": "usr_danny_001",
+    "name": "大强",
+    "phone": "138****6789",
+    "wechat_nickname": "Danny强",
+    "avatar": null,
+    "created_at": "2026-04-11T10:00:00Z"
+  },
+  "family": {
+    "spouse": {
+      "name": "小芳",
+      "wechat_nickname": "芳芳",
+      "role": "shared_ledger_recipient"
+    }
+  },
+  "transactions": {
+    "summary": {
+      "period": "2026-01 to 2026-03",
+      "total_count": 287,
+      "total_amount_cents": 4235600
+    },
+    "monthly": [
+      {
+        "month": "2026-03",
+        "total_cents": 1456800,
+        "categories": [
+          { "name": "居住", "amount_cents": 850000, "icon": "🏠", "is_fixed": true, "top_items": ["房贷 ¥8,500"] },
+          { "name": "餐饮", "amount_cents": 285000, "icon": "🍜", "is_fixed": false, "top_items": ["美团外卖 ¥45", "海底捞 ¥186", "公司食堂 ¥15"] },
+          { "name": "交通", "amount_cents": 98000, "icon": "🚗", "is_fixed": false, "top_items": ["中国石化 ¥400", "停车费 ¥180", "滴滴出行 ¥35"] },
+          { "name": "购物", "amount_cents": 125800, "icon": "🛒", "is_fixed": false, "top_items": ["京东 ¥658", "拼多多 ¥89", "超市 ¥45"] },
+          { "name": "娱乐", "amount_cents": 56000, "icon": "🎮", "is_fixed": false, "top_items": ["腾讯视频 ¥25", "电影票 ¥76", "Steam ¥198"] },
+          { "name": "健康", "amount_cents": 42000, "icon": "💊", "is_fixed": false, "top_items": ["药房 ¥120", "体检 ¥300"] }
+        ]
+      },
+      {
+        "month": "2026-02",
+        "total_cents": 1328400,
+        "categories": [
+          { "name": "居住", "amount_cents": 850000, "icon": "🏠", "is_fixed": true },
+          { "name": "餐饮", "amount_cents": 245000, "icon": "🍜", "is_fixed": false },
+          { "name": "交通", "amount_cents": 88000, "icon": "🚗", "is_fixed": false },
+          { "name": "购物", "amount_cents": 78400, "icon": "🛒", "is_fixed": false },
+          { "name": "娱乐", "amount_cents": 45000, "icon": "🎮", "is_fixed": false },
+          { "name": "健康", "amount_cents": 22000, "icon": "💊", "is_fixed": false }
+        ]
+      },
+      {
+        "month": "2026-01",
+        "total_cents": 1450400,
+        "categories": [
+          { "name": "居住", "amount_cents": 850000, "icon": "🏠", "is_fixed": true },
+          { "name": "餐饮", "amount_cents": 310000, "icon": "🍜", "is_fixed": false },
+          { "name": "交通", "amount_cents": 92000, "icon": "🚗", "is_fixed": false },
+          { "name": "购物", "amount_cents": 108400, "icon": "🛒", "is_fixed": false },
+          { "name": "娱乐", "amount_cents": 58000, "icon": "🎮", "is_fixed": false },
+          { "name": "健康", "amount_cents": 32000, "icon": "💊", "is_fixed": false }
+        ]
+      }
+    ]
+  },
+  "ai_coverage": {
+    "auto_categorized_percent": 96.2,
+    "manual_adjusted_count": 11,
+    "uncategorized_count": 0
+  },
+  "import_source": {
+    "type": "alipay_csv",
+    "file_name": "alipay_record_20260101_20260331.csv",
+    "record_count": 287,
+    "date_range": "2026-01-01 to 2026-03-31"
+  }
+}
