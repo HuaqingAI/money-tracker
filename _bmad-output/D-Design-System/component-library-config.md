@@ -13,6 +13,9 @@ npx create-tamagui@latest
 
 # Or add to existing Expo project
 npm install tamagui @tamagui/config
+
+# Icon library — Lucide Icons
+npm install @tamagui/lucide-icons lucide-react-native
 ```
 
 ## Library Components Used

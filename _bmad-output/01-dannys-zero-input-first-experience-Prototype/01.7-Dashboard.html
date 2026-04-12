@@ -49,10 +49,8 @@
             <!-- HERO SUMMARY (brand gradient) -->
             <div id="dash-summary" class="mx-4 mt-2 rounded-2xl p-5 shadow-lg text-white relative overflow-hidden"
                  style="background: linear-gradient(135deg, #0F4F42 0%, #1A6B5A 50%, #47AF8F 100%);">
-                <!-- Subtle pattern overlay -->
                 <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 80% 20%, white 1px, transparent 1px); background-size: 24px 24px;"></div>
                 <div class="relative">
-                    <!-- Member badge (hidden by default, shown in member state) -->
                     <div id="dash-member-badge" class="hidden absolute -top-1 -right-1 bg-amber-400 text-amber-900 text-[9px] font-bold px-2 py-0.5 rounded-full shadow-sm">会员</div>
                     <p class="text-sm text-white/70">本月总支出</p>
                     <p id="dash-summary-total" class="text-4xl font-bold mt-1 tracking-tight">¥14,568</p>
@@ -66,7 +64,6 @@
                             <p class="text-base font-semibold">¥5,432</p>
                         </div>
                     </div>
-                    <!-- AI coverage integrated -->
                     <div class="mt-4 flex items-center gap-2">
                         <div class="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                             <span class="text-[9px] font-bold">AI</span>
@@ -81,6 +78,16 @@
                 </div>
             </div>
 
+            <!-- AI SPOTLIGHT (管家说) — all Full State users -->
+            <button id="dash-ai-spotlight" onclick="window.location.href='../07-ai-butler-intelligence-Prototype/07.1-AIChat.html'"
+                    class="mx-4 mt-3 w-[calc(100%-2rem)] bg-liaoran-50 border border-liaoran-200/50 rounded-2xl p-4 flex items-center gap-3 active:bg-liaoran-100">
+                <div class="w-9 h-9 rounded-full bg-liaoran-500 flex items-center justify-center flex-shrink-0">
+                    <span class="text-sm">🤖</span>
+                </div>
+                <p id="spotlight-text" class="flex-1 text-sm text-liaoran-800 font-medium leading-snug"></p>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A6B5A" stroke-width="2.5" stroke-linecap="round" class="flex-shrink-0"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+
             <!-- CATEGORY BREAKDOWN -->
             <div class="mx-4 mt-5">
                 <h2 class="text-base font-semibold text-gray-900 mb-3">分类消费</h2>
@@ -89,60 +96,56 @@
                 </div>
             </div>
 
-            <!-- INVITE FAMILY CARD (Free state only) -->
-            <div id="dash-invite-card" class="mx-4 mt-5">
-                <button onclick="window.location.href='../02-dannys-family-shared-ledger-Prototype/02.1-Subscription.html'"
-                        class="w-full rounded-2xl p-4 shadow-sm flex items-center justify-between active:opacity-90 bg-gradient-to-r from-liaoran-50 to-emerald-50 border border-liaoran-200/50">
-                    <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-xl bg-liaoran-500 flex items-center justify-center">
+            <!-- FAMILY SNAPSHOT (Member only, hidden by default) -->
+            <div id="dash-family-snapshot" class="mx-4 mt-4 hidden">
+                <button onclick="window.location.href='../02-dannys-family-shared-ledger-Prototype/02.2-SharedFamilyLedger.html'"
+                        class="w-full bg-white rounded-2xl shadow-sm p-4 border-l-4 border-liaoran-500 active:bg-gray-50">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
                             <span class="text-lg">👨‍👩‍👦</span>
+                            <span class="text-sm font-semibold text-gray-900">我们家这个月</span>
                         </div>
-                        <div>
-                            <span class="text-sm font-semibold text-liaoran-700">邀请家人共享</span>
-                            <p class="text-xs text-liaoran-500/70">让 Ta 也能看到消费数据，不再各说各的</p>
+                        <span class="text-xs text-liaoran-500 font-medium">查看详情 →</span>
+                    </div>
+                    <p class="text-xl font-bold text-gray-900 mb-3">家庭总支出 ¥28,568</p>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-gray-500 w-8">你</span>
+                            <div class="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                                <div class="h-full bg-liaoran-400 rounded-full" style="width:62%"></div>
+                            </div>
+                            <span class="text-xs text-gray-500 w-8 text-right">62%</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-gray-500 w-8">芳芳</span>
+                            <div class="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                                <div class="h-full bg-pink-400 rounded-full" style="width:38%"></div>
+                            </div>
+                            <span class="text-xs text-gray-500 w-8 text-right">38%</span>
                         </div>
                     </div>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A6B5A" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
                 </button>
             </div>
 
-            <!-- BENEFICIARY BREAKDOWN (Member state only, hidden by default) -->
-            <div id="dash-beneficiary" class="mx-4 mt-5 hidden">
-                <div class="flex items-center justify-between mb-3">
-                    <h2 class="text-base font-semibold text-gray-900">为谁花的</h2>
-                    <button onclick="window.location.href='../02-dannys-family-shared-ledger-Prototype/02.3-BeneficiaryTagging.html'" class="text-xs text-liaoran-500 font-medium">管理标注 ></button>
-                </div>
-                <div class="bg-white rounded-2xl shadow-sm p-4">
-                    <div class="grid grid-cols-4 gap-3 mb-4" id="beneficiary-chips">
-                        <!-- Filled by JS -->
-                    </div>
-                    <div class="w-full h-3 bg-gray-100 rounded-full overflow-hidden flex">
-                        <div class="h-full bg-blue-400 rounded-l-full" style="width:30%"></div>
-                        <div class="h-full bg-pink-400" style="width:15%"></div>
-                        <div class="h-full bg-amber-400" style="width:11%"></div>
-                        <div class="h-full bg-emerald-400 rounded-r-full" style="width:44%"></div>
-                    </div>
-                    <div class="flex justify-between mt-2">
-                        <span class="text-[10px] text-gray-400">按金额占比</span>
-                        <span class="text-[10px] text-gray-400">共 245 笔已标注</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- FAMILY LEDGER STATUS (Member state only, hidden by default) -->
-            <div id="dash-family-status" class="mx-4 mt-4 hidden">
-                <button onclick="window.location.href='../02-dannys-family-shared-ledger-Prototype/02.2-SharedFamilyLedger.html'"
-                        class="w-full bg-white rounded-2xl p-4 shadow-sm flex items-center justify-between active:bg-gray-50">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
-                            <span class="text-lg">📗</span>
+            <!-- IDENTITY SNAPSHOT (Member only, hidden by default) -->
+            <div id="dash-identity-snapshot" class="mx-4 mt-3 hidden">
+                <button onclick="window.location.href='../05-meis-multi-identity-accounting-Prototype/05.2-IdentityPnL.html'"
+                        class="w-full bg-white rounded-2xl shadow-sm p-4 border-l-4 border-amber-400 active:bg-gray-50">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg">🏪</span>
+                            <span class="text-sm font-semibold text-gray-900">薯店本月</span>
                         </div>
-                        <div>
-                            <span class="text-sm font-medium text-gray-900">我们的家庭账本</span>
-                            <p class="text-xs text-emerald-500">芳芳已加入 · 共享中</p>
-                        </div>
+                        <span class="text-xs text-liaoran-500 font-medium">查看详情 →</span>
                     </div>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                    <div class="flex items-baseline gap-2 mb-2">
+                        <span class="text-xl font-bold text-liaoran-600">净利润 ¥2,847</span>
+                        <span class="text-xs font-medium text-liaoran-500 bg-liaoran-50 px-1.5 py-0.5 rounded">↑15%</span>
+                    </div>
+                    <div class="flex gap-4 text-sm text-gray-500">
+                        <span>收入 ¥9,000</span>
+                        <span>支出 ¥6,153</span>
+                    </div>
                 </button>
             </div>
 
@@ -277,12 +280,10 @@
         ];
         const totalAmount = CATS.reduce((s,c) => s+c.amount, 0);
 
-        const BENEFICIARIES = [
-            { label:'为自己', icon:'👤', amount:'¥8,560', pct:'30%', color:'bg-blue-50', border:'border-blue-200', text:'text-blue-700' },
-            { label:'为配偶', icon:'💑', amount:'¥4,250', pct:'15%', color:'bg-pink-50', border:'border-pink-200', text:'text-pink-700' },
-            { label:'为孩子', icon:'👶', amount:'¥3,180', pct:'11%', color:'bg-amber-50', border:'border-amber-200', text:'text-amber-700' },
-            { label:'为家庭', icon:'🏠', amount:'¥12,578', pct:'44%', color:'bg-emerald-50', border:'border-emerald-200', text:'text-emerald-700' },
-        ];
+        const SPOTLIGHT = {
+            free: '本月奶茶已花 ¥380，超过上月全月',
+            member: '家庭本月支出比上月少了 ¥1,200，主要省在外卖',
+        };
 
         // Month switching
         const months = [1, 2, 3];
@@ -296,17 +297,19 @@
             document.getElementById('dash-month-header-nav-left').style.opacity = monthIdx <= 0 ? '0.3' : '1';
         }
 
+        let catsExpanded = false;
         function renderCategories() {
             const container = document.getElementById('dash-categories');
-            container.innerHTML = CATS.map(cat => {
+            const showCats = catsExpanded ? CATS : CATS.slice(0, 3);
+            let html = showCats.map(cat => {
                 const pct = (cat.amount / totalAmount * 100).toFixed(1);
                 const amt = '¥' + (cat.amount/100).toLocaleString();
                 const fixedTag = cat.fixed ? '<span class="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded ml-1.5">固定</span>' : '';
                 return `<button class="w-full bg-white rounded-xl shadow-sm flex items-center gap-3 active:bg-gray-50 overflow-hidden">
                     <div class="w-1 self-stretch rounded-l-xl" style="background:${cat.color}"></div>
-                    <span class="text-xl py-4 pl-1">${cat.icon}</span>
-                    <div class="flex-1 py-4">
-                        <div class="flex justify-between items-center mb-1.5">
+                    <span class="text-xl py-3 pl-1">${cat.icon}</span>
+                    <div class="flex-1 py-3">
+                        <div class="flex justify-between items-center mb-1">
                             <span class="text-sm font-medium text-gray-900">${cat.name}${fixedTag}</span>
                             <span class="text-sm font-semibold text-gray-900">${amt}</span>
                         </div>
@@ -317,22 +320,16 @@
                     <span class="text-xs text-gray-400 w-10 text-right pr-4">${pct}%</span>
                 </button>`;
             }).join('');
-        }
-
-        function renderBeneficiaryChips() {
-            document.getElementById('beneficiary-chips').innerHTML = BENEFICIARIES.map(b =>
-                `<div class="text-center">
-                    <div class="${b.color} ${b.border} border rounded-xl py-2 px-1">
-                        <span class="text-base">${b.icon}</span>
-                        <p class="text-xs font-semibold text-gray-900 mt-0.5">${b.amount}</p>
-                    </div>
-                    <p class="text-[10px] text-gray-500 mt-1">${b.label}</p>
-                </div>`
-            ).join('');
+            if (!catsExpanded && CATS.length > 3) {
+                html += `<button onclick="catsExpanded=true;renderCategories()" class="w-full py-2 text-xs text-liaoran-500 font-medium text-center active:text-liaoran-700">查看全部 ${CATS.length} 个分类 ▾</button>`;
+            } else if (catsExpanded) {
+                html += `<button onclick="catsExpanded=false;renderCategories()" class="w-full py-2 text-xs text-gray-400 font-medium text-center active:text-gray-600">收起 ▴</button>`;
+            }
+            container.innerHTML = html;
         }
 
         // State management: 'free' | 'member' | 'empty'
-        const STATES = ['free', 'member', 'empty'];
+        const STATES = ['member', 'free', 'empty'];
         let stateIdx = 0;
 
         function toggleState() {
@@ -344,10 +341,10 @@
             const label = document.getElementById('state-label');
             const fullContent = document.getElementById('dash-content-full');
             const emptyContent = document.getElementById('dash-content-empty');
-            const inviteCard = document.getElementById('dash-invite-card');
-            const beneficiary = document.getElementById('dash-beneficiary');
-            const familyStatus = document.getElementById('dash-family-status');
+            const familySnapshot = document.getElementById('dash-family-snapshot');
+            const identitySnapshot = document.getElementById('dash-identity-snapshot');
             const memberBadge = document.getElementById('dash-member-badge');
+            const spotlightText = document.getElementById('spotlight-text');
 
             if (state === 'empty') {
                 label.textContent = 'Empty';
@@ -358,16 +355,18 @@
                 fullContent.classList.remove('hidden');
                 emptyContent.classList.add('hidden');
 
-                // Free: show invite card, hide member features
-                inviteCard.classList.toggle('hidden', state === 'member');
-                beneficiary.classList.toggle('hidden', state === 'free');
-                familyStatus.classList.toggle('hidden', state === 'free');
+                // Snapshot cards: member only
+                familySnapshot.classList.toggle('hidden', state === 'free');
+                identitySnapshot.classList.toggle('hidden', state === 'free');
                 memberBadge.classList.toggle('hidden', state === 'free');
+
+                // AI Spotlight text varies by state
+                spotlightText.textContent = SPOTLIGHT[state] || SPOTLIGHT.free;
             }
         }
 
         renderCategories();
-        renderBeneficiaryChips();
+        applyState('member');
     </script>
 
 </body>

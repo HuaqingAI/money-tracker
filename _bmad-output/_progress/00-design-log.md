@@ -302,6 +302,7 @@
 | 2026-04-11 | Profile Card 从 08.1 Settings 提升到 08.0 Hub，头像 64pt（vs Settings 48pt），强调"个人空间"感 | Phase 4: UX Design | Freya |
 | 2026-04-11 | Hub 的 Feature Grid 对免费用户显示付费功能（带锁标），点击跳转订阅页，提升升级动机 | Phase 4: UX Design | Freya |
 | 2026-04-11 | 04.1a OCR 准确率：MVP 接受印刷体/清晰手写 >= 80%，后续迭代提升。Phase 5 前做 Spike 验证 | Phase 4: UX Design | Sue |
+| 2026-04-11 | Dashboard 从"个人消费报表"升级为"财务管家首页"：废弃账本切换器方案，改用平铺快照卡片（家庭快照+副业快照）。新增 AI Spotlight（管家说）作为产品人格锚点。快照卡片数据驱动出现，不聚合不切换 | Phase 5: Spec Revision | Sue |
 
 ---
 
@@ -393,5 +394,140 @@ All 8 scenarios, 30 pages specified (29 + 08.0 Hub).
 ## Backlog
 
 - [x] Phase 4: UX Design — 详细页面规格、线框图、组件定义 (COMPLETE)
+- [x] Phase 7: Design System — 17个组件 + Lucide Icons + Token 具体化 (COMPLETE)
 - [ ] Phase 5: Agentic Development — AI辅助开发
-- [ ] Phase 6: Asset Generation — 视觉资产生成
+- [x] Phase 6: Asset Generation — Content (全部 8 个场景 30 页文案定稿 COMPLETE)
+- [x] Phase 6: Asset Generation — Visual — Wireframes (全部 30 页 HTML 线框图 COMPLETE)
+- [x] Phase 6: Asset Generation — Visual — Page Designs (全部 30 页高保真 HTML COMPLETE)
+- [ ] Phase 6: Asset Generation — Visual (UI元素、图标等)
+
+---
+
+### 2026-04-12 — Phase 6: Page Design Generation — All 30 Pages Complete
+
+**Agent:** WDS Asset Generation (Page Designs)
+**Mode:** Batch high-fidelity HTML generation
+**Style:** Brand colors (了然绿 #1A6B5A) + Design System tokens + 真实内容文案
+**Status:** ALL 30 PAGES COMPLETE
+
+**Artifacts Created:**
+- `E-Assets/wireframes/page-designs-catalog.html` — 高保真 HTML 页面设计目录（30页，1124行）
+
+**Summary:** 基于 Phase 4 UX 规格、Phase 6 内容文案、Phase 7 设计系统 tokens 和 Phase 5 原型视觉方向，生成全部 30 页高保真 HTML 页面设计。使用了然品牌绿色系（#1A6B5A，来自原型而非 design-tokens.md 中的 indigo），分类固定色映射，真实中文文案内容。
+
+**Visual Design Decisions:**
+- 品牌色采用原型的了然绿（#1A6B5A系列），而非 design-tokens.md 中的 indigo（#6366F1）——两者存在不一致，以原型为准
+- Dashboard Hero 使用品牌渐变（brand-800 → brand-500 → brand-400）
+- 分类卡片左侧彩色竖条 + 分类固定色映射
+- AI Spotlight 使用 brand-50 背景 + brand-200 边框
+- 快照卡片使用左侧 4px 彩色边框（家庭=brand-500，副业=warning）
+- 洞察卡片使用左侧 3px brand-500 边框 + NEW badge
+
+**Note:** design-tokens.md 中的 brand-500 (#6366F1 indigo) 与原型中的 liaoran-500 (#1A6B5A green) 不一致，建议在进入开发前统一。
+
+---
+
+### 2026-04-12 — Phase 6: Wireframe Generation — All 30 Pages Complete
+
+**Agent:** WDS Asset Generation (Wireframes)
+**Mode:** Batch HTML generation
+**Style:** Minimal (极简)
+**Status:** ALL 30 PAGES COMPLETE
+
+**Artifacts Created:**
+- `E-Assets/wireframes/wireframes-catalog.html` — 可交互 HTML 线框图目录（30页，1150行）
+
+**Summary:** 基于全部 30 个 Phase 4 UX 规格的 ASCII Layout，生成 Minimal 风格的 HTML 线框图目录。采用手机框架（375×812）展示，左侧导航按场景分组，支持快速切换浏览。灰度配色 + 单强调色，聚焦信息层级和空间关系。
+
+**Coverage:**
+
+| Scenario | Pages | Wireframes |
+|----------|-------|------------|
+| 01: 大强的零记账初体验 | 8 | 8 ✓ |
+| 02: 大强的家庭共享账本 | 3 | 3 ✓ |
+| 03: 小丽的消费真相镜子 | 4 | 4 ✓ |
+| 04: 大强的人情账管理 | 3 | 3 ✓ |
+| 05: 小美的多身份核算 | 2 | 2 ✓ |
+| 06: 手动记账与分类管理 | 3 | 3 ✓ |
+| 07: AI管家智能层 | 4 | 4 ✓ |
+| 08: 账户与设置管理 | 3 | 3 ✓ |
+| **Total** | **30** | **30 ✓** |
+
+**Design Decisions:**
+- 每页展示主要状态（Full State），未包含所有边界状态变体
+- 图表区域使用占位符标注内容描述
+- 底部 Tab Bar 在需要全局导航的页面统一展示
+- FAB（悬浮+按钮）在 Dashboard 和 Transaction List 页面展示
+
+---
+
+### 2026-04-12 — Phase 6: Content Generation — All Scenarios Complete
+
+**Agent:** WDS Content Creation (5-Model Framework)
+**Mode:** Autonomous (strategic audit + refine)
+**Status:** ALL 8 SCENARIOS COMPLETE — 30 pages content finalized
+
+**Artifacts Created:**
+- `E-Assets/content/scenario-01-content-final.md` — 大强的零记账初体验 (8页, 20处精修)
+- `E-Assets/content/scenario-02-content-final.md` — 大强的家庭共享账本 (3页, 9处精修)
+- `E-Assets/content/scenario-03-content-final.md` — 小丽的消费真相镜子 (4页, 14处精修)
+- `E-Assets/content/scenario-04-content-final.md` — 大强的人情账管理 (3页, 5处精修)
+- `E-Assets/content/scenario-05-content-final.md` — 小美的多身份核算 (2页, 7处精修)
+- `E-Assets/content/scenario-06-content-final.md` — 手动记账与分类管理 (3页, 9处精修)
+- `E-Assets/content/scenario-07-content-final.md` — AI管家智能层 (4页, 12处精修)
+- `E-Assets/content/scenario-08-content-final.md` — 账户与设置管理 (3页, 7处精修 + Tab Bar 1处)
+
+**Summary:** 通过五模型战略框架（Trigger Map + Customer Awareness + Action Mapping + Badass Users + Golden Circle）对全部 30 个页面的用户面文案进行系统审核和精修。共计 84 处精修，涵盖：
+
+| 精修类型 | 数量 | 典型案例 |
+|---------|------|---------|
+| "交易"→"消费" 全局统一 | 20+ | 03.1 Header、Tab Bar、搜索、删除、空状态等 |
+| 禁用词修正 ("记账""手动""试用"等) | 15+ | 01.4 "记账"→"自动识别消费"、06.3 "记账"→"记一笔" |
+| 去技术术语 (CSV/OCR/AES-256等) | 10+ | 01.5 "CSV文件"→"账单文件"、08.1 去AES-256 |
+| Badass Users 主语转换 | 8+ | 01.2 "AI帮你分类"→"每笔花销，自动归类" |
+| 口语化/去广告腔 | 10+ | 04.1a "请确认"→"看看识别得对不对" |
+| 产品名统一 (→"了然") | 2 | 03.4/07.4 分享卡片品牌名 |
+| 中性化/去审判性 | 5+ | 05.1 "净亏损"→"净支出超过收入" |
+
+**Cross-cutting Decision:** 底部 Tab Bar "交易"→"消费"，影响全 APP 导航层
+
+---
+
+### 2026-04-11 — Phase 7: Design System Initialized
+
+**Agent:** Design System Architect
+**Mode:** Component Library (Tamagui v2)
+**Status:** INITIALIZED — 8 core components created
+
+**Artifacts Created:**
+- `D-Design-System/components/button.md` — Button [btn-001] 6变体
+- `D-Design-System/components/card.md` — Card [crd-001] 11变体
+- `D-Design-System/components/badge.md` — Badge [bdg-001] 4变体
+- `D-Design-System/components/text-input.md` — Text Input [inp-001] 5变体
+- `D-Design-System/components/bottom-tab-bar.md` — Bottom Tab Bar [nav-001]
+- `D-Design-System/components/header.md` — Header [nav-002] 3变体
+- `D-Design-System/components/tab.md` — Tab [tab-001] 2变体
+- `D-Design-System/components/modal-sheet.md` — Modal/Sheet [sht-001] 3变体
+- `D-Design-System/components/progress.md` — Progress [prg-001] 3变体
+- `D-Design-System/design-tokens.md` — Token 占位（待填充）
+- `D-Design-System/component-library-config.md` — Tamagui 配置
+- `D-Design-System/components/README.md` — 组件索引
+- `D-Design-System/catalog.html` — 可交互 HTML Catalog
+
+**Summary:** 从 30 个 Phase 4 UX 规格页面中提取 Top 8 高频复用组件，创建完整规格文档。选择 Tamagui v2 作为组件库（MIT 开源，跨平台 token 共享，编译时优化）。生成可交互 HTML Catalog 供视觉预览。
+
+**Component Coverage:**
+
+| ID | Component | Variants | Pages |
+|----|-----------|----------|-------|
+| btn-001 | Button | 6 (primary/secondary/ghost/icon/fab/voice) | 30/30 |
+| crd-001 | Card | 11 (metric/category/transaction/insight/guidance/prompt/contact/event/locked/share/empty) | 20+ |
+| bdg-001 | Badge | 4 (dot/label/tag/counter) | 10+ |
+| inp-001 | Text Input | 5 (phone/code/amount/text/chat) | 8+ |
+| nav-001 | Bottom Tab Bar | 1 (4-column) | 20+ |
+| nav-002 | Header/TopBar | 3 (root/stack/modal) | 25+ |
+| tab-001 | Tab/Segment | 2 (segment/mode) | 3 |
+| sht-001 | Modal/Sheet | 3 (alert/sheet/picker) | 15+ |
+| prg-001 | Progress | 3 (dots/bar/counter) | 5+ |
+
+**Next:** 可继续添加更多组件（如 Avatar、Divider、Toast 等），或进入 Phase 5 开发

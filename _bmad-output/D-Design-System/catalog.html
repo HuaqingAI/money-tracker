@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>了然 Liaoran — Design System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50:'#EEF2FF',100:'#E0E7FF',200:'#C7D2FE',500:'#6366F1',600:'#4F46E5',700:'#4338CA',900:'#312E81' },
+          }
+        }
+      }
+    }
+    </script>
+    <style>
+        :root {
+            --brand-500: #6366F1;
+            --brand-600: #4F46E5;
+            --brand-700: #4338CA;
+            --brand-50: #EEF2FF;
+            --neutral-50: #F9FAFB;
+            --neutral-100: #F3F4F6;
+            --neutral-200: #E5E7EB;
+            --neutral-400: #9CA3AF;
+            --neutral-500: #6B7280;
+            --neutral-700: #374151;
+            --neutral-800: #1F2937;
+            --neutral-900: #111827;
+        }
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', 'Noto Sans SC', -apple-system, sans-serif; margin: 0; background: var(--neutral-50); color: var(--neutral-800); }
+
+        /* Sidebar */
+        .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 272px; background: #fff; border-right: 1px solid var(--neutral-200); overflow-y: auto; z-index: 50; }
+        .sidebar-inner { padding: 28px 20px; }
+        .sidebar-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--neutral-200); }
+        .sidebar-logo-icon { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, var(--brand-500), var(--brand-700)); display: flex; align-items: center; justify-content: center; color: #fff; }
+        .sidebar-logo-text { font-weight: 700; font-size: 15px; color: var(--neutral-900); }
+        .sidebar-logo-sub { font-size: 11px; color: var(--neutral-500); margin-top: 1px; }
+        .nav-group { margin-bottom: 20px; }
+        .nav-group-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--neutral-400); margin-bottom: 6px; padding-left: 10px; }
+        .nav-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; color: var(--neutral-700); text-decoration: none; border-radius: 8px; font-size: 13px; font-weight: 450; transition: all 0.12s; }
+        .nav-item:hover { background: var(--neutral-100); color: var(--neutral-900); }
+        .nav-item.active { background: var(--brand-50); color: var(--brand-600); font-weight: 550; }
+        .nav-item i { width: 16px; height: 16px; flex-shrink: 0; }
+
+        /* Main */
+        .main { margin-left: 272px; padding: 40px 48px; max-width: 1200px; }
+
+        /* Cards */
+        .card { background: #fff; border-radius: 16px; border: 1px solid var(--neutral-200); padding: 28px; margin-bottom: 20px; transition: box-shadow 0.2s, transform 0.2s; }
+        .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+        .preview { background: var(--neutral-50); border: 1px solid var(--neutral-200); border-radius: 12px; padding: 24px; margin: 16px 0; position: relative; }
+        .preview::before { content: ''; position: absolute; inset: 0; border-radius: 12px; background: radial-gradient(circle at 1px 1px, var(--neutral-200) 0.5px, transparent 0); background-size: 16px 16px; opacity: 0.3; pointer-events: none; }
+        .code { background: var(--neutral-900); color: #e2e8f0; border-radius: 12px; padding: 16px 20px; font-family: 'Fira Code', 'SF Mono', monospace; font-size: 13px; line-height: 1.6; overflow-x: auto; margin: 12px 0; }
+        .code .kw { color: #c084fc; }
+        .code .str { color: #86efac; }
+        .code .cmt { color: #6b7280; }
+
+        /* Badges */
+        .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .badge-id { background: var(--brand-50); color: var(--brand-600); }
+        .badge-usage { background: #F0FDF4; color: #16A34A; }
+        .badge-new { background: #FEF3C7; color: #D97706; }
+
+        /* Section title */
+        .section-title { font-size: 28px; font-weight: 800; color: var(--neutral-900); margin-bottom: 8px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+        /* Phone frame */
+        .phone { width: 320px; margin: 0 auto; border: 2px solid var(--neutral-300); border-radius: 28px; overflow: hidden; background: #fff; box-shadow: 0 8px 32px rgba(0,0,0,0.08); }
+        .phone-notch { height: 28px; background: #fff; display: flex; align-items: center; justify-content: center; }
+        .phone-notch-pill { width: 80px; height: 6px; background: var(--neutral-200); border-radius: 3px; }
+        .phone-content { min-height: 200px; }
+        .phone-home { width: 40px; height: 5px; background: var(--neutral-300); border-radius: 3px; margin: 8px auto 12px; }
+
+        /* Demo components */
+        .d-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; font-family: inherit; }
+        .d-btn-primary { background: var(--brand-500); color: #fff; height: 48px; padding: 0 24px; border-radius: 12px; font-size: 15px; width: 100%; }
+        .d-btn-primary:hover { background: var(--brand-600); }
+        .d-btn-primary:active { transform: scale(0.97); }
+        .d-btn-secondary { background: transparent; color: var(--brand-500); height: 44px; padding: 0 24px; border-radius: 12px; font-size: 14px; border: 1.5px solid var(--brand-500); width: 100%; font-weight: 550; }
+        .d-btn-ghost { background: transparent; color: var(--neutral-500); padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 400; }
+        .d-btn-icon { background: transparent; color: var(--neutral-700); width: 36px; height: 36px; border-radius: 50%; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
+        .d-btn-icon:hover { background: var(--neutral-100); }
+        .d-btn-fab { background: var(--brand-500); color: #fff; width: 56px; height: 56px; border-radius: 50%; padding: 0; box-shadow: 0 6px 20px rgba(99,102,241,0.35); display: inline-flex; align-items: center; justify-content: center; }
+        .d-tabbar { display: flex; background: #fff; border-top: 1px solid var(--neutral-200); height: 56px; align-items: center; }
+        .d-tabbar-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 10px; font-weight: 500; color: var(--neutral-400); cursor: pointer; padding: 6px 0; }
+        .d-tabbar-item.active { color: var(--brand-500); }
+        .d-tabbar-item i { width: 22px; height: 22px; }
+        .d-header { display: flex; align-items: center; height: 44px; padding: 0 16px; background: #fff; }
+        .d-card { background: #fff; border-radius: 12px; padding: 16px; border: 1px solid var(--neutral-200); box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+        .d-card-metric { background: linear-gradient(135deg, var(--brand-500), #7C3AED); color: #fff; border: none; box-shadow: 0 4px 16px rgba(99,102,241,0.2); }
+        .d-chip { display: inline-flex; align-items: center; height: 32px; padding: 0 12px; border-radius: 16px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.12s; }
+        .d-chip-active { background: var(--brand-500); color: #fff; }
+        .d-chip-inactive { background: var(--neutral-100); color: var(--neutral-700); }
+        .d-toast { background: #fff; border-radius: 12px; padding: 12px 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); display: flex; align-items: center; gap: 10px; }
+        .d-toggle { width: 51px; height: 31px; border-radius: 16px; position: relative; cursor: pointer; transition: background 0.2s; }
+        .d-toggle-on { background: var(--brand-500); }
+        .d-toggle-off { background: var(--neutral-300); }
+        .d-toggle-thumb { width: 27px; height: 27px; border-radius: 50%; background: #fff; position: absolute; top: 2px; box-shadow: 0 1px 4px rgba(0,0,0,0.15); transition: left 0.2s; }
+
+        /* Token swatches */
+        .swatch { height: 56px; border-radius: 10px; border: 1px solid var(--neutral-200); transition: transform 0.15s; }
+        .swatch:hover { transform: scale(1.05); }
+
+        /* Variant grid */
+        .vgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin: 16px 0; }
+        .sgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 12px 0; }
+
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="sidebar-inner">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-icon"><i data-lucide="wallet" style="width:20px;height:20px;"></i></div>
+            <div>
+                <div class="sidebar-logo-text">了然 Liaoran</div>
+                <div class="sidebar-logo-sub">Design System v1.0</div>
+            </div>
+        </div>
+        <nav>
+            <div class="nav-group">
+                <div class="nav-group-title">Overview</div>
+                <a href="#intro" class="nav-item"><i data-lucide="book-open"></i> Introduction</a>
+                <a href="#getting-started" class="nav-item"><i data-lucide="rocket"></i> Getting Started</a>
+            </div>
+            <div class="nav-group">
+                <div class="nav-group-title">Foundation</div>
+                <a href="#tokens" class="nav-item"><i data-lucide="palette"></i> Design Tokens</a>
+            </div>
+            <div class="nav-group">
+                <div class="nav-group-title">Interactive</div>
+                <a href="#button" class="nav-item"><i data-lucide="mouse-pointer-click"></i> Button</a>
+                <a href="#filter-chip" class="nav-item"><i data-lucide="sliders-horizontal"></i> Filter Chip</a>
+            </div>
+            <div class="nav-group">
+                <div class="nav-group-title">Content</div>
+                <a href="#card" class="nav-item"><i data-lucide="layout-grid"></i> Card</a>
+                <a href="#badge" class="nav-item"><i data-lucide="tag"></i> Badge</a>
+                <a href="#avatar" class="nav-item"><i data-lucide="circle-user"></i> Avatar</a>
+                <a href="#chart" class="nav-item"><i data-lucide="bar-chart-3"></i> Chart</a>
+            </div>
+            <div class="nav-group">
+                <div class="nav-group-title">Form</div>
+                <a href="#text-input" class="nav-item"><i data-lucide="text-cursor-input"></i> Text Input</a>
+                <a href="#search-bar" class="nav-item"><i data-lucide="search"></i> Search Bar</a>
+                <a href="#toggle" class="nav-item"><i data-lucide="toggle-right"></i> Toggle</a>
+            </div>
+            <div class="nav-group">
+                <div class="nav-group-title">Navigation</div>
+                <a href="#tab-bar" class="nav-item"><i data-lucide="panel-bottom"></i> Tab Bar</a>
+                <a href="#header" class="nav-item"><i data-lucide="panel-top"></i> Header</a>
+                <a href="#tab" class="nav-item"><i data-lucide="columns-2"></i> Tab / Segment</a>
+            </div>
+            <div class="nav-group">
+                <div class="nav-group-title">Feedback</div>
+                <a href="#modal" class="nav-item"><i data-lucide="layers"></i> Modal / Sheet</a>
+                <a href="#progress" class="nav-item"><i data-lucide="loader"></i> Progress</a>
+                <a href="#toast" class="nav-item"><i data-lucide="bell-ring"></i> Toast</a>
+                <a href="#tooltip" class="nav-item"><i data-lucide="message-square"></i> Tooltip</a>
+                <a href="#skeleton" class="nav-item"><i data-lucide="scan-line"></i> Skeleton</a>
+            </div>
+            <div class="nav-group">
+                <div class="nav-group-title">Layout</div>
+                <a href="#divider" class="nav-item"><i data-lucide="minus"></i> Divider</a>
+            </div>
+            <div class="nav-group">
+                <div class="nav-group-title">Resources</div>
+                <a href="#changelog" class="nav-item"><i data-lucide="history"></i> Changelog</a>
+            </div>
+        </nav>
+    </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- INTRO -->
+<section id="intro" style="margin-bottom:48px;scroll-margin-top:2rem;">
+    <h1 style="font-size:40px;font-weight:800;color:var(--neutral-900);margin-bottom:6px;">了然 Design System</h1>
+    <p style="font-size:17px;color:var(--neutral-500);margin-bottom:24px;">AI驱动的零记账智能财务管家 — 基于 Tamagui v2 + Lucide Icons</p>
+    <div class="card">
+        <p style="color:var(--neutral-700);line-height:1.7;margin-bottom:16px;">从 30 个 UX 规格页面中提取 15 个高频复用组件，统一视觉语言和交互模式。支持 React Native (Expo) + Next.js 跨平台 token 共享。</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <span class="badge badge-id">v1.0.0</span>
+            <span class="badge badge-usage">17 Components</span>
+            <span class="badge badge-id">Tamagui v2</span>
+            <span class="badge badge-id">Lucide Icons</span>
+        </div>
+    </div>
+</section>
+
+<!-- GETTING STARTED -->
+<section id="getting-started" style="margin-bottom:48px;scroll-margin-top:2rem;">
+    <div class="section-title">Getting Started</div>
+    <div class="card">
+        <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;">Installation</h3>
+        <div class="code"><pre><span class="cmt"># Core</span>
+npm install tamagui @tamagui/config
+
+<span class="cmt"># Icons</span>
+npm install @tamagui/lucide-icons lucide-react-native</pre></div>
+    </div>
+    <div class="card">
+        <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;">Usage</h3>
+        <div class="code"><pre><span class="kw">import</span> { Button, Card, Input, Sheet, Tabs } <span class="kw">from</span> <span class="str">'tamagui'</span>
+<span class="kw">import</span> { Home, Receipt, Bot, User } <span class="kw">from</span> <span class="str">'@tamagui/lucide-icons'</span>
+<span class="kw">import</span> { liaoran } <span class="kw">from</span> <span class="str">'./theme/liaoran'</span></pre></div>
+    </div>
+</section>
+
+<!-- TOKENS -->
+<section id="tokens" style="margin-bottom:48px;scroll-margin-top:2rem;">
+    <div class="section-title">Design Tokens</div>
+    <div class="card">
+        <h3 style="font-size:16px;font-weight:600;margin-bottom:16px;">Brand Colors</h3>
+        <div class="vgrid">
+            <div><div class="swatch" style="background:#EEF2FF;"></div><p style="font-size:12px;font-family:monospace;margin-top:6px;">brand-50 #EEF2FF</p></div>
+            <div><div class="swatch" style="background:#C7D2FE;"></div><p style="font-size:12px;font-family:monospace;margin-top:6px;">brand-200 #C7D2FE</p></div>
+            <div><div class="swatch" style="background:#6366F1;"></div><p style="font-size:12px;font-family:monospace;margin-top:6px;">brand-500 #6366F1</p></div>
+            <div><div class="swatch" style="background:#4F46E5;"></div><p style="font-size:12px;font-family:monospace;margin-top:6px;">brand-600 #4F46E5</p></div>
+            <div><div class="swatch" style="background:#4338CA;"></div><p style="font-size:12px;font-family:monospace;margin-top:6px;">brand-700 #4338CA</p></div>
+            <div><div class="swatch" style="background:#312E81;"></div><p style="font-size:12px;font-family:monospace;margin-top:6px;">brand-900 #312E81</p></div>
+        </div>
+        <h3 style="font-size:16px;font-weight:600;margin:24px 0 16px;">Semantic</h3>
+        <div class="vgrid">
+            <div><div class="swatch" style="background:#22C55E;"></div><p style="font-size:12px;font-family:monospace;margin-top:6px;">success #22C55E</p></div>
+            <div><div class="swatch" style="background:#EF4444;"></div><p style="font-size:12px;font-family:monospace;margin-top:6px;">error #EF4444</p></div>
+            <div><div class="swatch" style="background:#F59E0B;"></div><p style="font-size:12px;font-family:monospace;margin-top:6px;">warning #F59E0B</p></div>
+            <div><div class="swatch" style="background:#3B82F6;"></div><p style="font-size:12px;font-family:monospace;margin-top:6px;">info #3B82F6</p></div>
+        </div>
+        <h3 style="font-size:16px;font-weight:600;margin:24px 0 16px;">Category Mapping</h3>
+        <div class="vgrid">
+            <div><div class="swatch" style="background:#F97316;"></div><p style="font-size:12px;margin-top:6px;">餐饮 #F97316</p></div>
+            <div><div class="swatch" style="background:#3B82F6;"></div><p style="font-size:12px;margin-top:6px;">交通 #3B82F6</p></div>
+            <div><div class="swatch" style="background:#8B5CF6;"></div><p style="font-size:12px;margin-top:6px;">购物 #8B5CF6</p></div>
+            <div><div class="swatch" style="background:#06B6D4;"></div><p style="font-size:12px;margin-top:6px;">居住 #06B6D4</p></div>
+            <div><div class="swatch" style="background:#EC4899;"></div><p style="font-size:12px;margin-top:6px;">娱乐 #EC4899</p></div>
+            <div><div class="swatch" style="background:#22C55E;"></div><p style="font-size:12px;margin-top:6px;">健康 #22C55E</p></div>
+        </div>
+        <h3 style="font-size:16px;font-weight:600;margin:24px 0 16px;">Typography Scale</h3>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+            <div><span style="font-size:11px;color:var(--neutral-400);">36pt bold — Metric</span><p style="font-size:36px;font-weight:700;font-family:'Noto Sans SC',sans-serif;">¥12,580</p></div>
+            <div><span style="font-size:11px;color:var(--neutral-400);">20pt bold — H1</span><p style="font-size:20px;font-weight:700;">4月消费</p></div>
+            <div><span style="font-size:11px;color:var(--neutral-400);">17pt semibold — Header</span><p style="font-size:17px;font-weight:600;">月度报表</p></div>
+            <div><span style="font-size:11px;color:var(--neutral-400);">16pt semibold — Button</span><p style="font-size:16px;font-weight:600;">开始体验</p></div>
+            <div><span style="font-size:11px;color:var(--neutral-400);">14pt — Body</span><p style="font-size:14px;">AI自动识别您的消费分类</p></div>
+            <div><span style="font-size:11px;color:var(--neutral-400);">13pt — Caption</span><p style="font-size:13px;color:var(--neutral-500);">餐饮·外卖 · 12:30</p></div>
+        </div>
+    </div>
+</section>
+
+<!-- BUTTON -->
+<section id="button" style="margin-bottom:48px;scroll-margin-top:2rem;">
+    <div class="section-title">Button <span class="badge badge-id">btn-001</span> <span class="badge badge-usage">30/30 pages</span></div>
+    <p style="color:var(--neutral-500);margin-bottom:16px;">触发主要和次要操作。每个页面最多一个 Primary Button。</p>
+    <div class="card">
+        <h3 style="font-size:15px;font-weight:600;margin-bottom:16px;">Variants</h3>
+        <div class="vgrid">
+            <div style="text-align:center;"><button class="d-btn d-btn-primary">开始体验</button><p style="font-size:11px;color:var(--neutral-400);margin-top:8px;">primary — 48pt</p></div>
+            <div style="text-align:center;"><button class="d-btn d-btn-secondary"><i data-lucide="bar-chart-3" style="width:16px;height:16px;"></i> 查看完整报表</button><p style="font-size:11px;color:var(--neutral-400);margin-top:8px;">secondary — 44pt</p></div>
+            <div style="text-align:center;"><button class="d-btn d-btn-ghost">先不了，继续基础版</button><p style="font-size:11px;color:var(--neutral-400);margin-top:8px;">ghost</p></div>
+            <div style="text-align:center;">
+                <button class="d-btn d-btn-icon"><i data-lucide="chevron-left" style="width:20px;height:20px;"></i></button>
+                <button class="d-btn d-btn-icon" style="margin-left:8px;"><i data-lucide="x" style="width:20px;height:20px;"></i></button>
+                <button class="d-btn d-btn-icon" style="margin-left:8px;"><i data-lucide="share-2" style="width:20px;height:20px;"></i></button>
+                <p style="font-size:11px;color:var(--neutral-400);margin-top:8px;">icon — 36pt</p>
+            </div>
+            <div style="text-align:center;"><button class="d-btn d-btn-fab"><i data-lucide="plus" style="width:24px;height:24px;"></i></button><p style="font-size:11px;color:var(--neutral-400);margin-top:8px;">fab — 56pt</p></div>
+        </div>
+    </div>
+    <div class="card">
+        <h3 style="font-size:15px;font-weight:600;margin-bottom:16px;">States</h3>
+        <div class="sgrid">
+            <div style="text-align:center;"><button class="d-btn d-btn-primary" style="font-size:14px;height:40px;">默认</button><p style="font-size:11px;color:var(--neutral-400);margin-top:6px;">default</p></div>
+            <div style="text-align:center;"><button class="d-btn d-btn-primary" style="font-size:14px;height:40px;opacity:0.5;cursor:not-allowed;">已禁用</button><p style="font-size:11px;color:var(--neutral-400);margin-top:6px;">disabled</p></div>
+            <div style="text-align:center;"><button class="d-btn d-btn-primary" style="font-size:14px;height:40px;transform:scale(0.97);">按下</button><p style="font-size:11px;color:var(--neutral-400);margin-top:6px;">pressed</p></div>
+            <div style="text-align:center;"><button class="d-btn d-btn-primary" style="font-size:14px;height:40px;position:relative;"><span style="visibility:hidden;">加载</span><svg width="18" height="18" viewBox="0 0 24 24" style="position:absolute;animation:spin 1s linear infinite;"><circle cx="12" cy="12" r="10" stroke="white" stroke-width="2.5" fill="none" stroke-dasharray="31.4 31.4" stroke-linecap="round"/></svg></button><p style="font-size:11px;color:var(--neutral-400);margin-top:6px;">loading</p></div>
+        </div>
+    </div>
+</section>
+
+<!-- FILTER CHIP -->
+<section id="filter-chip" style="margin-bottom:48px;scroll-margin-top:2rem;">
+    <div class="section-title">Filter Chip <span class="badge badge-id">chp-001</span> <span class="badge badge-usage">3+ pages</span></div>
+    <div class="card">
+        <div class="preview" style="display:flex;gap:8px;overflow-x:auto;flex-wrap:wrap;">
+            <span class="d-chip d-chip-active">全部</span>
+            <span class="d-chip d-chip-inactive">餐饮</span>
+            <span class="d-chip d-chip-inactive">购物</span>
+            <span class="d-chip d-chip-inactive">交通</span>
+            <span class="d-chip d-chip-inactive">居住</span>
+        </div>
+        <p style="font-size:12px;color:var(--neutral-400);margin-top:12px;">amount variant:</p>
+        <div class="preview" style="display:flex;gap:8px;">
+            <span class="d-chip d-chip-inactive">¥200</span>
+            <span class="d-chip d-chip-active">¥500</span>
+            <span class="d-chip d-chip-inactive">¥800</span>
+            <span class="d-chip d-chip-inactive">¥1000</span>
+        </div>
+    </div>
+</section>
+
+<!-- CARD -->
+<section id="card" style="margin-bottom:48px;scroll-margin-top:2rem;">
+    <div class="section-title">Card <span class="badge badge-id">crd-001</span> <span class="badge badge-usage">20+ pages</span></div>
+    <p style="color:var(--neutral-500);margin-bottom:16px;">信息分组容器。13 个变体覆盖指标、列表、引导、洞察等场景。</p>
+    <div class="card">
+        <div style="display:flex;flex-direction:column;gap:20px;">
+            <div><p style="font-size:11px;color:var(--neutral-400);margin-bottom:8px;">metric</p>
+                <div class="d-card d-card-metric" style="padding:20px;">
+                    <p style="font-size:13px;opacity:0.8;">4月总支出</p>
+                    <p style="font-size:36px;font-weight:700;margin:4px 0;font-family:'Noto Sans SC',sans-serif;">¥12,580</p>
+                    <div style="display:flex;gap:16px;font-size:13px;opacity:0.8;"><span>收入 ¥18,500</span><span>结余 ¥5,920</span></div>
+                </div>
+            </div>
+            <div><p style="font-size:11px;color:var(--neutral-400);margin-bottom:8px;">spotlight <span class="badge badge-new">NEW</span></p>
+                <div class="d-card" style="display:flex;align-items:center;gap:12px;cursor:pointer;">
+                    <i data-lucide="bot" style="width:22px;height:22px;color:var(--brand-500);flex-shrink:0;"></i>
+                    <span style="flex:1;font-size:14px;color:var(--neutral-700);">您的副业本月净利润 ¥3,200，环比增长 15%</span>
+                    <i data-lucide="chevron-right" style="width:16px;height:16px;color:var(--neutral-400);flex-shrink:0;"></i>
+                </div>
+            </div>
+            <div><p style="font-size:11px;color:var(--neutral-400);margin-bottom:8px;">category</p>
+                <div class="d-card" style="display:flex;align-items:center;gap:12px;height:76px;">
+                    <div style="width:36px;height:36px;border-radius:10px;background:#FFF7ED;display:flex;align-items:center;justify-content:center;"><i data-lucide="utensils" style="width:18px;height:18px;color:#F97316;"></i></div>
+                    <div style="flex:1;"><div style="display:flex;justify-content:space-between;"><span style="font-weight:500;font-size:14px;">餐饮</span><span style="font-weight:600;font-size:14px;">¥3,280</span></div><div style="height:4px;background:var(--neutral-100);border-radius:2px;margin-top:6px;"><div style="height:100%;width:32%;background:#F97316;border-radius:2px;"></div></div><span style="font-size:11px;color:var(--neutral-400);">32%</span></div>
+                </div>
+            </div>
+            <div><p style="font-size:11px;color:var(--neutral-400);margin-bottom:8px;">transaction</p>
+                <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--neutral-200);">
+                    <div style="width:36px;height:36px;border-radius:50%;background:#FEF3C7;display:flex;align-items:center;justify-content:center;"><i data-lucide="utensils" style="width:16px;height:16px;color:#F97316;"></i></div>
+                    <div style="flex:1;"><div style="font-weight:500;font-size:14px;">美团外卖</div><div style="font-size:13px;color:var(--neutral-500);">餐饮·外卖 · 12:30</div></div>
+                    <div style="font-weight:600;font-size:14px;">-¥38.50</div>
+                </div>
+            </div>
+            <div><p style="font-size:11px;color:var(--neutral-400);margin-bottom:8px;">snapshot <span class="badge badge-new">NEW</span></p>
+                <div class="d-card" style="padding:16px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                        <div style="display:flex;align-items:center;gap:8px;"><i data-lucide="users" style="width:18px;height:18px;color:var(--brand-500);"></i><span style="font-weight:600;font-size:14px;">家庭账本</span></div>
+                        <span style="color:var(--brand-500);font-size:13px;cursor:pointer;display:flex;align-items:center;gap:2px;">查看详情 <i data-lucide="chevron-right" style="width:14px;height:14px;"></i></span>
+                    </div>
+                    <div style="font-size:24px;font-weight:700;margin-bottom:8px;">¥18,320</div>
+                    <div style="display:flex;gap:4px;height:8px;border-radius:4px;overflow:hidden;"><div style="flex:6;background:var(--brand-500);border-radius:4px;"></div><div style="flex:4;background:#EC4899;border-radius:4px;"></div></div>
+                    <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:11px;color:var(--neutral-400);"><span>大强 60%</span><span>小丽 40%</span></div>
+                </div>
+            </div>
+            <div><p style="font-size:11px;color:var(--neutral-400);margin-bottom:8px;">guidance</p>
+                <div class="d-card" style="display:flex;gap:12px;align-items:flex-start;">
+                    <div style="width:36px;height:36px;border-radius:10px;background:#EEF2FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="bell" style="width:18px;height:18px;color:var(--brand-500);"></i></div>
+                    <div style="flex:1;"><div style="font-weight:600;font-size:14px;">开启通知读取</div><div style="font-size:13px;color:var(--neutral-500);margin-top:4px;">自动捕获支付通知，实现零记账</div><button class="d-btn d-btn-primary" style="margin-top:12px;height:36px;font-size:13px;">去开启</button></div>
+                </div>
+            </div>
+            <div><p style="font-size:11px;color:var(--neutral-400);margin-bottom:8px;">locked</p>
+                <div class="d-card" style="background:var(--neutral-100);text-align:center;padding:24px;">
+                    <i data-lucide="lock" style="width:24px;height:24px;color:var(--neutral-400);"></i>
+                    <div style="font-weight:600;margin-top:8px;">还有 3 条洞察</div>
+                    <div style="filter:blur(4px);color:var(--neutral-500);margin:8px 0;">您的外卖消费比上月增长了23%...</div>
+                    <button class="d-btn d-btn-primary" style="height:36px;font-size:13px;margin-top:8px;">免费领取7天体验</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- BADGE -->
+<section id="badge" style="margin-bottom:48px;scroll-margin-top:2rem;">
+    <div class="section-title">Badge <span class="badge badge-id">bdg-001</span> <span class="badge badge-usage">10+ pages</span></div>
+    <div class="card">
+        <div class="preview" style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
+            <div style="text-align:center;"><div style="position:relative;display:inline-block;"><i data-lucide="bot" style="width:24px;height:24px;color:var(--neutral-700);"></i><span style="position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:#EF4444;"></span></div><p style="font-size:11px;color:var(--neutral-400);margin-top:6px;">dot</p></div>
+            <div style="text-align:center;"><span style="display:inline-block;padding:2px 6px;background:var(--brand-500);color:#fff;border-radius:4px;font-size:11px;font-weight:700;">NEW</span><p style="font-size:11px;color:var(--neutral-400);margin-top:6px;">label</p></div>
+            <div style="text-align:center;"><span class="d-chip d-chip-active" style="height:28px;font-size:12px;">为自己</span> <span class="d-chip" style="height:28px;font-size:12px;background:#EC4899;color:#fff;">为配偶</span> <span class="d-chip d-chip-inactive" style="height:28px;font-size:12px;">为孩子</span><p style="font-size:11px;color:var(--neutral-400);margin-top:6px;">tag</p></div>
+            <div style="text-align:center;"><span style="display:inline-block;padding:2px 6px;background:var(--neutral-100);border-radius:4px;font-size:13px;color:var(--neutral-500);">免费体验 2/3</span><p style="font-size:11px;color:var(--neutral-400);margin-top:6px;">counter</p></div>
+        </div>
+    </div>
+</section>
+
+<!-- AVATAR -->
+<section id="avatar" style="margin-bottom:48px;scroll-margin-top:2rem;">
+    <div class="section-title">Avatar <span class="badge badge-id">avt-001</span> <span class="badge badge-usage">4+ pages</span></div>
+    <div class="card">
+        <div class="preview" style="display:flex;align-items:end;gap:20px;justify-content:center;">
+            <div style="text-align:center;"><div style="width:32px;height:32px;border-radius:50%;background:var(--brand-500);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:600;">强</div><p style="font-size:11px;color:var(--neutral-400);margin-top:6px;">sm 32</p></div>
+            <div style="text-align:center;"><div style="width:44px;height:44px;border-radius:50%;background:#EC4899;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:600;">丽</div><p style="font-size:11px;color:var(--neutral-400);margin-top:6px;">md 44</p></div>
+            <div style="text-align:center;"><div style="width:64px;height:64px;border-radius:50%;background:#F97316;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:600;">美</div><p style="font-size:11px;color:var(--neutral-400);margin-top:6px;">lg 64</p></div>
+            <div style="text-align:center;"><div style="width:80px;height:80px;border-radius:50%;background:#06B6D4;display:flex;align-items:center;justify-content:center;color:#fff;font-size:28px;font-weight:600;position:relative;">强<div style="position:absolute;bottom:0;right:0;width:24px;height:24px;border-radius:50%;background:var(--brand-500);border:2px solid #fff;display:flex;align-items:center;justify-content:center;"><i data-lucide="camera" style="width:12px;height:12px;color:#fff;"></i></div></div><p style="font-size:11px;color:var(--neutral-400);margin-top:6px;">xl 80 editable</p></div>
+        </div>
+    </div>
+</section>
+
+<!-- CHART -->
+<section id="chart" style="margin-bottom:48px;scroll-margin-top:2rem;">
+    <div class="section-title">Chart <span class="badge badge-id">chr-001</span> <span class="badge badge-usage">4+ pages</span></div>
+    <div class="card">
+        <h3 style="font-size:15px;font-weight:600;margin-bottom:12px;">Category Color Mapping</h3>
+        <div class="vgrid">
+            <div><div class="swatch" style="background:#F97316;"></div><p style="font-size:12px;margin-top:6px;">餐饮</p></div>
+            <div><div class="swatch" style="background:#3B82F6;"></div><p style="font-size:12px;margin-top:6px;">交通</p></div>
+            <div><div class="swatch" style="background:#8B5CF6;"></div><p style="font-size:12px;margin-top:6px;">购物</p></div>
+            <div><div class="swatch" style="background:#06B6D4;"></div><p style="font-size:12px;margin-top:6px;">居住</p></div>
+            <div><div class="swatch" style="background:#EC4899;"></div><p style="font-size:12px;margin-top:6px;">娱乐</p></div>
+            <div><div class="swatch" style="background:#22C55E;"></div><p style="font-size:12px;margin-top:6px;">健康</p></div>
+        </div>
+        <p style="font-size:13px;color:var(--neutral-500);margin-top:16px;">4 variants: <strong>donut</strong> (01.8) · <strong>line</strong> (03.3) · <strong>radar</strong> (03.4) · <strong>bar</strong> (05.2, 07.4)</p>
+    </div>
+</section>
+
+<!-- TEXT INPUT -->
+<section id="text-input" style="margin-bottom:48px;scroll-margin-top:2rem;">
+    <div class="section-title">Text Input <span class="badge badge-id">inp-001</span> <span class="badge badge-usage">8+ pages</span></div>
+    <div class="card">
+        <div style="display:flex;flex-direction:column;gap:20px;max-width:360px;">
+            <div><p style="font-size:11px;color:var(--neutral-400);margin-bottom:6px;">phone</p><div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--neutral-500);font-size:15px;">+86</span><input type="text" value="138 0000 0000" readonly style="flex:1;height:48px;border:none;border-bottom:2px solid var(--brand-500);font-size:16px;padding:0 8px;outline:none;background:transparent;font-family:inherit;"></div></div>
+            <div><p style="font-size:11px;color:var(--neutral-400);margin-bottom:6px;">code</p><div style="display:flex;gap:8px;justify-content:center;"><div style="width:42px;height:48px;border:2px solid var(--brand-500);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:600;">3</div><div style="width:42px;height:48px;border:2px solid var(--brand-500);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:600;">8</div><div style="width:42px;height:48px;border:2px solid var(--brand-500);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:600;">5</div><div style="width:42px;height:48px;border:2px solid var(--neutral-200);border-radius:8px;"></div><div style="width:42px;height:48px;border:2px solid var(--neutral-200);border-radius:8px;"></div><div style="width:42px;height:48px;border:2px solid var(--neutral-200);border-radius:8px;"></div></div></div>
+            <div><p style="font-size:11px;color:var(--neutral-400);margin-bottom:6px;">amount</p><div style="text-align:center;"><span style="font-size:22px;color:var(--neutral-400);">¥</span><span style="font-size:36px;font-weight:700;border-bottom:2px solid var(--brand-500);padding:0 4px;">38.50</span></div></div>
+            <div><p style="font-size:11px;color:var(--neutral-400);margin-bottom:6px;">chat</p><div style="display:flex;gap:8px;align-items:flex-end;"><div style="flex:1;background:var(--neutral-100);border-radius:20px;padding:10px 16px;font-size:14px;color:var(--neutral-400);">问问AI管家...</div><button class="d-btn d-btn-fab" style="width:40px;height:40px;box-shadow:none;"><i data-lucide="send" style="width:16px;height:16px;"></i></button></div></div>
+        </div>
+    </div>
+</section>
+
+<!-- SEARCH BAR -->
+<section id="search-bar" style="margin-bottom:48px;scroll-margin-top:2rem;">
+    <div class="section-title">Search Bar <span class="badge badge-id">src-001</span> <span class="badge badge-usage">3+ pages</span></div>
+    <div class="card">
+        <div class="preview" style="max-width:360px;margin:0 auto;">
+            <div style="display:flex;align-items:center;gap:8px;background:var(--neutral-100);border-radius:20px;padding:0 14px;height:40px;"><i data-lucide="search" style="width:16px;height:16px;color:var(--neutral-400);flex-shrink:0;"></i><span style="flex:1;color:var(--neutral-400);font-size:14px;">搜索交易...</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- TOGGLE -->
+<section id="toggle" style="margin-bottom:48px;scroll-margin-top:2rem;">
+    <div class="section-title">Toggle <span class="badge badge-id">swi-001</span> <span class="badge badge-usage">2+ pages</span></div>
+    <div class="card">
+        <div style="max-width:360px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--neutral-100);">
+                <div><div style="font-size:14px;font-weight:500;">洞察推送</div><div style="font-size:12px;color:var(--neutral-500);margin-top:2px;">每日 1-2 条 AI 洞察</div></div>
+                <div class="d-toggle d-toggle-on"><div class="d-toggle-thumb" style="left:22px;"></div></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;">
+                <div><div style="font-size:14px;font-weight:500;">月度报表提醒</div><div style="font-size:12px;color:var(--neutral-500);margin-top:2px;">每月 1 号推送</div></div>
+                <div class="d-toggle d-toggle-off"><div class="d-toggle-thumb" style="left:2px;"></div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- TAB BAR -->
+<section id="tab-bar" style="margin-bottom:48px;scroll-margin-top:2rem;">
+    <div class="section-title">Bottom Tab Bar <span class="badge badge-id">nav-001</span> <span class="badge badge-usage">20+ pages</span></div>
+    <div class="card">
+        <div class="phone" style="margin:0 auto;">
+            <div class="phone-notch"><div class="phone-notch-pill"></div></div>
+            <div class="phone-content" style="height:180px;display:flex;align-items:center;justify-content:center;color:var(--neutral-400);font-size:13px;">Page Content</div>
+            <div class="d-tabbar">
+                <div class="d-tabbar-item active"><i data-lucide="home"></i><span>首页</span></div>
+                <div class="d-tabbar-item"><i data-lucide="receipt"></i><span>交易</span></div>
+                <div class="d-tabbar-item" style="position:relative;"><i data-lucide="bot"></i><span style="position:absolute;top:4px;right:calc(50% - 16px);width:8px;height:8px;border-radius:50%;background:#EF4444;"></span><span>AI</span></div>
+                <div class="d-tabbar-item"><i data-lucide="user"></i><span>我的</span></div>
+            </div>
+            <div class="phone-home"></div>
+        </div>
+        <p style="font-size:12px;color:var(--neutral-400);text-align:center;margin-top:12px;">56pt + SafeArea · Lucide line icons · Active: brand-500</p>
+    </div>
+</section>
+
+<!-- HEADER -->
+<section id="header" style="margin-bottom:48px;scroll-margin-top:2rem;">
+    <div class="section-title">Header <span class="badge badge-id">nav-002</span> <span class="badge badge-usage">25+ pages</span></div>
+    <div class="card">
+        <div style="display:flex;flex-direction:column;gap:16px;max-width:360px;margin:0 auto;">
+            <div><p style="font-size:11px;color:var(--neutral-400);margin-bottom:6px;">root — Dashboard</p><div class="d-header" style="justify-content:space-between;border-radius:12px;border:1px solid var(--neutral-200);"><span style="font-size:20px;font-weight:700;">4月消费</span><div style="display:flex;gap:8px;"><button class="d-btn d-btn-icon" style="width:32px;height:32px;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i></button><button class="d-btn d-btn-icon" style="width:32px;height:32px;"><i data-lucide="chevron-right" style="width:18px;height:18px;"></i></button></div></div></div>
+            <div><p style="font-size:11px;color:var(--neutral-400);margin-bottom:6px;">stack — 设置</p><div class="d-header" style="border-radius:12px;border:1px solid var(--neutral-200);"><button class="d-btn d-btn-icon" style="width:32px;height:32px;"><i data-lucide="chevron-left" style="width:18px;height:18px;"></i></button><span style="flex:1;text-align:center;font-size:17px;font-weight:600;">设置</span><span style="width:32px;"></span></div></div>
+            <div><p style="font-size:11px;color:var(--neutral-400);margin-bottom:6px;">modal — 记一笔</p><div class="d-header" style="border-radius:12px;border:1px solid var(--neutral-200);"><button class="d-btn d-btn-icon" style="width:32px;height:32px;"><i data-lucide="x" style="width:18px;height:18px;"></i></button><span style="flex:1;text-align:center;font-size:17px;font-weight:600;">记一笔</span><span style="width:32px;"></span></div></div>
+        </div>
+    </div>
+</section>
+
+<!-- TAB -->
+<section id="tab" style="margin-bottom:48px;scroll-margin-top:2rem;">
+    <div class="section-title">Tab / Segment <span class="badge badge-id">tab-001</span> <span class="badge badge-usage">3 pages</span></div>
+    <div class="card">
+        <div style="display:flex;flex-direction:column;gap:16px;max-width:360px;margin:0 auto;">
+            <div><p style="font-size:11px;color:var(--neutral-400);margin-bottom:6px;">2-tab — 注册</p><div style="display:flex;border-bottom:1px solid var(--neutral-200);"><div style="flex:1;text-align:center;padding:12px 0;font-size:15px;font-weight:600;color:var(--brand-500);position:relative;">微信<div style="position:absolute;bottom:0;left:20%;right:20%;height:2px;background:var(--brand-500);border-radius:1px;"></div></div><div style="flex:1;text-align:center;padding:12px 0;font-size:15px;color:var(--neutral-500);">手机号</div></div></div>
+            <div><p style="font-size:11px;color:var(--neutral-400);margin-bottom:6px;">3-tab — 手动记账</p><div style="display:flex;border-bottom:1px solid var(--neutral-200);"><div style="flex:1;text-align:center;padding:12px 0;font-size:15px;color:var(--neutral-500);">语音</div><div style="flex:1;text-align:center;padding:12px 0;font-size:15px;font-weight:600;color:var(--brand-500);position:relative;">表单<div style="position:absolute;bottom:0;left:20%;right:20%;height:2px;background:var(--brand-500);border-radius:1px;"></div></div><div style="flex:1;text-align:center;padding:12px 0;font-size:15px;color:var(--neutral-500);">截图</div></div></div>
+        </div>
+    </div>
+</section>
+
+<!-- MODAL -->
+<section id="modal" style="margin-bottom:48px;scroll-margin-top:2rem;">
+    <div class="section-title">Modal / Sheet <span class="badge badge-id">sht-001</span> <span class="badge badge-usage">15+ pages</span></div>
+    <div class="card">
+        <div class="vgrid">
+            <div><p style="font-size:11px;color:var(--neutral-400);margin-bottom:8px;">alert</p><div style="background:rgba(0,0,0,0.3);border-radius:16px;padding:48px 20px;display:flex;align-items:center;justify-content:center;"><div style="background:#fff;border-radius:16px;padding:24px;width:260px;text-align:center;"><div style="font-weight:600;font-size:16px;margin-bottom:8px;">确认解绑微信？</div><div style="font-size:13px;color:var(--neutral-500);margin-bottom:16px;">解绑后将无法使用微信登录</div><div style="display:flex;gap:10px;"><button class="d-btn d-btn-ghost" style="flex:1;border:1px solid var(--neutral-200);border-radius:12px;padding:10px;">取消</button><button class="d-btn d-btn-primary" style="flex:1;height:40px;font-size:14px;">解绑</button></div></div></div></div>
+            <div><p style="font-size:11px;color:var(--neutral-400);margin-bottom:8px;">sheet</p><div style="background:rgba(0,0,0,0.3);border-radius:16px;padding:60px 16px 16px;"><div style="background:#fff;border-radius:16px 16px 0 0;padding:20px;"><div style="width:36px;height:4px;background:var(--neutral-300);border-radius:2px;margin:0 auto 16px;"></div><div style="font-weight:600;font-size:16px;margin-bottom:8px;">服务协议与隐私保护</div><div style="font-size:13px;color:var(--neutral-500);margin-bottom:16px;">请阅读并同意以下协议</div><button class="d-btn d-btn-primary" style="height:40px;font-size:14px;margin-bottom:8px;">同意并继续</button><button class="d-btn d-btn-ghost" style="width:100%;text-align:center;">不同意</button></div></div></div>
+        </div>
+    </div>
+</section>
+
+<!-- PROGRESS -->
+<section id="progress" style="margin-bottom:48px;scroll-margin-top:2rem;">
+    <div class="section-title">Progress <span class="badge badge-id">prg-001</span> <span class="badge badge-usage">5+ pages</span></div>
+    <div class="card">
+        <div style="display:flex;flex-direction:column;gap:20px;max-width:360px;margin:0 auto;">
+            <div><p style="font-size:11px;color:var(--neutral-400);margin-bottom:8px;">dots — Onboarding</p><div style="display:flex;gap:8px;justify-content:center;"><div style="width:8px;height:8px;border-radius:50%;background:var(--neutral-200);"></div><div style="width:10px;height:10px;border-radius:50%;background:var(--brand-500);"></div><div style="width:8px;height:8px;border-radius:50%;background:var(--neutral-200);"></div></div></div>
+            <div><p style="font-size:11px;color:var(--neutral-400);margin-bottom:8px;">bar — 导入处理</p><div style="height:4px;background:var(--neutral-100);border-radius:2px;overflow:hidden;"><div style="height:100%;width:68%;background:var(--brand-500);border-radius:2px;"></div></div><p style="text-align:center;margin-top:8px;font-size:13px;color:var(--neutral-500);">正在识别 68/100 笔交易</p></div>
+        </div>
+    </div>
+</section>
+
+<!-- TOAST -->
+<section id="toast" style="margin-bottom:48px;scroll-margin-top:2rem;">
+    <div class="section-title">Toast <span class="badge badge-id">tst-001</span> <span class="badge badge-usage">5+ pages</span></div>
+    <div class="card">
+        <div style="display:flex;flex-direction:column;gap:12px;max-width:360px;margin:0 auto;">
+            <div class="d-toast"><i data-lucide="check-circle" style="width:20px;height:20px;color:#22C55E;flex-shrink:0;"></i><span style="flex:1;font-size:14px;">已记录 ¥50.00 食品·生鲜</span><span style="color:var(--brand-500);font-size:13px;cursor:pointer;white-space:nowrap;">调整分类</span></div>
+            <div class="d-toast"><i data-lucide="info" style="width:20px;height:20px;color:var(--brand-500);flex-shrink:0;"></i><span style="flex:1;font-size:14px;">已分享，有据可说</span></div>
+            <div class="d-toast"><i data-lucide="alert-circle" style="width:20px;height:20px;color:#EF4444;flex-shrink:0;"></i><span style="flex:1;font-size:14px;">网络连接失败，请重试</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- DIVIDER -->
+<section id="divider" style="margin-bottom:48px;scroll-margin-top:2rem;">
+    <div class="section-title">Divider <span class="badge badge-id">div-001</span> <span class="badge badge-usage">6+ pages</span></div>
+    <div class="card">
+        <div style="max-width:360px;">
+            <p style="font-size:11px;color:var(--neutral-400);margin-bottom:8px;">full</p>
+            <hr style="border:none;border-top:1px solid var(--neutral-200);margin:8px 0;">
+            <p style="font-size:11px;color:var(--neutral-400);margin:16px 0 8px;">inset (60px)</p>
+            <hr style="border:none;border-top:1px solid var(--neutral-200);margin:8px 0 8px 60px;">
+        </div>
+    </div>
+</section>
+
+<!-- TOOLTIP -->
+<section id="tooltip" style="margin-bottom:48px;scroll-margin-top:2rem;">
+    <div class="section-title">Tooltip / Popover <span class="badge badge-id">pop-001</span> <span class="badge badge-usage">4+ pages</span></div>
+    <div class="card">
+        <div class="preview" style="display:flex;gap:32px;justify-content:center;align-items:center;flex-wrap:wrap;">
+            <div style="text-align:center;">
+                <p style="font-size:11px;color:var(--neutral-400);margin-bottom:12px;">chart-tip</p>
+                <div style="position:relative;display:inline-block;">
+                    <div style="width:12px;height:12px;border-radius:50%;background:var(--brand-500);"></div>
+                    <div style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background:var(--neutral-900);color:#fff;padding:6px 10px;border-radius:8px;font-size:12px;white-space:nowrap;">
+                        ¥3,280 · 4月
+                        <div style="position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid var(--neutral-900);"></div>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align:center;">
+                <p style="font-size:11px;color:var(--neutral-400);margin-bottom:12px;">info-tip</p>
+                <div style="position:relative;display:inline-block;">
+                    <div style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:var(--neutral-100);cursor:pointer;"><i data-lucide="info" style="width:16px;height:16px;color:var(--neutral-500);"></i></div>
+                    <div style="position:absolute;bottom:40px;left:50%;transform:translateX(-50%);background:#fff;border:1px solid var(--neutral-200);padding:10px 14px;border-radius:12px;font-size:13px;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,0.1);">
+                        每日免费 3 次 AI 对话
+                        <div style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%) rotate(45deg);width:10px;height:10px;background:#fff;border-right:1px solid var(--neutral-200);border-bottom:1px solid var(--neutral-200);"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SKELETON -->
+<section id="skeleton" style="margin-bottom:48px;scroll-margin-top:2rem;">
+    <div class="section-title">Skeleton <span class="badge badge-id">skn-001</span> <span class="badge badge-usage">5+ pages</span></div>
+    <div class="card">
+        <div style="display:flex;flex-direction:column;gap:20px;max-width:360px;">
+            <div>
+                <p style="font-size:11px;color:var(--neutral-400);margin-bottom:8px;">card skeleton</p>
+                <div style="background:var(--neutral-100);border-radius:12px;padding:16px;animation:pulse 1.5s ease-in-out infinite;">
+                    <div style="height:14px;width:40%;background:var(--neutral-200);border-radius:4px;margin-bottom:12px;"></div>
+                    <div style="height:32px;width:60%;background:var(--neutral-200);border-radius:4px;margin-bottom:8px;"></div>
+                    <div style="display:flex;gap:12px;"><div style="height:12px;width:30%;background:var(--neutral-200);border-radius:4px;"></div><div style="height:12px;width:30%;background:var(--neutral-200);border-radius:4px;"></div></div>
+                </div>
+            </div>
+            <div>
+                <p style="font-size:11px;color:var(--neutral-400);margin-bottom:8px;">list-item skeleton</p>
+                <div style="display:flex;align-items:center;gap:12px;padding:12px 0;animation:pulse 1.5s ease-in-out infinite;">
+                    <div style="width:36px;height:36px;border-radius:50%;background:var(--neutral-200);flex-shrink:0;"></div>
+                    <div style="flex:1;"><div style="height:14px;width:70%;background:var(--neutral-200);border-radius:4px;margin-bottom:6px;"></div><div style="height:12px;width:50%;background:var(--neutral-200);border-radius:4px;"></div></div>
+                    <div style="height:14px;width:60px;background:var(--neutral-200);border-radius:4px;"></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--neutral-100);animation:pulse 1.5s ease-in-out infinite;animation-delay:0.2s;">
+                    <div style="width:36px;height:36px;border-radius:50%;background:var(--neutral-200);flex-shrink:0;"></div>
+                    <div style="flex:1;"><div style="height:14px;width:55%;background:var(--neutral-200);border-radius:4px;margin-bottom:6px;"></div><div style="height:12px;width:40%;background:var(--neutral-200);border-radius:4px;"></div></div>
+                    <div style="height:14px;width:48px;background:var(--neutral-200);border-radius:4px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }</style>
+
+<!-- CHANGELOG -->
+<section id="changelog" style="margin-bottom:48px;scroll-margin-top:2rem;">
+    <div class="section-title">Changelog</div>
+    <div class="card">
+        <div style="border-left:3px solid var(--brand-500);padding-left:16px;margin-bottom:20px;">
+            <p style="font-weight:600;font-size:14px;">2026-04-11 — 质感打磨 + 最终组件</p>
+            <ul style="font-size:13px;color:var(--neutral-500);margin-top:6px;padding-left:16px;line-height:1.8;">
+                <li>Icon 库从 emoji 迁移至 Lucide Icons</li>
+                <li>Design Tokens 具体化（色值、间距、圆角、阴影、字体 scale）</li>
+                <li>Catalog 页面质感提升（品牌色、手机壳预览、点阵背景、hover 交互）</li>
+                <li>新增 Tooltip [pop-001]、Skeleton [skn-001] → 17 components total</li>
+                <li>所有组件规格文档同步更新 icon 引用</li>
+            </ul>
+        </div>
+        <div style="border-left:3px solid var(--neutral-300);padding-left:16px;margin-bottom:20px;">
+            <p style="font-weight:600;font-size:14px;">2026-04-11 — Dashboard 规格变更</p>
+            <ul style="font-size:13px;color:var(--neutral-500);margin-top:6px;padding-left:16px;line-height:1.8;">
+                <li>Card: 新增 spotlight、snapshot 变体 → 13 变体</li>
+                <li>Header: Dashboard root 新增滑动手势</li>
+                <li>Progress: 新增 inline 变体</li>
+            </ul>
+        </div>
+        <div style="border-left:3px solid var(--neutral-300);padding-left:16px;">
+            <p style="font-weight:600;font-size:14px;">2026-04-11 — 设计系统初始化</p>
+            <ul style="font-size:13px;color:var(--neutral-500);margin-top:6px;padding-left:16px;line-height:1.8;">
+                <li>基于 Tamagui v2 创建设计系统</li>
+                <li>从 30 个 UX 规格页面提取 15 个核心组件</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+</div>
+
+<script>
+lucide.createIcons();
+document.querySelectorAll('.nav-item').forEach(link => {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const id = this.getAttribute('href').substring(1);
+        const el = document.getElementById(id);
+        if (el) { el.scrollIntoView({ behavior: 'smooth' }); document.querySelectorAll('.nav-item').forEach(l => l.classList.remove('active')); this.classList.add('active'); }
+    });
+});
+window.addEventListener('scroll', () => {
+    let current = '';
+    document.querySelectorAll('section[id]').forEach(s => { if (window.pageYOffset >= s.offsetTop - 100) current = s.id; });
+    document.querySelectorAll('.nav-item').forEach(l => { l.classList.remove('active'); if (l.getAttribute('href') === '#' + current) l.classList.add('active'); });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>了然 Liaoran — Wireframe Catalog (30 Pages)</title>
+<style>
+:root {
+  --bg: #f5f5f5; --surface: #ffffff; --border: #e0e0e0;
+  --text-primary: #1a1a1a; --text-secondary: #666666; --text-tertiary: #999999;
+  --accent: #2563eb; --accent-light: #dbeafe;
+  --success: #16a34a; --warning: #f59e0b; --danger: #dc2626;
+  --radius: 12px; --radius-sm: 8px; --radius-xs: 4px;
+  --phone-w: 375px; --phone-h: 812px;
+  --sidebar-w: 280px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, 'SF Pro Text', 'Helvetica Neue', sans-serif; background: var(--bg); color: var(--text-primary); display:flex; height:100vh; overflow:hidden; }
+
+/* Sidebar */
+.sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); overflow-y: auto; flex-shrink:0; padding: 16px 0; }
+.sidebar h1 { font-size: 18px; font-weight: 700; padding: 0 16px 4px; }
+.sidebar .subtitle { font-size: 12px; color: var(--text-tertiary); padding: 0 16px 16px; }
+.sidebar .scenario-group { margin-bottom: 8px; }
+.sidebar .scenario-label { font-size: 11px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 16px 4px; }
+.sidebar .page-link { display: block; padding: 6px 16px 6px 24px; font-size: 13px; color: var(--text-secondary); cursor: pointer; text-decoration: none; transition: all 0.15s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sidebar .page-link:hover { background: var(--accent-light); color: var(--accent); }
+.sidebar .page-link.active { background: var(--accent-light); color: var(--accent); font-weight: 600; border-right: 3px solid var(--accent); }
+
+/* Main */
+.main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+.toolbar { padding: 12px 24px; background: var(--surface); border-bottom: 1px solid var(--border); display:flex; align-items:center; gap:12px; flex-shrink:0; }
+.toolbar .page-title { font-size: 16px; font-weight: 600; flex:1; }
+.toolbar .badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: var(--accent-light); color: var(--accent); }
+.toolbar .state-select { font-size: 13px; padding: 4px 8px; border: 1px solid var(--border); border-radius: var(--radius-xs); background: var(--surface); }
+.viewport { flex:1; display:flex; justify-content:center; align-items:center; overflow:auto; padding: 24px; }
+
+/* Phone Frame */
+.phone { width: var(--phone-w); height: var(--phone-h); background: var(--surface); border-radius: 40px; box-shadow: 0 0 0 8px #1a1a1a, 0 20px 60px rgba(0,0,0,0.15); overflow: hidden; position: relative; flex-shrink:0; display:flex; flex-direction:column; }
+.phone .status-bar { height: 44px; display:flex; align-items:flex-end; justify-content:center; padding-bottom:4px; font-size:12px; font-weight:600; flex-shrink:0; }
+.phone .status-bar .time { font-size:15px; font-weight:600; }
+.phone .screen { flex:1; overflow-y:auto; overflow-x:hidden; display:flex; flex-direction:column; }
+.phone .screen::-webkit-scrollbar { width:0; }
+.phone .home-indicator { height: 34px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.phone .home-indicator::after { content:''; width:134px; height:5px; background:#1a1a1a; border-radius:3px; }
+
+/* Wireframe Components */
+.wf-header { display:flex; align-items:center; padding: 8px 16px; height:44px; border-bottom:1px solid var(--border); flex-shrink:0; }
+.wf-header .back { width:24px; height:24px; border:1.5px solid var(--text-secondary); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; color:var(--text-secondary); margin-right:8px; cursor:pointer; }
+.wf-header .title { flex:1; font-size:16px; font-weight:600; }
+.wf-header .action { font-size:14px; color:var(--text-secondary); }
+
+.wf-body { flex:1; padding:16px; display:flex; flex-direction:column; gap:12px; }
+
+.wf-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px; }
+.wf-card.accent { border-color: var(--accent); background: var(--accent-light); }
+.wf-card.ghost { border-style: dashed; background: #fafafa; }
+
+.wf-btn { display:block; width:100%; padding:14px; border-radius:var(--radius); text-align:center; font-size:15px; font-weight:600; border:none; cursor:pointer; }
+.wf-btn.primary { background:#1a1a1a; color:#fff; }
+.wf-btn.secondary { background:transparent; border:1.5px solid var(--border); color:var(--text-primary); }
+.wf-btn.ghost-btn { background:transparent; color:var(--text-secondary); font-weight:400; font-size:13px; }
+
+.wf-text-lg { font-size:32px; font-weight:700; line-height:1.2; }
+.wf-text-md { font-size:16px; font-weight:600; }
+.wf-text-sm { font-size:13px; color:var(--text-secondary); line-height:1.5; }
+.wf-text-xs { font-size:11px; color:var(--text-tertiary); }
+
+.wf-placeholder { background:#f0f0f0; border-radius:var(--radius); display:flex; align-items:center; justify-content:center; color:var(--text-tertiary); font-size:12px; }
+
+.wf-input { width:100%; padding:12px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:14px; background:#fafafa; }
+
+.wf-chip { display:inline-block; padding:6px 12px; border-radius:20px; font-size:12px; border:1px solid var(--border); margin:2px; }
+.wf-chip.active { background:var(--text-primary); color:#fff; border-color:var(--text-primary); }
+
+.wf-divider { height:1px; background:var(--border); margin:4px 0; }
+
+.wf-row { display:flex; align-items:center; gap:8px; }
+.wf-row.between { justify-content:space-between; }
+
+.wf-icon { width:40px; height:40px; border-radius:50%; background:#f0f0f0; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.wf-icon.sm { width:32px; height:32px; font-size:14px; }
+.wf-icon.lg { width:56px; height:56px; font-size:24px; }
+
+.wf-progress { height:6px; background:#f0f0f0; border-radius:3px; overflow:hidden; }
+.wf-progress .fill { height:100%; background:var(--text-primary); border-radius:3px; }
+
+.wf-tab-bar { display:flex; border-top:1px solid var(--border); padding:8px 0 0; flex-shrink:0; background:var(--surface); }
+.wf-tab-bar .tab { flex:1; text-align:center; padding:4px 0 8px; font-size:10px; color:var(--text-tertiary); }
+.wf-tab-bar .tab.active { color:var(--text-primary); font-weight:600; }
+.wf-tab-bar .tab .tab-icon { font-size:20px; display:block; margin-bottom:2px; }
+
+.wf-list-item { display:flex; align-items:center; padding:12px 0; border-bottom:1px solid #f0f0f0; gap:12px; }
+.wf-list-item:last-child { border-bottom:none; }
+.wf-list-item .content { flex:1; }
+.wf-list-item .label { font-size:14px; font-weight:500; }
+.wf-list-item .meta { font-size:12px; color:var(--text-tertiary); }
+.wf-list-item .amount { font-size:14px; font-weight:600; text-align:right; }
+.wf-list-item .arrow { color:var(--text-tertiary); font-size:12px; }
+
+.wf-section-title { font-size:13px; font-weight:600; color:var(--text-tertiary); margin:8px 0 4px; }
+
+.wf-dots { display:flex; gap:6px; justify-content:center; }
+.wf-dots .dot { width:8px; height:8px; border-radius:50%; background:var(--border); }
+.wf-dots .dot.active { background:var(--text-primary); }
+
+.wf-fab { position:absolute; bottom:90px; right:20px; width:56px; height:56px; border-radius:28px; background:var(--text-primary); color:#fff; display:flex; align-items:center; justify-content:center; font-size:24px; box-shadow:0 4px 12px rgba(0,0,0,0.15); z-index:10; }
+
+/* Page container - all pages hidden by default */
+.page { display:none; flex-direction:column; height:100%; }
+.page.active { display:flex; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar { position:fixed; left:-280px; z-index:100; height:100vh; transition:left 0.3s; }
+  .sidebar.open { left:0; }
+  .menu-toggle { display:block !important; }
+}
+.menu-toggle { display:none; cursor:pointer; font-size:20px; }
+</style>
+</head>
+<body>
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <h1>了然 Wireframes</h1>
+  <div class="subtitle">30 Pages · Minimal Style · Phase 6</div>
+
+  <div class="scenario-group">
+    <div class="scenario-label">01 大强的零记账初体验</div>
+    <a class="page-link active" data-page="p01-1">01.1 Welcome</a>
+    <a class="page-link" data-page="p01-2">01.2 Onboarding</a>
+    <a class="page-link" data-page="p01-3">01.3 Registration</a>
+    <a class="page-link" data-page="p01-4">01.4 Permission</a>
+    <a class="page-link" data-page="p01-5">01.5 Bill Import</a>
+    <a class="page-link" data-page="p01-6">01.6 Import Processing</a>
+    <a class="page-link" data-page="p01-7">01.7 Dashboard</a>
+    <a class="page-link" data-page="p01-8">01.8 Monthly Report</a>
+  </div>
+  <div class="scenario-group">
+    <div class="scenario-label">02 大强的家庭共享账本</div>
+    <a class="page-link" data-page="p02-1">02.1 Subscription</a>
+    <a class="page-link" data-page="p02-2">02.2 Shared Ledger</a>
+    <a class="page-link" data-page="p02-3">02.3 Beneficiary Tag</a>
+  </div>
+  <div class="scenario-group">
+    <div class="scenario-label">03 小丽的消费真相镜子</div>
+    <a class="page-link" data-page="p03-1">03.1 Transaction List</a>
+    <a class="page-link" data-page="p03-2">03.2 Transaction Detail</a>
+    <a class="page-link" data-page="p03-3">03.3 Trend Chart</a>
+    <a class="page-link" data-page="p03-4">03.4 Spending Radar</a>
+  </div>
+  <div class="scenario-group">
+    <div class="scenario-label">04 大强的人情账管理</div>
+    <a class="page-link" data-page="p04-1">04.1 Gift Management</a>
+    <a class="page-link" data-page="p04-1a">04.1a Gift Book Import</a>
+    <a class="page-link" data-page="p04-2">04.2 Gift Suggestion</a>
+  </div>
+  <div class="scenario-group">
+    <div class="scenario-label">05 小美的多身份核算</div>
+    <a class="page-link" data-page="p05-1">05.1 Identity Mgmt</a>
+    <a class="page-link" data-page="p05-2">05.2 Identity P&amp;L</a>
+  </div>
+  <div class="scenario-group">
+    <div class="scenario-label">06 手动记账与分类</div>
+    <a class="page-link" data-page="p06-1">06.1 Manual Entry</a>
+    <a class="page-link" data-page="p06-2">06.2 Category Mgmt</a>
+    <a class="page-link" data-page="p06-3">06.3 iOS Shortcuts</a>
+  </div>
+  <div class="scenario-group">
+    <div class="scenario-label">07 AI管家智能层</div>
+    <a class="page-link" data-page="p07-1">07.1 AI Chat</a>
+    <a class="page-link" data-page="p07-2">07.2 Insights Feed</a>
+    <a class="page-link" data-page="p07-3">07.3 Optimization</a>
+    <a class="page-link" data-page="p07-4">07.4 Simulation</a>
+  </div>
+  <div class="scenario-group">
+    <div class="scenario-label">08 账户与设置</div>
+    <a class="page-link" data-page="p08-0">08.0 My Hub</a>
+    <a class="page-link" data-page="p08-1">08.1 Settings</a>
+    <a class="page-link" data-page="p08-2">08.2 Profile/Account</a>
+  </div>
+</nav>
+
+<!-- MAIN AREA -->
+<div class="main">
+  <div class="toolbar">
+    <span class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</span>
+    <span class="page-title" id="toolbarTitle">01.1 Welcome</span>
+    <span class="badge" id="toolbarBadge">P1</span>
+  </div>
+  <div class="viewport">
+    <div class="phone">
+      <div class="status-bar"><span class="time">9:41</span></div>
+      <div class="screen" id="screen">
+<!-- 01.1 Welcome -->
+<div class="page active" id="p01-1">
+  <div class="wf-body" style="justify-content:center;align-items:center;text-align:center;gap:24px;">
+    <div class="wf-placeholder" style="width:80px;height:80px;border-radius:20px;font-size:28px;">了</div>
+    <div class="wf-placeholder" style="width:240px;height:200px;">插画 / 动画区<br>AI自动捕获消费的视觉隐喻</div>
+    <div>
+      <div class="wf-text-md" style="font-size:20px;margin-bottom:8px;">花了多少，自动知道</div>
+      <div class="wf-text-sm" style="max-width:260px;margin:0 auto;">连接支付宝，消费自动归类，不用动手记</div>
+    </div>
+    <button class="wf-btn primary" style="width:240px;">开始体验</button>
+  </div>
+</div>
+
+<!-- 01.2 Onboarding -->
+<div class="page" id="p01-2">
+  <div class="wf-body" style="justify-content:space-between;align-items:center;text-align:center;">
+    <div style="text-align:right;padding:0 4px;"><span style="font-size:13px;color:var(--text-tertiary);">跳过</span></div>
+    <div class="wf-placeholder" style="width:260px;height:220px;margin:0 auto;">插画 / 动画区<br>Slide 1: 零输入</div>
+    <div style="padding:0 24px;">
+      <div class="wf-text-md" style="font-size:18px;margin-bottom:8px;">不用动手记一笔</div>
+      <div class="wf-text-sm">连接支付宝，每笔消费自动到账</div>
+    </div>
+    <div class="wf-dots"><span class="dot active"></span><span class="dot"></span><span class="dot"></span></div>
+    <button class="wf-btn secondary" style="width:240px;margin:0 auto;">下一步</button>
+    <div></div>
+  </div>
+</div>
+
+<!-- 01.3 Registration -->
+<div class="page" id="p01-3">
+  <div class="wf-header"><div class="back">←</div><div class="title"></div></div>
+  <div class="wf-body" style="align-items:center;text-align:center;">
+    <div class="wf-placeholder" style="width:60px;height:60px;border-radius:16px;font-size:22px;">了</div>
+    <div class="wf-text-sm">几秒搞定，马上体验</div>
+    <div style="display:flex;gap:0;width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;">
+      <div style="flex:1;padding:10px;text-align:center;background:var(--text-primary);color:#fff;font-size:13px;font-weight:600;">微信登录</div>
+      <div style="flex:1;padding:10px;text-align:center;font-size:13px;color:var(--text-secondary);">手机号</div>
+    </div>
+    <div class="wf-card" style="width:100%;text-align:center;padding:32px 16px;">
+      <div class="wf-icon lg" style="margin:0 auto 12px;font-size:28px;">微</div>
+      <button class="wf-btn primary" style="margin-top:16px;">微信一键登录</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-tertiary);">
+      <div style="width:14px;height:14px;border:1.5px solid var(--border);border-radius:3px;"></div>
+      我已阅读并同意 <span style="color:var(--accent);">用户协议</span> 和 <span style="color:var(--accent);">隐私政策</span>
+    </div>
+  </div>
+</div>
+
+<!-- 01.4 Permission -->
+<div class="page" id="p01-4">
+  <div class="wf-body" style="align-items:center;text-align:center;gap:16px;">
+    <div class="wf-icon lg" style="margin-top:8px;">🔔</div>
+    <div>
+      <div class="wf-text-md" style="margin-bottom:6px;">要实现不用手动记账，<br>需要一个小小的权限</div>
+      <div class="wf-text-sm">读取消费通知来自动识别你的每笔消费</div>
+    </div>
+    <div class="wf-card" style="width:100%;text-align:left;">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;"><span>🔒</span><span class="wf-text-sm" style="color:var(--text-primary);">安全提取 · 只提取金额和商户名</span></div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;"><span>🔐</span><span class="wf-text-sm" style="color:var(--text-primary);">加密存储 · 所有数据加密后存储</span></div>
+      <div style="display:flex;gap:8px;align-items:center;"><span>🚫</span><span class="wf-text-sm" style="color:var(--text-primary);">不上传原文 · 只提取关键信息</span></div>
+    </div>
+    <div class="wf-card ghost" style="width:100%;text-align:left;">
+      <div class="wf-text-xs" style="margin-bottom:6px;">检测到您的设备：小米 / Redmi</div>
+      <div class="wf-text-sm" style="color:var(--text-primary);">步骤1: 打开系统设置<br>步骤2: 找到了然<br>步骤3: 打开通知读取开关</div>
+      <div class="wf-placeholder" style="width:100%;height:60px;margin-top:8px;">示意截图</div>
+    </div>
+    <button class="wf-btn primary">去开启通知读取</button>
+    <span class="wf-text-sm" style="color:var(--text-tertiary);">暂时跳过 · 可随时在设置中开启</span>
+  </div>
+</div>
+
+<!-- 01.5 Bill Import -->
+<div class="page" id="p01-5">
+  <div class="wf-header"><div class="back">←</div><div class="title">导入账单</div></div>
+  <div class="wf-body" style="gap:12px;">
+    <div class="wf-text-md">导入历史账单，看看过去几个月的消费全貌</div>
+    <div class="wf-section-title">选择来源</div>
+    <div style="display:flex;gap:8px;">
+      <div class="wf-chip active">支付宝 ✓</div>
+      <div class="wf-chip" style="opacity:0.5;">微信支付 · 即将支持</div>
+    </div>
+    <div class="wf-section-title">如何从支付宝导出</div>
+    <div class="wf-card" style="padding:12px;">
+      <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Step 1</div>
+      <div class="wf-text-sm">打开支付宝，点击"我的">"账单"</div>
+      <div class="wf-placeholder" style="width:100%;height:48px;margin-top:6px;">截图示意</div>
+    </div>
+    <div class="wf-card" style="padding:12px;">
+      <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Step 2</div>
+      <div class="wf-text-sm">点击右上角"..." > "开具交易流水"</div>
+      <div class="wf-placeholder" style="width:100%;height:48px;margin-top:6px;">截图示意</div>
+    </div>
+    <div class="wf-card" style="padding:12px;">
+      <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Step 3</div>
+      <div class="wf-text-sm">选择时间范围 > "申请" > 导出</div>
+    </div>
+    <div class="wf-card" style="padding:12px;">
+      <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Step 4</div>
+      <div class="wf-text-sm">在邮箱中下载附件</div>
+    </div>
+    <button class="wf-btn primary">选择文件并上传</button>
+    <div style="text-align:center;"><span class="wf-text-sm" style="color:var(--text-tertiary);">跳过，先看看</span></div>
+  </div>
+</div>
+
+<!-- 01.6 Import Processing -->
+<div class="page" id="p01-6">
+  <div class="wf-body" style="justify-content:center;align-items:center;text-align:center;gap:20px;">
+    <div class="wf-placeholder" style="width:120px;height:120px;border-radius:60px;font-size:14px;">AI Brain<br>脉冲动画</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;">
+      <span class="wf-chip" style="font-size:11px;">🍽 餐饮</span>
+      <span class="wf-chip" style="font-size:11px;">🚗 交通</span>
+      <span class="wf-chip" style="font-size:11px;">🛒 购物</span>
+      <span class="wf-chip" style="font-size:11px;">🏠 居住</span>
+    </div>
+    <div>
+      <div class="wf-text-md">正在识别 42/132</div>
+      <div class="wf-progress" style="width:200px;margin:8px auto;"><div class="fill" style="width:32%;"></div></div>
+      <div class="wf-text-xs">通常需要 10-20 秒</div>
+    </div>
+    <div class="wf-card" style="width:100%;text-align:left;padding:12px;">
+      <div class="wf-text-xs" style="margin-bottom:6px;">最新识别</div>
+      <div style="font-size:13px;margin-bottom:4px;">美团外卖 ¥28.50 → 餐饮</div>
+      <div style="font-size:13px;margin-bottom:4px;">滴滴出行 ¥15.00 → 交通</div>
+      <div style="font-size:13px;">淘宝 ¥199.00 → 购物</div>
+    </div>
+  </div>
+</div>
+
+<!-- 01.7 Dashboard (Full State) — aligned with prototype -->
+<div class="page" id="p01-7">
+  <!-- Sticky Month Header -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);flex-shrink:0;">
+    <span style="font-size:16px;color:var(--text-tertiary);">‹</span>
+    <span style="font-size:16px;font-weight:700;">3月消费</span>
+    <span style="font-size:16px;color:var(--border);">›</span>
+  </div>
+  <div class="wf-body" style="gap:12px;padding-bottom:60px;">
+    <!-- Hero Summary (gradient card) -->
+    <div style="background:linear-gradient(135deg,#333 0%,#555 50%,#888 100%);border-radius:var(--radius);padding:20px;color:#fff;">
+      <div style="font-size:12px;opacity:0.7;">本月总支出</div>
+      <div style="font-size:36px;font-weight:700;margin:4px 0;letter-spacing:-1px;">¥14,568</div>
+      <div style="display:flex;gap:8px;margin-top:12px;">
+        <div style="flex:1;background:rgba(255,255,255,0.12);border-radius:var(--radius-sm);padding:10px;">
+          <div style="font-size:11px;opacity:0.6;">收入</div>
+          <div style="font-size:15px;font-weight:600;">¥20,000</div>
+        </div>
+        <div style="flex:1;background:rgba(255,255,255,0.12);border-radius:var(--radius-sm);padding:10px;">
+          <div style="font-size:11px;opacity:0.6;">结余</div>
+          <div style="font-size:15px;font-weight:600;">¥5,432</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:12px;">
+        <div style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;">AI</div>
+        <div style="flex:1;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;overflow:hidden;"><div style="width:96%;height:100%;background:rgba(255,255,255,0.8);border-radius:2px;"></div></div>
+        <span style="font-size:11px;opacity:0.7;">96.2% 自动识别</span>
+      </div>
+    </div>
+
+    <!-- AI Spotlight (管家说) -->
+    <div style="display:flex;align-items:center;gap:10px;background:#f0f7f5;border:1px solid #d1ebe3;border-radius:var(--radius);padding:12px;">
+      <div style="width:36px;height:36px;border-radius:50%;background:#1a6b5a;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🤖</div>
+      <div style="flex:1;font-size:13px;font-weight:500;color:#0f4f42;">本月奶茶已花 ¥380，超过上月全月</div>
+      <span style="color:#1a6b5a;font-size:14px;">›</span>
+    </div>
+
+    <!-- Category Breakdown -->
+    <div>
+      <div class="wf-section-title">分类消费</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <!-- Category card with left color bar -->
+        <div style="display:flex;align-items:center;background:var(--surface);border-radius:var(--radius-sm);box-shadow:0 1px 3px rgba(0,0,0,0.06);overflow:hidden;">
+          <div style="width:4px;align-self:stretch;background:#8B5CF6;border-radius:4px 0 0 4px;"></div>
+          <span style="font-size:18px;padding:10px 4px 10px 10px;">🏠</span>
+          <div style="flex:1;padding:10px 0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+              <span style="font-size:13px;font-weight:500;">居住 <span style="font-size:10px;color:var(--text-tertiary);background:#f0f0f0;padding:1px 5px;border-radius:3px;">固定</span></span>
+              <span style="font-size:13px;font-weight:600;">¥8,500</span>
+            </div>
+            <div class="wf-progress"><div class="fill" style="width:58%;background:#8B5CF6;"></div></div>
+          </div>
+          <span style="font-size:11px;color:var(--text-tertiary);width:36px;text-align:right;padding-right:12px;">58.3%</span>
+        </div>
+        <div style="display:flex;align-items:center;background:var(--surface);border-radius:var(--radius-sm);box-shadow:0 1px 3px rgba(0,0,0,0.06);overflow:hidden;">
+          <div style="width:4px;align-self:stretch;background:#F59E0B;"></div>
+          <span style="font-size:18px;padding:10px 4px 10px 10px;">🍜</span>
+          <div style="flex:1;padding:10px 0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+              <span style="font-size:13px;font-weight:500;">餐饮</span>
+              <span style="font-size:13px;font-weight:600;">¥2,850</span>
+            </div>
+            <div class="wf-progress"><div class="fill" style="width:19.6%;background:#F59E0B;"></div></div>
+          </div>
+          <span style="font-size:11px;color:var(--text-tertiary);width:36px;text-align:right;padding-right:12px;">19.6%</span>
+        </div>
+        <div style="display:flex;align-items:center;background:var(--surface);border-radius:var(--radius-sm);box-shadow:0 1px 3px rgba(0,0,0,0.06);overflow:hidden;">
+          <div style="width:4px;align-self:stretch;background:#EC4899;"></div>
+          <span style="font-size:18px;padding:10px 4px 10px 10px;">🛒</span>
+          <div style="flex:1;padding:10px 0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+              <span style="font-size:13px;font-weight:500;">购物</span>
+              <span style="font-size:13px;font-weight:600;">¥1,258</span>
+            </div>
+            <div class="wf-progress"><div class="fill" style="width:8.6%;background:#EC4899;"></div></div>
+          </div>
+          <span style="font-size:11px;color:var(--text-tertiary);width:36px;text-align:right;padding-right:12px;">8.6%</span>
+        </div>
+        <div style="text-align:center;font-size:12px;color:var(--accent);padding:4px;">查看全部 6 个分类 ▾</div>
+      </div>
+    </div>
+
+    <!-- Family Snapshot (Member only) -->
+    <div style="background:var(--surface);border-radius:var(--radius);box-shadow:0 1px 3px rgba(0,0,0,0.06);border-left:4px solid #1a6b5a;padding:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:16px;">👨‍👩‍👦</span><span style="font-size:13px;font-weight:600;">我们家这个月</span></div>
+        <span style="font-size:11px;color:#1a6b5a;">查看详情 →</span>
+      </div>
+      <div style="font-size:18px;font-weight:700;margin-bottom:10px;">家庭总支出 ¥28,568</div>
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+        <span style="font-size:11px;color:var(--text-tertiary);width:28px;">你</span>
+        <div style="flex:1;height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;"><div style="width:62%;height:100%;background:#47AF8F;border-radius:3px;"></div></div>
+        <span style="font-size:11px;color:var(--text-tertiary);width:28px;text-align:right;">62%</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span style="font-size:11px;color:var(--text-tertiary);width:28px;">芳芳</span>
+        <div style="flex:1;height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;"><div style="width:38%;height:100%;background:#EC4899;border-radius:3px;"></div></div>
+        <span style="font-size:11px;color:var(--text-tertiary);width:28px;text-align:right;">38%</span>
+      </div>
+    </div>
+
+    <!-- Identity Snapshot (Member only) -->
+    <div style="background:var(--surface);border-radius:var(--radius);box-shadow:0 1px 3px rgba(0,0,0,0.06);border-left:4px solid #F59E0B;padding:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:16px;">🏪</span><span style="font-size:13px;font-weight:600;">薯店本月</span></div>
+        <span style="font-size:11px;color:#1a6b5a;">查看详情 →</span>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px;">
+        <span style="font-size:18px;font-weight:700;color:#1a6b5a;">净利润 ¥2,847</span>
+        <span style="font-size:11px;font-weight:500;color:#1a6b5a;background:#e8f5f1;padding:2px 6px;border-radius:4px;">↑15%</span>
+      </div>
+      <div style="display:flex;gap:16px;font-size:13px;color:var(--text-secondary);">
+        <span>收入 ¥9,000</span><span>支出 ¥6,153</span>
+      </div>
+    </div>
+
+    <!-- Report CTA -->
+    <div style="display:flex;align-items:center;gap:12px;border:2px solid rgba(26,107,90,0.2);background:rgba(232,245,241,0.5);border-radius:var(--radius);padding:14px;">
+      <div style="width:40px;height:40px;border-radius:10px;background:#1a6b5a;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <span style="font-size:18px;filter:grayscale(1) brightness(2);">📊</span>
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:600;color:#0f4f42;">查看完整报表</div>
+        <div style="font-size:11px;color:rgba(26,107,90,0.7);">饼图 · 趋势 · AI洞察 · 分享</div>
+      </div>
+      <span style="color:#1a6b5a;font-size:14px;">›</span>
+    </div>
+
+    <!-- Import More -->
+    <div style="display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:var(--radius);box-shadow:0 1px 3px rgba(0,0,0,0.06);padding:14px;">
+      <div style="width:40px;height:40px;border-radius:10px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <span style="font-size:16px;">📄</span>
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:500;">补充更多账单数据</div>
+        <div style="font-size:11px;color:var(--text-tertiary);">导入其他月份的支付宝账单</div>
+      </div>
+      <span style="color:var(--text-tertiary);font-size:14px;">›</span>
+    </div>
+  </div>
+  <div class="wf-tab-bar">
+    <div class="tab active"><span class="tab-icon">🏠</span>首页</div>
+    <div class="tab"><span class="tab-icon">💳</span>消费</div>
+    <div class="tab"><span class="tab-icon">🤖</span>AI</div>
+    <div class="tab"><span class="tab-icon">👤</span>我的</div>
+  </div>
+  <div class="wf-fab">+</div>
+</div>
+
+<!-- 01.8 Monthly Report -->
+<div class="page" id="p01-8">
+  <div class="wf-header"><div class="back">←</div><div class="title">3月消费报表</div><div class="action">⤴️</div></div>
+  <div class="wf-body" style="gap:12px;">
+    <div class="wf-card accent" style="padding:10px;font-size:12px;text-align:center;">这份报表由AI自动生成，你没有手动输入任何一笔 ✕</div>
+    <div style="text-align:center;font-size:13px;color:var(--text-secondary);">← 2026年3月 →</div>
+    <div class="wf-card" style="text-align:center;">
+      <div class="wf-text-xs">本月总支出</div>
+      <div class="wf-text-lg">¥12,680</div>
+      <div class="wf-text-xs">较上月 ↑8.2% · 132笔 · AI识别97%</div>
+      <div class="wf-row" style="justify-content:center;gap:16px;margin-top:12px;">
+        <div><div class="wf-text-xs">收入</div><div style="font-weight:600;">¥20,000</div></div>
+        <div><div class="wf-text-xs">支出</div><div style="font-weight:600;">¥12,680</div></div>
+        <div><div class="wf-text-xs">结余</div><div style="font-weight:600;">¥7,320</div></div>
+      </div>
+    </div>
+    <div class="wf-placeholder" style="width:100%;height:160px;">环形饼图<br>餐饮25% · 交通14% · 购物18%</div>
+    <div class="wf-section-title">分类明细</div>
+    <div class="wf-card" style="padding:10px;">
+      <div class="wf-row between"><span style="font-size:13px;">🍜 餐饮</span><span style="font-size:13px;font-weight:600;">¥3,200</span></div>
+      <div class="wf-progress" style="margin:6px 0;"><div class="fill" style="width:25%;"></div></div>
+      <div class="wf-text-xs">32笔 · 较上月↑12%</div>
+    </div>
+    <div class="wf-card" style="padding:10px;">
+      <div class="wf-row between"><span style="font-size:13px;">🛒 购物</span><span style="font-size:13px;font-weight:600;">¥2,280</span></div>
+      <div class="wf-progress" style="margin:6px 0;"><div class="fill" style="width:18%;"></div></div>
+      <div class="wf-text-xs">18笔 · 较上月↓5%</div>
+    </div>
+    <div class="wf-section-title">AI 发现</div>
+    <div class="wf-card accent" style="padding:12px;">
+      <div style="font-size:13px;">💡 餐饮32笔中，外卖占68%（22笔），工作日午餐外卖频率最高</div>
+    </div>
+    <button class="wf-btn primary">📤 分享给家人</button>
+  </div>
+</div>
+
+<!-- 02.1 Subscription -->
+<div class="page" id="p02-1">
+  <div class="wf-header"><div class="back">←</div><div class="title">会员体验</div></div>
+  <div class="wf-body" style="align-items:center;text-align:center;gap:16px;">
+    <div class="wf-icon lg" style="font-size:36px;">🎁</div>
+    <div>
+      <div class="wf-text-md" style="font-size:18px;">送你 14 天<br>全功能会员体验</div>
+      <div class="wf-text-sm" style="margin-top:6px;">你已经用零记账管理了14天<br>现在解锁全部功能</div>
+    </div>
+    <div class="wf-card" style="width:100%;text-align:left;padding:12px;">
+      <div style="font-size:12px;color:var(--text-tertiary);margin-bottom:6px;">你将解锁的功能</div>
+      <div style="font-size:13px;color:var(--text-tertiary);margin-bottom:4px;">✓ 账单自动导入</div>
+      <div style="font-size:13px;color:var(--text-tertiary);margin-bottom:4px;">✓ AI 智能分类</div>
+      <div style="font-size:13px;color:var(--text-tertiary);margin-bottom:8px;">✓ 基础报表</div>
+      <div class="wf-divider"></div>
+      <div style="font-size:13px;font-weight:600;margin:8px 0 4px;">★ 共享家庭账本</div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:4px;">★ 受益人标注</div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:4px;">★ 消费习惯雷达</div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:4px;">★ 人情账管理</div>
+      <div style="font-size:13px;font-weight:600;">★ AI 财务管家</div>
+    </div>
+    <div class="wf-card" style="width:100%;text-align:left;padding:12px;font-size:12px;">
+      <div>🔓 完全免费，无需绑卡</div>
+      <div>⏰ 到期后自动回到免费版</div>
+      <div>🔒 隐私消费仍只有你能看</div>
+    </div>
+    <button class="wf-btn primary" style="width:100%;">免费领取</button>
+    <span class="wf-text-sm" style="color:var(--text-tertiary);">先不了，继续基础版</span>
+  </div>
+</div>
+
+<!-- 02.2 Shared Family Ledger -->
+<div class="page" id="p02-2">
+  <div class="wf-header"><div class="back">←</div><div class="title">创建家庭账本</div></div>
+  <div class="wf-body" style="align-items:center;text-align:center;gap:16px;">
+    <div class="wf-icon lg" style="font-size:32px;">👨‍👩‍👦</div>
+    <div class="wf-text-md">同一份账本，同一份事实</div>
+    <div style="width:100%;text-align:left;">
+      <div class="wf-text-xs" style="margin-bottom:4px;">账本名称</div>
+      <input class="wf-input" value="我们的家庭账本" readonly>
+    </div>
+    <div class="wf-card" style="width:100%;text-align:left;padding:12px;">
+      <div style="font-size:13px;font-weight:600;margin-bottom:8px;">🔒 隐私说明</div>
+      <div class="wf-text-sm">· 各自的隐私消费不共享<br>· 只共享家庭相关支出<br>· 你可以随时选择哪些消费共享</div>
+    </div>
+    <button class="wf-btn primary" style="width:100%;">创建账本</button>
+  </div>
+</div>
+
+<!-- 02.3 Beneficiary Tagging -->
+<div class="page" id="p02-3">
+  <div class="wf-header"><div class="back">←</div><div class="title">为谁花的</div><div class="action">完成</div></div>
+  <div class="wf-body" style="gap:10px;">
+    <div class="wf-text-sm" style="color:var(--text-primary);">AI 已识别你的消费模式，确认即可</div>
+    <div class="wf-card" style="padding:12px;">
+      <div class="wf-row between"><span style="font-size:13px;font-weight:500;">🍽 工作日午餐外卖</span><span class="wf-text-xs">▿</span></div>
+      <div class="wf-text-xs" style="margin:4px 0;">美团外卖、饿了么 等 · 12笔 · ¥384</div>
+      <div class="wf-text-xs">AI 建议: <b>为自己</b></div>
+      <div class="wf-row" style="gap:8px;margin-top:8px;">
+        <button class="wf-btn primary" style="flex:1;padding:8px;font-size:12px;">确认 ✓</button>
+        <button class="wf-btn secondary" style="flex:1;padding:8px;font-size:12px;">修改为...</button>
+      </div>
+    </div>
+    <div class="wf-card" style="padding:12px;">
+      <div class="wf-row between"><span style="font-size:13px;font-weight:500;">🛒 超市采购（>¥80）</span><span class="wf-text-xs">▿</span></div>
+      <div class="wf-text-xs" style="margin:4px 0;">盒马、永辉 等 · 6笔 · ¥936</div>
+      <div class="wf-text-xs">AI 建议: <b>为家庭</b></div>
+      <div class="wf-row" style="gap:8px;margin-top:8px;">
+        <button class="wf-btn primary" style="flex:1;padding:8px;font-size:12px;">确认 ✓</button>
+        <button class="wf-btn secondary" style="flex:1;padding:8px;font-size:12px;">修改为...</button>
+      </div>
+    </div>
+    <div class="wf-card" style="padding:12px;">
+      <div class="wf-row between"><span style="font-size:13px;font-weight:500;">👶 母婴/育儿用品</span><span class="wf-text-xs">▿</span></div>
+      <div class="wf-text-xs" style="margin:4px 0;">宝宝树、孩子王 等 · 4笔 · ¥356</div>
+      <div class="wf-text-xs">AI 建议: <b>为孩子</b></div>
+      <div class="wf-row" style="gap:8px;margin-top:8px;">
+        <button class="wf-btn primary" style="flex:1;padding:8px;font-size:12px;">确认 ✓</button>
+        <button class="wf-btn secondary" style="flex:1;padding:8px;font-size:12px;">修改为...</button>
+      </div>
+    </div>
+    <div class="wf-card ghost" style="padding:10px;text-align:center;">
+      <div class="wf-text-xs">已确认 0/6 条规则 · 覆盖 0/47 笔</div>
+      <div class="wf-progress" style="margin:6px 0;"><div class="fill" style="width:0%;"></div></div>
+      <button class="wf-btn secondary" style="padding:8px;font-size:12px;margin-top:4px;">全部确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- 03.1 Transaction List -->
+<div class="page" id="p03-1">
+  <div class="wf-header"><div class="back">←</div><div class="title">消费</div><div class="action">🔍</div></div>
+  <div class="wf-body" style="gap:8px;padding-bottom:60px;">
+    <div class="wf-card" style="padding:10px;"><div class="wf-row between"><span style="font-size:14px;font-weight:600;">4月</span><span style="font-size:16px;font-weight:700;">¥12,847</span></div></div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <span class="wf-chip active">全部</span><span class="wf-chip">餐饮</span><span class="wf-chip">居住</span><span class="wf-chip">交通</span><span class="wf-chip">购物</span>
+    </div>
+    <div class="wf-section-title">今天 4月10日</div>
+    <div class="wf-list-item"><div class="wf-icon sm">🍵</div><div class="content"><div class="label">瑞幸咖啡</div><div class="meta">餐饮·饮品 · 10:32</div></div><div class="amount">-¥18</div></div>
+    <div class="wf-list-item"><div class="wf-icon sm">🚗</div><div class="content"><div class="label">滴滴出行</div><div class="meta">交通·打车 · 08:15</div></div><div class="amount">-¥23</div></div>
+    <div class="wf-section-title">昨天 4月9日</div>
+    <div class="wf-list-item"><div class="wf-icon sm">🍜</div><div class="content"><div class="label">美团外卖</div><div class="meta">餐饮·外卖 · 12:05</div></div><div class="amount">-¥38</div></div>
+    <div class="wf-list-item"><div class="wf-icon sm">🧋</div><div class="content"><div class="label">蜜雪冰城</div><div class="meta">餐饮·饮品 · 15:22</div></div><div class="amount">-¥8</div></div>
+    <div class="wf-list-item"><div class="wf-icon sm">🛒</div><div class="content"><div class="label">淘宝</div><div class="meta">购物·服饰 · 21:47</div></div><div class="amount">-¥129</div></div>
+    <div class="wf-section-title">4月8日 周三</div>
+    <div class="wf-list-item"><div class="wf-icon sm">🏠</div><div class="content"><div class="label">物业费</div><div class="meta">居住·物业 · 09:00</div></div><div class="amount">-¥280</div></div>
+  </div>
+  <div class="wf-tab-bar">
+    <div class="tab"><span class="tab-icon">🏠</span>首页</div>
+    <div class="tab active"><span class="tab-icon">💳</span>消费</div>
+    <div class="tab"><span class="tab-icon">🤖</span>AI</div>
+    <div class="tab"><span class="tab-icon">👤</span>我的</div>
+  </div>
+  <div class="wf-fab">+</div>
+</div>
+
+<!-- 03.2 Transaction Detail -->
+<div class="page" id="p03-2">
+  <div class="wf-header"><div class="back">←</div><div class="title">消费详情</div></div>
+  <div class="wf-body" style="gap:12px;align-items:center;">
+    <div style="text-align:center;">
+      <div class="wf-icon lg" style="margin:0 auto 8px;">🍵</div>
+      <div style="font-size:16px;font-weight:600;">瑞幸咖啡</div>
+      <div class="wf-text-lg" style="margin:4px 0;">-¥18</div>
+      <div class="wf-text-xs">2026年4月10日 10:32</div>
+    </div>
+    <div class="wf-section-title" style="width:100%;">消费信息</div>
+    <div class="wf-card" style="width:100%;padding:0;">
+      <div class="wf-list-item" style="padding:10px 16px;"><div class="content"><div class="meta">分类</div></div><div style="font-size:13px;">餐饮 · 饮品 ></div></div>
+      <div class="wf-list-item" style="padding:10px 16px;"><div class="content"><div class="meta">支付渠道</div></div><div style="font-size:13px;">支付宝</div></div>
+      <div class="wf-list-item" style="padding:10px 16px;"><div class="content"><div class="meta">原始摘要</div></div><div style="font-size:13px;">瑞幸咖啡门店</div></div>
+      <div class="wf-list-item" style="padding:10px 16px;"><div class="content"><div class="meta">数据来源</div></div><div style="font-size:13px;">账单导入</div></div>
+      <div class="wf-list-item" style="padding:10px 16px;border:none;"><div class="content"><div class="meta">备注</div></div><div style="font-size:13px;color:var(--text-tertiary);">点击添加</div></div>
+    </div>
+    <div class="wf-section-title" style="width:100%;">消费洞察</div>
+    <div class="wf-card" style="width:100%;padding:12px;">
+      <div style="font-size:13px;">☕ 本月瑞幸消费</div>
+      <div style="font-size:14px;font-weight:600;">12笔 · 共¥216</div>
+      <div class="wf-text-xs" style="color:var(--accent);">查看消费趋势 →</div>
+    </div>
+    <button class="wf-btn ghost-btn" style="color:var(--danger);">🗑 删除这笔消费</button>
+  </div>
+</div>
+
+<!-- 03.3 Trend Chart -->
+<div class="page" id="p03-3">
+  <div class="wf-header"><div class="back">←</div><div class="title">消费趋势</div></div>
+  <div class="wf-body" style="gap:12px;">
+    <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;">
+      <div style="flex:1;padding:8px;text-align:center;background:var(--text-primary);color:#fff;font-size:12px;">近3月</div>
+      <div style="flex:1;padding:8px;text-align:center;font-size:12px;color:var(--text-secondary);">近6月</div>
+      <div style="flex:1;padding:8px;text-align:center;font-size:12px;color:var(--text-secondary);">近12月</div>
+    </div>
+    <div class="wf-placeholder" style="width:100%;height:140px;">总消费折线图<br>1月 ¥11.8k → 2月 ¥14.2k → 3月 ¥12.7k</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <span class="wf-chip active">全部</span><span class="wf-chip">餐饮</span><span class="wf-chip">购物</span><span class="wf-chip">交通</span>
+    </div>
+    <div class="wf-section-title">本月变化</div>
+    <div class="wf-card" style="padding:10px;">
+      <div class="wf-row between"><span style="font-size:13px;">🍜 餐饮</span><span style="font-size:13px;font-weight:600;">↑12%</span></div>
+      <div class="wf-text-xs">较上月多了 ¥380 · 主因：外卖消费增加</div>
+    </div>
+    <div class="wf-card" style="padding:10px;">
+      <div class="wf-row between"><span style="font-size:13px;">🛒 购物</span><span style="font-size:13px;font-weight:600;">↓5%</span></div>
+      <div class="wf-text-xs">较上月少了 ¥120</div>
+    </div>
+    <div class="wf-section-title">月度对比</div>
+    <div class="wf-placeholder" style="width:100%;height:80px;">月度对比条形图<br>1月 ¥11.8k · 2月 ¥14.2k · 3月 ¥12.7k</div>
+    <button class="wf-btn secondary" style="font-size:13px;">看看你的消费雷达 →</button>
+  </div>
+  <div class="wf-tab-bar">
+    <div class="tab"><span class="tab-icon">🏠</span>首页</div>
+    <div class="tab"><span class="tab-icon">💳</span>消费</div>
+    <div class="tab"><span class="tab-icon">🤖</span>AI</div>
+    <div class="tab"><span class="tab-icon">👤</span>我的</div>
+  </div>
+</div>
+
+<!-- 03.4 Spending Radar -->
+<div class="page" id="p03-4">
+  <div class="wf-header"><div class="back">←</div><div class="title">消费雷达</div><div class="action">⤴️</div></div>
+  <div class="wf-body" style="gap:12px;">
+    <div style="text-align:center;font-size:13px;color:var(--text-secondary);">← 2026年3月 →</div>
+    <div class="wf-placeholder" style="width:200px;height:200px;border-radius:50%;margin:0 auto;">6维雷达图<br>餐饮·购物·交通<br>居住·娱乐·健康</div>
+    <div style="text-align:center;"><span class="wf-chip active" style="font-size:14px;padding:8px 16px;">「外卖达人」</span></div>
+    <div class="wf-section-title">各维度详情</div>
+    <div class="wf-card" style="padding:10px;">
+      <div class="wf-row between"><span style="font-size:13px;">🍜 餐饮 ¥3,200</span><span style="font-size:12px;font-weight:600;">78分</span></div>
+      <div class="wf-progress" style="margin:4px 0;"><div class="fill" style="width:78%;"></div></div>
+      <div class="wf-text-xs">外卖占68%，最爱瑞幸</div>
+    </div>
+    <div class="wf-card" style="padding:10px;">
+      <div class="wf-row between"><span style="font-size:13px;">🛒 购物 ¥2,280</span><span style="font-size:12px;font-weight:600;">55分</span></div>
+      <div class="wf-progress" style="margin:4px 0;"><div class="fill" style="width:55%;"></div></div>
+      <div class="wf-text-xs">护肤品为主</div>
+    </div>
+    <div class="wf-section-title">AI 发现</div>
+    <div class="wf-card accent" style="padding:10px;">
+      <div style="font-size:13px;">☕ 你的奶茶消费可以绕地球 0.3 圈</div>
+    </div>
+    <div class="wf-card accent" style="padding:10px;">
+      <div style="font-size:13px;">🌙 你的外卖消费 78% 发生在晚上8点后</div>
+    </div>
+    <button class="wf-btn primary">📤 分享给好友</button>
+  </div>
+  <div class="wf-tab-bar">
+    <div class="tab"><span class="tab-icon">🏠</span>首页</div>
+    <div class="tab"><span class="tab-icon">💳</span>消费</div>
+    <div class="tab"><span class="tab-icon">🤖</span>AI</div>
+    <div class="tab"><span class="tab-icon">👤</span>我的</div>
+  </div>
+</div>
+
+<!-- 04.1 Gift Management -->
+<div class="page" id="p04-1">
+  <div class="wf-header"><div class="back">←</div><div class="title">人情账</div><div class="action">+</div></div>
+  <div class="wf-body" style="gap:10px;padding-bottom:60px;">
+    <div class="wf-card" style="padding:10px;text-align:center;">
+      <div class="wf-text-xs">人情往来总览</div>
+      <div style="display:flex;justify-content:center;gap:24px;margin-top:6px;">
+        <div><div class="wf-text-xs">送出</div><div style="font-size:16px;font-weight:600;">¥12,400</div></div>
+        <div><div class="wf-text-xs">收到</div><div style="font-size:16px;font-weight:600;">¥8,600</div></div>
+        <div><div class="wf-text-xs">净额</div><div style="font-size:16px;font-weight:600;">-¥3,800</div></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;"><span class="wf-chip active">全部</span><span class="wf-chip">亲戚</span><span class="wf-chip">朋友</span><span class="wf-chip">同事</span></div>
+    <div class="wf-section-title">联系人</div>
+    <div class="wf-list-item"><div class="wf-icon sm">👤</div><div class="content"><div class="label">张叔叔</div><div class="meta">亲戚 · 3次往来</div></div><div class="amount">净 -¥600</div></div>
+    <div class="wf-list-item"><div class="wf-icon sm">👤</div><div class="content"><div class="label">李阿姨</div><div class="meta">亲戚 · 5次往来</div></div><div class="amount">净 +¥200</div></div>
+    <div class="wf-list-item"><div class="wf-icon sm">👤</div><div class="content"><div class="label">王哥</div><div class="meta">朋友 · 2次往来</div></div><div class="amount">净 -¥1,000</div></div>
+    <div class="wf-list-item"><div class="wf-icon sm">👤</div><div class="content"><div class="label">赵姐</div><div class="meta">同事 · 1次往来</div></div><div class="amount">净 -¥500</div></div>
+  </div>
+  <div class="wf-tab-bar">
+    <div class="tab"><span class="tab-icon">🏠</span>首页</div>
+    <div class="tab"><span class="tab-icon">💳</span>消费</div>
+    <div class="tab"><span class="tab-icon">🤖</span>AI</div>
+    <div class="tab active"><span class="tab-icon">👤</span>我的</div>
+  </div>
+</div>
+
+<!-- 04.1a Gift Book Import -->
+<div class="page" id="p04-1a">
+  <div class="wf-header"><div class="back">←</div><div class="title">导入人情簿</div><div class="action">步骤 1/5</div></div>
+  <div class="wf-body" style="gap:16px;align-items:center;text-align:center;">
+    <div class="wf-text-md">拍照导入人情簿</div>
+    <div class="wf-text-sm">拍下纸质人情簿，AI帮你识别</div>
+    <div class="wf-placeholder" style="width:100%;height:240px;">📷 相机取景框<br>支持多页连拍</div>
+    <div class="wf-row" style="gap:8px;width:100%;">
+      <button class="wf-btn secondary" style="flex:1;padding:10px;font-size:13px;">从相册选择</button>
+      <button class="wf-btn primary" style="flex:1;padding:10px;font-size:13px;">拍照</button>
+    </div>
+    <div class="wf-text-xs">已拍 0 页 · 支持多页连拍</div>
+  </div>
+</div>
+
+<!-- 04.2 Gift Smart Suggestion -->
+<div class="page" id="p04-2">
+  <div class="wf-header"><div class="back">←</div><div class="title">人情建议</div></div>
+  <div class="wf-body" style="gap:12px;">
+    <div class="wf-card" style="text-align:center;padding:16px;">
+      <div class="wf-icon lg" style="margin:0 auto 8px;">👤</div>
+      <div style="font-size:15px;font-weight:600;">张叔叔的婚礼</div>
+      <div class="wf-text-xs">2026年5月1日 · 亲戚</div>
+    </div>
+    <div class="wf-section-title">AI 建议金额</div>
+    <div class="wf-card accent" style="padding:16px;text-align:center;">
+      <div class="wf-text-lg" style="font-size:24px;">¥600 - ¥800</div>
+      <div class="wf-text-xs" style="margin-top:4px;">基于你们的往来历史和当地习俗</div>
+    </div>
+    <div class="wf-card" style="padding:12px;">
+      <div style="font-size:13px;font-weight:500;margin-bottom:8px;">💡 AI 推理依据</div>
+      <div class="wf-text-sm">· 张叔叔上次送你 ¥600（你的婚礼）</div>
+      <div class="wf-text-sm">· 同城亲戚婚礼中位数 ¥600-800</div>
+      <div class="wf-text-sm">· 你近期人情支出月均 ¥1,200</div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <span class="wf-chip">¥600</span><span class="wf-chip active">¥800</span><span class="wf-chip">¥1,000</span><span class="wf-chip">自定义</span>
+    </div>
+    <button class="wf-btn primary">记录这笔人情</button>
+  </div>
+</div>
+
+<!-- 05.1 Identity Management -->
+<div class="page" id="p05-1">
+  <div class="wf-header"><div class="back">←</div><div class="title">身份管理</div><div class="action">+</div></div>
+  <div class="wf-body" style="gap:12px;padding-bottom:60px;">
+    <div class="wf-card" style="padding:14px;">
+      <div class="wf-row" style="gap:10px;margin-bottom:8px;"><div class="wf-icon sm">👩‍💻</div><div><div class="label">打工人小美</div><div class="meta">设计公司 · 主业收入</div></div></div>
+      <div class="wf-row between"><span class="wf-text-xs">本月支出 ¥4,200</span><span class="wf-text-xs">本月收入 ¥9,000</span></div>
+      <div style="text-align:right;margin-top:4px;"><span class="wf-text-xs" style="color:var(--accent);">详情 ></span></div>
+    </div>
+    <div class="wf-card" style="padding:14px;">
+      <div class="wf-row" style="gap:10px;margin-bottom:8px;"><div class="wf-icon sm">👩‍💼</div><div><div class="label">老板小美</div><div class="meta">小红书带货 · 副业</div></div></div>
+      <div class="wf-row between"><span class="wf-text-xs">本月支出 ¥6,153</span><span class="wf-text-xs">本月收入 ¥9,000</span></div>
+      <div class="wf-row between" style="margin-top:4px;"><span class="wf-text-xs" style="font-weight:600;">净利润 ¥2,847</span><span class="wf-text-xs" style="color:var(--accent);">详情 ></span></div>
+    </div>
+    <div class="wf-card accent" style="padding:12px;">
+      <div style="font-size:13px;">💡 "对了，平台佣金算进副业成本了吗？"</div>
+      <div class="wf-text-xs" style="color:var(--accent);margin-top:4px;">去看看 ></div>
+    </div>
+  </div>
+  <div class="wf-tab-bar">
+    <div class="tab"><span class="tab-icon">🏠</span>首页</div>
+    <div class="tab"><span class="tab-icon">💳</span>消费</div>
+    <div class="tab"><span class="tab-icon">🤖</span>AI</div>
+    <div class="tab active"><span class="tab-icon">👤</span>我的</div>
+  </div>
+</div>
+
+<!-- 05.2 Identity P&L -->
+<div class="page" id="p05-2">
+  <div class="wf-header"><div class="back">←</div><div class="title">老板小美</div><div class="action">4月 ▿</div></div>
+  <div class="wf-body" style="gap:12px;">
+    <div class="wf-card" style="text-align:center;padding:20px;">
+      <div class="wf-text-xs">本月损益</div>
+      <div class="wf-text-xs">净利润</div>
+      <div class="wf-text-lg" style="font-size:40px;color:var(--success);">¥2,847</div>
+      <div class="wf-text-xs">▲ 比上月多 ¥340</div>
+      <div class="wf-row" style="justify-content:center;gap:24px;margin-top:12px;">
+        <div><div class="wf-text-xs">收入</div><div style="font-weight:600;">¥9,000</div></div>
+        <div><div class="wf-text-xs">支出</div><div style="font-weight:600;">¥6,153</div></div>
+      </div>
+      <div class="wf-progress" style="margin-top:8px;"><div class="fill" style="width:31.6%;background:var(--success);"></div></div>
+      <div class="wf-text-xs" style="text-align:right;">利润率 31.6%</div>
+    </div>
+    <div class="wf-section-title">收入明细</div>
+    <div class="wf-list-item"><div class="wf-icon sm">💰</div><div class="content"><div class="label">薯店结算</div></div><div class="amount">¥5,400</div></div>
+    <div class="wf-list-item"><div class="wf-icon sm">🤝</div><div class="content"><div class="label">品牌合作</div></div><div class="amount">¥3,200</div></div>
+    <div class="wf-list-item"><div class="wf-icon sm">🎁</div><div class="content"><div class="label">样品佣金</div></div><div class="amount">¥400</div></div>
+    <div class="wf-section-title">成本明细</div>
+    <div class="wf-list-item"><div class="wf-icon sm">📱</div><div class="content"><div class="label">广告投流</div></div><div class="amount">¥2,000</div></div>
+    <div class="wf-list-item"><div class="wf-icon sm">📦</div><div class="content"><div class="label">样品采购</div></div><div class="amount">¥1,600</div></div>
+    <div class="wf-card accent" style="padding:10px;font-size:12px;">💡 广告投流占总成本32%，ROI仅2.7</div>
+    <div class="wf-section-title">时间价值</div>
+    <div class="wf-card" style="padding:12px;">
+      <div style="font-size:13px;">⏱ 本月投入约 124 小时</div>
+      <div class="wf-row between" style="margin-top:6px;">
+        <div><div class="wf-text-xs">副业时薪</div><div style="font-weight:600;">¥23/h</div></div>
+        <div><div class="wf-text-xs">主业时薪</div><div style="font-weight:600;">¥51/h</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 06.1 Manual Entry -->
+<div class="page" id="p06-1">
+  <div class="wf-header"><div class="back">✕</div><div class="title">记一笔</div></div>
+  <div class="wf-body" style="gap:12px;">
+    <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;">
+      <div style="flex:1;padding:8px;text-align:center;font-size:12px;color:var(--text-secondary);">语音</div>
+      <div style="flex:1;padding:8px;text-align:center;background:var(--text-primary);color:#fff;font-size:12px;">表单</div>
+      <div style="flex:1;padding:8px;text-align:center;font-size:12px;color:var(--text-secondary);">截图</div>
+    </div>
+    <div style="text-align:center;padding:16px 0;">
+      <div style="font-size:36px;font-weight:300;color:var(--text-tertiary);">¥ <span style="border-bottom:2px solid var(--text-primary);padding-bottom:2px;">___</span></div>
+    </div>
+    <div class="wf-list-item" style="border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;">
+      <span>🍽</span><div class="content"><div class="label" style="font-size:14px;">食品·生鲜</div><div class="meta">AI推荐分类</div></div><span class="arrow">></span>
+    </div>
+    <div class="wf-list-item" style="border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;">
+      <span>📅</span><div class="content"><div class="label" style="font-size:14px;">今天 4月11日</div></div><span class="arrow">></span>
+    </div>
+    <div class="wf-input" style="color:var(--text-tertiary);">📝 备注（选填）</div>
+    <button class="wf-btn primary">保存</button>
+    <div class="wf-card" style="padding:8px;background:#fafafa;text-align:center;">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;font-size:18px;font-weight:300;">
+        <div style="padding:10px;">1</div><div style="padding:10px;">2</div><div style="padding:10px;">3</div><div style="padding:10px;">⌫</div>
+        <div style="padding:10px;">4</div><div style="padding:10px;">5</div><div style="padding:10px;">6</div><div style="padding:10px;">.</div>
+        <div style="padding:10px;">7</div><div style="padding:10px;">8</div><div style="padding:10px;">9</div><div style="padding:10px;">0</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 06.2 Category Management -->
+<div class="page" id="p06-2">
+  <div class="wf-header"><div class="back">←</div><div class="title">分类管理</div></div>
+  <div class="wf-body" style="gap:12px;">
+    <div class="wf-card" style="padding:12px;text-align:center;">
+      <div style="font-size:13px;">AI 分类准确率</div>
+      <div style="font-size:28px;font-weight:700;">96.2%</div>
+      <div class="wf-text-xs">本月 487 笔自动分类 · 18 笔手动修正</div>
+    </div>
+    <div class="wf-section-title">分类规则</div>
+    <div class="wf-card" style="padding:0;">
+      <div style="padding:12px;border-bottom:1px solid #f0f0f0;">
+        <div style="font-size:14px;font-weight:500;">🍽 餐饮</div>
+        <div class="wf-text-xs" style="margin-top:4px;">瑞幸咖啡 → 饮品</div>
+        <div class="wf-text-xs">美团外卖 → 外卖</div>
+      </div>
+      <div style="padding:12px;border-bottom:1px solid #f0f0f0;">
+        <div style="font-size:14px;font-weight:500;">🚗 交通</div>
+        <div class="wf-text-xs" style="margin-top:4px;">滴滴出行 → 打车</div>
+      </div>
+      <div style="padding:12px;">
+        <div style="font-size:14px;font-weight:500;">🛒 购物</div>
+        <div class="wf-text-xs" style="margin-top:4px;">拼多多 → 综合 ></div>
+      </div>
+    </div>
+    <button class="wf-btn secondary" style="font-size:13px;">+ 创建自定义分类</button>
+  </div>
+</div>
+
+<!-- 06.3 iOS Shortcuts -->
+<div class="page" id="p06-3">
+  <div class="wf-header"><div class="back">←</div><div class="title">快速触发记账</div></div>
+  <div class="wf-body" style="gap:12px;">
+    <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;">
+      <div style="flex:1;padding:8px;text-align:center;background:var(--text-primary);color:#fff;font-size:12px;">🎤 语音</div>
+      <div style="flex:1;padding:8px;text-align:center;font-size:12px;color:var(--text-secondary);">📲 按键</div>
+      <div style="flex:1;padding:8px;text-align:center;font-size:12px;color:var(--text-secondary);">📸 截屏</div>
+    </div>
+    <div class="wf-card" style="padding:20px;text-align:center;">
+      <div style="font-size:18px;font-style:italic;color:var(--text-secondary);">"嘿Siri，<br>记一笔午饭38块"</div>
+    </div>
+    <div class="wf-section-title">预设指令</div>
+    <div class="wf-card" style="padding:10px;">
+      <div class="wf-text-sm" style="color:var(--text-primary);">· "记一笔 [金额] [分类]"</div>
+      <div class="wf-text-sm" style="color:var(--text-primary);">· "今天花了 [金额]"</div>
+    </div>
+    <div class="wf-section-title">设置步骤</div>
+    <div class="wf-card" style="padding:10px;">
+      <div class="wf-text-sm" style="color:var(--text-primary);">1. 打开 iOS 快捷指令 App</div>
+      <div class="wf-text-sm" style="color:var(--text-primary);">2. 添加了然快捷指令</div>
+      <div class="wf-text-sm" style="color:var(--text-primary);">3. 测试语音触发</div>
+    </div>
+    <div class="wf-card ghost" style="padding:10px;text-align:center;font-size:12px;color:var(--text-tertiary);">Phase 2 · 详细规格待定</div>
+  </div>
+</div>
+
+<!-- 07.1 AI Chat -->
+<div class="page" id="p07-1">
+  <div class="wf-header"><div class="title">AI管家</div><div class="action">ⓘ</div></div>
+  <div style="display:flex;border-bottom:1px solid var(--border);">
+    <div style="flex:1;padding:8px;text-align:center;font-size:13px;font-weight:600;border-bottom:2px solid var(--text-primary);">对话</div>
+    <div style="flex:1;padding:8px;text-align:center;font-size:13px;color:var(--text-tertiary);">洞察</div>
+  </div>
+  <div class="wf-body" style="gap:10px;flex:1;padding-bottom:0;">
+    <div class="wf-text-xs" style="text-align:center;">── 今天 ──</div>
+    <div class="wf-card" style="padding:10px;margin-right:40px;">
+      <div style="font-size:12px;font-weight:600;margin-bottom:4px;">🤖 AI管家</div>
+      <div class="wf-text-sm" style="color:var(--text-primary);">你好大强！有什么想了解的？</div>
+      <div class="wf-text-xs" style="margin-top:6px;">💡 试试问我：</div>
+      <div class="wf-chip" style="font-size:11px;margin-top:4px;">"外卖花了多少"</div>
+    </div>
+    <div class="wf-card" style="padding:10px;margin-left:40px;background:#f0f0f0;border:none;">
+      <div class="wf-text-sm" style="color:var(--text-primary);">如果每月少吃一次外卖，一年能省多少？</div>
+    </div>
+    <div class="wf-card" style="padding:10px;margin-right:40px;">
+      <div style="font-size:12px;font-weight:600;margin-bottom:4px;">🤖 AI管家</div>
+      <div class="wf-card" style="padding:8px;margin:6px 0;">
+        <div class="wf-text-xs">📊 你的外卖消费</div>
+        <div style="font-size:13px;font-weight:600;">3月: ¥1,280 (40次) · 平均 ¥32/次</div>
+      </div>
+      <div class="wf-row" style="gap:6px;">
+        <span class="wf-chip" style="font-size:11px;color:var(--accent);border-color:var(--accent);">查看外卖明细</span>
+        <span class="wf-chip" style="font-size:11px;color:var(--accent);border-color:var(--accent);">模拟存款</span>
+      </div>
+    </div>
+  </div>
+  <div style="padding:8px 16px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;">
+    <input class="wf-input" style="flex:1;padding:10px;" placeholder="问问AI管家..." readonly>
+    <span style="font-size:18px;">⬆</span>
+  </div>
+  <div class="wf-tab-bar">
+    <div class="tab"><span class="tab-icon">🏠</span>首页</div>
+    <div class="tab"><span class="tab-icon">💳</span>消费</div>
+    <div class="tab active"><span class="tab-icon">🤖</span>AI</div>
+    <div class="tab"><span class="tab-icon">👤</span>我的</div>
+  </div>
+</div>
+
+<!-- 07.2 Insights Feed -->
+<div class="page" id="p07-2">
+  <div class="wf-header"><div class="title">AI管家</div><div class="action">ⓘ</div></div>
+  <div style="display:flex;border-bottom:1px solid var(--border);">
+    <div style="flex:1;padding:8px;text-align:center;font-size:13px;color:var(--text-tertiary);">对话</div>
+    <div style="flex:1;padding:8px;text-align:center;font-size:13px;font-weight:600;border-bottom:2px solid var(--text-primary);">洞察</div>
+  </div>
+  <div class="wf-body" style="gap:10px;padding-bottom:60px;">
+    <div class="wf-text-xs">本月已生成 8 条洞察 · 最新更新: 今天 14:30</div>
+    <div class="wf-card" style="padding:12px;border-left:3px solid var(--accent);">
+      <div class="wf-row between"><span style="font-size:13px;font-weight:600;">📈 外卖频率环比上升</span><span class="wf-chip" style="font-size:10px;padding:2px 6px;">NEW</span></div>
+      <div class="wf-text-sm" style="margin:6px 0;">你本月外卖 40 次，较上月增加 11%</div>
+      <div class="wf-progress" style="margin:4px 0;"><div class="fill" style="width:60%;"></div></div>
+      <div class="wf-text-xs">¥1,280 vs ¥1,150 · +11%</div>
+      <div class="wf-row" style="gap:6px;margin-top:8px;">
+        <span class="wf-chip" style="font-size:11px;color:var(--accent);border-color:var(--accent);">查看外卖明细</span>
+        <span class="wf-chip" style="font-size:11px;color:var(--accent);border-color:var(--accent);">追问AI</span>
+      </div>
+      <div class="wf-row" style="gap:12px;margin-top:8px;">
+        <span class="wf-text-xs">👍 有用</span><span class="wf-text-xs">👎 不相关</span><span class="wf-text-xs">📤</span>
+      </div>
+    </div>
+    <div class="wf-card" style="padding:12px;opacity:0.7;">
+      <div style="font-size:13px;font-weight:500;">☕ 咖啡消费习惯</div>
+      <div class="wf-text-sm" style="margin-top:4px;">瑞幸消费稳定，月均12杯...</div>
+      <div class="wf-text-xs" style="margin-top:4px;">已读</div>
+    </div>
+    <div class="wf-card ghost" style="padding:12px;filter:blur(3px);">
+      <div style="font-size:13px;">🔒 更多洞察</div>
+      <div class="wf-text-sm">升级会员解锁全部洞察...</div>
+    </div>
+  </div>
+  <div class="wf-tab-bar">
+    <div class="tab"><span class="tab-icon">🏠</span>首页</div>
+    <div class="tab"><span class="tab-icon">💳</span>消费</div>
+    <div class="tab active"><span class="tab-icon">🤖</span>AI</div>
+    <div class="tab"><span class="tab-icon">👤</span>我的</div>
+  </div>
+</div>
+
+<!-- 07.3 Optimization Suggestions -->
+<div class="page" id="p07-3">
+  <div class="wf-header"><div class="back">←</div><div class="title">优化建议</div></div>
+  <div class="wf-body" style="gap:12px;padding-bottom:60px;">
+    <div class="wf-card" style="text-align:center;padding:16px;">
+      <div class="wf-text-xs">本月省钱潜力</div>
+      <div class="wf-text-lg" style="color:var(--success);">¥1,860 /月</div>
+      <div style="font-size:14px;color:var(--success);font-weight:500;">¥22,320 /年</div>
+      <div class="wf-text-xs" style="margin-top:4px;">基于你近3个月的真实消费数据分析</div>
+    </div>
+    <div class="wf-section-title">AI为你找到的建议</div>
+    <div class="wf-card" style="padding:12px;">
+      <div class="wf-row between"><span style="font-size:13px;font-weight:500;">🍜 减少外卖频率</span><span style="font-size:13px;font-weight:600;color:var(--success);">省 ¥680/月</span></div>
+      <div class="wf-text-xs" style="margin:6px 0;">当前12次/月 → 建议8次/月</div>
+      <div class="wf-row" style="gap:6px;margin-top:8px;">
+        <button class="wf-btn primary" style="flex:1;padding:8px;font-size:12px;">采纳</button>
+        <button class="wf-btn secondary" style="flex:1;padding:8px;font-size:12px;">暂不考虑</button>
+      </div>
+    </div>
+    <div class="wf-card" style="padding:12px;">
+      <div class="wf-row between"><span style="font-size:13px;font-weight:500;">☕ 减少咖啡消费</span><span style="font-size:13px;font-weight:600;color:var(--success);">省 ¥180/月</span></div>
+      <div class="wf-text-xs" style="margin:6px 0;">当前12杯/月 → 建议8杯/月</div>
+    </div>
+    <div class="wf-section-title">执行追踪</div>
+    <div class="wf-card" style="padding:12px;">
+      <div class="wf-row between"><span style="font-size:13px;">🍜 减少外卖（已采纳）</span><span class="wf-text-xs">50%</span></div>
+      <div class="wf-progress" style="margin:6px 0;"><div class="fill" style="width:50%;background:var(--success);"></div></div>
+      <div class="wf-text-xs" style="color:var(--success);">本月已省：¥340</div>
+    </div>
+    <button class="wf-btn secondary" style="font-size:13px;">模拟省钱效果 →</button>
+  </div>
+  <div class="wf-tab-bar">
+    <div class="tab"><span class="tab-icon">🏠</span>首页</div>
+    <div class="tab"><span class="tab-icon">💳</span>消费</div>
+    <div class="tab"><span class="tab-icon">🤖</span>AI</div>
+    <div class="tab"><span class="tab-icon">👤</span>我的</div>
+  </div>
+</div>
+
+<!-- 07.4 Simulation & Comparison -->
+<div class="page" id="p07-4">
+  <div class="wf-header"><div class="back">←</div><div class="title">省钱模拟</div></div>
+  <div class="wf-body" style="gap:12px;">
+    <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;">
+      <div style="flex:1;padding:8px;text-align:center;background:var(--text-primary);color:#fff;font-size:12px;">消费模拟</div>
+      <div style="flex:1;padding:8px;text-align:center;font-size:12px;color:var(--text-secondary);">同类对比</div>
+    </div>
+    <div class="wf-section-title">调整你的省钱方案</div>
+    <div class="wf-card" style="padding:12px;">
+      <div style="font-size:13px;font-weight:500;">🍜 外卖频率</div>
+      <div class="wf-text-xs">当前 12次/月</div>
+      <div class="wf-progress" style="margin:8px 0;height:8px;"><div class="fill" style="width:67%;"></div></div>
+      <div class="wf-text-xs" style="color:var(--success);">每月可省 ¥680</div>
+    </div>
+    <div class="wf-section-title">年度存款模拟</div>
+    <div class="wf-card" style="text-align:center;padding:16px;">
+      <div style="font-size:32px;font-weight:700;color:var(--success);">¥22,320</div>
+      <div class="wf-text-xs">一年可多存</div>
+    </div>
+    <div class="wf-placeholder" style="width:100%;height:120px;">双线面积图<br>当前 vs 优化后</div>
+    <div class="wf-card" style="padding:10px;">
+      <div class="wf-text-xs">📅 3个月后 +¥5,580</div>
+      <div class="wf-text-xs">📅 6个月后 +¥11,160</div>
+      <div class="wf-text-xs">📅 12个月后 +¥22,320</div>
+    </div>
+    <button class="wf-btn primary" style="font-size:13px;">分享我的省钱计划 →</button>
+  </div>
+</div>
+
+<!-- 08.0 My Hub -->
+<div class="page" id="p08-0">
+  <div class="wf-body" style="gap:12px;padding-bottom:60px;">
+    <div class="wf-card" style="padding:16px;">
+      <div class="wf-row" style="gap:12px;">
+        <div class="wf-icon lg">👤</div>
+        <div>
+          <div style="font-size:16px;font-weight:600;">大强</div>
+          <div class="wf-text-xs">138****1234</div>
+          <div class="wf-chip" style="font-size:10px;padding:2px 8px;margin-top:4px;">🏷️ 体验会员 · 到期 4/30</div>
+        </div>
+        <span class="arrow" style="margin-left:auto;">></span>
+      </div>
+    </div>
+    <div class="wf-section-title">我的功能</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+      <div class="wf-card" style="text-align:center;padding:12px;"><div style="font-size:24px;">🎁</div><div class="wf-text-xs" style="margin-top:4px;">人情账</div></div>
+      <div class="wf-card" style="text-align:center;padding:12px;"><div style="font-size:24px;">👥</div><div class="wf-text-xs" style="margin-top:4px;">家庭</div></div>
+      <div class="wf-card" style="text-align:center;padding:12px;"><div style="font-size:24px;">🏷️</div><div class="wf-text-xs" style="margin-top:4px;">多身份</div></div>
+    </div>
+    <div class="wf-card" style="padding:12px;">
+      <div class="wf-row" style="gap:8px;"><span>✏️</span><div><div style="font-size:14px;font-weight:500;">记一笔</div><div class="wf-text-xs">AI 没捕到的，手动补上</div></div></div>
+    </div>
+    <div class="wf-card" style="padding:0;">
+      <div class="wf-list-item" style="padding:12px 16px;"><span>📂</span><div class="content"><div class="label">导入数据</div></div><span class="arrow">></span></div>
+      <div class="wf-list-item" style="padding:12px 16px;"><span>📋</span><div class="content"><div class="label">分类管理</div></div><span class="arrow">></span></div>
+    </div>
+    <div class="wf-card" style="padding:0;">
+      <div class="wf-list-item" style="padding:12px 16px;"><span>⚙️</span><div class="content"><div class="label">设置</div></div><span class="arrow">></span></div>
+      <div class="wf-list-item" style="padding:12px 16px;"><span>❓</span><div class="content"><div class="label">帮助与反馈</div></div><span class="arrow">></span></div>
+      <div class="wf-list-item" style="padding:12px 16px;border:none;"><span>ℹ️</span><div class="content"><div class="label">关于</div></div><span class="arrow">></span></div>
+    </div>
+  </div>
+  <div class="wf-tab-bar">
+    <div class="tab"><span class="tab-icon">🏠</span>首页</div>
+    <div class="tab"><span class="tab-icon">💳</span>消费</div>
+    <div class="tab"><span class="tab-icon">🤖</span>AI</div>
+    <div class="tab active"><span class="tab-icon">👤</span>我的</div>
+  </div>
+</div>
+
+<!-- 08.1 Settings -->
+<div class="page" id="p08-1">
+  <div class="wf-header"><div class="back">←</div><div class="title">设置</div></div>
+  <div class="wf-body" style="gap:8px;">
+    <div class="wf-section-title">数据安全</div>
+    <div class="wf-card" style="padding:0;">
+      <div class="wf-list-item" style="padding:12px 16px;"><span>🔒</span><div class="content"><div class="label">数据加密</div><div class="meta">端到端加密保护</div></div><span class="arrow">▿</span></div>
+      <div class="wf-list-item" style="padding:12px 16px;"><span>🛡️</span><div class="content"><div class="label">隐私设置</div><div class="meta">管理数据共享范围</div></div><span class="arrow">></span></div>
+      <div class="wf-list-item" style="padding:12px 16px;border:none;"><span>📤</span><div class="content"><div class="label">数据导出</div><div class="meta">导出你的全部数据</div></div><span class="arrow">></span></div>
+    </div>
+    <div class="wf-section-title">通知管理</div>
+    <div class="wf-card" style="padding:0;">
+      <div class="wf-list-item" style="padding:12px 16px;"><span>🔔</span><div class="content"><div class="label">通知读取</div><div class="meta">已开启</div></div><div style="width:40px;height:22px;background:var(--success);border-radius:11px;"></div></div>
+      <div class="wf-list-item" style="padding:12px 16px;border:none;"><span>📱</span><div class="content"><div class="label">推送通知</div><div class="meta">洞察和提醒</div></div><span class="arrow">></span></div>
+    </div>
+    <div class="wf-section-title">账户</div>
+    <div class="wf-card" style="padding:0;">
+      <div class="wf-list-item" style="padding:12px 16px;"><span>💳</span><div class="content"><div class="label">会员管理</div><div class="meta">体验会员 · 4/30到期</div></div><span class="arrow">></span></div>
+      <div class="wf-list-item" style="padding:12px 16px;border:none;"><span>🔗</span><div class="content"><div class="label">账号绑定</div><div class="meta">微信已绑定</div></div><span class="arrow">></span></div>
+    </div>
+    <div class="wf-section-title">其他</div>
+    <div class="wf-card" style="padding:0;">
+      <div class="wf-list-item" style="padding:12px 16px;"><span>🌙</span><div class="content"><div class="label">深色模式</div></div><div style="width:40px;height:22px;background:var(--border);border-radius:11px;"></div></div>
+      <div class="wf-list-item" style="padding:12px 16px;border:none;"><span>🗑</span><div class="content"><div class="label" style="color:var(--danger);">清除缓存</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 08.2 Profile / Account -->
+<div class="page" id="p08-2">
+  <div class="wf-header"><div class="back">←</div><div class="title">个人资料</div></div>
+  <div class="wf-body" style="gap:12px;align-items:center;">
+    <div class="wf-icon" style="width:72px;height:72px;border-radius:36px;font-size:32px;">👤</div>
+    <div style="text-align:center;">
+      <div style="font-size:18px;font-weight:600;">大强</div>
+      <div class="wf-text-xs">138****1234</div>
+    </div>
+    <div class="wf-card" style="width:100%;padding:14px;">
+      <div class="wf-row between" style="margin-bottom:4px;">
+        <span style="font-size:14px;font-weight:600;">🏷️ 体验会员</span>
+        <span class="wf-text-xs" style="color:var(--accent);">管理 ></span>
+      </div>
+      <div class="wf-text-xs">到期日：2026年4月30日</div>
+      <div class="wf-progress" style="margin-top:6px;"><div class="fill" style="width:60%;background:var(--accent);"></div></div>
+    </div>
+    <div class="wf-card" style="width:100%;padding:0;">
+      <div class="wf-list-item" style="padding:12px 16px;"><div class="content"><div class="label">昵称</div></div><div style="font-size:13px;color:var(--text-secondary);">大强 ></div></div>
+      <div class="wf-list-item" style="padding:12px 16px;"><div class="content"><div class="label">手机号</div></div><div style="font-size:13px;color:var(--text-secondary);">138****1234</div></div>
+      <div class="wf-list-item" style="padding:12px 16px;"><div class="content"><div class="label">微信</div></div><div style="font-size:13px;color:var(--text-secondary);">已绑定</div></div>
+      <div class="wf-list-item" style="padding:12px 16px;border:none;"><div class="content"><div class="label">邮箱</div></div><div style="font-size:13px;color:var(--text-tertiary);">未绑定 ></div></div>
+    </div>
+    <div style="margin-top:24px;">
+      <button class="wf-btn ghost-btn" style="color:var(--danger);font-size:13px;">注销账号</button>
+    </div>
+  </div>
+</div>
+
+      </div>
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Page metadata
+const pageMeta = {
+  'p01-1': {title:'01.1 Welcome', badge:'P1'},
+  'p01-2': {title:'01.2 Onboarding', badge:'P1'},
+  'p01-3': {title:'01.3 Registration', badge:'P1'},
+  'p01-4': {title:'01.4 Permission', badge:'P1'},
+  'p01-5': {title:'01.5 Bill Import', badge:'P1'},
+  'p01-6': {title:'01.6 Import Processing', badge:'P1'},
+  'p01-7': {title:'01.7 Dashboard', badge:'P1'},
+  'p01-8': {title:'01.8 Monthly Report', badge:'P1'},
+  'p02-1': {title:'02.1 Subscription', badge:'P1'},
+  'p02-2': {title:'02.2 Shared Ledger', badge:'P1'},
+  'p02-3': {title:'02.3 Beneficiary Tag', badge:'P1'},
+  'p03-1': {title:'03.1 Transaction List', badge:'P1'},
+  'p03-2': {title:'03.2 Transaction Detail', badge:'P1'},
+  'p03-3': {title:'03.3 Trend Chart', badge:'P1'},
+  'p03-4': {title:'03.4 Spending Radar', badge:'P1'},
+  'p04-1': {title:'04.1 Gift Management', badge:'P2'},
+  'p04-1a': {title:'04.1a Gift Book Import', badge:'P2'},
+  'p04-2': {title:'04.2 Gift Suggestion', badge:'P2'},
+  'p05-1': {title:'05.1 Identity Mgmt', badge:'P2'},
+  'p05-2': {title:'05.2 Identity P&L', badge:'P2'},
+  'p06-1': {title:'06.1 Manual Entry', badge:'P2'},
+  'p06-2': {title:'06.2 Category Mgmt', badge:'P2'},
+  'p06-3': {title:'06.3 iOS Shortcuts', badge:'P2'},
+  'p07-1': {title:'07.1 AI Chat', badge:'P3'},
+  'p07-2': {title:'07.2 Insights Feed', badge:'P3'},
+  'p07-3': {title:'07.3 Optimization', badge:'P3'},
+  'p07-4': {title:'07.4 Simulation', badge:'P3'},
+  'p08-0': {title:'08.0 My Hub', badge:'P3'},
+  'p08-1': {title:'08.1 Settings', badge:'P3'},
+  'p08-2': {title:'08.2 Profile/Account', badge:'P3'},
+};
+
+// Navigation
+document.querySelectorAll('.page-link').forEach(link => {
+  link.addEventListener('click', () => {
+    const pageId = link.dataset.page;
+    // Update sidebar
+    document.querySelectorAll('.page-link').forEach(l => l.classList.remove('active'));
+    link.classList.add('active');
+    // Update pages
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const target = document.getElementById(pageId);
+    if (target) target.classList.add('active');
+    // Update toolbar
+    const meta = pageMeta[pageId];
+    if (meta) {
+      document.getElementById('toolbarTitle').textContent = meta.title;
+      document.getElementById('toolbarBadge').textContent = meta.badge;
+    }
+    // Close mobile sidebar
+    document.getElementById('sidebar').classList.remove('open');
+  });
+});
+</script>
+</body>
+</html>
