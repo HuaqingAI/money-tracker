@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+  <!-- Background -->
+  <rect width="240" height="240" fill="#F9FAFB"/>
+
+  <!-- Soft background circle -->
+  <circle cx="120" cy="120" r="78" fill="#EEF9F6" opacity="0.6"/>
+
+  <!-- Chart frame / axes -->
+  <!-- Y-axis -->
+  <line x1="58" y1="55" x2="58" y2="175" stroke="#E5E7EB" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- X-axis -->
+  <line x1="58" y1="175" x2="192" y2="175" stroke="#E5E7EB" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Y-axis tick marks and grid lines -->
+  <line x1="54" y1="130" x2="192" y2="130" stroke="#E5E7EB" stroke-width="1.2" stroke-linecap="round" stroke-dasharray="4 4"/>
+  <line x1="54" y1="100" x2="192" y2="100" stroke="#E5E7EB" stroke-width="1.2" stroke-linecap="round" stroke-dasharray="4 4"/>
+  <line x1="54" y1="70" x2="192" y2="70" stroke="#E5E7EB" stroke-width="1.2" stroke-linecap="round" stroke-dasharray="4 4"/>
+
+  <!-- Y-axis small ticks -->
+  <line x1="54" y1="130" x2="62" y2="130" stroke="#E5E7EB" stroke-width="2" stroke-linecap="round"/>
+  <line x1="54" y1="100" x2="62" y2="100" stroke="#E5E7EB" stroke-width="2" stroke-linecap="round"/>
+  <line x1="54" y1="70" x2="62" y2="70" stroke="#E5E7EB" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Y-axis label placeholders -->
+  <rect x="40" y="127" width="10" height="6" rx="3" fill="#E5E7EB"/>
+  <rect x="40" y="97" width="10" height="6" rx="3" fill="#E5E7EB"/>
+  <rect x="40" y="67" width="10" height="6" rx="3" fill="#E5E7EB"/>
+
+  <!-- X-axis tick marks and month label placeholders -->
+  <line x1="90" y1="175" x2="90" y2="181" stroke="#E5E7EB" stroke-width="2" stroke-linecap="round"/>
+  <line x1="122" y1="175" x2="122" y2="181" stroke="#E5E7EB" stroke-width="2" stroke-linecap="round"/>
+  <line x1="154" y1="175" x2="154" y2="181" stroke="#E5E7EB" stroke-width="2" stroke-linecap="round"/>
+  <line x1="186" y1="175" x2="186" y2="181" stroke="#E5E7EB" stroke-width="2" stroke-linecap="round"/>
+
+  <rect x="82" y="184" width="16" height="5" rx="2.5" fill="#E5E7EB"/>
+  <rect x="114" y="184" width="16" height="5" rx="2.5" fill="#E5E7EB"/>
+  <rect x="146" y="184" width="16" height="5" rx="2.5" fill="#E5E7EB"/>
+  <rect x="178" y="184" width="16" height="5" rx="2.5" fill="#E5E7EB"/>
+
+  <!-- Flat line (no data) - the main feature -->
+  <line x1="66" y1="155" x2="186" y2="155" stroke="#1A6B5A" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="6 5"/>
+
+  <!-- Small circle at start of flat line -->
+  <circle cx="66" cy="155" r="4" fill="#EEF9F6" stroke="#1A6B5A" stroke-width="2"/>
+
+  <!-- Upward arrow hint at end of flat line -->
+  <g transform="translate(186, 155)">
+    <!-- Arrow shaft going up-right -->
+    <line x1="0" y1="0" x2="14" y2="-22" stroke="#1A6B5A" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Arrow head -->
+    <path d="M14,-22 L8,-20 L14,-14 Z" fill="#1A6B5A"/>
+    <!-- Small arc suggesting potential growth -->
+    <path d="M0,0 Q8,-8 14,-22" fill="none" stroke="#A8DDD6" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+  </g>
+
+  <!-- Sparkle accents near arrow -->
+  <g transform="translate(202, 122)">
+    <line x1="0" y1="-5" x2="0" y2="5" stroke="#A8DDD6" stroke-width="2" stroke-linecap="round"/>
+    <line x1="-5" y1="0" x2="5" y2="0" stroke="#A8DDD6" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(215, 110)">
+    <line x1="0" y1="-3.5" x2="0" y2="3.5" stroke="#A8DDD6" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="-3.5" y1="0" x2="3.5" y2="0" stroke="#A8DDD6" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="-2.5" y1="-2.5" x2="2.5" y2="2.5" stroke="#A8DDD6" stroke-width="1.2" stroke-linecap="round"/>
+    <line x1="2.5" y1="-2.5" x2="-2.5" y2="2.5" stroke="#A8DDD6" stroke-width="1.2" stroke-linecap="round"/>
+  </g>
+  <circle cx="196" cy="136" r="2" fill="#A8DDD6" opacity="0.8"/>
+  <circle cx="210" cy="128" r="1.5" fill="#1A6B5A" opacity="0.35"/>
+
+  <!-- Chart title placeholder -->
+  <rect x="64" y="44" width="50" height="7" rx="3.5" fill="#E5E7EB"/>
+</svg>

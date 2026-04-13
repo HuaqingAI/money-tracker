@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <!-- Outer glow ring (pulse animation reference) -->
+  <circle cx="24" cy="24" r="20" fill="none" stroke="#A8DDD6" stroke-width="3" opacity="0.4"/>
+
+  <!-- Mid glow ring -->
+  <circle cx="24" cy="24" r="14" fill="none" stroke="#A8DDD6" stroke-width="2.5" opacity="0.25"/>
+
+  <!-- 4-point star / sparkle shape -->
+  <!-- Main 4 long points -->
+  <polygon points="24,4 26.5,21.5 44,24 26.5,26.5 24,44 21.5,26.5 4,24 21.5,21.5"
+    fill="#1A6B5A"/>
+
+  <!-- 4 small diagonal points -->
+  <polygon points="24,4 26.5,21.5 44,24 26.5,26.5 24,44 21.5,26.5 4,24 21.5,21.5"
+    fill="#1A6B5A" transform="rotate(45 24 24)" opacity="0.55"/>
+
+  <!-- Center dot -->
+  <circle cx="24" cy="24" r="3" fill="#A8DDD6"/>
+</svg>

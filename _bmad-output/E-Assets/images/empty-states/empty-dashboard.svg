@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+  <!-- Background -->
+  <rect width="240" height="240" fill="#F9FAFB"/>
+
+  <!-- Soft glow circle -->
+  <circle cx="120" cy="125" r="80" fill="#EEF9F6" opacity="0.8"/>
+
+  <!-- Open notebook / ledger body -->
+  <rect x="55" y="85" width="130" height="100" rx="6" fill="#FFFFFF" stroke="#1A6B5A" stroke-width="2.5" stroke-linejoin="round"/>
+
+  <!-- Notebook spine (center line) -->
+  <line x1="120" y1="86" x2="120" y2="184" stroke="#A8DDD6" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Left page ruled lines -->
+  <line x1="67" y1="104" x2="113" y2="104" stroke="#E5E7EB" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="67" y1="116" x2="113" y2="116" stroke="#E5E7EB" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="67" y1="128" x2="113" y2="128" stroke="#E5E7EB" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="67" y1="140" x2="104" y2="140" stroke="#E5E7EB" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="67" y1="152" x2="109" y2="152" stroke="#E5E7EB" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="67" y1="164" x2="100" y2="164" stroke="#E5E7EB" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- Right page ruled lines -->
+  <line x1="127" y1="104" x2="173" y2="104" stroke="#E5E7EB" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="127" y1="116" x2="173" y2="116" stroke="#E5E7EB" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="127" y1="128" x2="173" y2="128" stroke="#E5E7EB" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="127" y1="140" x2="165" y2="140" stroke="#E5E7EB" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="127" y1="152" x2="170" y2="152" stroke="#E5E7EB" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="127" y1="164" x2="160" y2="164" stroke="#E5E7EB" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- Notebook header bar -->
+  <rect x="55" y="85" width="130" height="14" rx="6" fill="#EEF9F6"/>
+  <rect x="55" y="92" width="130" height="7" fill="#EEF9F6"/>
+
+  <!-- Notebook bookmark ribbon -->
+  <polygon points="173,85 178,85 178,100 175.5,97 173,100" fill="#A8DDD6"/>
+
+  <!-- Hourglass body -->
+  <g transform="translate(162, 148)">
+    <!-- Outer frame -->
+    <rect x="-10" y="-16" width="20" height="32" rx="3" fill="#EEF9F6" stroke="#1A6B5A" stroke-width="2"/>
+    <!-- Top sand -->
+    <path d="M-7,-13 L7,-13 L2,-2 L-2,-2 Z" fill="#A8DDD6"/>
+    <!-- Bottom sand -->
+    <path d="M-2,2 L2,2 L7,13 L-7,13 Z" fill="#A8DDD6" opacity="0.5"/>
+    <!-- Center waist line -->
+    <line x1="-7" y1="0" x2="7" y2="0" stroke="#1A6B5A" stroke-width="1.5" stroke-linecap="round"/>
+    <!-- Sand drop -->
+    <circle cx="0" cy="1" r="1.2" fill="#1A6B5A"/>
+    <!-- Top cap -->
+    <rect x="-10" y="-19" width="20" height="4" rx="2" fill="#1A6B5A"/>
+    <!-- Bottom cap -->
+    <rect x="-10" y="15" width="20" height="4" rx="2" fill="#1A6B5A"/>
+  </g>
+
+  <!-- Sparkle stars floating above -->
+  <!-- Large star top center -->
+  <g transform="translate(120, 62)">
+    <line x1="0" y1="-7" x2="0" y2="7" stroke="#1A6B5A" stroke-width="2" stroke-linecap="round"/>
+    <line x1="-7" y1="0" x2="7" y2="0" stroke="#1A6B5A" stroke-width="2" stroke-linecap="round"/>
+    <line x1="-5" y1="-5" x2="5" y2="5" stroke="#1A6B5A" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="5" y1="-5" x2="-5" y2="5" stroke="#1A6B5A" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- Small star left -->
+  <g transform="translate(88, 72)">
+    <line x1="0" y1="-4" x2="0" y2="4" stroke="#A8DDD6" stroke-width="1.8" stroke-linecap="round"/>
+    <line x1="-4" y1="0" x2="4" y2="0" stroke="#A8DDD6" stroke-width="1.8" stroke-linecap="round"/>
+  </g>
+
+  <!-- Tiny star right -->
+  <g transform="translate(152, 68)">
+    <line x1="0" y1="-3.5" x2="0" y2="3.5" stroke="#A8DDD6" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="-3.5" y1="0" x2="3.5" y2="0" stroke="#A8DDD6" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="-2.5" y1="-2.5" x2="2.5" y2="2.5" stroke="#A8DDD6" stroke-width="1.2" stroke-linecap="round"/>
+    <line x1="2.5" y1="-2.5" x2="-2.5" y2="2.5" stroke="#A8DDD6" stroke-width="1.2" stroke-linecap="round"/>
+  </g>
+
+  <!-- Tiny dot sparkles -->
+  <circle cx="105" cy="58" r="2" fill="#A8DDD6"/>
+  <circle cx="140" cy="56" r="1.5" fill="#1A6B5A" opacity="0.4"/>
+  <circle cx="75" cy="80" r="1.5" fill="#A8DDD6" opacity="0.6"/>
+
+  <!-- Pencil leaning on notebook -->
+  <g transform="translate(52, 160) rotate(-30)">
+    <rect x="-3" y="-28" width="6" height="50" rx="3" fill="#F59E0B"/>
+    <polygon points="-3,22 3,22 0,32" fill="#FBBF24"/>
+    <rect x="-3" y="-32" width="6" height="6" rx="1" fill="#E5E7EB"/>
+    <line x1="-3" y1="-28" x2="3" y2="-28" stroke="#D97706" stroke-width="1"/>
+    <!-- pencil tip -->
+    <circle cx="0" cy="32" r="1" fill="#374151"/>
+  </g>
+</svg>

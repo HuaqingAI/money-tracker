@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 400" width="240" height="400">
+  <defs>
+    <style>
+      text { font-family: Inter,-apple-system,sans-serif; }
+    </style>
+  </defs>
+
+  <!-- Phone frame -->
+  <rect x="10" y="10" width="220" height="380" rx="20" ry="20" fill="#F5F5F5" stroke="#1A1A1A" stroke-width="2.5"/>
+  <!-- Screen area -->
+  <rect x="14" y="14" width="212" height="372" rx="17" ry="17" fill="#FFFFFF"/>
+
+  <!-- Status bar -->
+  <rect x="14" y="14" width="212" height="18" rx="17" ry="0" fill="#415FFF"/>
+  <rect x="14" y="14" width="212" height="4" rx="17" ry="17" fill="#415FFF"/>
+  <text x="120" y="26" text-anchor="middle" fill="white" font-size="7" font-weight="600">9:41</text>
+
+  <!-- Vivo OriginOS Settings Header -->
+  <rect x="14" y="32" width="212" height="36" fill="#415FFF"/>
+  <text x="120" y="55" text-anchor="middle" fill="white" font-size="13" font-weight="700">&#35774;&#32622;</text>
+
+  <!-- Breadcrumb path -->
+  <rect x="14" y="68" width="212" height="18" fill="#EEF0FF"/>
+  <text x="24" y="80" fill="#415FFF" font-size="6.5">&#35774;&#32622; &gt; &#36890;&#30693; &gt; &#24212;&#29992;&#31649;&#29702;</text>
+
+  <!-- Notification section header -->
+  <rect x="14" y="90" width="212" height="22" fill="#F5F5F5"/>
+  <text x="24" y="104" fill="#888888" font-size="7" font-weight="600">&#24212;&#29992;&#36890;&#30693;&#31649;&#29702;</text>
+
+  <!-- Sort/filter bar -->
+  <rect x="14" y="112" width="212" height="26" fill="white"/>
+  <rect x="22" y="117" width="40" height="16" rx="8" fill="#415FFF" opacity="0.15"/>
+  <text x="42" y="128" text-anchor="middle" fill="#415FFF" font-size="7">&#20840;&#37096;</text>
+  <rect x="68" y="117" width="40" height="16" rx="8" fill="#F5F5F5"/>
+  <text x="88" y="128" text-anchor="middle" fill="#888888" font-size="7">&#24320;&#21551;</text>
+  <rect x="114" y="117" width="40" height="16" rx="8" fill="#F5F5F5"/>
+  <text x="134" y="128" text-anchor="middle" fill="#888888" font-size="7">&#20851;&#38381;</text>
+  <rect x="14" y="138" width="212" height="1" fill="#EEEEEE"/>
+
+  <!-- App list -->
+  <!-- Item 1 -->
+  <rect x="14" y="139" width="212" height="32" fill="white"/>
+  <circle cx="31" cy="155" r="9" fill="#F44336" opacity="0.25"/>
+  <text x="31" y="159" text-anchor="middle" fill="#F44336" font-size="7">N</text>
+  <text x="46" y="157" fill="#333333" font-size="8">&#32593;&#26613;&#26131;&#30424;</text>
+  <!-- Toggle ON -->
+  <rect x="178" y="149" width="24" height="13" rx="6.5" fill="#415FFF"/>
+  <circle cx="195" cy="155.5" r="4.5" fill="white"/>
+  <rect x="14" y="171" width="212" height="1" fill="#F5F5F5"/>
+
+  <!-- Item 2: LiaoRan - HIGHLIGHTED (Step 1) -->
+  <rect x="14" y="172" width="212" height="36" fill="#EEEEFF" stroke="#EF4444" stroke-width="1.5"/>
+  <circle cx="31" cy="190" r="11" fill="#1A6B5A"/>
+  <text x="31" y="194" text-anchor="middle" fill="white" font-size="8" font-weight="700">&#20102;</text>
+  <text x="46" y="187" fill="#333333" font-size="9" font-weight="600">&#20102;&#28982;</text>
+  <text x="46" y="198" fill="#EF4444" font-size="7">&#36890;&#30693;&#24050;&#20851;&#38381;</text>
+  <!-- Toggle OFF - attention state -->
+  <rect x="178" y="184" width="24" height="13" rx="6.5" fill="#DDDDDD"/>
+  <circle cx="181" cy="190.5" r="4.5" fill="white"/>
+  <text x="208" y="192" text-anchor="end" fill="#AAAAAA" font-size="10">&#8250;</text>
+
+  <!-- Item 3 -->
+  <rect x="14" y="209" width="212" height="32" fill="white"/>
+  <circle cx="31" cy="225" r="9" fill="#2196F3" opacity="0.25"/>
+  <text x="31" y="229" text-anchor="middle" fill="#2196F3" font-size="7">M</text>
+  <text x="46" y="227" fill="#333333" font-size="8">&#22320;&#22270;</text>
+  <rect x="178" y="219" width="24" height="13" rx="6.5" fill="#415FFF"/>
+  <circle cx="195" cy="225.5" r="4.5" fill="white"/>
+  <rect x="14" y="241" width="212" height="1" fill="#F5F5F5"/>
+
+  <!-- LiaoRan notification detail - Step 2 -->
+  <rect x="14" y="246" width="212" height="22" fill="#EEF0FF"/>
+  <text x="24" y="260" fill="#415FFF" font-size="7" font-weight="600">&#20102;&#28982; &#8250; &#36890;&#30693;&#35774;&#32622;</text>
+
+  <!-- Notification permission toggle - HIGHLIGHTED (Step 2) -->
+  <rect x="14" y="268" width="212" height="40" fill="#EEEEFF" stroke="#EF4444" stroke-width="1.5"/>
+  <text x="24" y="284" fill="#333333" font-size="9" font-weight="600">&#20801;&#35768;&#25509;&#25910;&#36890;&#30693;</text>
+  <text x="24" y="296" fill="#888888" font-size="7">&#24320;&#21551;&#20197;&#25509;&#25910;&#20102;&#28982;&#25552;&#37266;</text>
+  <!-- Toggle switch ON -->
+  <rect x="174" y="278" width="28" height="15" rx="7.5" fill="#415FFF"/>
+  <circle cx="195" cy="285.5" r="5.5" fill="white"/>
+
+  <!-- Notification detail options -->
+  <rect x="14" y="313" width="212" height="28" fill="white"/>
+  <text x="24" y="330" fill="#333333" font-size="8">&#36590;&#27454;&#26631;&#35782;</text>
+  <!-- Toggle -->
+  <rect x="174" y="322" width="28" height="15" rx="7.5" fill="#415FFF"/>
+  <circle cx="195" cy="329.5" r="5.5" fill="white"/>
+  <rect x="14" y="341" width="212" height="1" fill="#EEEEEE"/>
+
+  <!-- Step 1 annotation circle -->
+  <circle cx="22" cy="190" r="11" fill="#1A6B5A" stroke="white" stroke-width="2"/>
+  <text x="22" y="194" text-anchor="middle" fill="white" font-size="9" font-weight="700">1</text>
+
+  <!-- Arrow -->
+  <path d="M22 202 L22 260 L22 263" fill="none" stroke="#1A6B5A" stroke-width="2" stroke-dasharray="3,2"/>
+  <polygon points="22,268 18,260 26,260" fill="#1A6B5A"/>
+
+  <!-- Step 2 annotation circle -->
+  <circle cx="22" cy="288" r="11" fill="#1A6B5A" stroke="white" stroke-width="2"/>
+  <text x="22" y="292" text-anchor="middle" fill="white" font-size="9" font-weight="700">2</text>
+
+  <!-- Brand label -->
+  <rect x="14" y="345" width="212" height="41" fill="#EEF0FF"/>
+  <text x="120" y="369" text-anchor="middle" fill="#415FFF" font-size="7">Vivo OriginOS &#8226; &#24212;&#29992;&#36890;&#30693;&#31649;&#29702;</text>
+</svg>

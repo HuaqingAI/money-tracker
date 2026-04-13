@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 360" width="240" height="360">
+  <defs>
+    <style>
+      text { font-family: Inter,-apple-system,sans-serif; }
+    </style>
+  </defs>
+
+  <!-- Phone frame -->
+  <rect x="10" y="8" width="220" height="344" rx="20" ry="20" fill="#F5F5F5" stroke="#1A1A1A" stroke-width="2.5"/>
+  <!-- Screen area -->
+  <rect x="14" y="12" width="212" height="336" rx="17" ry="17" fill="#FFFFFF"/>
+
+  <!-- Status bar -->
+  <rect x="14" y="12" width="212" height="18" rx="17" ry="0" fill="#1677FF"/>
+  <rect x="14" y="12" width="212" height="4" rx="17" ry="17" fill="#1677FF"/>
+  <text x="120" y="24" text-anchor="middle" fill="white" font-size="7" font-weight="600">9:41</text>
+
+  <!-- Alipay Header -->
+  <rect x="14" y="30" width="212" height="44" fill="#1677FF"/>
+  <!-- Alipay logo area -->
+  <circle cx="38" cy="52" r="12" fill="white" opacity="0.2"/>
+  <text x="38" y="56" text-anchor="middle" fill="white" font-size="9" font-weight="700">&#25903;</text>
+  <text x="78" y="57" text-anchor="middle" fill="white" font-size="14" font-weight="700">&#25903;&#20184;&#23453;</text>
+
+  <!-- Search bar in header -->
+  <rect x="130" y="44" width="82" height="16" rx="8" fill="white" opacity="0.2"/>
+  <text x="171" y="55" text-anchor="middle" fill="white" font-size="7" opacity="0.8">&#25628;&#32034;</text>
+
+  <!-- Main content grid area -->
+  <rect x="14" y="74" width="212" height="170" fill="#F5F7FA"/>
+
+  <!-- Quick service icons grid - 3x2 -->
+  <!-- Row 1 -->
+  <rect x="25" y="83" width="40" height="44" rx="8" fill="white"/>
+  <rect x="32" y="89" width="26" height="26" rx="6" fill="#1677FF" opacity="0.15"/>
+  <text x="45" y="106" text-anchor="middle" fill="#1677FF" font-size="9">&#25173;</text>
+  <text x="45" y="119" text-anchor="middle" fill="#555" font-size="6">&#25173;&#27454;</text>
+
+  <rect x="73" y="83" width="40" height="44" rx="8" fill="white"/>
+  <rect x="80" y="89" width="26" height="26" rx="6" fill="#1677FF" opacity="0.15"/>
+  <text x="93" y="106" text-anchor="middle" fill="#1677FF" font-size="9">&#25910;</text>
+  <text x="93" y="119" text-anchor="middle" fill="#555" font-size="6">&#25910;&#27454;</text>
+
+  <rect x="121" y="83" width="40" height="44" rx="8" fill="white"/>
+  <rect x="128" y="89" width="26" height="26" rx="6" fill="#1677FF" opacity="0.15"/>
+  <text x="141" y="106" text-anchor="middle" fill="#1677FF" font-size="9">&#36716;</text>
+  <text x="141" y="119" text-anchor="middle" fill="#555" font-size="6">&#36716;&#36134;</text>
+
+  <rect x="169" y="83" width="40" height="44" rx="8" fill="white"/>
+  <rect x="176" y="89" width="26" height="26" rx="6" fill="#1677FF" opacity="0.15"/>
+  <text x="189" y="106" text-anchor="middle" fill="#1677FF" font-size="9">&#20840;</text>
+  <text x="189" y="119" text-anchor="middle" fill="#555" font-size="6">&#20840;&#37096;</text>
+
+  <!-- Row 2 -->
+  <rect x="25" y="134" width="40" height="44" rx="8" fill="white"/>
+  <rect x="32" y="140" width="26" height="26" rx="6" fill="#52C41A" opacity="0.15"/>
+  <text x="45" y="157" text-anchor="middle" fill="#52C41A" font-size="9">&#22269;</text>
+  <text x="45" y="170" text-anchor="middle" fill="#555" font-size="6">&#22269;&#23545;&#22269;</text>
+
+  <rect x="73" y="134" width="40" height="44" rx="8" fill="white"/>
+  <rect x="80" y="140" width="26" height="26" rx="6" fill="#FF7A00" opacity="0.15"/>
+  <text x="93" y="157" text-anchor="middle" fill="#FF7A00" font-size="9">&#20940;</text>
+  <text x="93" y="170" text-anchor="middle" fill="#555" font-size="6">&#20940;&#27454;</text>
+
+  <rect x="121" y="134" width="40" height="44" rx="8" fill="white"/>
+  <rect x="128" y="140" width="26" height="26" rx="6" fill="#722ED1" opacity="0.15"/>
+  <text x="141" y="157" text-anchor="middle" fill="#722ED1" font-size="9">&#22522;</text>
+  <text x="141" y="170" text-anchor="middle" fill="#555" font-size="6">&#22522;&#37329;</text>
+
+  <rect x="169" y="134" width="40" height="44" rx="8" fill="white"/>
+  <rect x="176" y="140" width="26" height="26" rx="6" fill="#EB2F96" opacity="0.15"/>
+  <text x="189" y="157" text-anchor="middle" fill="#EB2F96" font-size="9">&#20445;</text>
+  <text x="189" y="170" text-anchor="middle" fill="#555" font-size="6">&#20445;&#38669;</text>
+
+  <!-- Mini banner card -->
+  <rect x="25" y="186" width="184" height="48" rx="10" fill="white"/>
+  <rect x="33" y="196" width="36" height="30" rx="6" fill="#E6F4FF"/>
+  <text x="51" y="215" text-anchor="middle" fill="#1677FF" font-size="10">$</text>
+  <text x="78" y="208" fill="#333" font-size="8" font-weight="600">&#20110;&#20605;&#36827;&#34892;&#29702;&#36134;</text>
+  <text x="78" y="220" fill="#888" font-size="7">&#33258;&#21160;&#35760;&#24115;&#36134;&#21333;</text>
+  <rect x="175" y="202" width="24" height="14" rx="7" fill="#1677FF"/>
+  <text x="187" y="212" text-anchor="middle" fill="white" font-size="6">&#24320;&#21551;</text>
+
+  <!-- Bottom navigation bar -->
+  <rect x="14" y="299" width="212" height="49" rx="0" fill="white"/>
+  <rect x="14" y="299" width="212" height="1" fill="#EEEEEE"/>
+
+  <!-- Nav items: Home, Finance, Life, Me -->
+  <!-- Home -->
+  <rect x="14" y="300" width="53" height="48" fill="white"/>
+  <rect x="30" y="308" width="20" height="18" rx="3" fill="#1677FF" opacity="0.15"/>
+  <text x="40" y="319" text-anchor="middle" fill="#1677FF" font-size="9">&#39064;</text>
+  <text x="40" y="336" text-anchor="middle" fill="#1677FF" font-size="6" font-weight="600">&#39064;&#39029;</text>
+
+  <!-- Finance -->
+  <rect x="67" y="300" width="53" height="48" fill="white"/>
+  <rect x="83" y="308" width="20" height="18" rx="3" fill="#AAAAAA" opacity="0.2"/>
+  <text x="93" y="319" text-anchor="middle" fill="#AAAAAA" font-size="9">&#36135;</text>
+  <text x="93" y="336" text-anchor="middle" fill="#AAAAAA" font-size="6">&#29702;&#36135;</text>
+
+  <!-- Life -->
+  <rect x="120" y="300" width="53" height="48" fill="white"/>
+  <rect x="136" y="308" width="20" height="18" rx="3" fill="#AAAAAA" opacity="0.2"/>
+  <text x="146" y="319" text-anchor="middle" fill="#AAAAAA" font-size="9">&#29983;</text>
+  <text x="146" y="336" text-anchor="middle" fill="#AAAAAA" font-size="6">&#29983;&#27963;</text>
+
+  <!-- Me tab - HIGHLIGHTED (Step 1) -->
+  <rect x="173" y="299" width="53" height="49" rx="0" fill="#E6F4FF" stroke="#EF4444" stroke-width="1.5"/>
+  <circle cx="200" cy="316" r="10" fill="#1677FF" opacity="0.15"/>
+  <text x="200" y="320" text-anchor="middle" fill="#1677FF" font-size="9">&#25105;</text>
+  <text x="200" y="336" text-anchor="middle" fill="#1677FF" font-size="6" font-weight="600">&#25105;&#30340;</text>
+
+  <!-- Step 1 annotation circle -->
+  <circle cx="218" cy="308" r="11" fill="#1A6B5A" stroke="white" stroke-width="2"/>
+  <text x="218" y="312" text-anchor="middle" fill="white" font-size="9" font-weight="700">1</text>
+
+  <!-- Annotation arrow pointing down to the Me tab -->
+  <path d="M200 282 L200 294" fill="none" stroke="#1A6B5A" stroke-width="2"/>
+  <polygon points="200,299 196,291 204,291" fill="#1A6B5A"/>
+
+  <!-- Annotation label -->
+  <rect x="158" y="268" width="56" height="14" rx="4" fill="#1A6B5A"/>
+  <text x="186" y="278" text-anchor="middle" fill="white" font-size="6.5">&#28857;&#20987;&#25105;&#30340;</text>
+</svg>

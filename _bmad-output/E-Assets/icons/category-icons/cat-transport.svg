@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <!-- Background circle: cat-transport #3B82F6 -->
+  <circle cx="24" cy="24" r="24" fill="#3B82F6"/>
+  <!-- Bus / transit icon -->
+  <!-- Bus body -->
+  <rect x="11" y="14" width="26" height="18" rx="3" ry="3" fill="none" stroke="white" stroke-width="2.2"/>
+  <!-- Windshield divider -->
+  <line x1="11" y1="21" x2="37" y2="21" stroke="white" stroke-width="2.2"/>
+  <!-- Windows -->
+  <rect x="14" y="15.5" width="7" height="4" rx="1" fill="white" opacity="0.7"/>
+  <rect x="27" y="15.5" width="7" height="4" rx="1" fill="white" opacity="0.7"/>
+  <!-- Door -->
+  <rect x="20" y="23" width="8" height="7" rx="1" fill="white" opacity="0.5"/>
+  <!-- Wheels -->
+  <circle cx="16" cy="34" r="3.5" fill="none" stroke="white" stroke-width="2.2"/>
+  <circle cx="32" cy="34" r="3.5" fill="none" stroke="white" stroke-width="2.2"/>
+  <!-- Axle lines -->
+  <line x1="11" y1="34" x2="12.5" y2="34" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="19.5" y1="34" x2="28.5" y2="34" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="35.5" y1="34" x2="37" y2="34" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+</svg>

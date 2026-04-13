@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 360" width="240" height="360">
+  <defs>
+    <style>
+      text { font-family: Inter,-apple-system,sans-serif; }
+    </style>
+  </defs>
+
+  <!-- Phone frame -->
+  <rect x="10" y="8" width="220" height="344" rx="20" ry="20" fill="#F5F5F5" stroke="#1A1A1A" stroke-width="2.5"/>
+  <!-- Screen area -->
+  <rect x="14" y="12" width="212" height="336" rx="17" ry="17" fill="#FFFFFF"/>
+
+  <!-- Status bar -->
+  <rect x="14" y="12" width="212" height="18" rx="17" ry="0" fill="#1677FF"/>
+  <rect x="14" y="12" width="212" height="4" rx="17" ry="17" fill="#1677FF"/>
+  <text x="120" y="24" text-anchor="middle" fill="white" font-size="7" font-weight="600">9:41</text>
+
+  <!-- Bills page header -->
+  <rect x="14" y="30" width="212" height="38" fill="#1677FF"/>
+  <!-- Back arrow -->
+  <text x="28" y="52" fill="white" font-size="12">&#8249;</text>
+  <text x="120" y="54" text-anchor="middle" fill="white" font-size="12" font-weight="700">&#36134;&#21333;</text>
+
+  <!-- More/export button top right - HIGHLIGHTED (Step 3) -->
+  <circle cx="204" cy="49" r="14" fill="#EF4444" opacity="0.2"/>
+  <circle cx="204" cy="49" r="10" fill="white" opacity="0.25" stroke="#EF4444" stroke-width="1.5"/>
+  <circle cx="199" cy="49" r="2" fill="white"/>
+  <circle cx="204" cy="49" r="2" fill="white"/>
+  <circle cx="209" cy="49" r="2" fill="white"/>
+
+  <!-- Date filter tabs -->
+  <rect x="14" y="68" width="212" height="32" fill="white"/>
+  <rect x="14" y="68" width="212" height="1" fill="#EEEEEE"/>
+  <!-- Month tabs -->
+  <rect x="20" y="74" width="50" height="20" rx="10" fill="#1677FF"/>
+  <text x="45" y="87" text-anchor="middle" fill="white" font-size="7" font-weight="600">2024&#24180;4&#26376;</text>
+  <rect x="76" y="74" width="50" height="20" rx="10" fill="#F5F5F5"/>
+  <text x="101" y="87" text-anchor="middle" fill="#888" font-size="7">3&#26376;</text>
+  <rect x="132" y="74" width="50" height="20" rx="10" fill="#F5F5F5"/>
+  <text x="157" y="87" text-anchor="middle" fill="#888" font-size="7">2&#26376;</text>
+  <text x="196" y="87" text-anchor="end" fill="#1677FF" font-size="7">&#33258;&#23450;&#20041;</text>
+  <rect x="14" y="100" width="212" height="1" fill="#EEEEEE"/>
+
+  <!-- Summary bar -->
+  <rect x="14" y="101" width="212" height="30" fill="#F0F7FF"/>
+  <text x="30" y="119" fill="#555" font-size="7">&#25910;&#20837; &#165;8,200</text>
+  <text x="120" y="119" text-anchor="middle" fill="#555" font-size="7">&#25903;&#20986; &#165;4,320</text>
+  <text x="210" y="119" text-anchor="end" fill="#555" font-size="7">&#32467;&#39馀; &#165;3,880</text>
+  <rect x="14" y="131" width="212" height="1" fill="#EEEEEE"/>
+
+  <!-- Bill list items -->
+  <!-- Date group header -->
+  <rect x="14" y="132" width="212" height="20" fill="#F5F7FA"/>
+  <text x="24" y="145" fill="#888" font-size="7">4&#26376;12&#26085; &#26143;&#26399;&#20116;</text>
+
+  <!-- Bill item 1 -->
+  <rect x="14" y="152" width="212" height="34" fill="white"/>
+  <circle cx="32" cy="169" r="11" fill="#52C41A" opacity="0.2"/>
+  <text x="32" y="173" text-anchor="middle" fill="#52C41A" font-size="9">&#39277;</text>
+  <text x="50" y="165" fill="#333" font-size="8" font-weight="600">&#39277;&#39277;&#21507;</text>
+  <text x="50" y="177" fill="#AAA" font-size="6">&#39277;&#39277;&#39277;&#39277;</text>
+  <text x="206" y="169" text-anchor="end" fill="#EF4444" font-size="8" font-weight="600">-&#165;68.00</text>
+  <rect x="14" y="186" width="212" height="1" fill="#F5F5F5"/>
+
+  <!-- Bill item 2 -->
+  <rect x="14" y="187" width="212" height="34" fill="white"/>
+  <circle cx="32" cy="204" r="11" fill="#FF7A00" opacity="0.2"/>
+  <text x="32" y="208" text-anchor="middle" fill="#FF7A00" font-size="9">&#36135;</text>
+  <text x="50" y="200" fill="#333" font-size="8" font-weight="600">&#20914;&#26449;&#36135;&#36134;</text>
+  <text x="50" y="212" fill="#AAA" font-size="6">&#33457;&#20914;</text>
+  <text x="206" y="204" text-anchor="end" fill="#EF4444" font-size="8" font-weight="600">-&#165;200.00</text>
+  <rect x="14" y="221" width="212" height="1" fill="#F5F5F5"/>
+
+  <!-- Bill item 3 -->
+  <rect x="14" y="222" width="212" height="34" fill="white"/>
+  <circle cx="32" cy="239" r="11" fill="#1677FF" opacity="0.2"/>
+  <text x="32" y="243" text-anchor="middle" fill="#1677FF" font-size="9">&#36716;</text>
+  <text x="50" y="235" fill="#333" font-size="8" font-weight="600">&#36716;&#36134;</text>
+  <text x="50" y="247" fill="#AAA" font-size="6">&#32508;&#36153;&#36716;&#36134;</text>
+  <text x="206" y="239" text-anchor="end" fill="#52C41A" font-size="8" font-weight="600">+&#165;5,000.00</text>
+  <rect x="14" y="256" width="212" height="1" fill="#F5F5F5"/>
+
+  <!-- Date group 2 -->
+  <rect x="14" y="257" width="212" height="20" fill="#F5F7FA"/>
+  <text x="24" y="270" fill="#888" font-size="7">4&#26376;11&#26085; &#26143;&#26399;&#22235;</text>
+
+  <!-- Bill item 4 -->
+  <rect x="14" y="277" width="212" height="34" fill="white"/>
+  <circle cx="32" cy="294" r="11" fill="#722ED1" opacity="0.2"/>
+  <text x="32" y="298" text-anchor="middle" fill="#722ED1" font-size="9">&#36008;</text>
+  <text x="50" y="290" fill="#333" font-size="8" font-weight="600">&#36141;&#36135;</text>
+  <text x="50" y="302" fill="#AAA" font-size="6">&#28395;&#36827;&#36135;&#26266;&#23376;</text>
+  <text x="206" y="294" text-anchor="end" fill="#EF4444" font-size="8" font-weight="600">-&#165;456.80</text>
+  <rect x="14" y="311" width="212" height="1" fill="#F5F5F5"/>
+
+  <!-- Bottom faded area -->
+  <rect x="14" y="312" width="212" height="36" fill="white" opacity="0.6"/>
+  <rect x="24" y="320" width="120" height="8" rx="4" fill="#EEEEEE"/>
+  <rect x="24" y="334" width="80" height="6" rx="3" fill="#F5F5F5"/>
+
+  <!-- Step 3 annotation circle -->
+  <circle cx="218" cy="38" r="11" fill="#1A6B5A" stroke="white" stroke-width="2"/>
+  <text x="218" y="42" text-anchor="middle" fill="white" font-size="9" font-weight="700">3</text>
+
+  <!-- Arrow pointing to the ... button -->
+  <path d="M216 50 L210 51" fill="none" stroke="#1A6B5A" stroke-width="2"/>
+  <polygon points="204,49 212,46 212,52" fill="#1A6B5A"/>
+
+  <!-- Annotation label -->
+  <rect x="130" y="316" width="80" height="15" rx="4" fill="#1A6B5A"/>
+  <text x="170" y="327" text-anchor="middle" fill="white" font-size="6.5">&#28857;&#20987;&#21491;&#19978;&#8220;&#8943;&#8221;&#25353;&#38215;</text>
+</svg>

@@ -1,0 +1,221 @@
+<svg viewBox="0 0 360 280" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <defs>
+    <!-- Phone frame gradient -->
+    <linearGradient id="phoneGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1A6B5A"/>
+      <stop offset="100%" stop-color="#0D4437"/>
+    </linearGradient>
+    <!-- Screen background -->
+    <linearGradient id="screenBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#EEF9F6"/>
+      <stop offset="100%" stop-color="#F9FAFB"/>
+    </linearGradient>
+    <!-- Glow filter for phone -->
+    <filter id="phoneGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Soft drop shadow -->
+    <filter id="softShadow" x="-15%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#1A6B5A" flood-opacity="0.18"/>
+    </filter>
+    <!-- Blur for glow circles -->
+    <filter id="glowBlur">
+      <feGaussianBlur stdDeviation="12"/>
+    </filter>
+    <!-- Data stream gradient - dining -->
+    <linearGradient id="streamDining" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#F97316" stop-opacity="0"/>
+      <stop offset="60%" stop-color="#F97316" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#F97316" stop-opacity="0"/>
+    </linearGradient>
+    <!-- Data stream gradient - transport -->
+    <linearGradient id="streamTransport" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#3B82F6" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#3B82F6" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/>
+    </linearGradient>
+    <!-- Data stream gradient - shopping -->
+    <linearGradient id="streamShopping" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#8B5CF6" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#8B5CF6" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="screenClip">
+      <rect x="128" y="42" width="104" height="186" rx="6"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="360" height="280" fill="#F9FAFB"/>
+
+  <!-- Ambient glow blobs behind phone -->
+  <ellipse cx="180" cy="145" rx="70" ry="55" fill="#1A6B5A" opacity="0.07" filter="url(#glowBlur)"/>
+
+  <!-- ── Floating data stream lines ── -->
+  <!-- Left streams flowing toward phone -->
+  <line x1="30" y1="105" x2="128" y2="118" stroke="url(#streamDining)" stroke-width="2" stroke-linecap="round"/>
+  <line x1="22" y1="118" x2="128" y2="130" stroke="url(#streamDining)" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+  <line x1="35" y1="160" x2="128" y2="152" stroke="url(#streamTransport)" stroke-width="2" stroke-linecap="round"/>
+  <line x1="18" y1="172" x2="128" y2="165" stroke="url(#streamTransport)" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+
+  <!-- Right streams flowing from phone -->
+  <line x1="232" y1="112" x2="320" y2="100" stroke="url(#streamShopping)" stroke-width="2" stroke-linecap="round"/>
+  <line x1="232" y1="125" x2="335" y2="122" stroke="url(#streamShopping)" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+  <line x1="232" y1="158" x2="318" y2="170" stroke="url(#streamDining)" stroke-width="2" stroke-linecap="round"/>
+  <line x1="232" y1="170" x2="330" y2="182" stroke="url(#streamDining)" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+
+  <!-- ── Category circles (floating) ── -->
+  <!-- Dining - top left -->
+  <g filter="url(#softShadow)" opacity="0.92">
+    <circle cx="62" cy="84" r="26" fill="#FFF7ED"/>
+    <circle cx="62" cy="84" r="26" stroke="#F97316" stroke-width="2"/>
+    <!-- Fork & knife icon -->
+    <line x1="55" y1="76" x2="55" y2="92" stroke="#F97316" stroke-width="2" stroke-linecap="round"/>
+    <path d="M52 76 Q55 80 55 83" stroke="#F97316" stroke-width="2" stroke-linecap="round" fill="none"/>
+    <path d="M58 76 Q61 80 61 83" stroke="#F97316" stroke-width="2" stroke-linecap="round" fill="none"/>
+    <line x1="69" y1="76" x2="69" y2="83" stroke="#F97316" stroke-width="2" stroke-linecap="round"/>
+    <path d="M66 76 Q69 80 72 80 Q72 83 69 83" stroke="#F97316" stroke-width="2" stroke-linecap="round" fill="none"/>
+    <line x1="69" y1="83" x2="69" y2="92" stroke="#F97316" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <!-- Dining label -->
+  <text x="62" y="118" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#F97316" font-weight="600">餐饮</text>
+
+  <!-- Transport - bottom left -->
+  <g filter="url(#softShadow)" opacity="0.92">
+    <circle cx="52" cy="186" r="26" fill="#EFF6FF"/>
+    <circle cx="52" cy="186" r="26" stroke="#3B82F6" stroke-width="2"/>
+    <!-- Bus icon -->
+    <rect x="41" y="178" width="22" height="14" rx="3" stroke="#3B82F6" stroke-width="1.8" fill="none"/>
+    <line x1="41" y1="183" x2="63" y2="183" stroke="#3B82F6" stroke-width="1.5"/>
+    <circle cx="46" cy="193" r="2.5" fill="#3B82F6"/>
+    <circle cx="58" cy="193" r="2.5" fill="#3B82F6"/>
+    <rect x="44" y="179" width="6" height="3" rx="1" fill="#3B82F6" opacity="0.4"/>
+    <rect x="52" y="179" width="6" height="3" rx="1" fill="#3B82F6" opacity="0.4"/>
+  </g>
+  <text x="52" y="220" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#3B82F6" font-weight="600">出行</text>
+
+  <!-- Shopping - top right -->
+  <g filter="url(#softShadow)" opacity="0.92">
+    <circle cx="298" cy="84" r="26" fill="#F5F3FF"/>
+    <circle cx="298" cy="84" r="26" stroke="#8B5CF6" stroke-width="2"/>
+    <!-- Shopping bag icon -->
+    <rect x="289" y="82" width="18" height="14" rx="2.5" stroke="#8B5CF6" stroke-width="1.8" fill="none"/>
+    <path d="M293 82 Q293 77 298 77 Q303 77 303 82" stroke="#8B5CF6" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+    <line x1="294" y1="88" x2="294" y2="91" stroke="#8B5CF6" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="302" y1="88" x2="302" y2="91" stroke="#8B5CF6" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+  <text x="298" y="118" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#8B5CF6" font-weight="600">购物</text>
+
+  <!-- Notification bell - top right area -->
+  <g filter="url(#softShadow)" opacity="0.88">
+    <circle cx="302" cy="182" r="24" fill="#EEF9F6"/>
+    <circle cx="302" cy="182" r="24" stroke="#1A6B5A" stroke-width="2"/>
+    <!-- Bell body -->
+    <path d="M302 170 C296 170 292 175 292 181 L292 186 L289 189 L315 189 L312 186 L312 181 C312 175 308 170 302 170 Z" stroke="#1A6B5A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <!-- Bell bottom arc -->
+    <path d="M299 189 Q302 193 305 189" stroke="#1A6B5A" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+    <!-- Small dot at top -->
+    <circle cx="302" cy="170" r="1.5" fill="#1A6B5A"/>
+    <!-- Notification dot -->
+    <circle cx="311" cy="173" r="4" fill="#F97316"/>
+  </g>
+  <text x="302" y="214" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="9" fill="#1A6B5A" font-weight="600">通知</text>
+
+  <!-- Small sparkle dots floating -->
+  <circle cx="90" cy="52" r="3" fill="#A8DDD6" opacity="0.8"/>
+  <circle cx="100" cy="60" r="1.5" fill="#A8DDD6" opacity="0.6"/>
+  <circle cx="82" cy="62" r="2" fill="#A8DDD6" opacity="0.5"/>
+  <circle cx="265" cy="50" r="2.5" fill="#A8DDD6" opacity="0.7"/>
+  <circle cx="275" cy="58" r="1.5" fill="#A8DDD6" opacity="0.5"/>
+  <circle cx="258" cy="58" r="2" fill="#A8DDD6" opacity="0.6"/>
+  <circle cx="148" cy="240" r="2" fill="#A8DDD6" opacity="0.5"/>
+  <circle cx="210" cy="246" r="2.5" fill="#A8DDD6" opacity="0.6"/>
+
+  <!-- ── Phone frame ── -->
+  <g filter="url(#softShadow)">
+    <rect x="124" y="36" width="112" height="200" rx="16" fill="url(#phoneGrad)"/>
+    <!-- Side buttons -->
+    <rect x="120" y="78" width="4" height="20" rx="2" fill="#0D4437"/>
+    <rect x="120" y="104" width="4" height="20" rx="2" fill="#0D4437"/>
+    <rect x="236" y="86" width="4" height="24" rx="2" fill="#0D4437"/>
+    <!-- Notch -->
+    <rect x="163" y="40" width="34" height="8" rx="4" fill="#0D4437"/>
+    <!-- Camera dot in notch -->
+    <circle cx="192" cy="44" r="2" fill="#1A6B5A" opacity="0.6"/>
+  </g>
+
+  <!-- ── Phone screen ── -->
+  <rect x="128" y="48" width="104" height="184" rx="6" fill="url(#screenBg)" clip-path="url(#screenClip)"/>
+
+  <!-- Screen content: status bar -->
+  <rect x="128" y="48" width="104" height="14" rx="0" fill="#EEF9F6"/>
+  <text x="136" y="58" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#1A6B5A" font-weight="600">9:41</text>
+  <rect x="214" y="52" width="12" height="6" rx="1.5" stroke="#1A6B5A" stroke-width="1" fill="none"/>
+  <rect x="215" y="53" width="9" height="4" rx="1" fill="#1A6B5A"/>
+
+  <!-- Header section -->
+  <rect x="128" y="62" width="104" height="32" fill="#1A6B5A"/>
+  <text x="180" y="74" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="white" opacity="0.8">本月支出</text>
+  <text x="180" y="87" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="white" font-weight="700">¥ 3,248</text>
+
+  <!-- Screen divider -->
+  <rect x="128" y="94" width="104" height="1" fill="#E5E7EB"/>
+
+  <!-- Category bars section -->
+  <text x="136" y="106" font-family="system-ui, -apple-system, sans-serif" font-size="7.5" fill="#6B7280" font-weight="500">分类概览</text>
+
+  <!-- Dining bar -->
+  <text x="136" y="118" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#374151">餐饮</text>
+  <text x="226" y="118" text-anchor="end" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#F97316" font-weight="600">¥892</text>
+  <rect x="136" y="120" width="84" height="5" rx="2.5" fill="#F3F4F6"/>
+  <rect x="136" y="120" width="56" height="5" rx="2.5" fill="#F97316"/>
+
+  <!-- Transport bar -->
+  <text x="136" y="134" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#374151">出行</text>
+  <text x="226" y="134" text-anchor="end" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#3B82F6" font-weight="600">¥340</text>
+  <rect x="136" y="136" width="84" height="5" rx="2.5" fill="#F3F4F6"/>
+  <rect x="136" y="136" width="32" height="5" rx="2.5" fill="#3B82F6"/>
+
+  <!-- Shopping bar -->
+  <text x="136" y="150" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#374151">购物</text>
+  <text x="226" y="150" text-anchor="end" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#8B5CF6" font-weight="600">¥1,245</text>
+  <rect x="136" y="152" width="84" height="5" rx="2.5" fill="#F3F4F6"/>
+  <rect x="136" y="152" width="68" height="5" rx="2.5" fill="#8B5CF6"/>
+
+  <!-- Other bar -->
+  <text x="136" y="166" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#374151">其他</text>
+  <text x="226" y="166" text-anchor="end" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#10B981" font-weight="600">¥771</text>
+  <rect x="136" y="168" width="84" height="5" rx="2.5" fill="#F3F4F6"/>
+  <rect x="136" y="168" width="44" height="5" rx="2.5" fill="#10B981"/>
+
+  <!-- Divider -->
+  <rect x="128" y="178" width="104" height="1" fill="#E5E7EB"/>
+
+  <!-- Recent transactions -->
+  <text x="136" y="190" font-family="system-ui, -apple-system, sans-serif" font-size="7.5" fill="#6B7280" font-weight="500">最近记录</text>
+
+  <!-- Transaction 1 -->
+  <circle cx="141" cy="202" r="5" fill="#FFF7ED"/>
+  <circle cx="141" cy="202" r="5" stroke="#F97316" stroke-width="1.2"/>
+  <text x="150" y="204" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#374151">午饭</text>
+  <text x="226" y="204" text-anchor="end" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#374151">-¥38</text>
+
+  <!-- Transaction 2 -->
+  <circle cx="141" cy="215" r="5" fill="#EFF6FF"/>
+  <circle cx="141" cy="215" r="5" stroke="#3B82F6" stroke-width="1.2"/>
+  <text x="150" y="217" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#374151">地铁</text>
+  <text x="226" y="217" text-anchor="end" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#374151">-¥6</text>
+
+  <!-- Transaction 3 -->
+  <circle cx="141" cy="228" r="5" fill="#F5F3FF"/>
+  <circle cx="141" cy="228" r="5" stroke="#8B5CF6" stroke-width="1.2"/>
+  <text x="150" y="230" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#374151">网购</text>
+  <text x="226" y="230" text-anchor="end" font-family="system-ui, -apple-system, sans-serif" font-size="7" fill="#374151">-¥199</text>
+
+  <!-- Bottom tagline -->
+  <text x="180" y="265" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#1A6B5A" font-weight="500" opacity="0.7">了然 · 自动记账，一目了然</text>
+</svg>

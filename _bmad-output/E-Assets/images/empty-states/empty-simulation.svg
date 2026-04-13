@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+  <!-- Background -->
+  <rect width="240" height="240" fill="#F9FAFB"/>
+
+  <!-- Soft background -->
+  <rect x="30" y="50" width="180" height="160" rx="16" fill="#EEF9F6" opacity="0.4"/>
+
+  <!-- Left silhouette (faded/ghostly) -->
+  <g opacity="0.35">
+    <!-- Head -->
+    <circle cx="72" cy="90" r="22" fill="#1A6B5A"/>
+    <!-- Neck -->
+    <rect x="66" y="110" width="12" height="10" rx="4" fill="#1A6B5A"/>
+    <!-- Body / torso -->
+    <path d="M44,120 Q44,108 72,108 Q100,108 100,120 L104,172 Q104,178 72,178 Q40,178 40,172 Z"
+          fill="#1A6B5A"/>
+    <!-- Left arm -->
+    <path d="M46,120 Q32,130 28,148 Q26,156 32,158 Q38,160 42,148 L50,128 Z"
+          fill="#1A6B5A"/>
+    <!-- Right arm -->
+    <path d="M98,120 Q112,130 116,148 Q118,156 112,158 Q106,160 102,148 L94,128 Z"
+          fill="#1A6B5A"/>
+    <!-- Left leg -->
+    <path d="M52,170 L46,210 Q44,216 52,216 Q60,216 60,210 L64,170 Z"
+          fill="#1A6B5A"/>
+    <!-- Right leg -->
+    <path d="M92,170 L86,210 Q84,216 92,216 Q100,216 100,210 L80,170 Z"
+          fill="#1A6B5A"/>
+  </g>
+
+  <!-- Right silhouette (faded/ghostly) - slightly different pose -->
+  <g opacity="0.35">
+    <!-- Head -->
+    <circle cx="168" cy="90" r="22" fill="#1A6B5A"/>
+    <!-- Neck -->
+    <rect x="162" y="110" width="12" height="10" rx="4" fill="#1A6B5A"/>
+    <!-- Body / torso -->
+    <path d="M140,120 Q140,108 168,108 Q196,108 196,120 L200,172 Q200,178 168,178 Q136,178 136,172 Z"
+          fill="#1A6B5A"/>
+    <!-- Left arm (slightly raised) -->
+    <path d="M142,120 Q128,126 122,142 Q120,150 126,152 Q132,154 136,142 L146,126 Z"
+          fill="#1A6B5A"/>
+    <!-- Right arm -->
+    <path d="M194,120 Q208,130 212,148 Q214,156 208,158 Q202,160 198,148 L190,128 Z"
+          fill="#1A6B5A"/>
+    <!-- Left leg -->
+    <path d="M148,170 L142,210 Q140,216 148,216 Q156,216 156,210 L160,170 Z"
+          fill="#1A6B5A"/>
+    <!-- Right leg -->
+    <path d="M188,170 L182,210 Q180,216 188,216 Q196,216 196,210 L176,170 Z"
+          fill="#1A6B5A"/>
+  </g>
+
+  <!-- Ghostly shimmer overlay on silhouettes (creates the "not enough data" look) -->
+  <!-- Vertical fade stripes over left silhouette -->
+  <rect x="36" y="60" width="80" height="165" fill="url(#fadeLeft)" opacity="0.5"/>
+  <!-- Vertical fade stripes over right silhouette -->
+  <rect x="132" y="60" width="80" height="165" fill="url(#fadeRight)" opacity="0.5"/>
+
+  <defs>
+    <linearGradient id="fadeLeft" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#F9FAFB" stop-opacity="0.6"/>
+      <stop offset="40%" stop-color="#F9FAFB" stop-opacity="0"/>
+      <stop offset="60%" stop-color="#F9FAFB" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#F9FAFB" stop-opacity="0.6"/>
+    </linearGradient>
+    <linearGradient id="fadeRight" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#F9FAFB" stop-opacity="0.6"/>
+      <stop offset="40%" stop-color="#F9FAFB" stop-opacity="0"/>
+      <stop offset="60%" stop-color="#F9FAFB" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#F9FAFB" stop-opacity="0.6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- VS comparison symbol in the center -->
+  <g transform="translate(120, 138)">
+    <!-- Background pill -->
+    <rect x="-20" y="-18" width="40" height="36" rx="10" fill="#F3F4F6" stroke="#E5E7EB" stroke-width="2"/>
+    <!-- V -->
+    <path d="M-12,-8 L-6,8 L0,-8" fill="none" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- S -->
+    <path d="M6,-6 Q6,-10 11,-10 Q16,-10 16,-6 Q16,-2 11,-2 Q6,-2 6,2 Q6,6 11,6 Q16,6 16,2"
+          fill="none" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- Dashed comparison line between silhouettes (very faint) -->
+  <line x1="104" y1="120" x2="136" y2="120" stroke="#E5E7EB" stroke-width="1.5" stroke-dasharray="4 3" stroke-linecap="round"/>
+  <line x1="104" y1="145" x2="136" y2="145" stroke="#E5E7EB" stroke-width="1.5" stroke-dasharray="4 3" stroke-linecap="round"/>
+  <line x1="104" y1="170" x2="136" y2="170" stroke="#E5E7EB" stroke-width="1.5" stroke-dasharray="4 3" stroke-linecap="round"/>
+
+  <!-- Small sparkle accents top area -->
+  <g transform="translate(120, 52)">
+    <line x1="0" y1="-6" x2="0" y2="6" stroke="#A8DDD6" stroke-width="2" stroke-linecap="round"/>
+    <line x1="-6" y1="0" x2="6" y2="0" stroke="#A8DDD6" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <circle cx="96" cy="50" r="2.5" fill="#A8DDD6" opacity="0.7"/>
+  <circle cx="146" cy="48" r="2" fill="#A8DDD6" opacity="0.6"/>
+  <circle cx="172" cy="56" r="1.8" fill="#1A6B5A" opacity="0.25"/>
+  <circle cx="66" cy="55" r="1.8" fill="#1A6B5A" opacity="0.25"/>
+</svg>

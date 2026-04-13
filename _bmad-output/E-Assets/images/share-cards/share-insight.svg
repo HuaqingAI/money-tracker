@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 375 500" width="375" height="500" font-family="Inter,-apple-system,sans-serif">
+  <defs>
+    <linearGradient id="cardBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#F9FEFB"/>
+    </linearGradient>
+    <linearGradient id="insightCardBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F0FBF7"/>
+      <stop offset="100%" stop-color="#E8F8F2"/>
+    </linearGradient>
+    <linearGradient id="barGrad1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1A6B5A"/>
+      <stop offset="100%" stop-color="#2A8A72"/>
+    </linearGradient>
+    <linearGradient id="barGrad2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#D1FAE5"/>
+      <stop offset="100%" stop-color="#A7F3D0"/>
+    </linearGradient>
+    <clipPath id="avatarClip">
+      <circle cx="40" cy="38" r="18"/>
+    </clipPath>
+  </defs>
+
+  <!-- Card background -->
+  <rect width="375" height="500" rx="20" fill="url(#cardBg)"/>
+
+  <!-- Top green accent bar -->
+  <rect x="0" y="0" width="375" height="5" rx="0" fill="#1A6B5A"/>
+  <rect x="0" y="0" width="375" height="5" rx="20" fill="#1A6B5A"/>
+
+  <!-- Subtle accent line gradient -->
+  <rect x="0" y="5" width="375" height="60" fill="#EEF9F6" opacity="0.5"/>
+
+  <!-- ── HEADER: AI Avatar + Title ── -->
+  <!-- AI Avatar circle -->
+  <circle cx="40" cy="38" r="20" fill="#1A6B5A"/>
+  <!-- Eyes on avatar -->
+  <circle cx="34" cy="36" r="3" fill="#FFFFFF"/>
+  <circle cx="46" cy="36" r="3" fill="#FFFFFF"/>
+  <!-- Eye shine -->
+  <circle cx="35" cy="35" r="1" fill="#1A6B5A"/>
+  <circle cx="47" cy="35" r="1" fill="#1A6B5A"/>
+  <!-- Smile -->
+  <path d="M35,42 Q40,46 45,42" stroke="#FFFFFF" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <!-- AI label badge on avatar -->
+  <rect x="52" y="28" width="20" height="12" rx="4" fill="#4ECCA3" opacity="0.2"/>
+  <text x="62" y="38" text-anchor="middle" font-size="8" font-weight="700" fill="#1A6B5A">AI</text>
+
+  <!-- Title -->
+  <text x="80" y="33" font-size="11" fill="#6B8F87" letter-spacing="0.3">&#26381;&#21153;&#25552;&#31105;&#8231;AI&#21448;&#24115;</text>
+  <text x="80" y="51" font-size="16" font-weight="700" fill="#0D4437" letter-spacing="0.5">&#20102;&#28982;&#31649;&#23478;&#35828;</text>
+
+  <!-- Date badge -->
+  <rect x="280" y="26" width="74" height="26" rx="13" fill="#EEF9F6" stroke="#C6EDDF" stroke-width="1"/>
+  <text x="317" y="43" text-anchor="middle" font-size="11" fill="#1A6B5A" font-weight="500">3&#26376;&#25253;&#21578;</text>
+
+  <!-- ── DIVIDER ── -->
+  <line x1="24" y1="73" x2="351" y2="73" stroke="#E5F3EE" stroke-width="1.5"/>
+
+  <!-- ── INSIGHT CARD ── -->
+  <rect x="20" y="88" width="335" height="240" rx="16" fill="url(#insightCardBg)" stroke="#C6EDDF" stroke-width="1.2"/>
+
+  <!-- Coffee icon area -->
+  <circle cx="54" cy="132" r="26" fill="#FFFFFF" opacity="0.8"/>
+  <text x="54" y="140" text-anchor="middle" font-size="26">&#9749;</text>
+
+  <!-- Insight category label -->
+  <text x="90" y="112" font-size="11" fill="#6B8F87" letter-spacing="0.5">&#25903;&#20986;&#35266;&#23519;</text>
+  <!-- Insight title -->
+  <text x="90" y="134" font-size="16" font-weight="700" fill="#0D4437" letter-spacing="0.3">&#21672;&#21857;&#28040;&#36153;&#36831;&#21521;&#22909;</text>
+  <!-- Highlighted stat -->
+  <rect x="90" y="144" width="180" height="28" rx="8" fill="#1A6B5A" opacity="0.1"/>
+  <text x="180" y="162" text-anchor="middle" font-size="13" font-weight="700" fill="#1A6B5A">&#26412;&#26376;&#36731;&#26494;&#19979;&#38477; 23%</text>
+
+  <!-- ── BAR CHART ── -->
+  <text x="38" y="196" font-size="11" fill="#6B8F87">&#23588;&#26376;&#23545;&#27604;</text>
+
+  <!-- Month labels -->
+  <text x="80" y="296" text-anchor="middle" font-size="11" fill="#6B8F87">2&#26376;</text>
+  <text x="170" y="296" text-anchor="middle" font-size="11" fill="#6B8F87">3&#26376;</text>
+
+  <!-- Feb bar (higher - masked) -->
+  <rect x="56" y="218" width="48" height="68" rx="6" fill="url(#barGrad2)"/>
+  <!-- Privacy mask on Feb -->
+  <rect x="56" y="218" width="48" height="68" rx="6" fill="#D1FAE5" opacity="0.6"/>
+  <text x="80" y="260" text-anchor="middle" font-size="13" font-weight="700" fill="#6B8F87">***</text>
+
+  <!-- Mar bar (lower - current, masked) -->
+  <rect x="146" y="238" width="48" height="48" rx="6" fill="url(#barGrad1)"/>
+  <text x="170" y="270" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">***</text>
+
+  <!-- Down arrow between bars -->
+  <text x="122" y="262" text-anchor="middle" font-size="18" fill="#10B981">&#8595;</text>
+  <text x="122" y="278" text-anchor="middle" font-size="10" font-weight="600" fill="#10B981">-23%</text>
+
+  <!-- Privacy notice chip -->
+  <rect x="216" y="240" width="122" height="52" rx="10" fill="#FFFFFF" opacity="0.7"/>
+  <text x="277" y="258" text-anchor="middle" font-size="10" fill="#9CA3AF">&#20445;&#25252;&#38544;&#31199;</text>
+  <rect x="228" y="263" width="98" height="18" rx="9" fill="#F3F4F6"/>
+  <text x="277" y="275" text-anchor="middle" font-size="11" font-weight="600" fill="#6B7280">&#37329;&#39069;&#20851;&#38450;&#26174;&#31034;</text>
+
+  <!-- ── TAKEAWAY ── -->
+  <rect x="20" y="344" width="335" height="64" rx="14" fill="#FFFFFF" stroke="#E5F3EE" stroke-width="1.2"/>
+  <!-- Lightbulb icon -->
+  <circle cx="48" cy="376" r="16" fill="#FEF3C7"/>
+  <text x="48" y="381" text-anchor="middle" font-size="16">&#128161;</text>
+  <!-- Takeaway text -->
+  <text x="74" y="368" font-size="12" font-weight="600" fill="#374151">AI&#24515;&#24471;</text>
+  <text x="74" y="386" font-size="12" fill="#6B7280">&#20170;&#24180;&#21672;&#21857;&#39044;&#31639;&#36879;&#26631;&#39508;&#24418;&#12288;&#31243;&#24230;&#20248;&#31192;</text>
+  <text x="74" y="401" font-size="11" fill="#9CA3AF">&#12539;&#12539;&#12539; &#20445;&#25252;&#38544;&#31199;&#24314;&#35758;</text>
+
+  <!-- ── DIVIDER ── -->
+  <line x1="24" y1="424" x2="351" y2="424" stroke="#E5F3EE" stroke-width="1"/>
+
+  <!-- ── BOTTOM WATERMARK ── -->
+  <!-- QR placeholder -->
+  <rect x="296" y="438" width="50" height="50" rx="6" fill="#F0FBF7" stroke="#C6EDDF" stroke-width="1"/>
+  <rect x="302" y="444" width="7" height="7" rx="1" fill="#1A6B5A" opacity="0.5"/>
+  <rect x="313" y="444" width="3" height="3" rx="0.5" fill="#1A6B5A" opacity="0.4"/>
+  <rect x="320" y="444" width="7" height="7" rx="1" fill="#1A6B5A" opacity="0.5"/>
+  <rect x="302" y="455" width="3" height="3" rx="0.5" fill="#1A6B5A" opacity="0.4"/>
+  <rect x="314" y="455" width="5" height="5" rx="0.5" fill="#1A6B5A" opacity="0.4"/>
+  <rect x="324" y="457" width="3" height="3" rx="0.5" fill="#1A6B5A" opacity="0.4"/>
+  <rect x="302" y="462" width="7" height="7" rx="1" fill="#1A6B5A" opacity="0.5"/>
+  <rect x="313" y="464" width="3" height="3" rx="0.5" fill="#1A6B5A" opacity="0.4"/>
+  <rect x="320" y="462" width="7" height="7" rx="1" fill="#1A6B5A" opacity="0.5"/>
+  <rect x="302" y="444" width="7" height="7" rx="1" fill="none" stroke="#1A6B5A" stroke-width="1.2" opacity="0.6"/>
+  <rect x="320" y="444" width="7" height="7" rx="1" fill="none" stroke="#1A6B5A" stroke-width="1.2" opacity="0.6"/>
+  <rect x="302" y="462" width="7" height="7" rx="1" fill="none" stroke="#1A6B5A" stroke-width="1.2" opacity="0.6"/>
+
+  <!-- Brand text -->
+  <text x="24" y="458" font-size="17" font-weight="800" fill="#1A6B5A" letter-spacing="0.5">&#20102;&#28982;</text>
+  <text x="24" y="474" font-size="11" fill="#6B8F87" letter-spacing="0.2">&#38646;&#35760;&#36134;&#30340;AI&#36130;&#21153;&#31649;&#23478;</text>
+  <text x="24" y="488" font-size="10" fill="#9CA3AF">liaoran.app</text>
+
+  <!-- Bottom subtle bar -->
+  <rect x="0" y="494" width="375" height="6" rx="0" fill="#1A6B5A" opacity="0.08"/>
+</svg>

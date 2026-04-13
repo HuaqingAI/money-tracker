@@ -1,0 +1,172 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 280">
+  <defs>
+    <linearGradient id="bg02" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F0F9FF"/>
+      <stop offset="100%" stop-color="#D6ECFF"/>
+    </linearGradient>
+    <linearGradient id="aicore" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1A6B5A"/>
+      <stop offset="100%" stop-color="#0D4437"/>
+    </linearGradient>
+    <linearGradient id="funnelfill" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1A6B5A" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#1A6B5A" stop-opacity="0.03"/>
+    </linearGradient>
+    <filter id="fsoft02" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#1A6B5A" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="360" height="280" fill="url(#bg02)" rx="20"/>
+  <ellipse cx="60" cy="50" rx="80" ry="60" fill="#1A6B5A" opacity="0.04"/>
+  <ellipse cx="310" cy="240" rx="70" ry="55" fill="#3B82F6" opacity="0.04"/>
+
+  <!-- ── LEFT: Raw transaction pills ── -->
+  <text x="56" y="26" text-anchor="middle" font-family="Inter,-apple-system,sans-serif" font-size="8.5" font-weight="600" fill="#9CA3AF">&#21407;&#22987;&#28040;&#36153;</text>
+
+  <!-- Pill 1 - dining -->
+  <g transform="rotate(-2,56,52)" filter="url(#fsoft02)">
+    <rect x="10" y="36" width="92" height="28" rx="8" fill="white"/>
+    <circle cx="26" cy="50" r="10" fill="#F97316" opacity="0.15"/>
+    <circle cx="26" cy="50" r="6" fill="#F97316"/>
+    <text x="40" y="46" font-family="Inter,-apple-system,sans-serif" font-size="7" font-weight="500" fill="#374151">&#32654;&#22242;&#22806;&#21806;</text>
+    <text x="40" y="57" font-family="Inter,-apple-system,sans-serif" font-size="8" font-weight="700" fill="#111827">38.5</text>
+  </g>
+
+  <!-- Pill 2 - transport -->
+  <g transform="rotate(1.5,56,86)" filter="url(#fsoft02)">
+    <rect x="10" y="71" width="92" height="28" rx="8" fill="white"/>
+    <circle cx="26" cy="85" r="10" fill="#3B82F6" opacity="0.15"/>
+    <circle cx="26" cy="85" r="6" fill="#3B82F6"/>
+    <text x="40" y="81" font-family="Inter,-apple-system,sans-serif" font-size="7" font-weight="500" fill="#374151">&#22320;&#38081;&#31995;&#32479;</text>
+    <text x="40" y="92" font-family="Inter,-apple-system,sans-serif" font-size="8" font-weight="700" fill="#111827">5.0</text>
+  </g>
+
+  <!-- Pill 3 - shopping -->
+  <g transform="rotate(-1,56,120)" filter="url(#fsoft02)">
+    <rect x="10" y="106" width="92" height="28" rx="8" fill="white"/>
+    <circle cx="26" cy="120" r="10" fill="#8B5CF6" opacity="0.15"/>
+    <circle cx="26" cy="120" r="6" fill="#8B5CF6"/>
+    <text x="40" y="116" font-family="Inter,-apple-system,sans-serif" font-size="7" font-weight="500" fill="#374151">&#20140;&#19996;&#36141;&#29289;</text>
+    <text x="40" y="127" font-family="Inter,-apple-system,sans-serif" font-size="8" font-weight="700" fill="#111827">299</text>
+  </g>
+
+  <!-- Pill 4 - housing -->
+  <g transform="rotate(2,56,155)" filter="url(#fsoft02)">
+    <rect x="10" y="141" width="92" height="28" rx="8" fill="white"/>
+    <circle cx="26" cy="155" r="10" fill="#06B6D4" opacity="0.15"/>
+    <circle cx="26" cy="155" r="6" fill="#06B6D4"/>
+    <text x="40" y="151" font-family="Inter,-apple-system,sans-serif" font-size="7" font-weight="500" fill="#374151">&#29289;&#19994;&#32531;&#36153;</text>
+    <text x="40" y="162" font-family="Inter,-apple-system,sans-serif" font-size="8" font-weight="700" fill="#111827">580</text>
+  </g>
+
+  <!-- Pill 5 - transport -->
+  <g transform="rotate(-1.5,56,190)" filter="url(#fsoft02)">
+    <rect x="10" y="176" width="92" height="28" rx="8" fill="white"/>
+    <circle cx="26" cy="190" r="10" fill="#3B82F6" opacity="0.15"/>
+    <circle cx="26" cy="190" r="6" fill="#3B82F6"/>
+    <text x="40" y="186" font-family="Inter,-apple-system,sans-serif" font-size="7" font-weight="500" fill="#374151">&#28378;&#28192;&#20986;&#34892;</text>
+    <text x="40" y="197" font-family="Inter,-apple-system,sans-serif" font-size="8" font-weight="700" fill="#111827">22.0</text>
+  </g>
+
+  <!-- ── CENTER funnel + AI processor ── -->
+  <!-- Input funnel shape -->
+  <path d="M118 40 L118 238 Q136 238 142 198 L142 80 Q136 58 118 40Z" fill="url(#funnelfill)" stroke="#1A6B5A" stroke-width="0.7" stroke-opacity="0.25"/>
+
+  <!-- Flow lines from pills to funnel -->
+  <line x1="102" y1="50" x2="118" y2="88" stroke="#1A6B5A" stroke-width="1.1" stroke-dasharray="3,2" opacity="0.3"/>
+  <line x1="102" y1="85" x2="118" y2="110" stroke="#1A6B5A" stroke-width="1.1" stroke-dasharray="3,2" opacity="0.3"/>
+  <line x1="102" y1="120" x2="118" y2="132" stroke="#1A6B5A" stroke-width="1.1" stroke-dasharray="3,2" opacity="0.3"/>
+  <line x1="102" y1="155" x2="118" y2="150" stroke="#1A6B5A" stroke-width="1.1" stroke-dasharray="3,2" opacity="0.3"/>
+  <line x1="102" y1="190" x2="118" y2="168" stroke="#1A6B5A" stroke-width="1.1" stroke-dasharray="3,2" opacity="0.3"/>
+
+  <!-- AI circle -->
+  <circle cx="180" cy="139" r="36" fill="#EEF9F6"/>
+  <circle cx="180" cy="139" r="28" fill="url(#aicore)"/>
+
+  <!-- Neural dots -->
+  <circle cx="172" cy="131" r="2.5" fill="white" opacity="0.4"/>
+  <circle cx="188" cy="131" r="2.5" fill="white" opacity="0.4"/>
+  <circle cx="180" cy="147" r="2.5" fill="white" opacity="0.4"/>
+  <line x1="172" y1="131" x2="188" y2="131" stroke="white" stroke-width="0.8" opacity="0.3"/>
+  <line x1="172" y1="131" x2="180" y2="147" stroke="white" stroke-width="0.8" opacity="0.3"/>
+  <line x1="188" y1="131" x2="180" y2="147" stroke="white" stroke-width="0.8" opacity="0.3"/>
+
+  <!-- Star burst in AI circle -->
+  <path d="M180 127 L182 135.5 L190.5 137 L182 139.5 L180 148 L178 139.5 L169.5 137 L178 135.5 Z" fill="white" opacity="0.95"/>
+
+  <!-- Accuracy % -->
+  <text x="180" y="157" text-anchor="middle" font-family="Inter,-apple-system,sans-serif" font-size="7.5" font-weight="700" fill="white" opacity="0.8">96%</text>
+
+  <!-- Rotating dashes around AI -->
+  <circle cx="180" cy="139" r="38" fill="none" stroke="#1A6B5A" stroke-width="1.3" stroke-dasharray="7,4" opacity="0.18"/>
+
+  <!-- Output funnel shape -->
+  <path d="M242 40 L242 238 Q224 238 218 198 L218 80 Q224 58 242 40Z" fill="url(#funnelfill)" stroke="#1A6B5A" stroke-width="0.7" stroke-opacity="0.25"/>
+
+  <!-- Output flow lines to category cards -->
+  <path d="M210 125 Q226 84 258 57" fill="none" stroke="#F97316" stroke-width="1.3" stroke-linecap="round" opacity="0.55"/>
+  <path d="M210 133 Q230 110 258 101" fill="none" stroke="#3B82F6" stroke-width="1.3" stroke-linecap="round" opacity="0.55"/>
+  <path d="M210 139 L258 144" fill="none" stroke="#8B5CF6" stroke-width="1.3" stroke-linecap="round" opacity="0.55"/>
+  <path d="M210 147 Q228 168 258 188" fill="none" stroke="#06B6D4" stroke-width="1.3" stroke-linecap="round" opacity="0.55"/>
+
+  <!-- ── RIGHT: Category result cards ── -->
+  <text x="304" y="26" text-anchor="middle" font-family="Inter,-apple-system,sans-serif" font-size="8.5" font-weight="600" fill="#9CA3AF">&#33258;&#21160;&#20998;&#31867;</text>
+
+  <!-- Dining card -->
+  <rect x="258" y="36" width="92" height="36" rx="10" fill="white" filter="url(#fsoft02)"/>
+  <circle cx="276" cy="54" r="11" fill="#F97316"/>
+  <!-- Fork icon -->
+  <line x1="272" y1="49" x2="272" y2="59" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+  <line x1="276" y1="49" x2="276" y2="59" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+  <ellipse cx="280" cy="54" rx="3" ry="5" fill="none" stroke="white" stroke-width="1.6"/>
+  <text x="292" y="50" font-family="Inter,-apple-system,sans-serif" font-size="8" font-weight="700" fill="#374151">&#39278;&#39278;</text>
+  <text x="292" y="61" font-family="Inter,-apple-system,sans-serif" font-size="6.5" fill="#6B7280">1,243 · 18&#31508;</text>
+  <rect x="292" y="65" width="52" height="3" rx="1.5" fill="#F3F4F6"/>
+  <rect x="292" y="65" width="36" height="3" rx="1.5" fill="#F97316"/>
+
+  <!-- Transport card -->
+  <rect x="258" y="80" width="92" height="36" rx="10" fill="white" filter="url(#fsoft02)"/>
+  <circle cx="276" cy="98" r="11" fill="#3B82F6"/>
+  <!-- Bus icon mini -->
+  <rect x="270" y="94" width="12" height="7" rx="1.5" fill="none" stroke="white" stroke-width="1.5"/>
+  <line x1="270" y1="97" x2="282" y2="97" stroke="white" stroke-width="1.5"/>
+  <circle cx="273" cy="102" r="1.5" fill="none" stroke="white" stroke-width="1.5"/>
+  <circle cx="279" cy="102" r="1.5" fill="none" stroke="white" stroke-width="1.5"/>
+  <text x="292" y="94" font-family="Inter,-apple-system,sans-serif" font-size="8" font-weight="700" fill="#374151">&#20132;&#36890;</text>
+  <text x="292" y="105" font-family="Inter,-apple-system,sans-serif" font-size="6.5" fill="#6B7280">342 · 12&#31508;</text>
+  <rect x="292" y="109" width="52" height="3" rx="1.5" fill="#F3F4F6"/>
+  <rect x="292" y="109" width="18" height="3" rx="1.5" fill="#3B82F6"/>
+
+  <!-- Shopping card -->
+  <rect x="258" y="124" width="92" height="36" rx="10" fill="white" filter="url(#fsoft02)"/>
+  <circle cx="276" cy="142" r="11" fill="#8B5CF6"/>
+  <!-- Bag icon -->
+  <path d="M271 142 L273 150 L279 150 L281 142" fill="none" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M273 142 C273 138.5 279 138.5 279 142" fill="none" stroke="white" stroke-width="1.5"/>
+  <text x="292" y="138" font-family="Inter,-apple-system,sans-serif" font-size="8" font-weight="700" fill="#374151">&#36141;&#29289;</text>
+  <text x="292" y="149" font-family="Inter,-apple-system,sans-serif" font-size="6.5" fill="#6B7280">2,784 · 8&#31508;</text>
+  <rect x="292" y="153" width="52" height="3" rx="1.5" fill="#F3F4F6"/>
+  <rect x="292" y="153" width="48" height="3" rx="1.5" fill="#8B5CF6"/>
+
+  <!-- Housing card -->
+  <rect x="258" y="168" width="92" height="36" rx="10" fill="white" filter="url(#fsoft02)"/>
+  <circle cx="276" cy="186" r="11" fill="#06B6D4"/>
+  <!-- House icon -->
+  <path d="M271 188 L271 194 L281 194 L281 188" fill="none" stroke="white" stroke-width="1.5"/>
+  <path d="M269 190 L276 183 L283 190" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="292" y="182" font-family="Inter,-apple-system,sans-serif" font-size="8" font-weight="700" fill="#374151">&#23627;&#20303;</text>
+  <text x="292" y="193" font-family="Inter,-apple-system,sans-serif" font-size="6.5" fill="#6B7280">3,480 · 3&#31508;</text>
+  <rect x="292" y="197" width="52" height="3" rx="1.5" fill="#F3F4F6"/>
+  <rect x="292" y="197" width="44" height="3" rx="1.5" fill="#06B6D4"/>
+
+  <!-- ── BOTTOM bar ── -->
+  <rect x="20" y="228" width="320" height="38" rx="12" fill="white" filter="url(#fsoft02)"/>
+  <!-- Star shape (no emoji) -->
+  <path d="M40 240 L42.2 247.5 L50 248 L43.5 252.5 L45.5 260 L40 256 L34.5 260 L36.5 252.5 L30 248 L37.8 247.5 Z" fill="#F59E0B" opacity="0.9"/>
+  <text x="58" y="242" font-family="Inter,-apple-system,sans-serif" font-size="9" font-weight="700" fill="#111827">&#33258;&#21160;&#20998;&#31867;&#20934;&#30830;&#29575;</text>
+  <text x="58" y="253" font-family="Inter,-apple-system,sans-serif" font-size="7.5" fill="#6B7280">&#26412;&#26376; 127 &#31508;&#28040;&#36153;&#65292;&#20840;&#37096;&#33258;&#21160;&#24402;&#31867;</text>
+  <rect x="293" y="235" width="36" height="22" rx="6" fill="#1A6B5A"/>
+  <text x="311" y="249.5" text-anchor="middle" font-family="Inter,-apple-system,sans-serif" font-size="10" font-weight="800" fill="white">96%</text>
+</svg>

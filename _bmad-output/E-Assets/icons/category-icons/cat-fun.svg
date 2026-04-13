@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <!-- Background circle: cat-fun #EC4899 -->
+  <circle cx="24" cy="24" r="24" fill="#EC4899"/>
+  <!-- Game controller icon -->
+  <!-- Controller body -->
+  <path d="M10 22 C10 17 14 15 18 15 L30 15 C34 15 38 17 38 22 L38 26 C38 32 34 35 30 36 L18 36 C14 35 10 32 10 26 Z"
+        fill="none" stroke="white" stroke-width="2.2"/>
+  <!-- D-pad: cross shape -->
+  <line x1="17" y1="22" x2="17" y2="29" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="13.5" y1="25.5" x2="20.5" y2="25.5" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+  <!-- Action buttons: 2 circles -->
+  <circle cx="31" cy="22.5" r="2.5" fill="none" stroke="white" stroke-width="2.2"/>
+  <circle cx="31" cy="29.5" r="2.5" fill="none" stroke="white" stroke-width="2.2"/>
+</svg>

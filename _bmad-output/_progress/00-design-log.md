@@ -399,7 +399,113 @@ All 8 scenarios, 30 pages specified (29 + 08.0 Hub).
 - [x] Phase 6: Asset Generation — Content (全部 8 个场景 30 页文案定稿 COMPLETE)
 - [x] Phase 6: Asset Generation — Visual — Wireframes (全部 30 页 HTML 线框图 COMPLETE)
 - [x] Phase 6: Asset Generation — Visual — Page Designs (全部 30 页高保真 HTML COMPLETE)
-- [ ] Phase 6: Asset Generation — Visual (UI元素、图标等)
+- [x] Phase 6: Asset Generation — Icons (App Icon + 8 分类图标 + 3 Onboarding 插图 COMPLETE)
+- [x] Phase 6: Asset Generation — Images (9 空状态 + 4 Hero + 9 动效帧 + 8 教程 + 4 分享卡 = 34 COMPLETE)
+- [ ] Phase 6: Asset Generation — Visual (UI 元素等，可选)
+
+---
+
+### 2026-04-13 — Phase 6: Images Generation (COMPLETE)
+
+**Agent:** WDS Asset Generation (Images)
+**Scope:** 5 Batches, 34 SVG Assets
+**Style:** Flat Illustration (A/B) + Flat Design (C/E) + Line Art (D)
+**Brand:** 了然绿 #1A6B5A
+**Status:** **ALL 34 IMAGE ASSETS COMPLETE**
+
+**Artifacts Created:**
+
+*Batch A — Empty State Illustrations (9):*
+- `E-Assets/images/empty-states/empty-dashboard.svg` — Dashboard 空状态（笔记本+沙漏+星星）
+- `E-Assets/images/empty-states/empty-monthly-report.svg` — 月报空状态（日历+幼苗）
+- `E-Assets/images/empty-states/empty-transaction-list.svg` — 交易列表空状态（空白收据+星星）
+- `E-Assets/images/empty-states/empty-trend-chart.svg` — 趋势图空状态（空图表+上升箭头）
+- `E-Assets/images/empty-states/empty-spending-radar.svg` — 消费雷达空状态（空六边形+放大镜）
+- `E-Assets/images/empty-states/empty-gift-management.svg` — 人情账空状态（红包传递）
+- `E-Assets/images/empty-states/empty-identity.svg` — 多身份空状态（戏剧面具）
+- `E-Assets/images/empty-states/empty-insights-feed.svg` — 洞察空状态（放大镜+数据流）
+- `E-Assets/images/empty-states/empty-simulation.svg` — 模拟对比空状态（虚化剪影+VS）
+
+*Batch B — Hero/Feature Illustrations (4):*
+- `E-Assets/images/heroes/hero-welcome.svg` — Welcome 主视觉（手机+浮动分类+数据流）
+- `E-Assets/images/heroes/hero-permission.svg` — 权限页图标（铃铛+盾牌）
+- `E-Assets/images/heroes/hero-subscription.svg` — 订阅赠礼（打开的礼盒+光芒）
+- `E-Assets/images/heroes/hero-ai-avatar.svg` — AI管家头像（圆脸+天线，28-64pt适用）
+
+*Batch C — Animation Keyframes (9):*
+- `E-Assets/images/animation-keyframes/anim-ai-brain.svg` — AI处理中心（神经网络圆）
+- `E-Assets/images/animation-keyframes/anim-checkmark-success.svg` — 通用成功勾选
+- `E-Assets/images/animation-keyframes/anim-confetti-success.svg` — 订阅成功（彩纸）
+- `E-Assets/images/animation-keyframes/anim-paper-airplane.svg` — 邀请等待（纸飞机）
+- `E-Assets/images/animation-keyframes/anim-category-bubbles.svg` — 分类气泡浮出
+- `E-Assets/images/animation-keyframes/anim-ai-spark.svg` — AI加载火花
+- `E-Assets/images/animation-keyframes/anim-typing-dots.svg` — 打字指示器
+- `E-Assets/images/animation-keyframes/anim-records-flying.svg` — 记录飞入成功
+- `E-Assets/images/animation-keyframes/anim-share-success.svg` — 分享成功确认
+
+*Batch D — Tutorial Guides (8):*
+- `E-Assets/images/tutorial-guides/guide-xiaomi.svg` — 小米 MIUI 通知权限设置
+- `E-Assets/images/tutorial-guides/guide-huawei.svg` — 华为 EMUI 通知权限设置
+- `E-Assets/images/tutorial-guides/guide-oppo.svg` — OPPO ColorOS 通知权限设置
+- `E-Assets/images/tutorial-guides/guide-vivo.svg` — Vivo OriginOS 通知权限设置
+- `E-Assets/images/tutorial-guides/guide-alipay-step1.svg` — 支付宝导出步骤1（打开"我的"）
+- `E-Assets/images/tutorial-guides/guide-alipay-step2.svg` — 支付宝导出步骤2（找到"账单"）
+- `E-Assets/images/tutorial-guides/guide-alipay-step3.svg` — 支付宝导出步骤3（点击导出）
+- `E-Assets/images/tutorial-guides/guide-alipay-step4.svg` — 支付宝导出步骤4（下载账单文件）
+
+*Batch E — Share Card Templates (4):*
+- `E-Assets/images/share-cards/share-monthly-report.svg` — 月报分享卡（3:4，品类明细）
+- `E-Assets/images/share-cards/share-spending-radar.svg` — 雷达分享卡（9:16 Story，深色主题，无金额）
+- `E-Assets/images/share-cards/share-insight.svg` — 洞察分享卡（AI管家卡片，金额脱敏）
+- `E-Assets/images/share-cards/share-simulation.svg` — 模拟分享卡（年度节省预测曲线）
+
+*Catalog:*
+- `E-Assets/images/images-catalog.html` — 图片资产目录页（内联SVG，左侧导航，34个预览卡片）
+
+**Summary:** 完成了然 App 全套图片资产，覆盖 5 大类 34 个 SVG 文件。空状态插图风格温暖鼓励（"等待数据"而非"出错"），Hero 插图与 Onboarding 风格统一，动效帧为 Lottie 实现提供设计参考，教程截图为示意性线稿标注风格，分享卡片符合隐私设计原则（雷达/洞察卡无金额）。
+
+**Design Decisions:**
+- 空状态统一 viewBox 240x240，适配 64pt-120pt 多尺寸显示
+- AI 管家头像 hero-ai-avatar.svg 独立于 Onboarding 插图，可在 28pt（聊天内联）到 64pt（欢迎页）灵活使用
+- 教程截图使用各厂商品牌色（小米橙/华为红/OPPO绿/Vivo蓝）增强辨识度
+- 分享卡片遵循隐私设计：消费雷达和洞察卡不展示具体金额
+
+---
+
+### 2026-04-13 — Phase 6: Icons Generation (COMPLETE)
+
+**Agent:** WDS Asset Generation (Icons)
+**Scope:** App Icon + 8 Category Icons + 3 Onboarding Illustrations
+**Style:** Flat Illustration (极简平面插画) + Minimal
+**Brand:** 了然绿 #1A6B5A
+**Status:** **ALL 12 CUSTOM ASSETS COMPLETE**
+
+**Artifacts Created:**
+- `E-Assets/icons/icons-catalog.html` — 图标资产目录页（左侧导航 + 全量预览 + V1/V2版本切换）
+- `E-Assets/icons/app-icon/app-icon.svg` — 了然 App 启动图标（1024×1024，抽象"眼/了"形，了然绿渐变）
+- `E-Assets/icons/category-icons/cat-dining.svg` — 餐饮 #F97316（叉勺）
+- `E-Assets/icons/category-icons/cat-transport.svg` — 交通 #3B82F6（公交车）
+- `E-Assets/icons/category-icons/cat-shopping.svg` — 购物 #8B5CF6（购物袋）
+- `E-Assets/icons/category-icons/cat-housing.svg` — 居住 #06B6D4（房子）
+- `E-Assets/icons/category-icons/cat-fun.svg` — 娱乐 #EC4899（游戏手柄）
+- `E-Assets/icons/category-icons/cat-health.svg` — 健康 #22C55E（心电图心脏）
+- `E-Assets/icons/category-icons/cat-other.svg` — 其他 #6B7280（九宫格）
+- `E-Assets/icons/category-icons/cat-gift.svg` — 人情 #D97706（礼物盒）
+- `E-Assets/icons/onboarding-illustrations/onboarding-01-zero-input.svg` — 消费自动记录（手机+浮动交易通知卡）
+- `E-Assets/icons/onboarding-illustrations/onboarding-02-auto-categorize.svg` — 自动分类（漏斗+AI大脑+分类输出）
+- `E-Assets/icons/onboarding-illustrations/onboarding-03-ai-butler.svg` — AI财务管家 V1（机器人头像+对话气泡）
+- `E-Assets/icons/onboarding-illustrations/onboarding-01-zero-input-v2.svg` — 零输入 V2（手机+4个支付渠道通知卡：支付宝/微信/工行/美团）
+- `E-Assets/icons/onboarding-illustrations/onboarding-02-auto-categorize-v2.svg` — 自动分类 V2（原始交易→AI处理器→彩色分类卡，带进度条+漏斗）
+- `E-Assets/icons/onboarding-illustrations/onboarding-03-ai-butler-v2.svg` — AI管家 V2（精致机器人头像+对话气泡+周趋势图+建议卡）
+
+**Summary:** 完成了然 App 全套自定义图标资产。分类图标采用圆形色块+白色线条图形风格，与 Lucide 线条系统协调。Onboarding 插图采用平面插画风格，分别对应三幕叙事（零输入/自动分类/AI管家）。设计令牌 cat-* 颜色完全一致。Lucide Icons 35个 UI 图标映射已在目录页中完整记录。
+
+**Design Decisions:**
+- App Icon 寓意「洞见财务真相」，融合了"眼"和中文"了"字的抽象形态，了然绿渐变
+- 分类图标 cat-gift 新增人情账专属图标（Amber #D97706），补充设计令牌
+- Onboarding 插图尺寸 320×240，匹配移动端 Onboarding 页面宽度
+
+**Next:** Phase 5: Agentic Development，或继续 Phase 6 UI 元素生成
 
 ---
 

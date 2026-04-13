@@ -1,0 +1,112 @@
+<svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <defs>
+    <!-- Radial glow behind bell -->
+    <radialGradient id="bgGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#A8DDD6" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#EEF9F6" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Bell body gradient -->
+    <linearGradient id="bellGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#219E87"/>
+      <stop offset="100%" stop-color="#1A6B5A"/>
+    </linearGradient>
+    <!-- Shield gradient -->
+    <linearGradient id="shieldGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1A6B5A"/>
+      <stop offset="100%" stop-color="#0D4437"/>
+    </linearGradient>
+    <!-- Inner bell highlight -->
+    <linearGradient id="bellHighlight" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="white" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="white" stop-opacity="0"/>
+    </linearGradient>
+    <!-- Soft glow filter -->
+    <filter id="rayGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Drop shadow for bell -->
+    <filter id="bellShadow" x="-20%" y="-10%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#1A6B5A" flood-opacity="0.25"/>
+    </filter>
+    <!-- Shield shadow -->
+    <filter id="shieldShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0D4437" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="160" height="160" rx="0" fill="#F9FAFB"/>
+
+  <!-- Background glow circle -->
+  <circle cx="80" cy="78" r="62" fill="url(#bgGlow)"/>
+
+  <!-- ── Light rays / sparkles radiating from bell ── -->
+  <g filter="url(#rayGlow)" opacity="0.8">
+    <!-- Ray top -->
+    <line x1="80" y1="18" x2="80" y2="10" stroke="#A8DDD6" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Ray top-right -->
+    <line x1="103" y1="24" x2="109" y2="18" stroke="#A8DDD6" stroke-width="2" stroke-linecap="round"/>
+    <!-- Ray right -->
+    <line x1="114" y1="48" x2="122" y2="46" stroke="#A8DDD6" stroke-width="2" stroke-linecap="round"/>
+    <!-- Ray top-left -->
+    <line x1="57" y1="24" x2="51" y2="18" stroke="#A8DDD6" stroke-width="2" stroke-linecap="round"/>
+    <!-- Ray left -->
+    <line x1="46" y1="48" x2="38" y2="46" stroke="#A8DDD6" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- Small sparkle stars -->
+  <!-- Star top-right -->
+  <g opacity="0.75" filter="url(#rayGlow)">
+    <line x1="112" y1="30" x2="112" y2="38" stroke="#A8DDD6" stroke-width="2" stroke-linecap="round"/>
+    <line x1="108" y1="34" x2="116" y2="34" stroke="#A8DDD6" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <!-- Star top-left small -->
+  <g opacity="0.6" filter="url(#rayGlow)">
+    <line x1="42" y1="35" x2="42" y2="41" stroke="#A8DDD6" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="39" y1="38" x2="45" y2="38" stroke="#A8DDD6" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+  <!-- Dot sparkles -->
+  <circle cx="98" cy="14" r="2.5" fill="#A8DDD6" opacity="0.7"/>
+  <circle cx="62" cy="16" r="2" fill="#A8DDD6" opacity="0.6"/>
+  <circle cx="120" cy="58" r="2" fill="#A8DDD6" opacity="0.5"/>
+  <circle cx="36" cy="60" r="1.8" fill="#A8DDD6" opacity="0.5"/>
+
+  <!-- ── Bell body ── -->
+  <g filter="url(#bellShadow)">
+    <!-- Bell arc/dome -->
+    <path d="M80 28 C57 28 45 46 45 65 L45 82 L38 90 L122 90 L115 82 L115 65 C115 46 103 28 80 28 Z"
+          fill="url(#bellGrad)" stroke="#0D4437" stroke-width="1.5" stroke-linejoin="round"/>
+    <!-- Inner highlight overlay -->
+    <path d="M80 30 C62 30 52 46 52 65 L52 80 L115 80 L115 65 C115 46 98 30 80 30 Z"
+          fill="url(#bellHighlight)"/>
+    <!-- Stem at top -->
+    <rect x="75" y="20" width="10" height="10" rx="5" fill="url(#bellGrad)" stroke="#0D4437" stroke-width="1.5"/>
+    <!-- Clapper (bell bottom) -->
+    <path d="M70 90 Q80 100 90 90" stroke="#0D4437" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+    <!-- Clapper ball -->
+    <circle cx="80" cy="100" r="5" fill="#1A6B5A" stroke="#0D4437" stroke-width="1.5"/>
+  </g>
+
+  <!-- ── Shield overlay (bottom-right of bell) ── -->
+  <g filter="url(#shieldShadow)" transform="translate(94, 78)">
+    <!-- Shield background white halo -->
+    <circle cx="19" cy="19" r="17" fill="white" opacity="0.95"/>
+    <!-- Shield shape -->
+    <path d="M19 5 L31 10 L31 20 C31 28 25 34 19 36 C13 34 7 28 7 20 L7 10 Z"
+          fill="url(#shieldGrad)" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+    <!-- White checkmark -->
+    <polyline points="13,20 18,25 26,14" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </g>
+
+  <!-- ── Notification dot on bell (orange) ── -->
+  <circle cx="112" cy="38" r="7" fill="white"/>
+  <circle cx="112" cy="38" r="5.5" fill="#F97316"/>
+
+  <!-- Label text -->
+  <text x="80" y="148" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#1A6B5A" font-weight="600">允许通知</text>
+  <text x="80" y="132" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="8.5" fill="#6B7280">安全、私密，随时掌控</text>
+</svg>

@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 375 500" width="375" height="500" font-family="Inter,-apple-system,sans-serif">
+  <defs>
+    <linearGradient id="simBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#F7FDFB"/>
+    </linearGradient>
+    <linearGradient id="curveAreaGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1A6B5A" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#EEF9F6" stop-opacity="0.4"/>
+    </linearGradient>
+    <linearGradient id="heroNumGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0D4437"/>
+      <stop offset="100%" stop-color="#1A6B5A"/>
+    </linearGradient>
+    <linearGradient id="milestoneGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1A6B5A"/>
+      <stop offset="100%" stop-color="#2A8A72"/>
+    </linearGradient>
+    <filter id="mileShadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#1A6B5A" flood-opacity="0.25"/>
+    </filter>
+    <clipPath id="chartClip">
+      <rect x="24" y="210" width="327" height="180"/>
+    </clipPath>
+  </defs>
+
+  <!-- Card background -->
+  <rect width="375" height="500" rx="20" fill="url(#simBg)"/>
+
+  <!-- Top accent bar -->
+  <rect x="0" y="0" width="375" height="5" rx="0" fill="#1A6B5A"/>
+  <rect x="0" y="0" width="375" height="5" rx="20" fill="#1A6B5A"/>
+
+  <!-- ── HEADER ── -->
+  <!-- Logo mark -->
+  <rect x="24" y="22" width="32" height="32" rx="8" fill="#1A6B5A"/>
+  <text x="40" y="43" text-anchor="middle" font-size="16" font-weight="800" fill="#FFFFFF">&#20102;</text>
+  <!-- App name -->
+  <text x="64" y="34" font-size="15" font-weight="700" fill="#1A6B5A" letter-spacing="0.5">&#20102;&#28982;</text>
+  <text x="64" y="50" font-size="11" fill="#6B8F87" letter-spacing="0.3">&#25105;&#30340;&#30465;&#38065;&#27169;&#25311;</text>
+
+  <!-- Scenario chip -->
+  <rect x="258" y="22" width="96" height="32" rx="16" fill="#EEF9F6" stroke="#C6EDDF" stroke-width="1"/>
+  <text x="306" y="42" text-anchor="middle" font-size="12" font-weight="500" fill="#1A6B5A">2026&#24180;&#35745;&#21010;</text>
+
+  <!-- ── TITLE ── -->
+  <text x="187" y="94" text-anchor="middle" font-size="14" fill="#9CA3AF" letter-spacing="0.5">&#22914;&#26524;&#25105;&#27599;&#26376;&#36830;&#32493;&#25511;&#21046;</text>
+  <!-- Subtitle strikethrough-like decoration -->
+  <line x1="90" y1="88" x2="114" y2="88" stroke="#C6EDDF" stroke-width="1.5"/>
+  <line x1="260" y1="88" x2="284" y2="88" stroke="#C6EDDF" stroke-width="1.5"/>
+
+  <!-- ── HERO NUMBER ── -->
+  <!-- "Save per month" label with amount redacted -->
+  <text x="187" y="125" text-anchor="middle" font-size="13" fill="#6B7280">&#27599;&#26376;&#36739;&#24433;&#21709;&#26222;&#36807; &#9679;&#9679;&#9679;</text>
+  <!-- Hero projected annual savings -->
+  <text x="187" y="185" text-anchor="middle" font-size="56" font-weight="800" fill="url(#heroNumGrad)" letter-spacing="-1">&#165;12,000</text>
+  <text x="187" y="210" text-anchor="middle" font-size="16" font-weight="500" fill="#6B8F87">/&#24180;&#12288;&#9654;&#12288;&#22269;&#20869;&#36866;&#30410;&#22909;&#22330;&#25968;&#12288;&#9651; 1.4x</text>
+
+  <!-- ── GROWTH CURVE ── -->
+  <!-- Chart background area -->
+  <rect x="24" y="222" width="327" height="180" rx="14" fill="#F8FEFC"/>
+
+  <!-- Curve filled area (EEF9F6 fill under ascending line) -->
+  <!-- Curve: starts low-left, sweeps up-right, exponential feel -->
+  <!-- Path: M 44,378 C 100,370 140,340 180,310 S 250,260 330,232 L 330,390 Z -->
+  <path d="M 44,382 C 90,374 130,352 175,322 S 252,272 330,236 L 330,394 Z"
+        fill="url(#curveAreaGrad)" clip-path="url(#chartClip)"/>
+
+  <!-- Curve line -->
+  <path d="M 44,382 C 90,374 130,352 175,322 S 252,272 330,236"
+        fill="none" stroke="#1A6B5A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Grid lines (subtle) -->
+  <line x1="44" y1="394" x2="330" y2="394" stroke="#E5F3EE" stroke-width="1"/>
+  <line x1="44" y1="360" x2="330" y2="360" stroke="#E5F3EE" stroke-width="0.8" stroke-dasharray="4,4"/>
+  <line x1="44" y1="328" x2="330" y2="328" stroke="#E5F3EE" stroke-width="0.8" stroke-dasharray="4,4"/>
+  <line x1="44" y1="296" x2="330" y2="296" stroke="#E5F3EE" stroke-width="0.8" stroke-dasharray="4,4"/>
+  <line x1="44" y1="264" x2="330" y2="264" stroke="#E5F3EE" stroke-width="0.8" stroke-dasharray="4,4"/>
+  <line x1="44" y1="232" x2="330" y2="232" stroke="#E5F3EE" stroke-width="0.8" stroke-dasharray="4,4"/>
+
+  <!-- ── MILESTONE DOTS ── -->
+  <!-- 3月 milestone ~ x=126, curve at ~y=352 -->
+  <circle cx="126" cy="352" r="8" fill="#FFFFFF" stroke="#1A6B5A" stroke-width="2.5"/>
+  <circle cx="126" cy="352" r="3" fill="#1A6B5A"/>
+  <!-- 3月 label -->
+  <rect x="104" y="330" width="44" height="16" rx="8" fill="url(#milestoneGrad)" filter="url(#mileShadow)"/>
+  <text x="126" y="342" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">3&#26376;</text>
+  <!-- Amount (redacted style) -->
+  <text x="126" y="372" text-anchor="middle" font-size="10" fill="#1A6B5A" font-weight="600">+&#165;***</text>
+
+  <!-- 6月 milestone ~ x=196, curve at ~y=316 -->
+  <circle cx="196" cy="316" r="8" fill="#FFFFFF" stroke="#1A6B5A" stroke-width="2.5"/>
+  <circle cx="196" cy="316" r="3" fill="#1A6B5A"/>
+  <rect x="174" y="294" width="44" height="16" rx="8" fill="url(#milestoneGrad)" filter="url(#mileShadow)"/>
+  <text x="196" y="306" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">6&#26376;</text>
+  <text x="196" y="336" text-anchor="middle" font-size="10" fill="#1A6B5A" font-weight="600">+&#165;***</text>
+
+  <!-- 12月 milestone ~ x=300, curve at ~y=248 -->
+  <circle cx="300" cy="248" r="10" fill="url(#milestoneGrad)" filter="url(#mileShadow)"/>
+  <circle cx="300" cy="248" r="4" fill="#FFFFFF"/>
+  <rect x="272" y="226" width="55" height="17" rx="8.5" fill="#0D4437"/>
+  <text x="299" y="238" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">12&#26376; &#127881;</text>
+  <text x="300" y="268" text-anchor="middle" font-size="11" fill="#0D4437" font-weight="700">&#165;12,000</text>
+
+  <!-- X-axis labels -->
+  <text x="44" y="410" text-anchor="middle" font-size="10" fill="#9CA3AF">&#24320;&#22987;</text>
+  <text x="330" y="410" text-anchor="middle" font-size="10" fill="#9CA3AF">12&#26376;</text>
+
+  <!-- ── CALL TO ACTION STRIP ── -->
+  <rect x="20" y="416" width="335" height="48" rx="14" fill="#EEF9F6" stroke="#C6EDDF" stroke-width="1"/>
+  <!-- Star icon -->
+  <text x="42" y="446" text-anchor="middle" font-size="18">&#10024;</text>
+  <text x="62" y="438" font-size="12" font-weight="600" fill="#0D4437">&#24320;&#22987;&#35760;&#36134;&#65292;&#23436;&#25104;&#24481;&#38459;&#30446;&#26631;</text>
+  <text x="62" y="454" font-size="11" fill="#6B8F87">&#20851;&#27979;&#35797;&#31639;&#12289;AI&#22635;&#23492;&#12289;&#37325;&#22659;&#20998;&#26512;</text>
+
+  <!-- ── DIVIDER ── -->
+  <line x1="24" y1="477" x2="351" y2="477" stroke="#E5F3EE" stroke-width="1"/>
+
+  <!-- ── BOTTOM WATERMARK ── -->
+  <!-- QR placeholder -->
+  <rect x="296" y="482" width="50" height="50" rx="6" fill="#F0FBF7" stroke="#C6EDDF" stroke-width="1"/>
+  <rect x="302" y="488" width="7" height="7" rx="1" fill="#1A6B5A" opacity="0.5"/>
+  <rect x="313" y="488" width="3" height="3" rx="0.5" fill="#1A6B5A" opacity="0.4"/>
+  <rect x="320" y="488" width="7" height="7" rx="1" fill="#1A6B5A" opacity="0.5"/>
+  <rect x="302" y="499" width="3" height="3" rx="0.5" fill="#1A6B5A" opacity="0.4"/>
+  <rect x="314" y="499" width="5" height="5" rx="0.5" fill="#1A6B5A" opacity="0.4"/>
+  <rect x="324" y="501" width="3" height="3" rx="0.5" fill="#1A6B5A" opacity="0.4"/>
+  <rect x="302" y="507" width="7" height="7" rx="1" fill="#1A6B5A" opacity="0.5"/>
+  <rect x="313" y="509" width="3" height="3" rx="0.5" fill="#1A6B5A" opacity="0.4"/>
+  <rect x="320" y="507" width="7" height="7" rx="1" fill="#1A6B5A" opacity="0.5"/>
+  <rect x="302" y="488" width="7" height="7" rx="1" fill="none" stroke="#1A6B5A" stroke-width="1.2" opacity="0.6"/>
+  <rect x="320" y="488" width="7" height="7" rx="1" fill="none" stroke="#1A6B5A" stroke-width="1.2" opacity="0.6"/>
+  <rect x="302" y="507" width="7" height="7" rx="1" fill="none" stroke="#1A6B5A" stroke-width="1.2" opacity="0.6"/>
+
+  <!-- Brand text -->
+  <text x="24" y="499" font-size="17" font-weight="800" fill="#1A6B5A" letter-spacing="0.5">&#20102;&#28982;</text>
+  <text x="24" y="516" font-size="11" fill="#6B8F87" letter-spacing="0.2">&#38646;&#35760;&#36134;&#30340;AI&#36130;&#21153;&#31649;&#23478;</text>
+  <text x="24" y="530" font-size="10" fill="#9CA3AF">liaoran.app</text>
+
+  <!-- Bottom subtle bar -->
+  <rect x="0" y="494" width="375" height="6" rx="0" fill="#1A6B5A" opacity="0.08"/>
+</svg>

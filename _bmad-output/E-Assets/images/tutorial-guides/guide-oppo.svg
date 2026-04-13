@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 400" width="240" height="400">
+  <defs>
+    <style>
+      text { font-family: Inter,-apple-system,sans-serif; }
+    </style>
+  </defs>
+
+  <!-- Phone frame -->
+  <rect x="10" y="10" width="220" height="380" rx="20" ry="20" fill="#F5F5F5" stroke="#1A1A1A" stroke-width="2.5"/>
+  <!-- Screen area -->
+  <rect x="14" y="14" width="212" height="372" rx="17" ry="17" fill="#FFFFFF"/>
+
+  <!-- Status bar -->
+  <rect x="14" y="14" width="212" height="18" rx="17" ry="0" fill="#00A870"/>
+  <rect x="14" y="14" width="212" height="4" rx="17" ry="17" fill="#00A870"/>
+  <text x="120" y="26" text-anchor="middle" fill="white" font-size="7" font-weight="600">9:41</text>
+
+  <!-- OPPO ColorOS Settings Header -->
+  <rect x="14" y="32" width="212" height="36" fill="#00A870"/>
+  <text x="120" y="55" text-anchor="middle" fill="white" font-size="13" font-weight="700">&#35774;&#32622;</text>
+
+  <!-- Breadcrumb -->
+  <rect x="14" y="68" width="212" height="18" fill="#E8F8F2"/>
+  <text x="24" y="80" fill="#00A870" font-size="6.5">&#35774;&#32622; &gt; &#36890;&#30693;&#19982;&#29366;&#24577;&#26639; &gt; &#24212;&#29992;&#36890;&#30693;</text>
+
+  <!-- Section header -->
+  <rect x="14" y="90" width="212" height="22" fill="#F5F5F5"/>
+  <text x="24" y="104" fill="#888888" font-size="7" font-weight="600">&#24212;&#29992;&#36890;&#30693;&#31649;&#29702;</text>
+
+  <!-- App list header row -->
+  <rect x="14" y="112" width="212" height="28" fill="white"/>
+  <text x="24" y="129" fill="#666666" font-size="8">&#25345;&#32493;&#36816;&#34892;&#24212;&#29992;</text>
+  <rect x="14" y="140" width="212" height="1" fill="#EEEEEE"/>
+
+  <!-- App items list -->
+  <!-- Item 1: WeChat -->
+  <rect x="14" y="141" width="212" height="32" fill="white"/>
+  <circle cx="31" cy="157" r="9" fill="#07C160" opacity="0.3"/>
+  <text x="31" y="161" text-anchor="middle" fill="#07C160" font-size="7">W</text>
+  <text x="46" y="160" fill="#333333" font-size="8">&#24494;&#20449;</text>
+  <text x="208" y="160" text-anchor="end" fill="#AAAAAA" font-size="10">&#8250;</text>
+  <rect x="14" y="173" width="212" height="1" fill="#F5F5F5"/>
+
+  <!-- Item 2: LiaoRan - HIGHLIGHTED (Step 1) -->
+  <rect x="14" y="174" width="212" height="36" fill="#EDFAF5" stroke="#EF4444" stroke-width="1.5"/>
+  <circle cx="31" cy="192" r="11" fill="#1A6B5A"/>
+  <text x="31" y="196" text-anchor="middle" fill="white" font-size="8" font-weight="700">&#20102;</text>
+  <text x="47" y="189" fill="#333333" font-size="9" font-weight="600">&#20102;&#28982;</text>
+  <text x="47" y="200" fill="#888888" font-size="7">&#20851;&#38381;&#36890;&#30693;</text>
+  <text x="208" y="194" text-anchor="end" fill="#AAAAAA" font-size="10">&#8250;</text>
+
+  <!-- Item 3: Others -->
+  <rect x="14" y="211" width="212" height="32" fill="white"/>
+  <circle cx="31" cy="227" r="9" fill="#FF5722" opacity="0.3"/>
+  <text x="31" y="231" text-anchor="middle" fill="#FF5722" font-size="7">A</text>
+  <text x="46" y="230" fill="#333333" font-size="8">&#20915;&#36133;</text>
+  <text x="208" y="230" text-anchor="end" fill="#AAAAAA" font-size="10">&#8250;</text>
+  <rect x="14" y="243" width="212" height="1" fill="#F5F5F5"/>
+
+  <!-- Notification detail panel - Step 2 -->
+  <rect x="14" y="248" width="212" height="24" fill="#F0FBF7"/>
+  <text x="24" y="262" fill="#00A870" font-size="7" font-weight="600">&#20102;&#28982; &#8250; &#36890;&#30693;&#35774;&#32622;</text>
+
+  <!-- Allow notifications row - HIGHLIGHTED (Step 2) -->
+  <rect x="14" y="272" width="212" height="38" fill="#EDFAF5" stroke="#EF4444" stroke-width="1.5"/>
+  <text x="24" y="287" fill="#333333" font-size="9" font-weight="600">&#20801;&#35768;&#36890;&#30693;</text>
+  <text x="24" y="299" fill="#888888" font-size="7">&#24320;&#21551;&#21518;&#21487;&#25509;&#25910;&#36590;&#27454;&#25552;&#37266;</text>
+  <!-- Toggle switch ON -->
+  <rect x="174" y="281" width="28" height="15" rx="7.5" fill="#00A870"/>
+  <circle cx="195" cy="288.5" r="5.5" fill="white"/>
+
+  <!-- Banner style row -->
+  <rect x="14" y="315" width="212" height="32" fill="white"/>
+  <text x="24" y="334" fill="#333333" font-size="8">&#36890;&#30693;&#26174;&#31034;&#26041;&#24335;</text>
+  <text x="208" y="334" text-anchor="end" fill="#888888" font-size="7">&#26690;&#32423;</text>
+  <rect x="14" y="347" width="212" height="1" fill="#EEEEEE"/>
+
+  <!-- Step 1 annotation circle -->
+  <circle cx="218" cy="192" r="11" fill="#1A6B5A" stroke="white" stroke-width="2"/>
+  <text x="218" y="196" text-anchor="middle" fill="white" font-size="9" font-weight="700">1</text>
+
+  <!-- Arrow -->
+  <path d="M218 204 L218 262 L218 267" fill="none" stroke="#1A6B5A" stroke-width="2" stroke-dasharray="3,2"/>
+  <polygon points="218,272 214,264 222,264" fill="#1A6B5A"/>
+
+  <!-- Step 2 annotation circle -->
+  <circle cx="218" cy="291" r="11" fill="#1A6B5A" stroke="white" stroke-width="2"/>
+  <text x="218" y="295" text-anchor="middle" fill="white" font-size="9" font-weight="700">2</text>
+
+  <!-- Brand label -->
+  <rect x="14" y="352" width="212" height="34" fill="#E8F8F2"/>
+  <text x="120" y="372" text-anchor="middle" fill="#00A870" font-size="7">OPPO ColorOS &#8226; &#24212;&#29992;&#36890;&#30693;&#35774;&#32622;</text>
+</svg>

@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 280">
+  <defs>
+    <linearGradient id="bg01" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EEF9F6"/>
+      <stop offset="100%" stop-color="#D4EDE8"/>
+    </linearGradient>
+    <linearGradient id="phone01" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1A6B5A"/>
+      <stop offset="100%" stop-color="#0D4437"/>
+    </linearGradient>
+    <filter id="fshadow01" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#0D4437" flood-opacity="0.13"/>
+    </filter>
+    <filter id="fphone01" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="12" flood-color="#0D4437" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="360" height="280" fill="url(#bg01)" rx="20"/>
+  <circle cx="60" cy="60" r="70" fill="#1A6B5A" opacity="0.05"/>
+  <circle cx="300" cy="220" r="80" fill="#1A6B5A" opacity="0.04"/>
+
+  <!-- ── Phone frame ── -->
+  <g filter="url(#fphone01)">
+    <rect x="142" y="26" width="76" height="132" rx="14" fill="url(#phone01)"/>
+    <rect x="146" y="33" width="68" height="112" rx="8" fill="#F9FAFB"/>
+    <rect x="163" y="35" width="34" height="6" rx="3" fill="#0D4437"/>
+    <rect x="161" y="151" width="38" height="4" rx="2" fill="white" opacity="0.35"/>
+  </g>
+
+  <!-- Phone screen content -->
+  <text x="180" y="70" text-anchor="middle" font-family="Inter,-apple-system,sans-serif" font-size="16" font-weight="800" fill="#1A6B5A">4,329</text>
+  <text x="180" y="80" text-anchor="middle" font-family="Inter,-apple-system,sans-serif" font-size="5.5" fill="#6B7280">&#26412;&#26376;&#25903;&#20986;</text>
+  <line x1="152" y1="86" x2="208" y2="86" stroke="#E5E7EB" stroke-width="0.8"/>
+
+  <rect x="152" y="92" width="8" height="8" rx="2" fill="#F97316"/>
+  <text x="163" y="99" font-family="Inter,-apple-system,sans-serif" font-size="5.5" fill="#374151">&#39278;&#39278;</text>
+  <text x="208" y="99" text-anchor="end" font-family="Inter,-apple-system,sans-serif" font-size="5.5" font-weight="600" fill="#374151">1,203</text>
+
+  <rect x="152" y="104" width="8" height="8" rx="2" fill="#3B82F6"/>
+  <text x="163" y="111" font-family="Inter,-apple-system,sans-serif" font-size="5.5" fill="#374151">&#20132;&#36890;</text>
+  <text x="208" y="111" text-anchor="end" font-family="Inter,-apple-system,sans-serif" font-size="5.5" font-weight="600" fill="#374151">342</text>
+
+  <rect x="152" y="116" width="8" height="8" rx="2" fill="#8B5CF6"/>
+  <text x="163" y="123" font-family="Inter,-apple-system,sans-serif" font-size="5.5" fill="#374151">&#36141;&#29289;</text>
+  <text x="208" y="123" text-anchor="end" font-family="Inter,-apple-system,sans-serif" font-size="5.5" font-weight="600" fill="#374151">2,784</text>
+
+  <rect x="154" y="132" width="52" height="10" rx="5" fill="#1A6B5A" opacity="0.12"/>
+  <text x="180" y="139.5" text-anchor="middle" font-family="Inter,-apple-system,sans-serif" font-size="5" font-weight="600" fill="#1A6B5A">AI &#33258;&#21160;&#35760;&#24405;&#20013;</text>
+
+  <!-- ── LEFT: Alipay card ── -->
+  <g filter="url(#fshadow01)">
+    <rect x="12" y="48" width="108" height="46" rx="12" fill="white"/>
+    <circle cx="33" cy="71" r="12" fill="#1677FF"/>
+    <text x="33" y="76" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" font-weight="800" fill="white">&#25903;</text>
+    <text x="50" y="65" font-family="Inter,-apple-system,sans-serif" font-size="7" font-weight="600" fill="#111827">&#25903;&#20184;&#23453;</text>
+    <text x="50" y="75" font-family="Inter,-apple-system,sans-serif" font-size="8" font-weight="700" fill="#111827">68.5</text>
+    <text x="50" y="86" font-family="Inter,-apple-system,sans-serif" font-size="6" fill="#6B7280">&#22806;&#21806;</text>
+    <rect x="88" y="62" width="26" height="12" rx="6" fill="#EEF9F6"/>
+    <text x="101" y="71" text-anchor="middle" font-family="Inter,-apple-system,sans-serif" font-size="6" font-weight="700" fill="#1A6B5A">&#33258;&#21160;</text>
+  </g>
+  <!-- Arrow: dashed line, no marker -->
+  <line x1="120" y1="71" x2="141" y2="80" stroke="#1A6B5A" stroke-width="1.4" stroke-dasharray="3,2" opacity="0.45"/>
+
+  <!-- ── RIGHT TOP: WeChat card ── -->
+  <g filter="url(#fshadow01)">
+    <rect x="240" y="34" width="108" height="46" rx="12" fill="white"/>
+    <circle cx="260" cy="57" r="12" fill="#07C160"/>
+    <!-- WeChat: two overlapping ovals -->
+    <ellipse cx="256" cy="55" rx="5" ry="4" fill="white" opacity="0.9"/>
+    <ellipse cx="264" cy="60" rx="4.5" ry="3.5" fill="white" opacity="0.9"/>
+    <text x="276" y="51" font-family="Inter,-apple-system,sans-serif" font-size="7" font-weight="600" fill="#111827">&#24494;&#20449;&#25903;&#20184;</text>
+    <text x="276" y="62" font-family="Inter,-apple-system,sans-serif" font-size="8" font-weight="700" fill="#111827">299</text>
+    <text x="276" y="73" font-family="Inter,-apple-system,sans-serif" font-size="6" fill="#6B7280">&#36141;&#29289;</text>
+    <rect x="318" y="49" width="26" height="12" rx="6" fill="#EEF9F6"/>
+    <text x="331" y="58" text-anchor="middle" font-family="Inter,-apple-system,sans-serif" font-size="6" font-weight="700" fill="#1A6B5A">&#33258;&#21160;</text>
+  </g>
+  <line x1="240" y1="57" x2="219" y2="72" stroke="#1A6B5A" stroke-width="1.4" stroke-dasharray="3,2" opacity="0.45"/>
+
+  <!-- ── RIGHT BOTTOM: Bank card ── -->
+  <g filter="url(#fshadow01)">
+    <rect x="240" y="114" width="108" height="46" rx="12" fill="white"/>
+    <circle cx="260" cy="137" r="12" fill="#C0392B"/>
+    <text x="260" y="142" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" font-weight="800" fill="white">&#24037;</text>
+    <text x="276" y="131" font-family="Inter,-apple-system,sans-serif" font-size="7" font-weight="600" fill="#111827">&#24037;&#21306;&#37504;&#34892;</text>
+    <text x="276" y="142" font-family="Inter,-apple-system,sans-serif" font-size="8" font-weight="700" fill="#111827">2,800</text>
+    <text x="276" y="153" font-family="Inter,-apple-system,sans-serif" font-size="6" fill="#6B7280">&#25588;&#36143;</text>
+    <rect x="318" y="129" width="26" height="12" rx="6" fill="#EEF9F6"/>
+    <text x="331" y="138" text-anchor="middle" font-family="Inter,-apple-system,sans-serif" font-size="6" font-weight="700" fill="#1A6B5A">&#33258;&#21160;</text>
+  </g>
+  <line x1="240" y1="137" x2="219" y2="122" stroke="#1A6B5A" stroke-width="1.4" stroke-dasharray="3,2" opacity="0.45"/>
+
+  <!-- ── TOP: Meituan card ── -->
+  <g filter="url(#fshadow01)">
+    <rect x="100" y="12" width="160" height="34" rx="10" fill="white"/>
+    <circle cx="120" cy="29" r="10" fill="#FFCC00"/>
+    <text x="120" y="34" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" font-weight="800" fill="#0D1B39">M</text>
+    <text x="135" y="25" font-family="Inter,-apple-system,sans-serif" font-size="7" font-weight="600" fill="#111827">&#32654;&#22242;&#22806;&#21806;</text>
+    <text x="135" y="36" font-family="Inter,-apple-system,sans-serif" font-size="6.5" fill="#6B7280">36.5 · &#33258;&#21160;&#35782;&#21035;</text>
+    <!-- Checkmark circle -->
+    <circle cx="247" cy="29" r="8" fill="#1A6B5A" opacity="0.12"/>
+    <path d="M243 29 L246 32 L251 25" fill="none" stroke="#1A6B5A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <line x1="180" y1="46" x2="180" y2="54" stroke="#1A6B5A" stroke-width="1.4" stroke-dasharray="3,2" opacity="0.4"/>
+
+  <!-- ── BOTTOM summary bar ── -->
+  <rect x="20" y="216" width="320" height="46" rx="14" fill="white" filter="url(#fshadow01)"/>
+  <circle cx="46" cy="239" r="10" fill="#1677FF"/>
+  <text x="46" y="244" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" font-weight="700" fill="white">&#25903;</text>
+  <circle cx="70" cy="239" r="10" fill="#07C160"/>
+  <ellipse cx="66.5" cy="237.5" rx="4" ry="3.2" fill="white" opacity="0.9"/>
+  <ellipse cx="73.5" cy="241.5" rx="3.5" ry="2.8" fill="white" opacity="0.9"/>
+  <circle cx="94" cy="239" r="10" fill="#C0392B"/>
+  <text x="94" y="244" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" font-weight="700" fill="white">&#24037;</text>
+  <circle cx="118" cy="239" r="10" fill="#FFCC00"/>
+  <text x="118" y="244" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" font-weight="800" fill="#0D1B39">M</text>
+  <text x="136" y="235" font-family="Inter,-apple-system,sans-serif" font-size="8" font-weight="600" fill="#111827">4 &#20010;&#28138;&#36947;&#65292;&#33258;&#21160;&#21516;&#27493;</text>
+  <text x="136" y="247" font-family="Inter,-apple-system,sans-serif" font-size="7.5" fill="#6B7280">&#19981;&#29992;&#25163;&#21160;&#36755;&#20837;&#65292;&#20063;&#19981;&#20250;&#28204;&#25481;</text>
+  <rect x="293" y="229" width="38" height="20" rx="10" fill="#1A6B5A"/>
+  <text x="312" y="242" text-anchor="middle" font-family="Inter,-apple-system,sans-serif" font-size="9" font-weight="700" fill="white">48&#31508;</text>
+</svg>

@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 375 500" width="375" height="500" font-family="Inter,-apple-system,sans-serif">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#F7FDFB"/>
+    </linearGradient>
+    <linearGradient id="accentBand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#EEF9F6"/>
+      <stop offset="100%" stop-color="#D6F5EE"/>
+    </linearGradient>
+    <filter id="cardShadow" x="-2%" y="-2%" width="104%" height="104%">
+      <feDropShadow dx="0" dy="4" stdDeviation="12" flood-color="#1A6B5A" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <!-- Card background -->
+  <rect width="375" height="500" rx="20" fill="url(#bgGrad)"/>
+
+  <!-- Top accent band -->
+  <rect x="0" y="0" width="375" height="6" rx="0" fill="#1A6B5A"/>
+  <rect x="0" y="0" width="375" height="6" rx="20" fill="#1A6B5A"/>
+
+  <!-- Subtle accent area behind hero -->
+  <rect x="20" y="80" width="335" height="160" rx="16" fill="url(#accentBand)"/>
+
+  <!-- ── HEADER ── -->
+  <!-- Logo mark: green rounded square -->
+  <rect x="24" y="22" width="32" height="32" rx="8" fill="#1A6B5A"/>
+  <!-- &#20102;&#28982; as stylized "了" mark inside logo -->
+  <text x="40" y="43" text-anchor="middle" font-size="16" font-weight="700" fill="#FFFFFF">&#20102;</text>
+
+  <!-- App name -->
+  <text x="64" y="35" font-size="15" font-weight="700" fill="#1A6B5A" letter-spacing="0.5">&#20102;&#28982;</text>
+  <text x="64" y="50" font-size="11" fill="#6B8F87" letter-spacing="0.3">&#26376;&#24230;&#36134;&#21333;</text>
+
+  <!-- Month label pill -->
+  <rect x="258" y="22" width="96" height="32" rx="16" fill="#1A6B5A" opacity="0.1"/>
+  <text x="306" y="42" text-anchor="middle" font-size="13" font-weight="600" fill="#1A6B5A">2026&#24180;3&#26376;</text>
+
+  <!-- ── HERO SECTION ── -->
+  <!-- "Total Spending" label -->
+  <text x="187" y="112" text-anchor="middle" font-size="13" fill="#6B8F87" letter-spacing="0.5">&#26412;&#26376;&#25903;&#20986;&#24635;&#39069;</text>
+
+  <!-- Large amount -->
+  <text x="187" y="178" text-anchor="middle" font-size="60" font-weight="800" fill="#0D4437" letter-spacing="-1">&#165;4,329</text>
+
+  <!-- Comparison tag -->
+  <rect x="131" y="190" width="113" height="26" rx="13" fill="#FEF3C7"/>
+  <text x="187" y="207" text-anchor="middle" font-size="12" font-weight="500" fill="#D97706">&#9650; &#36831;&#19978;&#26376; 8.3%</text>
+
+  <!-- ── DIVIDER ── -->
+  <line x1="24" y1="244" x2="351" y2="244" stroke="#E8F5F2" stroke-width="1.5"/>
+
+  <!-- ── CATEGORY SECTION ── -->
+  <text x="24" y="274" font-size="13" font-weight="600" fill="#374151" letter-spacing="0.3">&#25903;&#20986;&#26126;&#32454;</text>
+
+  <!-- Category Row 1: 餐饮 -->
+  <circle cx="36" cy="308" r="7" fill="#F97316"/>
+  <text x="52" y="313" font-size="14" fill="#374151" font-weight="500">&#39278;&#39278;</text>
+  <!-- Progress bar track -->
+  <rect x="108" y="303" width="180" height="8" rx="4" fill="#F3F4F6"/>
+  <!-- Progress bar fill (1243/4329 ≈ 28.7%) -->
+  <rect x="108" y="303" width="52" height="8" rx="4" fill="#F97316" opacity="0.85"/>
+  <text x="351" y="313" text-anchor="end" font-size="14" font-weight="600" fill="#374151">1,243</text>
+
+  <!-- Category Row 2: 交通 -->
+  <circle cx="36" cy="344" r="7" fill="#3B82F6"/>
+  <text x="52" y="349" font-size="14" fill="#374151" font-weight="500">&#20132;&#36890;</text>
+  <rect x="108" y="339" width="180" height="8" rx="4" fill="#F3F4F6"/>
+  <!-- 342/4329 ≈ 7.9% -->
+  <rect x="108" y="339" width="14" height="8" rx="4" fill="#3B82F6" opacity="0.85"/>
+  <text x="351" y="349" text-anchor="end" font-size="14" font-weight="600" fill="#374151">342</text>
+
+  <!-- Category Row 3: 购物 -->
+  <circle cx="36" cy="380" r="7" fill="#8B5CF6"/>
+  <text x="52" y="385" font-size="14" fill="#374151" font-weight="500">&#36141;&#29289;</text>
+  <rect x="108" y="375" width="180" height="8" rx="4" fill="#F3F4F6"/>
+  <!-- 2784/4329 ≈ 64.3% -->
+  <rect x="108" y="375" width="116" height="8" rx="4" fill="#8B5CF6" opacity="0.85"/>
+  <text x="351" y="385" text-anchor="end" font-size="14" font-weight="600" fill="#374151">2,784</text>
+
+  <!-- ── DIVIDER ── -->
+  <line x1="24" y1="412" x2="351" y2="412" stroke="#E8F5F2" stroke-width="1"/>
+
+  <!-- ── BOTTOM WATERMARK ── -->
+  <!-- QR placeholder -->
+  <rect x="296" y="428" width="52" height="52" rx="6" fill="#F3F4F6" stroke="#D1D5DB" stroke-width="1"/>
+  <!-- QR inner dots pattern -->
+  <rect x="302" y="434" width="8" height="8" rx="1" fill="#9CA3AF"/>
+  <rect x="314" y="434" width="4" height="4" rx="0.5" fill="#9CA3AF"/>
+  <rect x="322" y="434" width="8" height="8" rx="1" fill="#9CA3AF"/>
+  <rect x="302" y="446" width="4" height="4" rx="0.5" fill="#9CA3AF"/>
+  <rect x="316" y="446" width="6" height="6" rx="0.5" fill="#9CA3AF"/>
+  <rect x="326" y="448" width="4" height="4" rx="0.5" fill="#9CA3AF"/>
+  <rect x="302" y="454" width="8" height="8" rx="1" fill="#9CA3AF"/>
+  <rect x="314" y="456" width="4" height="4" rx="0.5" fill="#9CA3AF"/>
+  <rect x="322" y="454" width="8" height="8" rx="1" fill="#9CA3AF"/>
+  <!-- Corner markers for QR -->
+  <rect x="302" y="434" width="8" height="8" rx="1" fill="none" stroke="#6B7280" stroke-width="1.5"/>
+  <rect x="322" y="434" width="8" height="8" rx="1" fill="none" stroke="#6B7280" stroke-width="1.5"/>
+  <rect x="302" y="454" width="8" height="8" rx="1" fill="none" stroke="#6B7280" stroke-width="1.5"/>
+
+  <!-- Brand text -->
+  <text x="24" y="449" font-size="16" font-weight="700" fill="#1A6B5A" letter-spacing="0.5">&#20102;&#28982;</text>
+  <text x="24" y="468" font-size="11" fill="#6B8F87" letter-spacing="0.2">&#38646;&#35760;&#36134;&#30340;AI&#36130;&#21153;&#31649;&#23478;</text>
+  <text x="24" y="484" font-size="10" fill="#9CA3AF">liaoran.app</text>
+
+  <!-- Bottom green bar -->
+  <rect x="0" y="494" width="375" height="6" rx="0" fill="#1A6B5A" opacity="0.15"/>
+</svg>

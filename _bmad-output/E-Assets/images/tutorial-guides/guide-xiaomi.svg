@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 400" width="240" height="400">
+  <defs>
+    <style>
+      text { font-family: Inter,-apple-system,sans-serif; }
+    </style>
+  </defs>
+
+  <!-- Phone frame -->
+  <rect x="10" y="10" width="220" height="380" rx="20" ry="20" fill="#F5F5F5" stroke="#1A1A1A" stroke-width="2.5"/>
+  <!-- Screen area -->
+  <rect x="14" y="14" width="212" height="372" rx="17" ry="17" fill="#FFFFFF"/>
+
+  <!-- Status bar -->
+  <rect x="14" y="14" width="212" height="18" rx="17" ry="0" fill="#FF6900"/>
+  <rect x="14" y="14" width="212" height="4" rx="17" ry="17" fill="#FF6900"/>
+  <text x="120" y="26" text-anchor="middle" fill="white" font-size="7" font-weight="600">9:41</text>
+
+  <!-- Xiaomi/MIUI Settings Header -->
+  <rect x="14" y="32" width="212" height="36" fill="#FF6900"/>
+  <text x="120" y="55" text-anchor="middle" fill="white" font-size="13" font-weight="700">&#35774;&#32622;</text>
+
+  <!-- Search bar -->
+  <rect x="24" y="74" width="192" height="22" rx="11" fill="#F0F0F0"/>
+  <circle cx="38" cy="85" r="5" fill="none" stroke="#AAAAAA" stroke-width="1.5"/>
+  <line x1="42" y1="89" x2="45" y2="92" stroke="#AAAAAA" stroke-width="1.5"/>
+  <text x="50" y="89" fill="#AAAAAA" font-size="8">&#25628;&#32034;&#35774;&#32622;</text>
+
+  <!-- Profile section -->
+  <rect x="14" y="102" width="212" height="44" fill="#FFF5EF"/>
+  <circle cx="38" cy="124" r="13" fill="#FF6900" opacity="0.2"/>
+  <circle cx="38" cy="124" r="8" fill="#FF6900" opacity="0.5"/>
+  <text x="56" y="121" fill="#333333" font-size="9" font-weight="600">&#23567;&#31859;&#36134;&#21495;</text>
+  <text x="56" y="133" fill="#888888" font-size="7">&#30767;&#23494;&#12289;&#20248;&#24402;&#12289;&#20070;&#26680;</text>
+  <text x="208" y="127" text-anchor="end" fill="#AAAAAA" font-size="10">&#8250;</text>
+
+  <!-- Section divider -->
+  <rect x="14" y="150" width="212" height="1" fill="#EEEEEE"/>
+
+  <!-- Settings list items -->
+  <!-- Item 1: WLAN -->
+  <rect x="14" y="151" width="212" height="36" fill="white"/>
+  <rect x="24" y="163" width="16" height="16" rx="4" fill="#4CAF50" opacity="0.15"/>
+  <text x="32" y="174" text-anchor="middle" fill="#4CAF50" font-size="9">W</text>
+  <text x="48" y="174" fill="#333333" font-size="9">WLAN</text>
+  <text x="208" y="174" text-anchor="end" fill="#AAAAAA" font-size="10">&#8250;</text>
+  <rect x="14" y="187" width="212" height="1" fill="#F5F5F5"/>
+
+  <!-- Item 2: Bluetooth -->
+  <rect x="14" y="188" width="212" height="36" fill="white"/>
+  <rect x="24" y="200" width="16" height="16" rx="4" fill="#2196F3" opacity="0.15"/>
+  <text x="32" y="211" text-anchor="middle" fill="#2196F3" font-size="9">B</text>
+  <text x="48" y="211" fill="#333333" font-size="9">&#34507;&#29260;</text>
+  <text x="208" y="211" text-anchor="end" fill="#AAAAAA" font-size="10">&#8250;</text>
+  <rect x="14" y="224" width="212" height="1" fill="#F5F5F5"/>
+
+  <!-- Item 3: Notification Management - HIGHLIGHTED (Step 1) -->
+  <rect x="14" y="225" width="212" height="36" fill="#FFF8F0" stroke="#EF4444" stroke-width="1.5"/>
+  <rect x="24" y="237" width="16" height="16" rx="4" fill="#FF6900" opacity="0.2"/>
+  <text x="32" y="248" text-anchor="middle" fill="#FF6900" font-size="9">N</text>
+  <text x="48" y="248" fill="#333333" font-size="9" font-weight="600">&#36890;&#30693;&#31649;&#29702;</text>
+  <text x="208" y="248" text-anchor="end" fill="#AAAAAA" font-size="10">&#8250;</text>
+
+  <!-- Item 4: Privacy -->
+  <rect x="14" y="262" width="212" height="36" fill="white"/>
+  <rect x="24" y="274" width="16" height="16" rx="4" fill="#9C27B0" opacity="0.15"/>
+  <text x="32" y="285" text-anchor="middle" fill="#9C27B0" font-size="9">P</text>
+  <text x="48" y="285" fill="#333333" font-size="9">&#38972;&#31199;&#20445;&#25252;</text>
+  <text x="208" y="285" text-anchor="end" fill="#AAAAAA" font-size="10">&#8250;</text>
+  <rect x="14" y="298" width="212" height="1" fill="#F5F5F5"/>
+
+  <!-- Step 2: App notification toggle area -->
+  <rect x="14" y="299" width="212" height="52" fill="#F9F9F9" stroke="#EF4444" stroke-width="1.5"/>
+  <text x="24" y="315" fill="#555555" font-size="7">&#36890;&#30693;&#31649;&#29702; &gt; &#20102;&#28982;</text>
+  <!-- App row -->
+  <circle cx="36" cy="332" r="9" fill="#1A6B5A"/>
+  <text x="36" y="336" text-anchor="middle" fill="white" font-size="7" font-weight="700">&#20102;</text>
+  <text x="50" y="330" fill="#333333" font-size="8" font-weight="600">&#20102;&#28982;</text>
+  <text x="50" y="340" fill="#888888" font-size="6">&#20801;&#35768;&#36890;&#30693;</text>
+  <!-- Toggle switch ON -->
+  <rect x="178" y="326" width="26" height="14" rx="7" fill="#1A6B5A"/>
+  <circle cx="197" cy="333" r="5" fill="white"/>
+
+  <!-- Step 1 annotation circle -->
+  <circle cx="210" cy="243" r="11" fill="#1A6B5A" stroke="white" stroke-width="2"/>
+  <text x="210" y="247" text-anchor="middle" fill="white" font-size="9" font-weight="700">1</text>
+
+  <!-- Arrow from step 1 to step 2 -->
+  <path d="M210 255 L210 270 L210 295" fill="none" stroke="#1A6B5A" stroke-width="2" stroke-dasharray="3,2"/>
+  <polygon points="210,299 206,291 214,291" fill="#1A6B5A"/>
+
+  <!-- Step 2 annotation circle -->
+  <circle cx="225" cy="325" r="11" fill="#1A6B5A" stroke="white" stroke-width="2"/>
+  <text x="225" y="329" text-anchor="middle" fill="white" font-size="9" font-weight="700">2</text>
+
+  <!-- Brand label at bottom -->
+  <rect x="14" y="356" width="212" height="30" rx="0" fill="#FFF5EF"/>
+  <text x="120" y="375" text-anchor="middle" fill="#FF6900" font-size="7">Xiaomi MIUI &#8226; &#36890;&#30693;&#26435;&#38480;&#35774;&#32622;</text>
+</svg>

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <!-- Outer dashed ring (rotation animation reference) -->
+  <circle cx="60" cy="60" r="56" fill="none" stroke="#A8DDD6" stroke-width="2"
+    stroke-dasharray="12 6" stroke-linecap="round"/>
+
+  <!-- Main AI brain circle -->
+  <circle cx="60" cy="60" r="44" fill="#1A6B5A"/>
+
+  <!-- Neural network connections (white lines) -->
+  <g stroke="white" stroke-width="1.5" fill="none" opacity="0.7">
+    <!-- Node connections -->
+    <line x1="60" y1="60" x2="44" y2="42"/>
+    <line x1="60" y1="60" x2="76" y2="42"/>
+    <line x1="60" y1="60" x2="40" y2="70"/>
+    <line x1="60" y1="60" x2="80" y2="70"/>
+    <line x1="60" y1="60" x2="60" y2="82"/>
+    <line x1="44" y1="42" x2="76" y2="42"/>
+    <line x1="40" y1="70" x2="60" y2="82"/>
+    <line x1="80" y1="70" x2="60" y2="82"/>
+    <line x1="44" y1="42" x2="40" y2="70"/>
+    <line x1="76" y1="42" x2="80" y2="70"/>
+  </g>
+
+  <!-- Outer nodes -->
+  <circle cx="44" cy="42" r="5" fill="white"/>
+  <circle cx="76" cy="42" r="5" fill="white"/>
+  <circle cx="40" cy="70" r="5" fill="white"/>
+  <circle cx="80" cy="70" r="5" fill="white"/>
+  <circle cx="60" cy="82" r="5" fill="white"/>
+
+  <!-- Center star/spark -->
+  <g transform="translate(60,60)">
+    <!-- 4-point star -->
+    <polygon points="0,-9 2,-2 9,0 2,2 0,9 -2,2 -9,0 -2,-2"
+      fill="white"/>
+    <!-- Inner glow dot -->
+    <circle cx="0" cy="0" r="2.5" fill="#A8DDD6"/>
+  </g>
+</svg>

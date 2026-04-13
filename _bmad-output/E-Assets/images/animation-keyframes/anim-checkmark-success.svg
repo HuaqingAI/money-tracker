@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" width="80" height="80">
+  <!-- Outer animated ring (stroke-dasharray at "drawn" final state) -->
+  <circle cx="40" cy="40" r="34" fill="none" stroke="#1A6B5A" stroke-width="3"
+    stroke-dasharray="213.6 0" stroke-linecap="round"
+    transform="rotate(-90 40 40)"/>
+
+  <!-- Filled circle background -->
+  <circle cx="40" cy="40" r="30" fill="#1A6B5A"/>
+
+  <!-- Checkmark -->
+  <polyline points="24,41 35,52 56,30" fill="none" stroke="white"
+    stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Sparkle dots around the circle (celebration) -->
+  <!-- Top -->
+  <circle cx="40" cy="3" r="2.5" fill="#F59E0B"/>
+  <!-- Top-right -->
+  <circle cx="68" cy="13" r="2" fill="#F59E0B" opacity="0.8"/>
+  <!-- Right -->
+  <circle cx="77" cy="40" r="2.5" fill="#F59E0B"/>
+  <!-- Bottom-right -->
+  <circle cx="68" cy="67" r="2" fill="#F59E0B" opacity="0.8"/>
+  <!-- Bottom -->
+  <circle cx="40" cy="77" r="2.5" fill="#F59E0B"/>
+  <!-- Bottom-left -->
+  <circle cx="12" cy="67" r="2" fill="#F59E0B" opacity="0.8"/>
+  <!-- Left -->
+  <circle cx="3" cy="40" r="2.5" fill="#F59E0B"/>
+  <!-- Top-left -->
+  <circle cx="12" cy="13" r="2" fill="#F59E0B" opacity="0.8"/>
+</svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <!-- Background circle: cat-health #22C55E -->
+  <circle cx="24" cy="24" r="24" fill="#22C55E"/>
+  <!-- Heart with ECG pulse icon -->
+  <!-- Heart shape -->
+  <path d="M24 36
+           C20 32 10 26 10 19
+           C10 14 14 11 18 11
+           C20.5 11 22.5 12.5 24 14.5
+           C25.5 12.5 27.5 11 30 11
+           C34 11 38 14 38 19
+           C38 26 28 32 24 36Z"
+        fill="none" stroke="white" stroke-width="2.2" stroke-linejoin="round"/>
+  <!-- ECG line through heart -->
+  <polyline points="12,22 17,22 19.5,16 21.5,28 24,20 26,24 30,24 33,22 36,22"
+            fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
+</svg>

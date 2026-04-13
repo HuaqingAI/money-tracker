@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>了然 — 图标资产目录</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#1A6B5A;--brand-light:#EEF9F6;--brand-dark:#0F4A3E;
+  --n50:#F9FAFB;--n100:#F3F4F6;--n200:#E5E7EB;--n400:#9CA3AF;
+  --n500:#6B7280;--n600:#4B5563;--n700:#374151;--n800:#1F2937;
+}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Noto Sans SC',sans-serif;background:var(--n50);color:var(--n800);min-height:100vh}
+.layout{display:flex;min-height:100vh}
+
+/* Sidebar */
+.sidebar{width:220px;min-height:100vh;background:white;border-right:1px solid var(--n200);position:sticky;top:0;height:100vh;overflow-y:auto;flex-shrink:0}
+.sb-header{padding:24px 20px 16px;border-bottom:1px solid var(--n200)}
+.brand-row{display:flex;align-items:center;gap:10px;margin-bottom:2px}
+.brand-dot{width:28px;height:28px;background:var(--brand);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-name{font-size:16px;font-weight:700;color:var(--brand)}
+.brand-sub{font-size:11px;color:var(--n400);margin-top:4px}
+.nav-sect{padding:16px 12px 8px}
+.nav-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--n400);padding:0 8px;margin-bottom:6px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;font-size:13px;color:var(--n500);cursor:pointer;transition:all .15s;text-decoration:none}
+.nav-item:hover{background:var(--n100);color:var(--n800)}
+.nav-item.active{background:var(--brand-light);color:var(--brand);font-weight:600}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.5;flex-shrink:0}
+.nav-badge{margin-left:auto;font-size:10px;background:var(--n100);color:var(--n500);padding:1px 6px;border-radius:10px}
+
+/* Main */
+.main{flex:1;padding:32px 40px;max-width:980px}
+.pg-header{margin-bottom:36px}
+.pg-title{font-size:26px;font-weight:700;color:var(--n800);margin-bottom:8px}
+.pg-meta{font-size:13px;color:var(--n400)}
+.stats-row{display:flex;gap:12px;margin-top:14px;flex-wrap:wrap}
+.stat-chip{display:flex;align-items:center;gap:6px;background:white;border:1px solid var(--n200);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--n500)}
+.stat-chip strong{color:var(--brand)}
+.section{margin-bottom:48px;scroll-margin-top:24px}
+.sec-title{font-size:16px;font-weight:700;color:var(--n800);margin-bottom:5px;display:flex;align-items:center;gap:10px}
+.sec-count{font-size:11px;font-weight:500;background:var(--brand-light);color:var(--brand);padding:2px 8px;border-radius:10px}
+.sec-desc{font-size:13px;color:var(--n400);margin-bottom:18px}
+.divider{height:1px;background:var(--n200);margin:40px 0}
+
+/* App icon showcase */
+.icon-showcase{display:flex;gap:20px;align-items:flex-end;flex-wrap:wrap}
+.icon-item{display:flex;flex-direction:column;align-items:center;gap:10px}
+.icon-frame{background:white;border:1px solid var(--n200);border-radius:16px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:transform .2s,box-shadow .2s;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.icon-frame:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(26,107,90,.12)}
+.icon-frame.dark{background:#111;border-color:#333}
+.icon-label{font-size:11px;color:var(--n400);text-align:center;line-height:1.4}
+
+/* Category grid */
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:14px}
+.cat-item{background:white;border:1px solid var(--n200);border-radius:12px;padding:18px 14px 14px;display:flex;flex-direction:column;align-items:center;gap:9px;cursor:pointer;transition:all .15s;text-align:center}
+.cat-item:hover{border-color:var(--brand);box-shadow:0 4px 16px rgba(26,107,90,.1);transform:translateY(-1px)}
+.cat-item-name{font-size:12px;font-weight:600;color:var(--n700)}
+.cat-item-hex{font-size:10px;color:var(--n400);font-family:'Fira Code','SF Mono',monospace}
+
+/* Size preview */
+.size-preview{display:flex;align-items:flex-end;gap:20px;padding:18px 20px;background:white;border:1px solid var(--n200);border-radius:12px;margin-top:18px;flex-wrap:wrap}
+.size-item{display:flex;flex-direction:column;align-items:center;gap:6px}
+.size-lbl{font-size:10px;color:var(--n400);text-align:center;line-height:1.4}
+
+/* Onboarding illustrations */
+.ob-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+.ob-item{background:white;border:1px solid var(--n200);border-radius:16px;overflow:hidden;cursor:pointer;transition:all .2s}
+.ob-item:hover{border-color:var(--brand);box-shadow:0 6px 24px rgba(26,107,90,.1);transform:translateY(-2px)}
+.ob-img-wrap{padding:18px 18px 12px;background:var(--n50);display:flex;justify-content:center}
+.ob-img-wrap svg{width:100%;max-width:300px;height:auto}
+.ob-meta{padding:14px 16px 16px;border-top:1px solid var(--n100)}
+.ob-slide{font-size:10px;font-weight:600;color:var(--brand);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.ob-title{font-size:14px;font-weight:700;color:var(--n800);margin-bottom:4px}
+.ob-desc{font-size:12px;color:var(--n400);line-height:1.5}
+
+/* Info box */
+.info-box{margin-top:14px;padding:12px 16px;background:var(--n50);border:1px solid var(--n200);border-radius:10px;font-size:12px;color:var(--n500)}
+.info-box strong{color:var(--n800)}
+code{font-family:'Fira Code','SF Mono',monospace;font-size:12px;background:var(--n100);padding:2px 5px;border-radius:4px;color:var(--brand-dark)}
+
+/* Token table */
+.tok-table{width:100%;border-collapse:collapse;font-size:13px}
+.tok-table th{text-align:left;padding:9px 12px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--n400);border-bottom:1px solid var(--n200)}
+.tok-table td{padding:9px 12px;border-bottom:1px solid var(--n100);color:var(--n700);vertical-align:middle}
+.tok-table tr:hover td{background:var(--n50)}
+.swatch{display:inline-block;width:16px;height:16px;border-radius:4px;vertical-align:middle;margin-right:7px;border:1px solid rgba(0,0,0,.06)}
+
+/* Footer */
+.pg-footer{margin-top:48px;padding-top:24px;border-top:1px solid var(--n200);font-size:12px;color:var(--n400);text-align:center}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-thumb{background:var(--n200);border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- Hidden SVG symbol for app icon (reused at multiple sizes) -->
+<svg style="display:none;width:0;height:0;position:absolute" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="sym-app-icon" viewBox="0 0 512 512">
+    <defs>
+      <linearGradient id="ai-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1A6B5A"/>
+        <stop offset="100%" stop-color="#0F4A3E"/>
+      </linearGradient>
+      <linearGradient id="ai-sym" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#FFFFFF"/>
+        <stop offset="100%" stop-color="#A8DDD6"/>
+      </linearGradient>
+      <filter id="ai-shad" x="-10%" y="-10%" width="120%" height="120%">
+        <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000" flood-opacity="0.15"/>
+      </filter>
+    </defs>
+    <rect width="512" height="512" rx="115" ry="115" fill="url(#ai-bg)"/>
+    <ellipse cx="256" cy="90" rx="190" ry="60" fill="white" opacity="0.05"/>
+    <g filter="url(#ai-shad)">
+      <path d="M135 256 C135 185 190 130 256 130 C322 130 377 185 377 256 C377 280 371 303 360 323" fill="none" stroke="url(#ai-sym)" stroke-width="26" stroke-linecap="round"/>
+      <path d="M360 323 C348 350 328 372 304 383 C278 395 248 392 225 378 C198 362 183 334 180 308" fill="none" stroke="url(#ai-sym)" stroke-width="26" stroke-linecap="round"/>
+      <circle cx="256" cy="245" r="34" fill="url(#ai-sym)" opacity="0.95"/>
+      <circle cx="256" cy="245" r="16" fill="#0F4A3E"/>
+      <circle cx="248" cy="237" r="6" fill="white" opacity="0.5"/>
+      <line x1="345" y1="155" x2="375" y2="125" stroke="white" stroke-width="12" stroke-linecap="round" opacity="0.65"/>
+      <line x1="370" y1="175" x2="410" y2="165" stroke="white" stroke-width="9" stroke-linecap="round" opacity="0.45"/>
+      <line x1="342" y1="128" x2="352" y2="96" stroke="white" stroke-width="9" stroke-linecap="round" opacity="0.45"/>
+    </g>
+    <circle cx="226" cy="400" r="6" fill="white" opacity="0.3"/>
+    <circle cx="256" cy="400" r="6" fill="white" opacity="0.3"/>
+    <circle cx="286" cy="400" r="6" fill="white" opacity="0.3"/>
+  </symbol>
+</svg>
+
+<div class="layout">
+
+<!-- ── Sidebar ── -->
+<nav class="sidebar">
+  <div class="sb-header">
+    <div class="brand-row">
+      <div class="brand-dot">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2.5">
+          <circle cx="12" cy="10" r="4"/><path d="M12 6 C12 2 20 2 20 10 Q20 18 12 20" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="brand-name">了然</div>
+    </div>
+    <div class="brand-sub">图标资产目录 · WDS Phase 6</div>
+  </div>
+  <div class="nav-sect">
+    <div class="nav-lbl">资产类型</div>
+    <a href="#app-icon" class="nav-item active"><div class="nav-dot"></div>App Icon<span class="nav-badge">1</span></a>
+    <a href="#category-icons" class="nav-item"><div class="nav-dot"></div>分类图标<span class="nav-badge">8</span></a>
+    <a href="#onboarding" class="nav-item"><div class="nav-dot"></div>Onboarding 插图<span class="nav-badge">3</span></a>
+    <a href="#lucide" class="nav-item"><div class="nav-dot"></div>Lucide 参考<span class="nav-badge">28</span></a>
+  </div>
+  <div class="nav-sect">
+    <div class="nav-lbl">设计令牌</div>
+    <a href="#color-tokens" class="nav-item"><div class="nav-dot"></div>分类颜色</a>
+    <a href="#size-spec" class="nav-item"><div class="nav-dot"></div>尺寸规范</a>
+  </div>
+</nav>
+
+<!-- ── Main ── -->
+<main class="main">
+
+  <div class="pg-header">
+    <h1 class="pg-title">了然 图标资产目录</h1>
+    <p class="pg-meta">WDS Phase 6 · Asset Generation · Icons · 2026-04-13</p>
+    <div class="stats-row">
+      <div class="stat-chip"><strong>12</strong> 个自定义资产</div>
+      <div class="stat-chip"><strong>28</strong> Lucide Icons 映射</div>
+      <div class="stat-chip">风格：极简 Flat Illustration</div>
+      <div class="stat-chip">品牌色 <strong style="color:#1A6B5A">#1A6B5A</strong></div>
+    </div>
+  </div>
+
+  <!-- ════ APP ICON ════ -->
+  <section class="section" id="app-icon">
+    <div class="sec-title">App Icon <span class="sec-count">1 个资产 · 多尺寸展示</span></div>
+    <p class="sec-desc">了然 App 启动图标。抽象「眼/了」形，了然绿渐变，寓意洞见财务真相。</p>
+
+    <div class="icon-showcase">
+      <div class="icon-item">
+        <div class="icon-frame"><svg width="120" height="120"><use href="#sym-app-icon"/></svg></div>
+        <div class="icon-label">120×120<br>App Store 2x</div>
+      </div>
+      <div class="icon-item">
+        <div class="icon-frame"><svg width="80" height="80"><use href="#sym-app-icon"/></svg></div>
+        <div class="icon-label">80×80<br>Settings</div>
+      </div>
+      <div class="icon-item">
+        <div class="icon-frame"><svg width="60" height="60"><use href="#sym-app-icon"/></svg></div>
+        <div class="icon-label">60×60<br>通知</div>
+      </div>
+      <div class="icon-item">
+        <div class="icon-frame"><svg width="44" height="44"><use href="#sym-app-icon"/></svg></div>
+        <div class="icon-label">44×44<br>Spotlight</div>
+      </div>
+      <div class="icon-item">
+        <div class="icon-frame dark"><svg width="80" height="80"><use href="#sym-app-icon"/></svg></div>
+        <div class="icon-label">深色背景</div>
+      </div>
+    </div>
+    <div class="info-box"><strong>源文件：</strong><code>app-icon/app-icon.svg</code> · 基于 512×512 viewBox · 任意缩放</div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ════ CATEGORY ICONS ════ -->
+  <section class="section" id="category-icons">
+    <div class="sec-title">分类图标 <span class="sec-count">8 个图标</span></div>
+    <p class="sec-desc">圆形色块背景 + 白色线条图形，48×48 SVG。用于 Dashboard、交易列表、分类管理页。</p>
+
+    <div class="cat-grid">
+
+      <!-- 餐饮 -->
+      <div class="cat-item">
+        <svg viewBox="0 0 48 48" width="48" height="48">
+          <circle cx="24" cy="24" r="24" fill="#F97316"/>
+          <line x1="16" y1="10" x2="16" y2="38" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M13 10 L13 18 Q13 22 16 22 Q19 22 19 18 L19 10" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="32" y1="22" x2="32" y2="38" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+          <ellipse cx="32" cy="15" rx="4" ry="6" fill="none" stroke="white" stroke-width="2.2"/>
+        </svg>
+        <div class="cat-item-name">餐饮</div>
+        <div class="cat-item-hex">#F97316</div>
+      </div>
+
+      <!-- 交通 -->
+      <div class="cat-item">
+        <svg viewBox="0 0 48 48" width="48" height="48">
+          <circle cx="24" cy="24" r="24" fill="#3B82F6"/>
+          <rect x="11" y="14" width="26" height="18" rx="3" fill="none" stroke="white" stroke-width="2.2"/>
+          <line x1="11" y1="21" x2="37" y2="21" stroke="white" stroke-width="2.2"/>
+          <rect x="14" y="15.5" width="7" height="4" rx="1" fill="white" opacity="0.7"/>
+          <rect x="27" y="15.5" width="7" height="4" rx="1" fill="white" opacity="0.7"/>
+          <rect x="20" y="23" width="8" height="7" rx="1" fill="white" opacity="0.5"/>
+          <circle cx="16" cy="34" r="3.5" fill="none" stroke="white" stroke-width="2.2"/>
+          <circle cx="32" cy="34" r="3.5" fill="none" stroke="white" stroke-width="2.2"/>
+          <line x1="11" y1="34" x2="12.5" y2="34" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+          <line x1="19.5" y1="34" x2="28.5" y2="34" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+          <line x1="35.5" y1="34" x2="37" y2="34" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        <div class="cat-item-name">交通</div>
+        <div class="cat-item-hex">#3B82F6</div>
+      </div>
+
+      <!-- 购物 -->
+      <div class="cat-item">
+        <svg viewBox="0 0 48 48" width="48" height="48">
+          <circle cx="24" cy="24" r="24" fill="#8B5CF6"/>
+          <path d="M14 20 L34 20 L32 38 L16 38 Z" fill="none" stroke="white" stroke-width="2.2" stroke-linejoin="round"/>
+          <path d="M18 20 C18 13 30 13 30 20" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+          <line x1="19" y1="26" x2="19" y2="32" stroke="white" stroke-width="2.2" stroke-linecap="round" opacity="0.6"/>
+        </svg>
+        <div class="cat-item-name">购物</div>
+        <div class="cat-item-hex">#8B5CF6</div>
+      </div>
+
+      <!-- 居住 -->
+      <div class="cat-item">
+        <svg viewBox="0 0 48 48" width="48" height="48">
+          <circle cx="24" cy="24" r="24" fill="#06B6D4"/>
+          <path d="M10 24 L24 11 L38 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="14" y="24" width="20" height="15" rx="1" fill="none" stroke="white" stroke-width="2.2"/>
+          <rect x="20" y="30" width="8" height="9" rx="1" fill="white" opacity="0.5"/>
+          <rect x="15.5" y="26" width="5" height="5" rx="0.5" fill="white" opacity="0.6"/>
+          <rect x="27" y="13" width="4" height="8" rx="1" fill="none" stroke="white" stroke-width="2.2"/>
+        </svg>
+        <div class="cat-item-name">居住</div>
+        <div class="cat-item-hex">#06B6D4</div>
+      </div>
+
+      <!-- 娱乐 -->
+      <div class="cat-item">
+        <svg viewBox="0 0 48 48" width="48" height="48">
+          <circle cx="24" cy="24" r="24" fill="#EC4899"/>
+          <path d="M10 22 C10 17 14 15 18 15 L30 15 C34 15 38 17 38 22 L38 26 C38 32 34 35 30 36 L18 36 C14 35 10 32 10 26 Z" fill="none" stroke="white" stroke-width="2.2"/>
+          <line x1="17" y1="22" x2="17" y2="29" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+          <line x1="13.5" y1="25.5" x2="20.5" y2="25.5" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+          <circle cx="31" cy="22.5" r="2.5" fill="none" stroke="white" stroke-width="2.2"/>
+          <circle cx="31" cy="29.5" r="2.5" fill="none" stroke="white" stroke-width="2.2"/>
+        </svg>
+        <div class="cat-item-name">娱乐</div>
+        <div class="cat-item-hex">#EC4899</div>
+      </div>
+
+      <!-- 健康 -->
+      <div class="cat-item">
+        <svg viewBox="0 0 48 48" width="48" height="48">
+          <circle cx="24" cy="24" r="24" fill="#22C55E"/>
+          <path d="M24 36 C20 32 10 26 10 19 C10 14 14 11 18 11 C20.5 11 22.5 12.5 24 14.5 C25.5 12.5 27.5 11 30 11 C34 11 38 14 38 19 C38 26 28 32 24 36Z" fill="none" stroke="white" stroke-width="2.2" stroke-linejoin="round"/>
+          <polyline points="12,22 17,22 19.5,16 21.5,28 24,20 26,24 30,24 33,22 36,22" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
+        </svg>
+        <div class="cat-item-name">健康</div>
+        <div class="cat-item-hex">#22C55E</div>
+      </div>
+
+      <!-- 其他 -->
+      <div class="cat-item">
+        <svg viewBox="0 0 48 48" width="48" height="48">
+          <circle cx="24" cy="24" r="24" fill="#6B7280"/>
+          <circle cx="16" cy="16" r="2.8" fill="white"/>
+          <circle cx="24" cy="16" r="2.8" fill="white"/>
+          <circle cx="32" cy="16" r="2.8" fill="white"/>
+          <circle cx="16" cy="24" r="2.8" fill="white"/>
+          <circle cx="24" cy="24" r="2.8" fill="white"/>
+          <circle cx="32" cy="24" r="2.8" fill="white"/>
+          <circle cx="16" cy="32" r="2.8" fill="white"/>
+          <circle cx="24" cy="32" r="2.8" fill="white"/>
+          <circle cx="32" cy="32" r="2.8" fill="white"/>
+        </svg>
+        <div class="cat-item-name">其他</div>
+        <div class="cat-item-hex">#6B7280</div>
+      </div>
+
+      <!-- 人情 -->
+      <div class="cat-item">
+        <svg viewBox="0 0 48 48" width="48" height="48">
+          <circle cx="24" cy="24" r="24" fill="#D97706"/>
+          <rect x="11" y="23" width="26" height="17" rx="2" fill="none" stroke="white" stroke-width="2.2"/>
+          <rect x="9" y="18" width="30" height="6" rx="2" fill="none" stroke="white" stroke-width="2.2"/>
+          <line x1="24" y1="18" x2="24" y2="40" stroke="white" stroke-width="2.2"/>
+          <line x1="9" y1="21" x2="39" y2="21" stroke="white" stroke-width="2.2"/>
+          <path d="M24 18 C20 15 15 10 18 8 C21 6 24 11 24 18" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M24 18 C28 15 33 10 30 8 C27 6 24 11 24 18" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        <div class="cat-item-name">人情</div>
+        <div class="cat-item-hex">#D97706</div>
+      </div>
+
+    </div>
+
+    <!-- Size variants -->
+    <div style="margin-top:20px">
+      <div style="font-size:12px;font-weight:600;color:var(--n500);margin-bottom:10px">尺寸变体（以「餐饮」为例）</div>
+      <div class="size-preview">
+        <div class="size-item">
+          <svg viewBox="0 0 48 48" width="48" height="48"><circle cx="24" cy="24" r="24" fill="#F97316"/><line x1="16" y1="10" x2="16" y2="38" stroke="white" stroke-width="2.2" stroke-linecap="round"/><path d="M13 10 L13 18 Q13 22 16 22 Q19 22 19 18 L19 10" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="32" y1="22" x2="32" y2="38" stroke="white" stroke-width="2.2" stroke-linecap="round"/><ellipse cx="32" cy="15" rx="4" ry="6" fill="none" stroke="white" stroke-width="2.2"/></svg>
+          <div class="size-lbl">48×48<br>标准</div>
+        </div>
+        <div class="size-item">
+          <svg viewBox="0 0 48 48" width="36" height="36"><circle cx="24" cy="24" r="24" fill="#F97316"/><line x1="16" y1="10" x2="16" y2="38" stroke="white" stroke-width="2.2" stroke-linecap="round"/><path d="M13 10 L13 18 Q13 22 16 22 Q19 22 19 18 L19 10" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="32" y1="22" x2="32" y2="38" stroke="white" stroke-width="2.2" stroke-linecap="round"/><ellipse cx="32" cy="15" rx="4" ry="6" fill="none" stroke="white" stroke-width="2.2"/></svg>
+          <div class="size-lbl">36×36<br>紧凑</div>
+        </div>
+        <div class="size-item">
+          <svg viewBox="0 0 48 48" width="28" height="28"><circle cx="24" cy="24" r="24" fill="#F97316"/><line x1="16" y1="10" x2="16" y2="38" stroke="white" stroke-width="2.2" stroke-linecap="round"/><path d="M13 10 L13 18 Q13 22 16 22 Q19 22 19 18 L19 10" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="32" y1="22" x2="32" y2="38" stroke="white" stroke-width="2.2" stroke-linecap="round"/><ellipse cx="32" cy="15" rx="4" ry="6" fill="none" stroke="white" stroke-width="2.2"/></svg>
+          <div class="size-lbl">28×28<br>小型</div>
+        </div>
+        <div class="size-item">
+          <svg viewBox="0 0 48 48" width="20" height="20"><circle cx="24" cy="24" r="24" fill="#F97316"/><line x1="16" y1="10" x2="16" y2="38" stroke="white" stroke-width="2.2" stroke-linecap="round"/><path d="M13 10 L13 18 Q13 22 16 22 Q19 22 19 18 L19 10" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"/><line x1="32" y1="22" x2="32" y2="38" stroke="white" stroke-width="2.2" stroke-linecap="round"/><ellipse cx="32" cy="15" rx="4" ry="6" fill="none" stroke="white" stroke-width="2.2"/></svg>
+          <div class="size-lbl">20×20<br>Chip</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ════ ONBOARDING ILLUSTRATIONS ════ -->
+  <section class="section" id="onboarding">
+    <div class="sec-title">Onboarding 插图 <span class="sec-count">3 幅平面插画</span></div>
+    <p class="sec-desc">三幕叙事配图，用于 01.2 Onboarding 引导页。320×280 SVG，打消恐惧→建立信任→建立期待。</p>
+
+    <div class="ob-grid">
+
+      <!-- Slide 1 -->
+      <div class="ob-item">
+        <div class="ob-img-wrap">
+          <svg viewBox="0 0 360 280">
+            <defs>
+              <linearGradient id="ob1-bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#EEF9F6"/><stop offset="100%" stop-color="#D4EDE8"/></linearGradient>
+              <linearGradient id="ob1-ph" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#1A6B5A"/><stop offset="100%" stop-color="#0D4437"/></linearGradient>
+              <filter id="ob1-fs" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#0D4437" flood-opacity="0.13"/></filter>
+              <filter id="ob1-fp" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="6" stdDeviation="12" flood-color="#0D4437" flood-opacity="0.18"/></filter>
+            </defs>
+            <rect width="360" height="280" fill="url(#ob1-bg)" rx="20"/>
+            <circle cx="60" cy="60" r="70" fill="#1A6B5A" opacity="0.05"/>
+            <circle cx="300" cy="220" r="80" fill="#1A6B5A" opacity="0.04"/>
+            <g filter="url(#ob1-fp)">
+              <rect x="142" y="26" width="76" height="132" rx="14" fill="url(#ob1-ph)"/>
+              <rect x="146" y="33" width="68" height="112" rx="8" fill="#F9FAFB"/>
+              <rect x="163" y="35" width="34" height="6" rx="3" fill="#0D4437"/>
+              <rect x="161" y="151" width="38" height="4" rx="2" fill="white" opacity="0.35"/>
+            </g>
+            <text x="180" y="70" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="800" fill="#1A6B5A">4,329</text>
+            <text x="180" y="80" text-anchor="middle" font-family="sans-serif" font-size="5.5" fill="#6B7280">本月支出</text>
+            <line x1="152" y1="86" x2="208" y2="86" stroke="#E5E7EB" stroke-width="0.8"/>
+            <rect x="152" y="92" width="8" height="8" rx="2" fill="#F97316"/>
+            <text x="163" y="99" font-family="sans-serif" font-size="5.5" fill="#374151">餐饮</text>
+            <text x="208" y="99" text-anchor="end" font-family="sans-serif" font-size="5.5" font-weight="600" fill="#374151">1,203</text>
+            <rect x="152" y="104" width="8" height="8" rx="2" fill="#3B82F6"/>
+            <text x="163" y="111" font-family="sans-serif" font-size="5.5" fill="#374151">交通</text>
+            <text x="208" y="111" text-anchor="end" font-family="sans-serif" font-size="5.5" font-weight="600" fill="#374151">342</text>
+            <rect x="152" y="116" width="8" height="8" rx="2" fill="#8B5CF6"/>
+            <text x="163" y="123" font-family="sans-serif" font-size="5.5" fill="#374151">购物</text>
+            <text x="208" y="123" text-anchor="end" font-family="sans-serif" font-size="5.5" font-weight="600" fill="#374151">2,784</text>
+            <rect x="154" y="132" width="52" height="10" rx="5" fill="#1A6B5A" opacity="0.12"/>
+            <text x="180" y="139.5" text-anchor="middle" font-family="sans-serif" font-size="5" font-weight="600" fill="#1A6B5A">AI 自动记录中</text>
+            <!-- Left: Alipay -->
+            <g filter="url(#ob1-fs)">
+              <rect x="12" y="48" width="108" height="46" rx="12" fill="white"/>
+              <circle cx="33" cy="71" r="12" fill="#1677FF"/>
+              <text x="33" y="76" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="800" fill="white">支</text>
+              <text x="50" y="65" font-family="sans-serif" font-size="7" font-weight="600" fill="#111827">支付宝</text>
+              <text x="50" y="75" font-family="sans-serif" font-size="8" font-weight="700" fill="#111827">68.5</text>
+              <text x="50" y="86" font-family="sans-serif" font-size="6" fill="#6B7280">外卖</text>
+              <rect x="88" y="62" width="26" height="12" rx="6" fill="#EEF9F6"/>
+              <text x="101" y="71" text-anchor="middle" font-family="sans-serif" font-size="6" font-weight="700" fill="#1A6B5A">自动</text>
+            </g>
+            <line x1="120" y1="71" x2="141" y2="80" stroke="#1A6B5A" stroke-width="1.4" stroke-dasharray="3,2" opacity="0.45"/>
+            <!-- Right top: WeChat -->
+            <g filter="url(#ob1-fs)">
+              <rect x="240" y="34" width="108" height="46" rx="12" fill="white"/>
+              <circle cx="260" cy="57" r="12" fill="#07C160"/>
+              <ellipse cx="256" cy="55" rx="5" ry="4" fill="white" opacity="0.9"/>
+              <ellipse cx="264" cy="60" rx="4.5" ry="3.5" fill="white" opacity="0.9"/>
+              <text x="276" y="51" font-family="sans-serif" font-size="7" font-weight="600" fill="#111827">微信支付</text>
+              <text x="276" y="62" font-family="sans-serif" font-size="8" font-weight="700" fill="#111827">299</text>
+              <text x="276" y="73" font-family="sans-serif" font-size="6" fill="#6B7280">购物</text>
+              <rect x="318" y="49" width="26" height="12" rx="6" fill="#EEF9F6"/>
+              <text x="331" y="58" text-anchor="middle" font-family="sans-serif" font-size="6" font-weight="700" fill="#1A6B5A">自动</text>
+            </g>
+            <line x1="240" y1="57" x2="219" y2="72" stroke="#1A6B5A" stroke-width="1.4" stroke-dasharray="3,2" opacity="0.45"/>
+            <!-- Right bottom: Bank -->
+            <g filter="url(#ob1-fs)">
+              <rect x="240" y="114" width="108" height="46" rx="12" fill="white"/>
+              <circle cx="260" cy="137" r="12" fill="#C0392B"/>
+              <text x="260" y="142" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="800" fill="white">工</text>
+              <text x="276" y="131" font-family="sans-serif" font-size="7" font-weight="600" fill="#111827">工行银行</text>
+              <text x="276" y="142" font-family="sans-serif" font-size="8" font-weight="700" fill="#111827">2,800</text>
+              <text x="276" y="153" font-family="sans-serif" font-size="6" fill="#6B7280">超市</text>
+              <rect x="318" y="129" width="26" height="12" rx="6" fill="#EEF9F6"/>
+              <text x="331" y="138" text-anchor="middle" font-family="sans-serif" font-size="6" font-weight="700" fill="#1A6B5A">自动</text>
+            </g>
+            <line x1="240" y1="137" x2="219" y2="122" stroke="#1A6B5A" stroke-width="1.4" stroke-dasharray="3,2" opacity="0.45"/>
+            <!-- Top: Meituan -->
+            <g filter="url(#ob1-fs)">
+              <rect x="100" y="12" width="160" height="34" rx="10" fill="white"/>
+              <circle cx="120" cy="29" r="10" fill="#FFCC00"/>
+              <text x="120" y="34" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="800" fill="#0D1B39">M</text>
+              <text x="135" y="25" font-family="sans-serif" font-size="7" font-weight="600" fill="#111827">美团外卖</text>
+              <text x="135" y="36" font-family="sans-serif" font-size="6.5" fill="#6B7280">36.5 · 自动识别</text>
+              <circle cx="247" cy="29" r="8" fill="#1A6B5A" opacity="0.12"/>
+              <path d="M243 29 L246 32 L251 25" fill="none" stroke="#1A6B5A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+            <line x1="180" y1="46" x2="180" y2="54" stroke="#1A6B5A" stroke-width="1.4" stroke-dasharray="3,2" opacity="0.4"/>
+            <!-- Bottom bar -->
+            <rect x="20" y="216" width="320" height="46" rx="14" fill="white" filter="url(#ob1-fs)"/>
+            <circle cx="46" cy="239" r="10" fill="#1677FF"/>
+            <text x="46" y="244" text-anchor="middle" font-family="sans-serif" font-size="9" font-weight="700" fill="white">支</text>
+            <circle cx="70" cy="239" r="10" fill="#07C160"/>
+            <ellipse cx="66.5" cy="237.5" rx="4" ry="3.2" fill="white" opacity="0.9"/>
+            <ellipse cx="73.5" cy="241.5" rx="3.5" ry="2.8" fill="white" opacity="0.9"/>
+            <circle cx="94" cy="239" r="10" fill="#C0392B"/>
+            <text x="94" y="244" text-anchor="middle" font-family="sans-serif" font-size="9" font-weight="700" fill="white">工</text>
+            <circle cx="118" cy="239" r="10" fill="#FFCC00"/>
+            <text x="118" y="244" text-anchor="middle" font-family="sans-serif" font-size="9" font-weight="800" fill="#0D1B39">M</text>
+            <text x="136" y="235" font-family="sans-serif" font-size="8" font-weight="600" fill="#111827">4 个渠道，自动同步</text>
+            <text x="136" y="247" font-family="sans-serif" font-size="7.5" fill="#6B7280">不用手动输入，也不会漏掉</text>
+            <rect x="293" y="229" width="38" height="20" rx="10" fill="#1A6B5A"/>
+            <text x="312" y="242" text-anchor="middle" font-family="sans-serif" font-size="9" font-weight="700" fill="white">48笔</text>
+          </svg>
+        </div>
+        <div class="ob-meta">
+          <div class="ob-slide">Slide 1 / 3</div>
+          <div class="ob-title">不用动手记一笔</div>
+          <div class="ob-desc">支付宝、微信、银行、美团……自动同步。不用手动输入，也不会漏掉。</div>
+        </div>
+      </div>
+
+      <!-- Slide 2 -->
+      <div class="ob-item">
+        <div class="ob-img-wrap">
+          <svg viewBox="0 0 360 280">
+            <defs>
+              <linearGradient id="ob2-bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F0F9FF"/><stop offset="100%" stop-color="#D6ECFF"/></linearGradient>
+              <linearGradient id="ob2-ai" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1A6B5A"/><stop offset="100%" stop-color="#0D4437"/></linearGradient>
+              <linearGradient id="ob2-fn" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#1A6B5A" stop-opacity="0.1"/><stop offset="100%" stop-color="#1A6B5A" stop-opacity="0.03"/></linearGradient>
+              <filter id="ob2-fs" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#1A6B5A" flood-opacity="0.1"/></filter>
+            </defs>
+            <rect width="360" height="280" fill="url(#ob2-bg)" rx="20"/>
+            <ellipse cx="60" cy="50" rx="80" ry="60" fill="#1A6B5A" opacity="0.04"/>
+            <text x="56" y="26" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="600" fill="#9CA3AF">原始消费</text>
+            <g transform="rotate(-2,56,52)" filter="url(#ob2-fs)"><rect x="10" y="36" width="92" height="28" rx="8" fill="white"/><circle cx="26" cy="50" r="6" fill="#F97316"/><text x="40" y="46" font-family="sans-serif" font-size="7" font-weight="500" fill="#374151">美团外卖</text><text x="40" y="57" font-family="sans-serif" font-size="8" font-weight="700" fill="#111827">38.5</text></g>
+            <g transform="rotate(1.5,56,86)" filter="url(#ob2-fs)"><rect x="10" y="71" width="92" height="28" rx="8" fill="white"/><circle cx="26" cy="85" r="6" fill="#3B82F6"/><text x="40" y="81" font-family="sans-serif" font-size="7" font-weight="500" fill="#374151">地铁系统</text><text x="40" y="92" font-family="sans-serif" font-size="8" font-weight="700" fill="#111827">5.0</text></g>
+            <g transform="rotate(-1,56,120)" filter="url(#ob2-fs)"><rect x="10" y="106" width="92" height="28" rx="8" fill="white"/><circle cx="26" cy="120" r="6" fill="#8B5CF6"/><text x="40" y="116" font-family="sans-serif" font-size="7" font-weight="500" fill="#374151">京东购物</text><text x="40" y="127" font-family="sans-serif" font-size="8" font-weight="700" fill="#111827">299</text></g>
+            <g transform="rotate(2,56,155)" filter="url(#ob2-fs)"><rect x="10" y="141" width="92" height="28" rx="8" fill="white"/><circle cx="26" cy="155" r="6" fill="#06B6D4"/><text x="40" y="151" font-family="sans-serif" font-size="7" font-weight="500" fill="#374151">物业缴费</text><text x="40" y="162" font-family="sans-serif" font-size="8" font-weight="700" fill="#111827">580</text></g>
+            <g transform="rotate(-1.5,56,190)" filter="url(#ob2-fs)"><rect x="10" y="176" width="92" height="28" rx="8" fill="white"/><circle cx="26" cy="190" r="6" fill="#3B82F6"/><text x="40" y="186" font-family="sans-serif" font-size="7" font-weight="500" fill="#374151">滴滴出行</text><text x="40" y="197" font-family="sans-serif" font-size="8" font-weight="700" fill="#111827">22.0</text></g>
+            <!-- Funnel -->
+            <path d="M118 40 L118 238 Q136 238 142 198 L142 80 Q136 58 118 40Z" fill="url(#ob2-fn)" stroke="#1A6B5A" stroke-width="0.7" stroke-opacity="0.25"/>
+            <line x1="102" y1="50" x2="118" y2="88" stroke="#1A6B5A" stroke-width="1.1" stroke-dasharray="3,2" opacity="0.3"/>
+            <line x1="102" y1="85" x2="118" y2="110" stroke="#1A6B5A" stroke-width="1.1" stroke-dasharray="3,2" opacity="0.3"/>
+            <line x1="102" y1="120" x2="118" y2="132" stroke="#1A6B5A" stroke-width="1.1" stroke-dasharray="3,2" opacity="0.3"/>
+            <line x1="102" y1="155" x2="118" y2="150" stroke="#1A6B5A" stroke-width="1.1" stroke-dasharray="3,2" opacity="0.3"/>
+            <line x1="102" y1="190" x2="118" y2="168" stroke="#1A6B5A" stroke-width="1.1" stroke-dasharray="3,2" opacity="0.3"/>
+            <!-- AI circle -->
+            <circle cx="180" cy="139" r="36" fill="#EEF9F6"/>
+            <circle cx="180" cy="139" r="28" fill="url(#ob2-ai)"/>
+            <circle cx="172" cy="131" r="2.5" fill="white" opacity="0.4"/>
+            <circle cx="188" cy="131" r="2.5" fill="white" opacity="0.4"/>
+            <circle cx="180" cy="147" r="2.5" fill="white" opacity="0.4"/>
+            <line x1="172" y1="131" x2="188" y2="131" stroke="white" stroke-width="0.8" opacity="0.3"/>
+            <line x1="172" y1="131" x2="180" y2="147" stroke="white" stroke-width="0.8" opacity="0.3"/>
+            <line x1="188" y1="131" x2="180" y2="147" stroke="white" stroke-width="0.8" opacity="0.3"/>
+            <path d="M180 127 L182 135.5 L190.5 137 L182 139.5 L180 148 L178 139.5 L169.5 137 L178 135.5 Z" fill="white" opacity="0.95"/>
+            <text x="180" y="157" text-anchor="middle" font-family="sans-serif" font-size="7.5" font-weight="700" fill="white" opacity="0.8">96%</text>
+            <circle cx="180" cy="139" r="38" fill="none" stroke="#1A6B5A" stroke-width="1.3" stroke-dasharray="7,4" opacity="0.18"/>
+            <!-- Output funnel -->
+            <path d="M242 40 L242 238 Q224 238 218 198 L218 80 Q224 58 242 40Z" fill="url(#ob2-fn)" stroke="#1A6B5A" stroke-width="0.7" stroke-opacity="0.25"/>
+            <path d="M210 125 Q226 84 258 57" fill="none" stroke="#F97316" stroke-width="1.3" stroke-linecap="round" opacity="0.55"/>
+            <path d="M210 133 Q230 110 258 101" fill="none" stroke="#3B82F6" stroke-width="1.3" stroke-linecap="round" opacity="0.55"/>
+            <path d="M210 139 L258 144" fill="none" stroke="#8B5CF6" stroke-width="1.3" stroke-linecap="round" opacity="0.55"/>
+            <path d="M210 147 Q228 168 258 188" fill="none" stroke="#06B6D4" stroke-width="1.3" stroke-linecap="round" opacity="0.55"/>
+            <text x="304" y="26" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="600" fill="#9CA3AF">自动分类</text>
+            <!-- Category cards -->
+            <rect x="258" y="36" width="92" height="36" rx="10" fill="white" filter="url(#ob2-fs)"/>
+            <circle cx="276" cy="54" r="11" fill="#F97316"/>
+            <text x="292" y="50" font-family="sans-serif" font-size="8" font-weight="700" fill="#374151">餐饮</text>
+            <text x="292" y="61" font-family="sans-serif" font-size="6.5" fill="#6B7280">1,243 · 18笔</text>
+            <rect x="292" y="65" width="52" height="3" rx="1.5" fill="#F3F4F6"/>
+            <rect x="292" y="65" width="36" height="3" rx="1.5" fill="#F97316"/>
+            <rect x="258" y="80" width="92" height="36" rx="10" fill="white" filter="url(#ob2-fs)"/>
+            <circle cx="276" cy="98" r="11" fill="#3B82F6"/>
+            <text x="292" y="94" font-family="sans-serif" font-size="8" font-weight="700" fill="#374151">交通</text>
+            <text x="292" y="105" font-family="sans-serif" font-size="6.5" fill="#6B7280">342 · 12笔</text>
+            <rect x="292" y="109" width="52" height="3" rx="1.5" fill="#F3F4F6"/>
+            <rect x="292" y="109" width="18" height="3" rx="1.5" fill="#3B82F6"/>
+            <rect x="258" y="124" width="92" height="36" rx="10" fill="white" filter="url(#ob2-fs)"/>
+            <circle cx="276" cy="142" r="11" fill="#8B5CF6"/>
+            <text x="292" y="138" font-family="sans-serif" font-size="8" font-weight="700" fill="#374151">购物</text>
+            <text x="292" y="149" font-family="sans-serif" font-size="6.5" fill="#6B7280">2,784 · 8笔</text>
+            <rect x="292" y="153" width="52" height="3" rx="1.5" fill="#F3F4F6"/>
+            <rect x="292" y="153" width="48" height="3" rx="1.5" fill="#8B5CF6"/>
+            <rect x="258" y="168" width="92" height="36" rx="10" fill="white" filter="url(#ob2-fs)"/>
+            <circle cx="276" cy="186" r="11" fill="#06B6D4"/>
+            <text x="292" y="182" font-family="sans-serif" font-size="8" font-weight="700" fill="#374151">居住</text>
+            <text x="292" y="193" font-family="sans-serif" font-size="6.5" fill="#6B7280">3,480 · 3笔</text>
+            <rect x="292" y="197" width="52" height="3" rx="1.5" fill="#F3F4F6"/>
+            <rect x="292" y="197" width="44" height="3" rx="1.5" fill="#06B6D4"/>
+            <!-- Bottom bar -->
+            <rect x="20" y="228" width="320" height="38" rx="12" fill="white" filter="url(#ob2-fs)"/>
+            <path d="M40 240 L42.2 247.5 L50 248 L43.5 252.5 L45.5 260 L40 256 L34.5 260 L36.5 252.5 L30 248 L37.8 247.5 Z" fill="#F59E0B" opacity="0.9"/>
+            <text x="58" y="242" font-family="sans-serif" font-size="9" font-weight="700" fill="#111827">自动分类准确率</text>
+            <text x="58" y="253" font-family="sans-serif" font-size="7.5" fill="#6B7280">本月 127 笔消费，全部自动归类</text>
+            <rect x="293" y="235" width="36" height="22" rx="6" fill="#1A6B5A"/>
+            <text x="311" y="249.5" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="800" fill="white">96%</text>
+          </svg>
+        </div>
+        <div class="ob-meta">
+          <div class="ob-slide">Slide 2 / 3</div>
+          <div class="ob-title">每笔花销，自动归类</div>
+          <div class="ob-desc">AI 识别商家，自动匹配餐饮、交通、购物等分类。准确率 96%。</div>
+        </div>
+      </div>
+
+      <!-- Slide 3 -->
+      <div class="ob-item">
+        <div class="ob-img-wrap">
+          <svg viewBox="0 0 360 280">
+            <defs>
+              <linearGradient id="ob3-bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F5F3FF"/><stop offset="100%" stop-color="#E8F4F0"/></linearGradient>
+              <linearGradient id="ob3-bt" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1A6B5A"/><stop offset="100%" stop-color="#0D4437"/></linearGradient>
+              <linearGradient id="ob3-bb" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1A6B5A"/><stop offset="100%" stop-color="#145C4C"/></linearGradient>
+              <filter id="ob3-fa" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="6" stdDeviation="12" flood-color="#1A6B5A" flood-opacity="0.18"/></filter>
+              <filter id="ob3-fc" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#1A6B5A" flood-opacity="0.1"/></filter>
+            </defs>
+            <rect width="360" height="280" fill="url(#ob3-bg)" rx="20"/>
+            <circle cx="50" cy="80" r="55" fill="#1A6B5A" opacity="0.04"/>
+            <circle cx="320" cy="60" r="45" fill="#8B5CF6" opacity="0.04"/>
+            <!-- Butler avatar -->
+            <g filter="url(#ob3-fa)">
+              <circle cx="88" cy="144" r="50" fill="#1A6B5A" opacity="0.07"/>
+              <circle cx="88" cy="144" r="42" fill="url(#ob3-bt)"/>
+              <ellipse cx="77" cy="138" rx="8.5" ry="7.5" fill="white" opacity="0.95"/>
+              <ellipse cx="99" cy="138" rx="8.5" ry="7.5" fill="white" opacity="0.95"/>
+              <circle cx="78.5" cy="139" r="4.5" fill="#0D4437"/>
+              <circle cx="100.5" cy="139" r="4.5" fill="#0D4437"/>
+              <circle cx="78.5" cy="139" r="2" fill="#1A6B5A"/>
+              <circle cx="100.5" cy="139" r="2" fill="#1A6B5A"/>
+              <circle cx="80" cy="137.5" r="1.6" fill="white"/>
+              <circle cx="102" cy="137.5" r="1.6" fill="white"/>
+              <path d="M70 130 Q77 127 84 130" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" opacity="0.65"/>
+              <path d="M92 130 Q99 127 106 130" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" opacity="0.65"/>
+              <path d="M76 152 Q88 162 100 152" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+              <circle cx="70" cy="152" r="4.5" fill="white" opacity="0.18"/>
+              <circle cx="106" cy="152" r="4.5" fill="white" opacity="0.18"/>
+              <line x1="88" y1="102" x2="88" y2="88" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+              <circle cx="88" cy="85" r="5" fill="white"/>
+              <circle cx="88" cy="85" r="2.5" fill="#1A6B5A"/>
+              <rect x="42" y="132" width="10" height="18" rx="5" fill="white" opacity="0.7"/>
+              <rect x="124" y="132" width="10" height="18" rx="5" fill="white" opacity="0.7"/>
+            </g>
+            <rect x="64" y="196" width="48" height="18" rx="9" fill="#1A6B5A"/>
+            <text x="88" y="208.5" text-anchor="middle" font-family="sans-serif" font-size="7.5" font-weight="700" fill="white">了然管家</text>
+            <!-- User question -->
+            <g filter="url(#ob3-fc)">
+              <rect x="155" y="24" width="186" height="46" rx="14" fill="white"/>
+              <polygon points="155,42 145,47 155,53" fill="white"/>
+              <circle cx="173" cy="47" r="12" fill="#E5E7EB"/>
+              <circle cx="173" cy="44" r="5" fill="#9CA3AF"/>
+              <path d="M163 56 Q173 50 183 56" fill="#9CA3AF"/>
+              <text x="190" y="40" font-family="sans-serif" font-size="8.5" font-weight="500" fill="#111827">我上个月餐饮</text>
+              <text x="190" y="52" font-family="sans-serif" font-size="8.5" font-weight="500" fill="#111827">花了多少钱？</text>
+              <text x="325" y="62" font-family="sans-serif" font-size="6.5" fill="#9CA3AF">09:42</text>
+            </g>
+            <!-- AI reply -->
+            <g filter="url(#ob3-fc)">
+              <rect x="143" y="84" width="198" height="106" rx="16" fill="url(#ob3-bb)"/>
+              <polygon points="143,100 132,106 143,112" fill="#1A6B5A"/>
+              <circle cx="162" cy="104" r="10" fill="white" opacity="0.18"/>
+              <path d="M162 97.5 L163.5 101.8 L168 102.5 L163.5 104.2 L162 108.5 L160.5 104.2 L156 102.5 L160.5 101.8 Z" fill="white" opacity="0.9"/>
+              <text x="177" y="101" font-family="sans-serif" font-size="7.5" fill="rgba(255,255,255,0.75)">了然管家</text>
+              <text x="177" y="113" font-family="sans-serif" font-size="11" font-weight="800" fill="white">餐饮 1,243 元</text>
+              <line x1="150" y1="121" x2="331" y2="121" stroke="white" stroke-width="0.5" opacity="0.2"/>
+              <text x="164" y="178" font-family="sans-serif" font-size="6" fill="rgba(255,255,255,0.5)">W1</text>
+              <text x="188" y="178" font-family="sans-serif" font-size="6" fill="rgba(255,255,255,0.5)">W2</text>
+              <text x="212" y="178" font-family="sans-serif" font-size="6" fill="rgba(255,255,255,0.5)">W3</text>
+              <text x="236" y="178" font-family="sans-serif" font-size="6" fill="rgba(255,255,255,0.5)">W4</text>
+              <rect x="162" y="150" width="18" height="24" rx="4" fill="white" opacity="0.38"/>
+              <rect x="186" y="140" width="18" height="34" rx="4" fill="white" opacity="0.52"/>
+              <rect x="210" y="131" width="18" height="43" rx="4" fill="white" opacity="0.72"/>
+              <rect x="234" y="143" width="18" height="31" rx="4" fill="white" opacity="0.46"/>
+              <text x="265" y="141" font-family="sans-serif" font-size="7.5" font-weight="600" fill="white">W3 最多</text>
+              <text x="265" y="152" font-family="sans-serif" font-size="7" fill="rgba(255,255,255,0.7)">国庆期影响</text>
+              <rect x="265" y="158" width="58" height="15" rx="7.5" fill="rgba(255,255,255,0.14)"/>
+              <text x="294" y="168" text-anchor="middle" font-family="sans-serif" font-size="7" font-weight="600" fill="white">+12% 较上月</text>
+              <text x="318" y="183" font-family="sans-serif" font-size="6.5" fill="rgba(255,255,255,0.4)">09:42</text>
+            </g>
+            <!-- Suggestion card -->
+            <g filter="url(#ob3-fc)">
+              <rect x="143" y="202" width="198" height="46" rx="14" fill="white"/>
+              <polygon points="143,215 132,219 143,225" fill="white"/>
+              <circle cx="163" cy="225" r="11" fill="#FFF7ED"/>
+              <path d="M159 221 Q159 216 163 215 Q167 216 167 221 L166 224 L160 224 Z" fill="#F59E0B"/>
+              <rect x="160.5" y="225" width="5" height="2" rx="1" fill="#F59E0B"/>
+              <text x="179" y="219" font-family="sans-serif" font-size="8.5" font-weight="600" fill="#111827">减少外卖，每月可省 340 元</text>
+              <text x="179" y="231" font-family="sans-serif" font-size="7.5" fill="#6B7280">基于你的消费习惯分析</text>
+              <rect x="179" y="235" width="52" height="9" rx="4.5" fill="#EEF9F6"/>
+              <text x="205" y="242" text-anchor="middle" font-family="sans-serif" font-size="6.5" font-weight="600" fill="#1A6B5A">查看详情</text>
+            </g>
+            <text x="88" y="258" text-anchor="middle" font-family="sans-serif" font-size="8.5" font-weight="600" fill="#1A6B5A">随时问，基于真实数据作答</text>
+            <text x="88" y="271" text-anchor="middle" font-family="sans-serif" font-size="7.5" fill="#9CA3AF">每个数字都有账单来源</text>
+          </svg>
+        </div>
+        <div class="ob-meta">
+          <div class="ob-slide">Slide 3 / 3</div>
+          <div class="ob-title">你的 AI 财务管家</div>
+          <div class="ob-desc">随时问财务问题，管家给出基于真实数据的洞察和建议。每个数字都有账单来源。</div>
+        </div>
+      </div>
+
+    </div><!-- end ob-grid -->
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ════ LUCIDE REFERENCE ════ -->
+  <section class="section" id="lucide">
+    <div class="sec-title">Lucide Icons 参考映射 <span class="sec-count">28 个 UI 图标</span></div>
+    <p class="sec-desc">所有 UI 操作图标使用 Lucide Icons。包：<code>lucide-react-native</code> / <code>@tamagui/lucide-icons</code>。默认 24pt，描边 2px。</p>
+    <table class="tok-table">
+      <thead><tr><th>用途</th><th>Lucide 图标名</th><th>所在页面</th></tr></thead>
+      <tbody>
+        <tr><td>首页 Tab</td><td><code>home</code></td><td>全局 Bottom Tab</td></tr>
+        <tr><td>消费 Tab</td><td><code>receipt</code></td><td>全局 Bottom Tab</td></tr>
+        <tr><td>AI Tab</td><td><code>bot</code></td><td>全局 Bottom Tab</td></tr>
+        <tr><td>我的 Tab</td><td><code>user</code></td><td>全局 Bottom Tab</td></tr>
+        <tr><td>返回</td><td><code>chevron-left</code></td><td>所有 Stack 页</td></tr>
+        <tr><td>关闭</td><td><code>x</code></td><td>Modal、Sheet</td></tr>
+        <tr><td>分享</td><td><code>share-2</code></td><td>01.8、03.4</td></tr>
+        <tr><td>搜索</td><td><code>search</code></td><td>03.1、04.1</td></tr>
+        <tr><td>添加/FAB</td><td><code>plus</code></td><td>06.1、04.1</td></tr>
+        <tr><td>设置</td><td><code>settings</code></td><td>08.0 Hub</td></tr>
+        <tr><td>通知</td><td><code>bell</code></td><td>01.7 Dashboard</td></tr>
+        <tr><td>报表/图表</td><td><code>bar-chart-3</code></td><td>01.8</td></tr>
+        <tr><td>拍照</td><td><code>camera</code></td><td>04.1a OCR 导入</td></tr>
+        <tr><td>语音</td><td><code>mic</code></td><td>06.1 手动记账</td></tr>
+        <tr><td>锁定/付费功能</td><td><code>lock</code></td><td>08.0 Feature Grid</td></tr>
+        <tr><td>礼物/人情</td><td><code>gift</code></td><td>04.x 人情账</td></tr>
+        <tr><td>日历</td><td><code>calendar</code></td><td>04.2、06.1</td></tr>
+        <tr><td>钱包</td><td><code>wallet</code></td><td>02.1 订阅</td></tr>
+        <tr><td>向右</td><td><code>chevron-right</code></td><td>列表项通用</td></tr>
+        <tr><td>信息</td><td><code>info</code></td><td>权限页、设置</td></tr>
+        <tr><td>成功</td><td><code>check-circle</code></td><td>导入完成、操作成功</td></tr>
+        <tr><td>错误</td><td><code>alert-circle</code></td><td>错误态</td></tr>
+        <tr><td>发送</td><td><code>send</code></td><td>07.1 AI Chat</td></tr>
+        <tr><td>编辑</td><td><code>pencil</code></td><td>分类规则、Profile</td></tr>
+        <tr><td>删除</td><td><code>trash-2</code></td><td>交易删除、规则删除</td></tr>
+        <tr><td>筛选</td><td><code>sliders-horizontal</code></td><td>03.1 交易列表</td></tr>
+        <tr><td>下载</td><td><code>download</code></td><td>01.5 账单导入</td></tr>
+        <tr><td>上传</td><td><code>upload</code></td><td>账单上传</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ════ COLOR TOKENS ════ -->
+  <section class="section" id="color-tokens">
+    <div class="sec-title">分类颜色令牌</div>
+    <p class="sec-desc">分类图标背景色，与设计令牌 <code>cat-*</code> 完全对应。</p>
+    <table class="tok-table">
+      <thead><tr><th>令牌</th><th>颜色</th><th>色值</th><th>分类</th></tr></thead>
+      <tbody>
+        <tr><td><code>cat-dining</code></td><td><span class="swatch" style="background:#F97316"></span></td><td><code>#F97316</code></td><td>餐饮 Orange</td></tr>
+        <tr><td><code>cat-transport</code></td><td><span class="swatch" style="background:#3B82F6"></span></td><td><code>#3B82F6</code></td><td>交通 Blue</td></tr>
+        <tr><td><code>cat-shopping</code></td><td><span class="swatch" style="background:#8B5CF6"></span></td><td><code>#8B5CF6</code></td><td>购物 Purple</td></tr>
+        <tr><td><code>cat-housing</code></td><td><span class="swatch" style="background:#06B6D4"></span></td><td><code>#06B6D4</code></td><td>居住 Cyan</td></tr>
+        <tr><td><code>cat-fun</code></td><td><span class="swatch" style="background:#EC4899"></span></td><td><code>#EC4899</code></td><td>娱乐 Pink</td></tr>
+        <tr><td><code>cat-health</code></td><td><span class="swatch" style="background:#22C55E"></span></td><td><code>#22C55E</code></td><td>健康 Green</td></tr>
+        <tr><td><code>cat-other</code></td><td><span class="swatch" style="background:#6B7280"></span></td><td><code>#6B7280</code></td><td>其他 Gray</td></tr>
+        <tr><td><code>cat-gift</code></td><td><span class="swatch" style="background:#D97706"></span></td><td><code>#D97706</code></td><td>人情 Amber</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ════ SIZE SPEC ════ -->
+  <section class="section" id="size-spec">
+    <div class="sec-title">尺寸规范</div>
+    <table class="tok-table">
+      <thead><tr><th>资产类型</th><th>标准尺寸</th><th>格式</th><th>使用位置</th></tr></thead>
+      <tbody>
+        <tr><td>App Icon 主文件</td><td>512×512 (viewBox)</td><td>SVG</td><td>App Store 提交</td></tr>
+        <tr><td>App Icon iOS</td><td>60/80/120/180pt</td><td>SVG</td><td>桌面、Spotlight、通知</td></tr>
+        <tr><td>分类图标 标准</td><td>48×48</td><td>SVG</td><td>Dashboard 分类卡、交易列表</td></tr>
+        <tr><td>分类图标 紧凑</td><td>36×36</td><td>SVG</td><td>分类管理列表</td></tr>
+        <tr><td>分类图标 小型</td><td>28×28</td><td>SVG</td><td>Filter Chip 内</td></tr>
+        <tr><td>分类图标 Chip</td><td>20×20</td><td>SVG</td><td>交易列表行内</td></tr>
+        <tr><td>Onboarding 插图</td><td>320×280</td><td>SVG</td><td>01.2 Onboarding 三幕</td></tr>
+        <tr><td>Lucide UI 图标</td><td>24pt</td><td>组件</td><td>全 App 操作图标</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div class="pg-footer">
+    了然 (Liaoran) · WDS Phase 6 Asset Generation · Icons · 2026-04-13<br>
+    全部 SVG 内联 · 无外部依赖 · Tamagui v2 · Lucide Icons 28 mappings
+  </div>
+
+</main>
+</div>
+
+<script>
+  document.querySelectorAll('.nav-item[href^="#"]').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      link.classList.add('active');
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) target.scrollIntoView({behavior:'smooth',block:'start'});
+    });
+  });
+  const sections = document.querySelectorAll('.section[id]');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        const lnk = document.querySelector(`.nav-item[href="#${e.target.id}"]`);
+        if (lnk) lnk.classList.add('active');
+      }
+    });
+  }, {threshold:0.3});
+  sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>

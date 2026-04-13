@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" width="320" height="240">
+  <defs>
+    <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#EEF6FF"/>
+      <stop offset="100%" style="stop-color:#D6EBFF"/>
+    </linearGradient>
+    <filter id="shadow2">
+      <feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#1A6B5A" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="320" height="240" fill="url(#bg2)" rx="16"/>
+  <circle cx="290" cy="50" r="50" fill="#1A6B5A" opacity="0.05"/>
+  <circle cx="30" cy="190" r="35" fill="#3B82F6" opacity="0.06"/>
+
+  <!-- Central "sorting funnel" visual -->
+  <!-- Raw transactions (left column) -->
+  <text x="30" y="50" font-family="Inter, sans-serif" font-size="8.5" font-weight="600" fill="#6B7280">消费记录</text>
+
+  <!-- Transaction pills (raw) -->
+  <rect x="14" y="56" width="90" height="22" rx="6" fill="white" filter="url(#shadow2)"/>
+  <text x="59" y="71" text-anchor="middle" font-family="Inter, sans-serif" font-size="7.5" fill="#374151">美团外卖 ¥38</text>
+
+  <rect x="14" y="84" width="90" height="22" rx="6" fill="white" filter="url(#shadow2)"/>
+  <text x="59" y="99" text-anchor="middle" font-family="Inter, sans-serif" font-size="7.5" fill="#374151">地铁 ¥5</text>
+
+  <rect x="14" y="112" width="90" height="22" rx="6" fill="white" filter="url(#shadow2)"/>
+  <text x="59" y="127" text-anchor="middle" font-family="Inter, sans-serif" font-size="7.5" fill="#374151">京东 ¥299</text>
+
+  <rect x="14" y="140" width="90" height="22" rx="6" fill="white" filter="url(#shadow2)"/>
+  <text x="59" y="155" text-anchor="middle" font-family="Inter, sans-serif" font-size="7.5" fill="#374151">沃尔玛 ¥156</text>
+
+  <rect x="14" y="168" width="90" height="22" rx="6" fill="white" filter="url(#shadow2)"/>
+  <text x="59" y="183" text-anchor="middle" font-family="Inter, sans-serif" font-size="7.5" fill="#374151">滴滴出行 ¥22</text>
+
+  <!-- Arrow / funnel (center) -->
+  <g opacity="0.7">
+    <!-- Flowing lines -->
+    <path d="M108 67 Q140 67 140 120" fill="none" stroke="#1A6B5A" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+    <path d="M108 95 Q135 95 140 120" fill="none" stroke="#1A6B5A" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <path d="M108 123 L140 123" fill="none" stroke="#1A6B5A" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <path d="M108 151 Q135 151 140 126" fill="none" stroke="#1A6B5A" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <path d="M108 179 Q140 179 140 130" fill="none" stroke="#1A6B5A" stroke-width="1.5" stroke-dasharray="4,3"/>
+  </g>
+
+  <!-- AI Brain / Sparkle center -->
+  <circle cx="160" cy="124" r="20" fill="#1A6B5A"/>
+  <!-- Sparkle star shape -->
+  <path d="M160 110 L162.5 119 L172 120 L163 126 L165 136 L160 130 L155 136 L157 126 L148 120 L157.5 119 Z"
+        fill="white" opacity="0.9"/>
+
+  <!-- Output arrows (right) -->
+  <path d="M180 114 Q195 114 195 80" fill="none" stroke="#F97316" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M180 118 Q200 118 200 106" fill="none" stroke="#3B82F6" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M180 124 L215 124" fill="none" stroke="#8B5CF6" stroke-width="1.8"/>
+  <path d="M180 130 Q200 130 200 148" fill="none" stroke="#EC4899" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M180 134 Q195 134 195 162" fill="none" stroke="#22C55E" stroke-width="1.8" stroke-linecap="round"/>
+
+  <!-- Category results (right column) -->
+  <!-- 餐饮 -->
+  <rect x="208" y="60" width="98" height="26" rx="8" fill="white" filter="url(#shadow2)"/>
+  <circle cx="224" cy="73" r="9" fill="#F97316"/>
+  <text x="236" y="70" font-family="Inter, sans-serif" font-size="7.5" font-weight="600" fill="#374151">餐饮</text>
+  <text x="236" y="81" font-family="Inter, sans-serif" font-size="7" fill="#6B7280">¥38  1笔</text>
+
+  <!-- 交通 -->
+  <rect x="208" y="92" width="98" height="26" rx="8" fill="white" filter="url(#shadow2)"/>
+  <circle cx="224" cy="105" r="9" fill="#3B82F6"/>
+  <text x="236" y="102" font-family="Inter, sans-serif" font-size="7.5" font-weight="600" fill="#374151">交通</text>
+  <text x="236" y="113" font-family="Inter, sans-serif" font-size="7" fill="#6B7280">¥27  2笔</text>
+
+  <!-- 购物 -->
+  <rect x="208" y="124" width="98" height="26" rx="8" fill="white" filter="url(#shadow2)"/>
+  <circle cx="224" cy="137" r="9" fill="#8B5CF6"/>
+  <text x="236" y="134" font-family="Inter, sans-serif" font-size="7.5" font-weight="600" fill="#374151">购物</text>
+  <text x="236" y="145" font-family="Inter, sans-serif" font-size="7" fill="#6B7280">¥455  2笔</text>
+
+  <!-- 娱乐 -->
+  <rect x="208" y="156" width="98" height="26" rx="8" fill="white" filter="url(#shadow2)"/>
+  <circle cx="224" cy="169" r="9" fill="#EC4899"/>
+  <text x="236" y="166" font-family="Inter, sans-serif" font-size="7.5" font-weight="600" fill="#374151">娱乐</text>
+  <text x="236" y="177" font-family="Inter, sans-serif" font-size="7" fill="#6B7280">¥68  1笔</text>
+
+  <!-- Bottom label -->
+  <text x="160" y="218" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" font-weight="600" fill="#1A6B5A">AI 自动分类，准确率 96%</text>
+</svg>

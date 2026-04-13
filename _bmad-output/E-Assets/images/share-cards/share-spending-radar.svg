@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 375 667" width="375" height="667" font-family="Inter,-apple-system,sans-serif">
+  <defs>
+    <linearGradient id="darkBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1A6B5A"/>
+      <stop offset="100%" stop-color="#0D3329"/>
+    </linearGradient>
+    <linearGradient id="radarFill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4ECCA3" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#1A6B5A" stop-opacity="0.7"/>
+    </linearGradient>
+    <filter id="glowFilter">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="softShadow">
+      <feDropShadow dx="0" dy="8" stdDeviation="20" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Dark background -->
+  <rect width="375" height="667" rx="20" fill="url(#darkBg)"/>
+
+  <!-- Decorative background circles -->
+  <circle cx="187" cy="300" r="240" fill="#FFFFFF" opacity="0.02"/>
+  <circle cx="187" cy="300" r="180" fill="#FFFFFF" opacity="0.02"/>
+  <circle cx="-40" cy="100" r="160" fill="#4ECCA3" opacity="0.04"/>
+  <circle cx="420" cy="560" r="200" fill="#4ECCA3" opacity="0.04"/>
+
+  <!-- ── HEADER ── -->
+  <!-- Logo mark -->
+  <rect x="24" y="28" width="36" height="36" rx="10" fill="#FFFFFF" opacity="0.15"/>
+  <text x="42" y="51" text-anchor="middle" font-size="18" font-weight="800" fill="#FFFFFF">&#20102;</text>
+
+  <!-- App name -->
+  <text x="70" y="42" font-size="16" font-weight="700" fill="#FFFFFF" letter-spacing="0.5">&#20102;&#28982;</text>
+  <text x="70" y="57" font-size="11" fill="#4ECCA3" opacity="0.9" letter-spacing="0.3">&#25105;&#30340;&#25688;&#36153;&#30011;&#20687;</text>
+
+  <!-- Date chip -->
+  <rect x="272" y="28" width="80" height="28" rx="14" fill="#FFFFFF" opacity="0.12"/>
+  <text x="312" y="46" text-anchor="middle" font-size="12" fill="#FFFFFF" opacity="0.9">2026&#24180;3&#26376;</text>
+
+  <!-- ── TITLE ── -->
+  <text x="187" y="108" text-anchor="middle" font-size="22" font-weight="800" fill="#FFFFFF" letter-spacing="1">&#25105;&#30340;&#28040;&#36153;&#38647;&#36798;</text>
+  <text x="187" y="128" text-anchor="middle" font-size="12" fill="#4ECCA3" opacity="0.8" letter-spacing="0.5">My Spending Radar</text>
+
+  <!-- ── RADAR CHART ── -->
+  <!-- Center point -->
+  <!-- cx=187, cy=310, radius=130 for outer ring -->
+  <!-- 6 axes at 0°, 60°, 120°, 180°, 240°, 300° -->
+  <!-- Points on outer ring (r=130): -->
+  <!--   0°  (top):    187, 180 -->
+  <!--   60°:          300, 245 -->
+  <!--  120°:          300, 375 -->
+  <!--  180° (bottom): 187, 440 -->
+  <!--  240°:           74, 375 -->
+  <!--  300°:           74, 245 -->
+
+  <!-- Grid rings (20%, 40%, 60%, 80%, 100%) -->
+  <!-- Ring 100% -->
+  <polygon points="187,180 300,245 300,375 187,440 74,375 74,245"
+           fill="none" stroke="#FFFFFF" stroke-width="0.8" opacity="0.15"/>
+  <!-- Ring 80% -->
+  <polygon points="187,206 274,261 274,359 187,414 100,359 100,261"
+           fill="none" stroke="#FFFFFF" stroke-width="0.8" opacity="0.12"/>
+  <!-- Ring 60% -->
+  <polygon points="187,232 248,275 248,345 187,388 126,345 126,275"
+           fill="none" stroke="#FFFFFF" stroke-width="0.8" opacity="0.12"/>
+  <!-- Ring 40% -->
+  <polygon points="187,258 222,290 222,330 187,362 152,330 152,290"
+           fill="none" stroke="#FFFFFF" stroke-width="0.8" opacity="0.12"/>
+  <!-- Ring 20% -->
+  <polygon points="187,284 196,304 196,316 187,336 178,316 178,304"
+           fill="none" stroke="#FFFFFF" stroke-width="0.6" opacity="0.10"/>
+
+  <!-- Axis lines -->
+  <line x1="187" y1="310" x2="187" y2="180" stroke="#FFFFFF" stroke-width="0.8" opacity="0.2"/>
+  <line x1="187" y1="310" x2="300" y2="245" stroke="#FFFFFF" stroke-width="0.8" opacity="0.2"/>
+  <line x1="187" y1="310" x2="300" y2="375" stroke="#FFFFFF" stroke-width="0.8" opacity="0.2"/>
+  <line x1="187" y1="310" x2="187" y2="440" stroke="#FFFFFF" stroke-width="0.8" opacity="0.2"/>
+  <line x1="187" y1="310" x2="74" y2="375" stroke="#FFFFFF" stroke-width="0.8" opacity="0.2"/>
+  <line x1="187" y1="310" x2="74" y2="245" stroke="#FFFFFF" stroke-width="0.8" opacity="0.2"/>
+
+  <!-- Data polygon: sample spending pattern -->
+  <!-- 餐饮: 75% → axis 0° (top): 187, 180+130*0.25=212.5 → 187, 212 (inward) -->
+  <!-- 购物: 85% → axis 60°: lerp from center(187,310) toward (300,245): 187+113*0.85, 310-65*0.85 = 283, 255 -->
+  <!-- 交通: 40% → axis 120°: 187+113*0.4, 310+65*0.4 = 232, 336 -->
+  <!-- 居住: 70% → axis 180°: 187, 310+130*0.7 = 187, 401 -->
+  <!-- 娱乐: 55% → axis 240°: 187-113*0.55, 310+65*0.55 = 125, 346 -->
+  <!-- 健康: 30% → axis 300°: 187-113*0.3, 310-65*0.3 = 153, 290 -->
+  <polygon points="187,212 283,255 232,336 187,401 125,346 153,290"
+           fill="url(#radarFill)" stroke="#4ECCA3" stroke-width="2" opacity="0.9" filter="url(#glowFilter)"/>
+
+  <!-- Data points on radar -->
+  <circle cx="187" cy="212" r="5" fill="#4ECCA3" filter="url(#glowFilter)"/>
+  <circle cx="283" cy="255" r="5" fill="#4ECCA3" filter="url(#glowFilter)"/>
+  <circle cx="232" cy="336" r="5" fill="#4ECCA3" filter="url(#glowFilter)"/>
+  <circle cx="187" cy="401" r="5" fill="#4ECCA3" filter="url(#glowFilter)"/>
+  <circle cx="125" cy="346" r="5" fill="#4ECCA3" filter="url(#glowFilter)"/>
+  <circle cx="153" cy="290" r="5" fill="#4ECCA3" filter="url(#glowFilter)"/>
+
+  <!-- Center dot -->
+  <circle cx="187" cy="310" r="4" fill="#FFFFFF" opacity="0.6"/>
+
+  <!-- Axis labels -->
+  <!-- 餐饮 (top) -->
+  <text x="187" y="168" text-anchor="middle" font-size="12" font-weight="600" fill="#FFFFFF" opacity="0.9">&#39278;&#39278;</text>
+  <!-- 购物 (top-right) -->
+  <text x="316" y="242" text-anchor="start" font-size="12" font-weight="600" fill="#FFFFFF" opacity="0.9">&#36141;&#29289;</text>
+  <!-- 交通 (bottom-right) -->
+  <text x="313" y="386" text-anchor="start" font-size="12" font-weight="600" fill="#FFFFFF" opacity="0.9">&#20132;&#36890;</text>
+  <!-- 居住 (bottom) -->
+  <text x="187" y="460" text-anchor="middle" font-size="12" font-weight="600" fill="#FFFFFF" opacity="0.9">&#23621;&#20303;</text>
+  <!-- 娱乐 (bottom-left) -->
+  <text x="58" y="386" text-anchor="end" font-size="12" font-weight="600" fill="#FFFFFF" opacity="0.9">&#23089;&#20048;</text>
+  <!-- 健康 (top-left) -->
+  <text x="58" y="242" text-anchor="end" font-size="12" font-weight="600" fill="#FFFFFF" opacity="0.9">&#20581;&#24247;</text>
+
+  <!-- ── PERSONALITY BADGE ── -->
+  <rect x="113" y="476" width="149" height="34" rx="17" fill="#4ECCA3" opacity="0.2" stroke="#4ECCA3" stroke-width="1.5"/>
+  <text x="187" y="498" text-anchor="middle" font-size="14" font-weight="700" fill="#4ECCA3" letter-spacing="0.5">&#31283;&#20581;&#29983;&#27963;&#23478;</text>
+
+  <!-- ── INSIGHT LINE ── -->
+  <!-- Insight bubble -->
+  <rect x="24" y="524" width="327" height="50" rx="12" fill="#FFFFFF" opacity="0.08"/>
+  <!-- Icon -->
+  <circle cx="47" cy="549" r="12" fill="#F97316" opacity="0.9"/>
+  <text x="47" y="554" text-anchor="middle" font-size="13">&#127860;</text>
+  <!-- Insight text -->
+  <text x="68" y="544" font-size="11" fill="#FFFFFF" opacity="0.7">&#31363;&#35013;&#25490;&#34892;</text>
+  <text x="68" y="561" font-size="13" font-weight="600" fill="#FFFFFF">&#39278;&#39278;&#33457;&#36153;&#36229;&#36807;62%&#30340;&#21516;&#22478;&#29992;&#25143;</text>
+
+  <!-- ── DIVIDER ── -->
+  <line x1="24" y1="592" x2="351" y2="592" stroke="#FFFFFF" stroke-width="0.8" opacity="0.12"/>
+
+  <!-- ── BOTTOM WATERMARK ── -->
+  <!-- QR placeholder -->
+  <rect x="298" y="606" width="50" height="50" rx="6" fill="#FFFFFF" opacity="0.1" stroke="#FFFFFF" stroke-width="0.8" stroke-opacity="0.3"/>
+  <!-- QR pattern dots -->
+  <rect x="304" y="612" width="7" height="7" rx="1" fill="#FFFFFF" opacity="0.5"/>
+  <rect x="315" y="612" width="3" height="3" rx="0.5" fill="#FFFFFF" opacity="0.4"/>
+  <rect x="322" y="612" width="7" height="7" rx="1" fill="#FFFFFF" opacity="0.5"/>
+  <rect x="304" y="623" width="3" height="3" rx="0.5" fill="#FFFFFF" opacity="0.4"/>
+  <rect x="316" y="623" width="5" height="5" rx="0.5" fill="#FFFFFF" opacity="0.4"/>
+  <rect x="325" y="625" width="3" height="3" rx="0.5" fill="#FFFFFF" opacity="0.4"/>
+  <rect x="304" y="631" width="7" height="7" rx="1" fill="#FFFFFF" opacity="0.5"/>
+  <rect x="315" y="633" width="3" height="3" rx="0.5" fill="#FFFFFF" opacity="0.4"/>
+  <rect x="322" y="631" width="7" height="7" rx="1" fill="#FFFFFF" opacity="0.5"/>
+  <rect x="304" y="612" width="7" height="7" rx="1" fill="none" stroke="#FFFFFF" stroke-width="1" opacity="0.6"/>
+  <rect x="322" y="612" width="7" height="7" rx="1" fill="none" stroke="#FFFFFF" stroke-width="1" opacity="0.6"/>
+  <rect x="304" y="631" width="7" height="7" rx="1" fill="none" stroke="#FFFFFF" stroke-width="1" opacity="0.6"/>
+
+  <!-- Brand text -->
+  <text x="24" y="625" font-size="18" font-weight="800" fill="#FFFFFF" letter-spacing="1">&#20102;&#28982;</text>
+  <text x="24" y="643" font-size="11" fill="#4ECCA3" opacity="0.9" letter-spacing="0.3">&#38646;&#35760;&#36134;&#30340;AI&#36130;&#21153;&#31649;&#23478;</text>
+  <text x="24" y="657" font-size="10" fill="#FFFFFF" opacity="0.4">liaoran.app</text>
+</svg>

@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+  <!-- Background -->
+  <rect width="240" height="240" fill="#F9FAFB"/>
+
+  <!-- Soft circle bg -->
+  <circle cx="120" cy="122" r="78" fill="#EEF9F6" opacity="0.7"/>
+
+  <!-- Calendar body -->
+  <rect x="50" y="72" width="140" height="120" rx="8" fill="#FFFFFF" stroke="#1A6B5A" stroke-width="2.5"/>
+
+  <!-- Calendar header band -->
+  <rect x="50" y="72" width="140" height="30" rx="8" fill="#1A6B5A"/>
+  <rect x="50" y="90" width="140" height="12" fill="#1A6B5A"/>
+
+  <!-- Calendar binding rings -->
+  <circle cx="85" cy="72" r="5" fill="#FFFFFF" stroke="#0D4437" stroke-width="2"/>
+  <circle cx="120" cy="72" r="5" fill="#FFFFFF" stroke="#0D4437" stroke-width="2"/>
+  <circle cx="155" cy="72" r="5" fill="#FFFFFF" stroke="#0D4437" stroke-width="2"/>
+
+  <!-- Calendar header lines (weekday labels) -->
+  <line x1="60" y1="79" x2="78" y2="79" stroke="#A8DDD6" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="85" y1="79" x2="103" y2="79" stroke="#A8DDD6" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="110" y1="79" x2="128" y2="79" stroke="#A8DDD6" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="135" y1="79" x2="153" y2="79" stroke="#A8DDD6" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="160" y1="79" x2="178" y2="79" stroke="#A8DDD6" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- Calendar grid dots (day numbers area - empty/faint) -->
+  <!-- Row 1 -->
+  <circle cx="67" cy="112" r="2.5" fill="#E5E7EB"/>
+  <circle cx="84" cy="112" r="2.5" fill="#E5E7EB"/>
+  <circle cx="101" cy="112" r="2.5" fill="#E5E7EB"/>
+  <circle cx="118" cy="112" r="2.5" fill="#E5E7EB"/>
+  <circle cx="135" cy="112" r="2.5" fill="#E5E7EB"/>
+  <circle cx="152" cy="112" r="2.5" fill="#E5E7EB"/>
+  <circle cx="169" cy="112" r="2.5" fill="#E5E7EB"/>
+  <!-- Row 2 -->
+  <circle cx="67" cy="128" r="2.5" fill="#E5E7EB"/>
+  <circle cx="84" cy="128" r="2.5" fill="#E5E7EB"/>
+  <circle cx="101" cy="128" r="2.5" fill="#E5E7EB"/>
+  <circle cx="118" cy="128" r="2.5" fill="#E5E7EB"/>
+  <circle cx="135" cy="128" r="2.5" fill="#E5E7EB"/>
+  <circle cx="152" cy="128" r="2.5" fill="#E5E7EB"/>
+  <circle cx="169" cy="128" r="2.5" fill="#E5E7EB"/>
+  <!-- Row 3 -->
+  <circle cx="67" cy="144" r="2.5" fill="#E5E7EB"/>
+  <circle cx="84" cy="144" r="2.5" fill="#E5E7EB"/>
+  <circle cx="101" cy="144" r="2.5" fill="#E5E7EB"/>
+  <circle cx="118" cy="144" r="2.5" fill="#E5E7EB"/>
+  <circle cx="135" cy="144" r="2.5" fill="#E5E7EB"/>
+  <circle cx="152" cy="144" r="2.5" fill="#E5E7EB"/>
+  <circle cx="169" cy="144" r="2.5" fill="#E5E7EB"/>
+
+  <!-- Blank chart area at bottom of calendar -->
+  <rect x="60" y="158" width="120" height="24" rx="4" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1.5"/>
+  <!-- flat line in chart area -->
+  <line x1="68" y1="170" x2="172" y2="170" stroke="#E5E7EB" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 3"/>
+
+  <!-- Sprouting seedling - positioned bottom-right, growing out of calendar area -->
+  <g transform="translate(158, 182)">
+    <!-- Soil mound -->
+    <ellipse cx="0" cy="12" rx="18" ry="7" fill="#A8DDD6" opacity="0.4"/>
+    <!-- Stem -->
+    <path d="M0,10 Q0,2 0,-8" stroke="#1A6B5A" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+    <!-- Left leaf -->
+    <path d="M0,0 Q-12,-6 -10,-16 Q-4,-10 0,0 Z" fill="#1A6B5A" opacity="0.8"/>
+    <!-- Right leaf -->
+    <path d="M0,-4 Q12,-10 10,-20 Q4,-14 0,-4 Z" fill="#A8DDD6"/>
+    <!-- Tiny bud at top -->
+    <circle cx="0" cy="-8" r="3" fill="#1A6B5A"/>
+  </g>
+
+  <!-- Small sparkle near seedling -->
+  <g transform="translate(142, 158)">
+    <line x1="0" y1="-4" x2="0" y2="4" stroke="#A8DDD6" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="-4" y1="0" x2="4" y2="0" stroke="#A8DDD6" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(178, 148)">
+    <line x1="0" y1="-3" x2="0" y2="3" stroke="#1A6B5A" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+    <line x1="-3" y1="0" x2="3" y2="0" stroke="#1A6B5A" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+  </g>
+</svg>

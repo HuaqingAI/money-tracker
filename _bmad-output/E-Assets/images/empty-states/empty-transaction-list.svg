@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+  <!-- Background -->
+  <rect width="240" height="240" fill="#F9FAFB"/>
+
+  <!-- Soft glow -->
+  <circle cx="120" cy="125" r="76" fill="#EEF9F6" opacity="0.6"/>
+
+  <!-- Receipt / bill paper with torn top edge -->
+  <!-- Receipt body -->
+  <rect x="72" y="68" width="96" height="130" rx="4" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+
+  <!-- Receipt top torn edge (zigzag) -->
+  <path d="M72,68 L79,62 L86,68 L93,62 L100,68 L107,62 L114,68 L121,62 L128,68 L135,62 L142,68 L149,62 L156,68 L163,62 L168,68"
+        fill="none" stroke="#E5E7EB" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+  <!-- Fill above zigzag to white to mask -->
+  <path d="M72,68 L79,62 L86,68 L93,62 L100,68 L107,62 L114,68 L121,62 L128,68 L135,62 L142,68 L149,62 L156,68 L163,62 L168,68 L168,55 L72,55 Z"
+        fill="#F9FAFB"/>
+
+  <!-- Receipt bottom torn edge -->
+  <path d="M72,198 L79,204 L86,198 L93,204 L100,198 L107,204 L114,198 L121,204 L128,198 L135,204 L142,198 L149,204 L156,198 L163,204 L168,198"
+        fill="none" stroke="#E5E7EB" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M72,198 L79,204 L86,198 L93,204 L100,198 L107,204 L114,198 L121,204 L128,198 L135,204 L142,198 L149,204 L156,198 L163,204 L168,198 L168,210 L72,210 Z"
+        fill="#F9FAFB"/>
+
+  <!-- Receipt header band -->
+  <rect x="72" y="68" width="96" height="22" rx="0" fill="#EEF9F6"/>
+  <!-- Header short lines -->
+  <line x1="95" y1="76" x2="145" y2="76" stroke="#A8DDD6" stroke-width="2" stroke-linecap="round"/>
+  <line x1="105" y1="83" x2="135" y2="83" stroke="#A8DDD6" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- Dotted row lines suggesting where entries would go -->
+  <!-- Row 1 -->
+  <line x1="84" y1="106" x2="156" y2="106" stroke="#E5E7EB" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="5 4"/>
+  <!-- Row 1 amount placeholder -->
+  <rect x="144" y="99" width="16" height="5" rx="2.5" fill="#E5E7EB"/>
+  <rect x="84" y="99" width="30" height="5" rx="2.5" fill="#E5E7EB"/>
+  <rect x="84" y="108" width="20" height="4" rx="2" fill="#F3F4F6"/>
+
+  <!-- Row 2 -->
+  <line x1="84" y1="128" x2="156" y2="128" stroke="#E5E7EB" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="5 4"/>
+  <rect x="144" y="121" width="16" height="5" rx="2.5" fill="#E5E7EB"/>
+  <rect x="84" y="121" width="36" height="5" rx="2.5" fill="#E5E7EB"/>
+  <rect x="84" y="130" width="24" height="4" rx="2" fill="#F3F4F6"/>
+
+  <!-- Row 3 -->
+  <line x1="84" y1="150" x2="156" y2="150" stroke="#E5E7EB" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="5 4"/>
+  <rect x="144" y="143" width="16" height="5" rx="2.5" fill="#E5E7EB"/>
+  <rect x="84" y="143" width="28" height="5" rx="2.5" fill="#E5E7EB"/>
+  <rect x="84" y="152" width="18" height="4" rx="2" fill="#F3F4F6"/>
+
+  <!-- Total line at bottom of receipt -->
+  <line x1="84" y1="174" x2="156" y2="174" stroke="#A8DDD6" stroke-width="1.5" stroke-linecap="round"/>
+  <rect x="84" y="179" width="28" height="5" rx="2.5" fill="#A8DDD6" opacity="0.5"/>
+  <rect x="136" y="179" width="20" height="5" rx="2.5" fill="#A8DDD6" opacity="0.5"/>
+
+  <!-- Waiting star / sparkle - floating top right of receipt -->
+  <g transform="translate(158, 72)">
+    <!-- 4-point star -->
+    <path d="M0,-10 L2.5,-2.5 L10,0 L2.5,2.5 L0,10 L-2.5,2.5 L-10,0 L-2.5,-2.5 Z" fill="#1A6B5A"/>
+    <!-- Inner highlight -->
+    <path d="M0,-6 L1.5,-1.5 L6,0 L1.5,1.5 L0,6 L-1.5,1.5 L-6,0 L-1.5,-1.5 Z" fill="#A8DDD6"/>
+  </g>
+
+  <!-- Small sparkle dots -->
+  <circle cx="170" cy="92" r="2" fill="#A8DDD6"/>
+  <circle cx="176" cy="82" r="1.5" fill="#1A6B5A" opacity="0.4"/>
+  <g transform="translate(65, 80)">
+    <line x1="0" y1="-4" x2="0" y2="4" stroke="#A8DDD6" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="-4" y1="0" x2="4" y2="0" stroke="#A8DDD6" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+</svg>

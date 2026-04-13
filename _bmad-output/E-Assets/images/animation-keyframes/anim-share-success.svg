@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" width="80" height="80">
+  <!-- Success check circle (left-center) -->
+  <circle cx="34" cy="42" r="26" fill="#1A6B5A"/>
+  <polyline points="22,43 31,52 47,33" fill="none" stroke="white"
+    stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Share icon (right side, overlapping slightly) -->
+  <g transform="translate(58, 28)">
+    <!-- Share arrow: circle nodes + lines -->
+    <!-- Top node -->
+    <circle cx="8" cy="0" r="5" fill="none" stroke="#6B7280" stroke-width="2"/>
+    <!-- Bottom-left node -->
+    <circle cx="-4" cy="12" r="5" fill="none" stroke="#6B7280" stroke-width="2"/>
+    <!-- Bottom-right node -->
+    <circle cx="8" cy="24" r="5" fill="none" stroke="#6B7280" stroke-width="2"/>
+    <!-- Connection lines -->
+    <line x1="3" y1="3" x2="-1" y2="9" stroke="#6B7280" stroke-width="2" stroke-linecap="round"/>
+    <line x1="3" y1="21" x2="-1" y2="15" stroke="#6B7280" stroke-width="2" stroke-linecap="round"/>
+  </g>
+</svg>

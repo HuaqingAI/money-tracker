@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" width="320" height="240">
+  <defs>
+    <linearGradient id="bg3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F5F3FF"/>
+      <stop offset="100%" style="stop-color:#EDE9FE"/>
+    </linearGradient>
+    <linearGradient id="butler-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1A6B5A"/>
+      <stop offset="100%" style="stop-color:#1A6B5A" stop-opacity="0.85"/>
+    </linearGradient>
+    <filter id="shadow3">
+      <feDropShadow dx="0" dy="3" stdDeviation="8" flood-color="#1A6B5A" flood-opacity="0.15"/>
+    </filter>
+    <filter id="bubble-shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="5" flood-color="#1A6B5A" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="320" height="240" fill="url(#bg3)" rx="16"/>
+  <circle cx="280" cy="200" r="60" fill="#1A6B5A" opacity="0.05"/>
+  <circle cx="20" cy="30" r="40" fill="#8B5CF6" opacity="0.06"/>
+
+  <!-- AI Butler Avatar (center-left) -->
+  <g filter="url(#shadow3)">
+    <!-- Body circle -->
+    <circle cx="90" cy="130" r="44" fill="url(#butler-grad)"/>
+    <!-- Inner lighter circle -->
+    <circle cx="90" cy="130" r="36" fill="white" opacity="0.1"/>
+
+    <!-- Bot face -->
+    <!-- Eyes -->
+    <circle cx="80" cy="124" r="5" fill="white"/>
+    <circle cx="100" cy="124" r="5" fill="white"/>
+    <circle cx="81.5" cy="125" r="2.5" fill="#0F4A3E"/>
+    <circle cx="101.5" cy="125" r="2.5" fill="#0F4A3E"/>
+    <!-- Eye shine -->
+    <circle cx="82.5" cy="123.5" r="1" fill="white"/>
+    <circle cx="102.5" cy="123.5" r="1" fill="white"/>
+
+    <!-- Smile -->
+    <path d="M80 136 Q90 143 100 136" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- Antenna -->
+    <line x1="90" y1="86" x2="90" y2="76" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="90" cy="73" r="4" fill="white"/>
+    <circle cx="90" cy="73" r="2" fill="#1A6B5A"/>
+
+    <!-- Ear nubs -->
+    <rect x="44" y="122" width="8" height="14" rx="4" fill="white" opacity="0.8"/>
+    <rect x="128" y="122" width="8" height="14" rx="4" fill="white" opacity="0.8"/>
+  </g>
+
+  <!-- Chat bubbles (right side) -->
+  <!-- User question bubble -->
+  <g filter="url(#bubble-shadow)">
+    <rect x="152" y="42" width="148" height="42" rx="12" fill="white"/>
+    <!-- User avatar -->
+    <circle cx="172" cy="63" r="12" fill="#E5E7EB"/>
+    <text x="172" y="67" text-anchor="middle" font-family="Inter, sans-serif" font-size="10">👤</text>
+    <text x="188" y="58" font-family="Inter, sans-serif" font-size="7.5" fill="#374151">上个月我在餐饮上</text>
+    <text x="188" y="70" font-family="Inter, sans-serif" font-size="7.5" fill="#374151">花了多少？</text>
+    <text x="285" y="80" font-family="Inter, sans-serif" font-size="6.5" fill="#9CA3AF">09:42</text>
+  </g>
+
+  <!-- AI Reply bubble (with data card style) -->
+  <g filter="url(#bubble-shadow)">
+    <rect x="152" y="96" width="160" height="80" rx="12" fill="#1A6B5A"/>
+
+    <!-- AI icon inside bubble -->
+    <circle cx="170" cy="116" r="10" fill="white" opacity="0.2"/>
+    <path d="M170 110 L171.5 115.5 L177 116 L171.5 117.5 L170 123 L168.5 117.5 L163 116 L168.5 115.5 Z"
+          fill="white" opacity="0.9"/>
+
+    <text x="184" y="112" font-family="Inter, sans-serif" font-size="7.5" fill="rgba(255,255,255,0.8)">了然管家</text>
+    <text x="184" y="124" font-family="Inter, sans-serif" font-size="9" font-weight="700" fill="white">餐饮支出 ¥1,243</text>
+
+    <!-- Mini bar chart in bubble -->
+    <rect x="184" y="132" width="10" height="16" rx="2" fill="white" opacity="0.3"/>
+    <rect x="197" y="128" width="10" height="20" rx="2" fill="white" opacity="0.5"/>
+    <rect x="210" y="122" width="10" height="26" rx="2" fill="white" opacity="0.7"/>
+    <rect x="223" y="130" width="10" height="18" rx="2" fill="white" opacity="0.45"/>
+    <rect x="236" y="134" width="10" height="14" rx="2" fill="white" opacity="0.3"/>
+
+    <!-- Trend text -->
+    <text x="256" y="145" font-family="Inter, sans-serif" font-size="7" fill="rgba(255,255,255,0.7)">↑ 12% 较上月</text>
+
+    <!-- Timestamp -->
+    <text x="285" y="170" font-family="Inter, sans-serif" font-size="6.5" fill="rgba(255,255,255,0.6)">09:42</text>
+  </g>
+
+  <!-- Insight suggestion card -->
+  <g filter="url(#bubble-shadow)">
+    <rect x="152" y="186" width="160" height="38" rx="10" fill="white"/>
+    <!-- Lightbulb -->
+    <circle cx="167" cy="205" r="9" fill="#FFF7ED"/>
+    <path d="M163 204 Q163 200 167 199 Q171 200 171 204 L170 207 L164 207 Z" fill="#F59E0B"/>
+    <rect x="164" y="208" width="6" height="2" rx="1" fill="#F59E0B"/>
+    <text x="180" y="201" font-family="Inter, sans-serif" font-size="7.5" font-weight="600" fill="#374151">管家建议：减少外卖频次</text>
+    <text x="180" y="213" font-family="Inter, sans-serif" font-size="7" fill="#6B7280">每月可节省约 ¥340</text>
+  </g>
+
+  <!-- Bottom label -->
+  <text x="90" y="192" text-anchor="middle" font-family="Inter, sans-serif" font-size="8.5" font-weight="600" fill="#1A6B5A">AI 财务管家</text>
+  <text x="90" y="206" text-anchor="middle" font-family="Inter, sans-serif" font-size="7.5" fill="#6B7280">随时问，即刻答</text>
+</svg>

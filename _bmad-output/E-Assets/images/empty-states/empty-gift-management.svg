@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+  <!-- Background with warm tint -->
+  <rect width="240" height="240" fill="#FFF8F6"/>
+
+  <!-- Soft warm background circle -->
+  <circle cx="120" cy="122" r="82" fill="#FEF2F0" opacity="0.8"/>
+
+  <!-- Left abstract hand (simplified, rounded) -->
+  <g transform="translate(52, 148)">
+    <!-- Palm -->
+    <ellipse cx="0" cy="0" rx="22" ry="18" fill="#EEF9F6" stroke="#1A6B5A" stroke-width="2.5"/>
+    <!-- Fingers (rounded rectangles) -->
+    <rect x="-18" y="-30" width="9" height="22" rx="4.5" fill="#EEF9F6" stroke="#1A6B5A" stroke-width="2"/>
+    <rect x="-7" y="-36" width="9" height="28" rx="4.5" fill="#EEF9F6" stroke="#1A6B5A" stroke-width="2"/>
+    <rect x="4" y="-36" width="9" height="28" rx="4.5" fill="#EEF9F6" stroke="#1A6B5A" stroke-width="2"/>
+    <rect x="15" y="-32" width="9" height="24" rx="4.5" fill="#EEF9F6" stroke="#1A6B5A" stroke-width="2"/>
+    <!-- Thumb -->
+    <ellipse cx="-22" cy="-8" rx="7" ry="10" fill="#EEF9F6" stroke="#1A6B5A" stroke-width="2" transform="rotate(-20,-22,-8)"/>
+  </g>
+
+  <!-- Right abstract hand (mirror) -->
+  <g transform="translate(188, 148) scale(-1,1)">
+    <!-- Palm -->
+    <ellipse cx="0" cy="0" rx="22" ry="18" fill="#EEF9F6" stroke="#1A6B5A" stroke-width="2.5"/>
+    <!-- Fingers -->
+    <rect x="-18" y="-30" width="9" height="22" rx="4.5" fill="#EEF9F6" stroke="#1A6B5A" stroke-width="2"/>
+    <rect x="-7" y="-36" width="9" height="28" rx="4.5" fill="#EEF9F6" stroke="#1A6B5A" stroke-width="2"/>
+    <rect x="4" y="-36" width="9" height="28" rx="4.5" fill="#EEF9F6" stroke="#1A6B5A" stroke-width="2"/>
+    <rect x="15" y="-32" width="9" height="24" rx="4.5" fill="#EEF9F6" stroke="#1A6B5A" stroke-width="2"/>
+    <!-- Thumb -->
+    <ellipse cx="-22" cy="-8" rx="7" ry="10" fill="#EEF9F6" stroke="#1A6B5A" stroke-width="2" transform="rotate(-20,-22,-8)"/>
+  </g>
+
+  <!-- Left red envelope (hongbao) - tilted slightly -->
+  <g transform="translate(78, 118) rotate(-10)">
+    <!-- Envelope body -->
+    <rect x="-22" y="-30" width="44" height="58" rx="5" fill="#DC2626"/>
+    <!-- Envelope top flap closed -->
+    <path d="M-22,-30 L0,-12 L22,-30 Z" fill="#B91C1C"/>
+    <!-- Gold oval emblem -->
+    <ellipse cx="0" cy="10" rx="14" ry="10" fill="#F59E0B" stroke="#D97706" stroke-width="1.5"/>
+    <!-- Chinese character 福 inside emblem -->
+    <text x="0" y="15" text-anchor="middle" font-family="serif" font-size="13" fill="#B91C1C" font-weight="bold">&#31119;</text>
+    <!-- Gold clasp line -->
+    <line x1="-22" y1="-2" x2="22" y2="-2" stroke="#F59E0B" stroke-width="2"/>
+    <!-- Pattern dots on lower body -->
+    <circle cx="-10" cy="30" r="2.5" fill="#B91C1C" opacity="0.5"/>
+    <circle cx="0" cy="32" r="2.5" fill="#B91C1C" opacity="0.5"/>
+    <circle cx="10" cy="30" r="2.5" fill="#B91C1C" opacity="0.5"/>
+  </g>
+
+  <!-- Right red envelope - tilted other way, slightly higher -->
+  <g transform="translate(162, 108) rotate(12)">
+    <!-- Envelope body -->
+    <rect x="-22" y="-30" width="44" height="58" rx="5" fill="#DC2626"/>
+    <!-- Envelope top flap closed -->
+    <path d="M-22,-30 L0,-12 L22,-30 Z" fill="#B91C1C"/>
+    <!-- Gold oval emblem -->
+    <ellipse cx="0" cy="10" rx="14" ry="10" fill="#F59E0B" stroke="#D97706" stroke-width="1.5"/>
+    <!-- Chinese character 福 inside emblem -->
+    <text x="0" y="15" text-anchor="middle" font-family="serif" font-size="13" fill="#B91C1C" font-weight="bold">&#31119;</text>
+    <!-- Gold clasp line -->
+    <line x1="-22" y1="-2" x2="22" y2="-2" stroke="#F59E0B" stroke-width="2"/>
+    <!-- Pattern dots on lower body -->
+    <circle cx="-10" cy="30" r="2.5" fill="#B91C1C" opacity="0.5"/>
+    <circle cx="0" cy="32" r="2.5" fill="#B91C1C" opacity="0.5"/>
+    <circle cx="10" cy="30" r="2.5" fill="#B91C1C" opacity="0.5"/>
+  </g>
+
+  <!-- Motion / passing arrows between envelopes -->
+  <path d="M102,118 Q120,102 138,112" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" fill="none" stroke-dasharray="5 4"/>
+  <!-- Arrow head -->
+  <path d="M138,112 L130,108 L132,116 Z" fill="#F59E0B"/>
+
+  <!-- Small sparkle dots (festive) -->
+  <g transform="translate(120, 62)">
+    <line x1="0" y1="-6" x2="0" y2="6" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
+    <line x1="-6" y1="0" x2="6" y2="0" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
+    <line x1="-4" y1="-4" x2="4" y2="4" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="4" y1="-4" x2="-4" y2="4" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+  <circle cx="88" cy="70" r="2.5" fill="#F59E0B" opacity="0.6"/>
+  <circle cx="150" cy="66" r="2" fill="#DC2626" opacity="0.5"/>
+  <circle cx="170" cy="75" r="2" fill="#F59E0B" opacity="0.5"/>
+  <g transform="translate(56, 95)">
+    <line x1="0" y1="-4" x2="0" y2="4" stroke="#A8DDD6" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="-4" y1="0" x2="4" y2="0" stroke="#A8DDD6" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(184, 90)">
+    <line x1="0" y1="-3" x2="0" y2="3" stroke="#1A6B5A" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="-3" y1="0" x2="3" y2="0" stroke="#1A6B5A" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+</svg>
