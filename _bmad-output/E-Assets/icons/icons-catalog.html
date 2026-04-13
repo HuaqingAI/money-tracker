@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Icons Catalog - Money Tracker</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --brand-500: #6366F1;
+            --neutral-50: #F9FAFB;
+            --neutral-200: #E5E7EB;
+            --neutral-500: #6B7280;
+            --neutral-700: #374151;
+            --neutral-900: #111827;
+            --success: #22C55E;
+            --error: #EF4444;
+            --radius-lg: 12px;
+        }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background: var(--neutral-50);
+            color: var(--neutral-900);
+        }
+        .header {
+            margin-bottom: 40px;
+        }
+        h1 { margin: 0 0 10px 0; font-size: 28px; }
+        .meta { color: var(--neutral-500); font-size: 14px; margin-bottom: 20px; }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 30px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--neutral-200);
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+        }
+        
+        .icon-card {
+            background: white;
+            border: 1px solid var(--neutral-200);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .icon-card:hover {
+            border-color: var(--brand-500);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+        }
+        
+        .icon-wrapper {
+            margin-bottom: 16px;
+            color: var(--neutral-700);
+        }
+        
+        .icon-card:hover .icon-wrapper {
+            color: var(--brand-500);
+        }
+        
+        .icon-name {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .icon-usage {
+            font-size: 12px;
+            color: var(--neutral-500);
+            line-height: 1.4;
+        }
+
+        .code-block {
+            background: #111827;
+            color: #A78BFA;
+            padding: 16px;
+            border-radius: var(--radius-lg);
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin-top: 40px;
+        }
+        .code-block span.tag { color: #34D399; }
+        .code-block span.attr { color: #60A5FA; }
+        .code-block span.string { color: #FCD34D; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>了然 (Money Tracker) — Icon Catalog</h1>
+        <div class="meta">
+            Library: Lucide Icons | Style: Outline | Stroke Width: 2px | Size: 24px
+        </div>
+        <p>本项目采用 Lucide 规范。开发时请直接使用 <code>lucide-react-native</code> 或 <code>@tamagui/lucide-icons</code>，确保跨平台矢量渲染的一致性。</p>
+    </div>
+
+    <div class="section-title">Navigation (导航类)</div>
+    <div class="grid">
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="home"></i></div>
+            <div class="icon-name">home</div>
+            <div class="icon-usage">首页 / Dashboard 底部 Tab</div>
+        </div>
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="receipt"></i></div>
+            <div class="icon-name">receipt</div>
+            <div class="icon-usage">交易明细 底部 Tab</div>
+        </div>
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="bot"></i></div>
+            <div class="icon-name">bot</div>
+            <div class="icon-usage">AI 管家 底部 Tab</div>
+        </div>
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="user"></i></div>
+            <div class="icon-name">user</div>
+            <div class="icon-usage">我的 / Profile 底部 Tab</div>
+        </div>
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="chevron-left"></i></div>
+            <div class="icon-name">chevron-left</div>
+            <div class="icon-usage">返回上一页 (全局)</div>
+        </div>
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="chevron-right"></i></div>
+            <div class="icon-name">chevron-right</div>
+            <div class="icon-usage">进入详情 / 卡片展开</div>
+        </div>
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="x"></i></div>
+            <div class="icon-name">x</div>
+            <div class="icon-usage">关闭弹窗 / 清除搜索</div>
+        </div>
+    </div>
+
+    <div class="section-title">Action (操作类)</div>
+    <div class="grid">
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="plus"></i></div>
+            <div class="icon-name">plus</div>
+            <div class="icon-usage">记一笔 / 新建 / 悬浮按钮</div>
+        </div>
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="search"></i></div>
+            <div class="icon-name">search</div>
+            <div class="icon-usage">搜索交易 / 过滤</div>
+        </div>
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="share-2"></i></div>
+            <div class="icon-name">share-2</div>
+            <div class="icon-usage">分享报表 / 分享雷达</div>
+        </div>
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="settings"></i></div>
+            <div class="icon-name">settings</div>
+            <div class="icon-usage">设置入口</div>
+        </div>
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="camera"></i></div>
+            <div class="icon-name">camera</div>
+            <div class="icon-usage">OCR 识别 / 拍照记账</div>
+        </div>
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="mic"></i></div>
+            <div class="icon-name">mic</div>
+            <div class="icon-usage">语音记账</div>
+        </div>
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="send"></i></div>
+            <div class="icon-name">send</div>
+            <div class="icon-usage">发送 AI 对话消息</div>
+        </div>
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="pencil"></i></div>
+            <div class="icon-name">pencil</div>
+            <div class="icon-usage">编辑规则 / 修改金额</div>
+        </div>
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="trash-2"></i></div>
+            <div class="icon-name">trash-2</div>
+            <div class="icon-usage">删除记录 / 注销账户</div>
+        </div>
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="sliders-horizontal"></i></div>
+            <div class="icon-name">sliders-horizontal</div>
+            <div class="icon-usage">列表筛选 / 过滤</div>
+        </div>
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="download"></i></div>
+            <div class="icon-name">download</div>
+            <div class="icon-usage">数据导出</div>
+        </div>
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="upload"></i></div>
+            <div class="icon-name">upload</div>
+            <div class="icon-usage">CSV 账单导入</div>
+        </div>
+    </div>
+
+    <div class="section-title">Feature (功能类)</div>
+    <div class="grid">
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="bell"></i></div>
+            <div class="icon-name">bell</div>
+            <div class="icon-usage">通知 / 洞察推送</div>
+        </div>
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="bar-chart-3"></i></div>
+            <div class="icon-name">bar-chart-3</div>
+            <div class="icon-usage">图表报表 / 数据洞察</div>
+        </div>
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="gift"></i></div>
+            <div class="icon-name">gift</div>
+            <div class="icon-usage">人情账管理</div>
+        </div>
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="calendar"></i></div>
+            <div class="icon-name">calendar</div>
+            <div class="icon-usage">日期选择 / 时间维度</div>
+        </div>
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="wallet"></i></div>
+            <div class="icon-name">wallet</div>
+            <div class="icon-usage">资产 / 多身份核算</div>
+        </div>
+    </div>
+
+    <div class="section-title">Status (状态类)</div>
+    <div class="grid">
+        <div class="icon-card">
+            <div class="icon-wrapper" style="color: var(--success)"><i data-lucide="check-circle"></i></div>
+            <div class="icon-name">check-circle</div>
+            <div class="icon-usage">成功状态 / 确认</div>
+        </div>
+        <div class="icon-card">
+            <div class="icon-wrapper" style="color: var(--error)"><i data-lucide="alert-circle"></i></div>
+            <div class="icon-name">alert-circle</div>
+            <div class="icon-usage">错误提示 / 警告</div>
+        </div>
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="info"></i></div>
+            <div class="icon-name">info</div>
+            <div class="icon-usage">帮助说明 / 提示信息</div>
+        </div>
+        <div class="icon-card">
+            <div class="icon-wrapper"><i data-lucide="lock"></i></div>
+            <div class="icon-name">lock</div>
+            <div class="icon-usage">付费功能锁定 / 隐私</div>
+        </div>
+    </div>
+
+    <div class="code-block">
+// React Native 示例用法
+import { Home, Search, Share2 } from '@tamagui/lucide-icons'
+
+export const MyComponent = () => (
+  &lt;Button icon={Home}&gt;
+    Dashboard
+  &lt;/Button&gt;
+)
+
+// 标准 SVG 配置 (Web/Raw):
+&lt;<span class="tag">svg</span> <span class="attr">width</span>=<span class="string">"24"</span> <span class="attr">height</span>=<span class="string">"24"</span> <span class="attr">viewBox</span>=<span class="string">"0 0 24 24"</span> <span class="attr">fill</span>=<span class="string">"none"</span> <span class="attr">stroke</span>=<span class="string">"currentColor"</span> <span class="attr">stroke-width</span>=<span class="string">"2"</span> <span class="attr">stroke-linecap</span>=<span class="string">"round"</span> <span class="attr">stroke-linejoin</span>=<span class="string">"round"</span>&gt;
+    &lt;!-- Path goes here --&gt;
+&lt;/<span class="tag">svg</span>&gt;
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
