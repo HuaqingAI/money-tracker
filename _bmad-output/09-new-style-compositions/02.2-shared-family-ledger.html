@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>了然 - 家庭账本</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#F0F9F6',
+                            100: '#E1F2ED',
+                            200: '#B2DFD4',
+                            500: '#1A6B5A',
+                            600: '#155648',
+                        },
+                        neutral: {
+                            50: '#F9FAFB',
+                            100: '#F3F4F6',
+                            200: '#E5E7EB',
+                            400: '#9CA3AF',
+                            500: '#6B7280',
+                            800: '#1F2937',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans SC', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-neutral-50 font-sans text-neutral-800 antialiased h-screen overflow-y-auto">
+
+    <!-- Top Bar -->
+    <header class="p-6 flex items-center justify-between sticky top-0 bg-neutral-50 z-40">
+        <button onclick="handleBack()" class="p-1"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg></button>
+        <h1 id="topBarTitle" class="text-lg font-bold">创建家庭账本</h1>
+        <div class="w-8"></div>
+    </header>
+
+    <!-- State 1: Create Ledger -->
+    <main id="createState" class="px-8 flex flex-col items-center">
+        <div class="text-6xl mb-8 mt-4">👨‍👩‍👦</div>
+        <div class="text-center space-y-2 mb-10">
+            <h2 class="text-2xl font-bold">同一份账本，同一份事实</h2>
+            <p class="text-neutral-500">讨论花销时，不再各说各的</p>
+        </div>
+
+        <div class="w-full space-y-4 mb-10">
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-neutral-400 uppercase tracking-widest">账本名称</label>
+                <div class="bg-white border border-neutral-100 rounded-2xl p-4 shadow-sm">
+                    <input type="text" id="ledgerName" value="我们的家庭账本" class="w-full bg-transparent outline-none font-bold text-lg">
+                </div>
+            </div>
+
+            <!-- Privacy Assurance -->
+            <div class="bg-brand-50 border border-brand-100 rounded-2xl p-5 flex gap-4">
+                <div class="text-2xl">🔒</div>
+                <div class="space-y-2">
+                    <h4 class="text-sm font-bold text-brand-600">你的隐私受保护</h4>
+                    <ul class="text-xs text-brand-600/80 space-y-1 list-disc pl-4">
+                        <li>各自的隐私消费不共享</li>
+                        <li>只共享家庭相关的支出</li>
+                        <li>可以随时选择哪些消费共享</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="gotoInvite()" class="w-full h-14 bg-brand-500 text-white font-bold rounded-2xl shadow-lg shadow-brand-500/20 active:scale-[0.98] transition-all">
+            创建账本
+        </button>
+    </main>
+
+    <!-- State 2: Invite (Hidden) -->
+    <main id="inviteState" class="hidden px-8 flex flex-col items-center">
+        <div class="w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center text-3xl mb-4 mt-4 shadow-lg">✓</div>
+        <h2 class="text-2xl font-bold mb-10">账本已创建！</h2>
+
+        <div class="bg-white border border-neutral-100 rounded-3xl p-8 w-full shadow-sm space-y-6 mb-8 text-center">
+            <div class="space-y-2">
+                <h3 class="text-lg font-bold">邀请家人加入</h3>
+                <p class="text-neutral-400 text-sm">让小芳也能看到这份消费数据</p>
+            </div>
+
+            <div class="space-y-4">
+                <button onclick="gotoWaiting()" class="w-full h-14 bg-[#07C160] text-white font-bold rounded-2xl flex items-center justify-center gap-3 active:scale-[0.98] transition-all">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12.002 4.148c-4.47 0-8.093 3.32-8.093 7.412 0 2.27 1.112 4.312 2.87 5.672l-.726 2.147 2.454-1.22c.473.13 1.01.213 1.495.213 4.47 0 8.093-3.32 8.093-7.412s-3.623-7.412-8.093-7.412z"/></svg>
+                    微信分享邀请
+                </button>
+                <button class="w-full h-14 border-2 border-neutral-100 text-neutral-800 font-bold rounded-2xl flex items-center justify-center gap-3 active:scale-[0.98] transition-all">
+                    📋 复制邀请链接
+                </button>
+                <button class="w-full h-14 border-2 border-neutral-100 text-neutral-800 font-bold rounded-2xl flex items-center justify-center gap-3 active:scale-[0.98] transition-all">
+                    ▣ 展示二维码
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-neutral-100/50 rounded-2xl p-5 w-full space-y-3 mb-10">
+            <h4 class="text-xs font-bold text-neutral-400 uppercase tracking-widest">对方会看到什么？</h4>
+            <ul class="text-xs text-neutral-500 space-y-1.5 list-disc pl-4">
+                <li>家庭共享的消费汇总</li>
+                <li>你选择共享的消费记录</li>
+                <li>你的隐私消费不可见</li>
+            </ul>
+        </div>
+
+        <button onclick="window.location.href='02.3-beneficiary-tagging.html'" class="text-sm font-bold text-neutral-400">稍后邀请，先标注“为谁花的” ></button>
+    </main>
+
+    <!-- State 3: Waiting (Hidden) -->
+    <main id="waitingState" class="hidden px-8 flex flex-col items-center">
+        <div class="text-6xl mb-4 mt-8">📨</div>
+        <div class="text-center space-y-2 mb-10">
+            <h2 class="text-2xl font-bold">邀请已发送！</h2>
+            <p class="text-neutral-500">等待小芳接受邀请</p>
+        </div>
+
+        <div class="bg-white border border-neutral-100 rounded-3xl p-8 w-full shadow-sm mb-10">
+            <p class="text-neutral-800 leading-relaxed font-medium">
+                小芳加入后，你们就能一起看到家庭消费了。<br><br>
+                先去标注<span class="text-brand-500">“为谁花的”</span>，让共享账本更有价值。
+            </p>
+        </div>
+
+        <div class="w-full space-y-4">
+            <button onclick="window.location.href='02.3-beneficiary-tagging.html'" class="w-full h-14 bg-brand-500 text-white font-bold rounded-2xl shadow-lg shadow-brand-500/20 active:scale-[0.98] transition-all">
+                去标注“为谁花的”
+            </button>
+            <button onclick="gotoInvite()" class="w-full h-14 text-neutral-400 font-bold active:scale-[0.98]">
+                再次发送邀请
+            </button>
+        </div>
+    </main>
+
+    <script>
+        let currentState = 'create';
+
+        function gotoInvite() {
+            document.getElementById('createState').classList.add('hidden');
+            document.getElementById('waitingState').classList.add('hidden');
+            document.getElementById('inviteState').classList.remove('hidden');
+            document.getElementById('topBarTitle').innerText = '家庭账本';
+            currentState = 'invite';
+        }
+
+        function gotoWaiting() {
+            document.getElementById('inviteState').classList.add('hidden');
+            document.getElementById('waitingState').classList.remove('hidden');
+            currentState = 'waiting';
+        }
+
+        function handleBack() {
+            if (currentState === 'create') {
+                if (confirm('账本尚未创建，确定离开？')) window.history.back();
+            } else {
+                window.location.href = '01.7-dashboard.html';
+            }
+        }
+    </script>
+</body>
+</html>

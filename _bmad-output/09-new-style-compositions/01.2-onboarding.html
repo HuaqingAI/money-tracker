@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>了然 - 引导</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#EEF2FF',
+                            500: '#1A6B5A',
+                            600: '#155648',
+                        },
+                        neutral: {
+                            50: '#F9FAFB',
+                            100: '#F3F4F6',
+                            200: '#E5E7EB',
+                            500: '#6B7280',
+                            800: '#1F2937',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans SC', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .slide-container {
+            display: flex;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+        }
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+        }
+        .dot {
+            transition: all 0.2s;
+        }
+        .dot.active {
+            width: 1.5rem;
+            background-color: #1A6B5A;
+        }
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-neutral-50 font-sans text-neutral-800 antialiased h-screen overflow-hidden flex flex-col">
+
+    <!-- Fixed Top Bar -->
+    <header class="p-6 flex justify-end items-center z-50">
+        <button onclick="goToNextStep()" class="text-neutral-500 font-medium hover:text-brand-500 transition-colors">跳过</button>
+    </header>
+
+    <!-- Slides Container -->
+    <div class="flex-grow overflow-hidden relative">
+        <div id="slideContainer" class="slide-container">
+            
+            <!-- Slide 1: 零输入 -->
+            <section class="slide">
+                <div class="flex-grow flex items-center justify-center">
+                    <div class="relative w-full max-w-[240px] aspect-square">
+                         <!-- 3D Render Style Placeholder -->
+                        <div class="absolute inset-0 bg-brand-500 opacity-5 rounded-full blur-3xl"></div>
+                        <div class="relative z-10 w-full h-full flex flex-col items-center justify-center">
+                             <!-- Floating cards icons -->
+                             <div class="absolute top-0 right-0 w-16 h-16 bg-green-500 rounded-2xl shadow-lg flex items-center justify-center transform rotate-12">
+                                <span class="text-white font-bold text-2xl">支</span>
+                             </div>
+                             <div class="absolute bottom-4 left-0 w-16 h-16 bg-green-600 rounded-2xl shadow-lg flex items-center justify-center transform -rotate-12">
+                                <span class="text-white font-bold text-2xl">微</span>
+                             </div>
+                             <div class="w-32 h-48 bg-white rounded-3xl border-4 border-neutral-100 shadow-xl flex flex-col p-4 space-y-3">
+                                <div class="w-full h-2 bg-neutral-100 rounded"></div>
+                                <div class="w-2/3 h-2 bg-neutral-100 rounded"></div>
+                                <div class="w-full h-12 bg-brand-50 rounded-lg animate-pulse"></div>
+                                <div class="w-full h-12 bg-brand-50 rounded-lg animate-pulse delay-75"></div>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center space-y-4 mb-12">
+                    <h2 class="text-2xl font-bold">不用动手记一笔</h2>
+                    <p class="text-neutral-500">支付宝、微信支付……消费到账自动识别<br>不用手动输入，也不会漏掉</p>
+                </div>
+            </section>
+
+            <!-- Slide 2: 自动分类 -->
+            <section class="slide">
+                <div class="flex-grow flex items-center justify-center">
+                    <div class="relative w-full max-w-[240px] aspect-square">
+                        <div class="absolute inset-0 bg-orange-500 opacity-5 rounded-full blur-3xl"></div>
+                        <div class="w-full h-full flex flex-col items-center justify-center space-y-4">
+                             <!-- Sorting items animation visual -->
+                             <div class="flex gap-3">
+                                <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center text-orange-500">🍱</div>
+                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-500">🚗</div>
+                                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-purple-500">🛍️</div>
+                             </div>
+                             <div class="w-48 h-32 bg-white rounded-2xl border-2 border-neutral-100 shadow-lg p-4 flex flex-col justify-center gap-3">
+                                 <div class="flex items-center gap-3">
+                                    <div class="w-6 h-6 rounded bg-orange-500"></div>
+                                    <div class="w-24 h-3 bg-neutral-100 rounded"></div>
+                                 </div>
+                                 <div class="flex items-center gap-3">
+                                    <div class="w-6 h-6 rounded bg-blue-500"></div>
+                                    <div class="w-16 h-3 bg-neutral-100 rounded"></div>
+                                 </div>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center space-y-4 mb-12">
+                    <h2 class="text-2xl font-bold">每笔花销，自动归类，一目了然</h2>
+                    <p class="text-neutral-500">餐饮、交通、购物……打开就是分好的<br>不用整理，不用对账</p>
+                </div>
+            </section>
+
+            <!-- Slide 3: AI管家 -->
+            <section class="slide">
+                <div class="flex-grow flex items-center justify-center">
+                    <div class="relative w-full max-w-[280px] aspect-square">
+                        <div class="absolute inset-0 bg-brand-500 opacity-10 rounded-full blur-3xl"></div>
+                        <div class="relative z-10 w-full h-full">
+                            <!-- Mock Dashboard Card -->
+                            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-64 bg-white rounded-2xl shadow-2xl border border-neutral-100 p-4 space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <div class="w-12 h-3 bg-neutral-100 rounded"></div>
+                                    <div class="w-6 h-6 rounded-full bg-neutral-50"></div>
+                                </div>
+                                <div class="space-y-1">
+                                    <div class="w-8 h-2 bg-neutral-400 opacity-20 rounded"></div>
+                                    <div class="w-24 h-6 bg-brand-500 opacity-20 rounded"></div>
+                                </div>
+                                <div class="pt-4 space-y-3">
+                                    <div class="flex justify-between">
+                                        <div class="w-10 h-2 bg-neutral-100 rounded"></div>
+                                        <div class="w-8 h-2 bg-neutral-100 rounded"></div>
+                                    </div>
+                                    <div class="h-2 bg-neutral-50 rounded w-full">
+                                        <div class="h-full bg-orange-400 rounded w-2/3"></div>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <div class="w-10 h-2 bg-neutral-100 rounded"></div>
+                                        <div class="w-8 h-2 bg-neutral-100 rounded"></div>
+                                    </div>
+                                    <div class="h-2 bg-neutral-50 rounded w-full">
+                                        <div class="h-full bg-blue-400 rounded w-1/3"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- AI Chat Bubble -->
+                            <div class="absolute top-0 right-0 w-44 glass-morphism p-3 rounded-2xl shadow-xl border border-white/50 animate-bounce">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <div class="w-4 h-4 bg-brand-500 rounded-full"></div>
+                                    <span class="text-[10px] font-bold text-brand-500">🤖 管家说</span>
+                                </div>
+                                <p class="text-[11px] leading-tight text-neutral-800 font-medium">本月餐饮支出比上个月多出 15% 喔~</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center space-y-4 mb-12">
+                    <h2 class="text-2xl font-bold">你的AI财务管家，已就位</h2>
+                    <p class="text-neutral-500">月度报表自动生成，异常消费主动提醒<br>从今天起，有人帮你看着钱了</p>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Fixed Bottom Controls -->
+    <footer class="p-8 space-y-8">
+        <!-- Progress Dots -->
+        <div class="flex justify-center gap-2">
+            <div class="dot w-2 h-2 rounded-full bg-neutral-200 active" id="dot0"></div>
+            <div class="dot w-2 h-2 rounded-full bg-neutral-200" id="dot1"></div>
+            <div class="dot w-2 h-2 rounded-full bg-neutral-200" id="dot2"></div>
+        </div>
+
+        <!-- CTA Buttons -->
+        <div class="relative h-14">
+            <button id="nextBtn" onclick="nextSlide()" class="w-full h-full border-2 border-brand-500 text-brand-500 font-bold rounded-lg transition-all active:scale-[0.98]">
+                下一步
+            </button>
+            <button id="startBtn" onclick="goToNextStep()" class="w-full h-full bg-brand-500 text-white font-bold rounded-lg opacity-0 pointer-events-none transition-all absolute top-0 left-0 active:scale-[0.98]">
+                开始体验
+            </button>
+        </div>
+    </footer>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 3;
+        const container = document.getElementById('slideContainer');
+        const nextBtn = document.getElementById('nextBtn');
+        const startBtn = document.getElementById('startBtn');
+
+        function updateUI() {
+            container.style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            // Update dots
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.getElementById(`dot${i}`);
+                if (i === currentSlide) {
+                    dot.classList.add('active', 'bg-brand-500');
+                    dot.classList.remove('bg-neutral-200');
+                } else {
+                    dot.classList.remove('active', 'bg-brand-500');
+                    dot.classList.add('bg-neutral-200');
+                }
+            }
+
+            // Update buttons
+            if (currentSlide === totalSlides - 1) {
+                nextBtn.classList.add('opacity-0', 'pointer-events-none');
+                startBtn.classList.remove('opacity-0', 'pointer-events-none');
+            } else {
+                nextBtn.classList.remove('opacity-0', 'pointer-events-none');
+                startBtn.classList.add('opacity-0', 'pointer-events-none');
+            }
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateUI();
+            }
+        }
+
+        function goToNextStep() {
+            window.location.href = '01.3-registration.html';
+        }
+
+        // Add touch swipe support
+        let touchStartX = 0;
+        container.addEventListener('touchstart', e => touchStartX = e.touches[0].clientX);
+        container.addEventListener('touchend', e => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0 && currentSlide < totalSlides - 1) {
+                    currentSlide++;
+                } else if (diff < 0 && currentSlide > 0) {
+                    currentSlide--;
+                }
+                updateUI();
+            }
+        });
+    </script>
+</body>
+</html>

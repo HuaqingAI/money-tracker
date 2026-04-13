@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>了然 - 身份管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#F0F9F6',
+                            500: '#1A6B5A',
+                            600: '#155648',
+                        },
+                        neutral: {
+                            50: '#F9FAFB',
+                            100: '#F3F4F6',
+                            200: '#E5E7EB',
+                            400: '#9CA3AF',
+                            500: '#6B7280',
+                            800: '#1F2937',
+                        },
+                        warning: '#F97316',
+                        success: '#22C55E'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans SC', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .rule-confirmed {
+            opacity: 0.6;
+            background-color: #F9FAFB;
+            border-color: transparent;
+        }
+        .rule-confirmed .action-buttons { display: none; }
+        .rule-confirmed .confirmed-tag { display: flex; }
+        .confirmed-tag { display: none; }
+    </style>
+</head>
+<body class="bg-neutral-50 font-sans text-neutral-800 antialiased h-screen overflow-y-auto pb-24">
+
+    <!-- View A: Identity List (Default Initial View) -->
+    <div id="viewA" class="h-full">
+        <header class="p-6 flex items-center justify-between sticky top-0 bg-neutral-50/90 backdrop-blur-md z-40">
+            <h1 class="text-xl font-bold">身份管理</h1>
+            <button onclick="gotoStep1()" class="w-10 h-10 bg-brand-500 text-white rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+        </header>
+
+        <main class="px-6 space-y-6">
+            <!-- Identity Card 1 -->
+            <div onclick="window.location.href='05.2-identity-pnl.html'" class="bg-white rounded-3xl p-6 border border-neutral-100 shadow-sm space-y-4 active:scale-[0.98] transition-all">
+                <div class="flex justify-between items-start">
+                    <div class="flex items-center gap-4">
+                        <div class="text-3xl">👩‍💻</div>
+                        <div>
+                            <h3 class="font-bold">打工人小美</h3>
+                            <p class="text-[10px] text-neutral-400 font-medium">设计公司 · 主业收入</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold text-brand-500">详情 ></span>
+                </div>
+                <div class="pt-2">
+                    <p class="text-sm font-medium">本月支出 ¥4,200 · 本月收入 ¥9,000</p>
+                </div>
+            </div>
+
+            <!-- Identity Card 2 -->
+            <div onclick="window.location.href='05.2-identity-pnl.html'" class="bg-white rounded-3xl p-6 border-l-4 border-l-warning shadow-sm space-y-4 active:scale-[0.98] transition-all">
+                <div class="flex justify-between items-start">
+                    <div class="flex items-center gap-4">
+                        <div class="text-3xl">👩‍💼</div>
+                        <div>
+                            <h3 class="font-bold">老板小美</h3>
+                            <p class="text-[10px] text-neutral-400 font-medium">小红书带货 · 副业</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold text-brand-500">详情 ></span>
+                </div>
+                <div class="space-y-1">
+                    <p class="text-sm font-medium">本月支出 ¥6,153 · 本月收入 ¥9,000</p>
+                    <p class="text-lg font-bold text-success">净利润 ¥2,847</p>
+                </div>
+            </div>
+
+            <!-- AI Insight -->
+            <div class="bg-brand-50 border border-brand-100 rounded-2xl p-5 flex gap-4 items-start">
+                <span class="text-xl">💡</span>
+                <div class="flex-grow space-y-3">
+                    <p class="text-sm font-bold text-brand-600">对了，平台佣金算进副业成本了吗？</p>
+                    <button class="text-xs font-bold text-brand-500">去看看 ></button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- View C: Create Step 1 (Hidden) -->
+    <div id="viewC" class="hidden h-full flex flex-col p-8 space-y-10">
+        <header class="flex items-center justify-between -mx-2">
+            <button onclick="backToA()" class="p-2"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg></button>
+            <h1 class="text-lg font-bold">创建身份</h1>
+            <span class="text-xs font-bold text-neutral-400">步骤 1/2</span>
+        </header>
+
+        <div class="space-y-8 flex-grow overflow-y-auto">
+            <h2 class="text-2xl font-bold">给你的副业身份起个名字</h2>
+            
+            <div class="space-y-6">
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-neutral-400 uppercase">身份名称</label>
+                    <input type="text" value="老板小美" class="w-full bg-white border border-neutral-100 rounded-2xl p-4 font-bold text-lg outline-none focus:ring-2 focus:ring-brand-500 shadow-sm">
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-neutral-400 uppercase">简短描述 (可选)</label>
+                    <input type="text" placeholder="如：小红书美妆带货" class="w-full bg-white border border-neutral-100 rounded-2xl p-4 font-medium outline-none focus:ring-2 focus:ring-brand-500 shadow-sm">
+                </div>
+
+                <div class="space-y-3">
+                    <label class="text-xs font-bold text-neutral-400 uppercase">选择图标</label>
+                    <div class="grid grid-cols-4 gap-4">
+                        <button class="aspect-square bg-brand-500 text-white rounded-2xl text-2xl flex items-center justify-center ring-4 ring-brand-100">👩‍💼</button>
+                        <button class="aspect-square bg-white border border-neutral-100 rounded-2xl text-2xl flex items-center justify-center">🏪</button>
+                        <button class="aspect-square bg-white border border-neutral-100 rounded-2xl text-2xl flex items-center justify-center">💼</button>
+                        <button class="aspect-square bg-white border border-neutral-100 rounded-2xl text-2xl flex items-center justify-center">🎨</button>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="text-xs font-bold text-neutral-400 uppercase">身份类型</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button class="py-3 bg-warning text-white rounded-xl text-sm font-bold">副业</button>
+                        <button class="py-3 bg-white border border-neutral-200 rounded-xl text-sm font-bold text-neutral-500">自由职业</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="gotoStep2()" class="w-full h-14 bg-brand-500 text-white font-bold rounded-2xl shadow-lg shadow-brand-500/30">下一步</button>
+    </div>
+
+    <!-- View D: Create Step 2 (Hidden) -->
+    <div id="viewD" class="hidden h-full flex flex-col">
+        <header class="p-6 flex items-center justify-between">
+            <button onclick="backToC()" class="p-2 -ml-2"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg></button>
+            <h1 class="text-lg font-bold">创建身份</h1>
+            <span class="text-xs font-bold text-neutral-400">步骤 2/2</span>
+        </header>
+
+        <main class="flex-grow px-6 space-y-6 overflow-y-auto pb-48">
+            <div class="space-y-1">
+                <h2 class="text-2xl font-bold">AI 分析了你近 3 个月的消费</h2>
+                <p class="text-sm text-neutral-400">以下消费可能属于“老板小美”</p>
+            </div>
+
+            <!-- Rule Card 1 -->
+            <div class="bg-white border border-neutral-100 rounded-3xl p-6 shadow-sm space-y-4" id="rule1">
+                <div class="flex justify-between items-start">
+                    <div class="flex items-center gap-4">
+                        <div class="text-2xl">📱</div>
+                        <div>
+                            <h3 class="font-bold text-sm">小红书平台消费</h3>
+                            <p class="text-[10px] text-neutral-400 font-medium">小红书、薯店 等</p>
+                        </div>
+                    </div>
+                    <button class="p-1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg></button>
+                </div>
+                <div class="flex justify-between items-end">
+                    <p class="text-xs font-bold text-neutral-500">18 笔 · 共 ¥3,200</p>
+                    <span class="px-2 py-0.5 bg-orange-50 text-warning rounded text-[9px] font-bold">类型: 副业支出</span>
+                </div>
+                <div class="action-buttons flex gap-3 pt-2">
+                    <button onclick="confirmRule('rule1')" class="flex-1 h-11 border-2 border-brand-500 text-brand-500 font-bold rounded-xl active:scale-95 transition-all">确认 ✓</button>
+                    <button class="px-4 text-xs font-bold text-neutral-400">不是副业</button>
+                </div>
+                <div class="confirmed-tag justify-between items-center pt-2">
+                    <span class="text-success text-xs font-bold">✓ 已确认归属</span>
+                    <button onclick="undoRule('rule1')" class="text-xs font-bold text-neutral-400">撤销</button>
+                </div>
+            </div>
+
+            <!-- Rule Card 2 -->
+            <div class="bg-white border border-neutral-100 rounded-3xl p-6 shadow-sm space-y-4" id="rule2">
+                <div class="flex justify-between items-start">
+                    <div class="flex items-center gap-4">
+                        <div class="text-2xl">📦</div>
+                        <div>
+                            <h3 class="font-bold text-sm">快递发货</h3>
+                            <p class="text-[10px] text-neutral-400 font-medium">韵达、中通、圆通 等</p>
+                        </div>
+                    </div>
+                    <button class="p-1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg></button>
+                </div>
+                <div class="flex justify-between items-end">
+                    <p class="text-xs font-bold text-neutral-500">22 笔 · 共 ¥880</p>
+                    <span class="px-2 py-0.5 bg-orange-50 text-warning rounded text-[9px] font-bold">类型: 副业支出</span>
+                </div>
+                <div class="action-buttons flex gap-3 pt-2">
+                    <button onclick="confirmRule('rule2')" class="flex-1 h-11 border-2 border-brand-500 text-brand-500 font-bold rounded-xl active:scale-95 transition-all">确认 ✓</button>
+                    <button class="px-4 text-xs font-bold text-neutral-400">不是副业</button>
+                </div>
+                <div class="confirmed-tag justify-between items-center pt-2">
+                    <span class="text-success text-xs font-bold">✓ 已确认归属</span>
+                    <button onclick="undoRule('rule2')" class="text-xs font-bold text-neutral-400">撤销</button>
+                </div>
+            </div>
+        </main>
+
+        <footer class="fixed bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-xl border-t border-neutral-100 z-50 space-y-4">
+            <div class="space-y-2">
+                <p id="progressText" class="text-[11px] font-bold text-neutral-500 text-center">已确认 0/2 条规则，覆盖 0 笔消费</p>
+                <div class="h-1.5 w-full bg-neutral-100 rounded-full overflow-hidden">
+                    <div id="progressBar" class="h-full bg-brand-500 w-0 transition-all duration-300"></div>
+                </div>
+            </div>
+            <button id="finalCta" onclick="finishFlow()" class="w-full h-14 bg-brand-500 text-white font-bold rounded-2xl shadow-lg shadow-brand-500/30">全部确认，看损益表</button>
+            <div class="text-center">
+                <p class="text-[10px] text-neutral-400">还有 7 笔 AI 不太确定 <span class="text-brand-500 font-bold ml-1">去看看 ></span></p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Bottom Tab Bar (Only for View A) -->
+    <nav id="bottomNav" class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-neutral-100 px-6 pt-3 pb-8 flex justify-between items-center z-40">
+        <div onclick="window.location.href='01.7-dashboard.html'" class="flex flex-col items-center gap-1 text-neutral-400">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            <span class="text-[10px] font-bold">首页</span>
+        </div>
+        <div class="flex flex-col items-center gap-1 text-neutral-400">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>
+            <span class="text-[10px] font-bold">消费</span>
+        </div>
+        <div class="flex flex-col items-center gap-1 text-neutral-400">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+            <span class="text-[10px] font-bold">AI</span>
+        </div>
+        <div class="flex flex-col items-center gap-1 text-brand-500">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span class="text-[10px] font-bold">我的</span>
+        </div>
+    </nav>
+
+    <script>
+        let confirmedCount = 0;
+        const totalRules = 2;
+        const totalTxns = 40;
+        const txnMap = { 'rule1': 18, 'rule2': 22 };
+        let coveredTxns = 0;
+
+        function gotoStep1() {
+            document.getElementById('viewA').classList.add('hidden');
+            document.getElementById('bottomNav').classList.add('hidden');
+            document.getElementById('viewC').classList.remove('hidden');
+        }
+        function backToA() {
+            document.getElementById('viewC').classList.add('hidden');
+            document.getElementById('viewA').classList.remove('hidden');
+            document.getElementById('bottomNav').classList.remove('hidden');
+        }
+        function gotoStep2() {
+            document.getElementById('viewC').classList.add('hidden');
+            document.getElementById('viewD').classList.remove('hidden');
+        }
+        function backToC() {
+            document.getElementById('viewD').classList.add('hidden');
+            document.getElementById('viewC').classList.remove('hidden');
+        }
+
+        function confirmRule(id) {
+            const el = document.getElementById(id);
+            if (el.classList.contains('rule-confirmed')) return;
+            el.classList.add('rule-confirmed');
+            confirmedCount++;
+            coveredTxns += txnMap[id];
+            updateProgress();
+        }
+
+        function undoRule(id) {
+            const el = document.getElementById(id);
+            el.classList.remove('rule-confirmed');
+            confirmedCount--;
+            coveredTxns -= txnMap[id];
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const text = document.getElementById('progressText');
+            const bar = document.getElementById('progressBar');
+            const cta = document.getElementById('finalCta');
+            
+            text.innerText = `已确认 ${confirmedCount}/${totalRules} 条规则，覆盖 ${coveredTxns} 笔消费`;
+            bar.style.width = (coveredTxns / totalTxns * 100) + '%';
+            
+            if (confirmedCount === totalRules) {
+                cta.innerText = '完成！看损益表';
+            } else {
+                cta.innerText = '全部确认，看损益表';
+            }
+        }
+
+        function finishFlow() {
+            window.location.href = '05.2-identity-pnl.html';
+        }
+    </script>
+</body>
+</html>

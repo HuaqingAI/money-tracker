@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>了然 - 回礼建议</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#F0F9F6',
+                            100: '#E1F2ED',
+                            500: '#1A6B5A',
+                            600: '#155648',
+                        },
+                        neutral: {
+                            50: '#F9FAFB',
+                            100: '#F3F4F6',
+                            200: '#E5E7EB',
+                            400: '#9CA3AF',
+                            500: '#6B7280',
+                            800: '#1F2937',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans SC', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .loading-dot {
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .loading-dot:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        .ai-card-glow {
+            background: linear-gradient(135deg, #1A6B5A 0%, #155648 100%);
+        }
+        .success-pop {
+            animation: popIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-neutral-50 font-sans text-neutral-800 antialiased min-h-screen pb-32">
+
+    <!-- Step 1: Suggestion Result -->
+    <div id="resultContent" class="h-full">
+        <!-- Top Bar -->
+        <header class="p-6 flex items-center justify-between sticky top-0 bg-neutral-50/90 backdrop-blur-md z-40">
+            <button onclick="window.history.back()" class="p-1"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg></button>
+            <h1 class="text-lg font-bold">回礼建议</h1>
+            <div class="w-8"></div>
+        </header>
+
+        <!-- Event Context -->
+        <section class="px-6 mb-6">
+            <div class="bg-white rounded-3xl p-5 border border-neutral-100 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 bg-orange-100 text-brand-600 rounded-full flex items-center justify-center font-bold text-lg">张</div>
+                <div class="flex-grow">
+                    <div class="flex items-center gap-2">
+                        <h2 class="font-bold">张三 · 婚礼</h2>
+                        <span class="px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded text-[9px] font-bold">同事</span>
+                    </div>
+                    <p class="text-[10px] text-neutral-400 font-medium">下周六 2026-04-18</p>
+                </div>
+                <button class="text-xs font-bold text-brand-500">修改信息</button>
+            </div>
+        </section>
+
+        <!-- AI Suggestion Card -->
+        <section class="px-6 mb-8">
+            <div id="aiLoading" class="bg-white rounded-[2rem] p-10 border border-neutral-100 shadow-sm flex flex-col items-center text-center space-y-4">
+                <div class="flex gap-1.5">
+                    <div class="w-3 h-3 bg-brand-500 rounded-full loading-dot"></div>
+                    <div class="w-3 h-3 bg-brand-500 rounded-full loading-dot"></div>
+                    <div class="w-3 h-3 bg-brand-500 rounded-full loading-dot"></div>
+                </div>
+                <div>
+                    <h3 class="font-bold">正在分析...</h3>
+                    <p class="text-xs text-neutral-400 mt-1">综合历史往来和当地惯例</p>
+                </div>
+            </div>
+
+            <div id="aiResult" class="hidden ai-card-glow rounded-[2rem] p-10 text-white shadow-xl shadow-brand-500/30 flex flex-col items-center text-center space-y-6 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-12 -mt-12 blur-2xl"></div>
+                <div class="flex items-center gap-2 text-brand-100/80">
+                    <span class="text-xl">🤖</span>
+                    <span class="text-xs font-bold uppercase tracking-widest">AI 建议区间</span>
+                </div>
+                <h2 class="text-5xl font-bold tracking-tight">¥600 — ¥800</h2>
+                <div class="px-4 py-1.5 bg-white/20 rounded-full text-sm font-bold">
+                    推荐: ¥800
+                </div>
+            </div>
+        </section>
+
+        <!-- Reasoning & Reference -->
+        <main id="detailsArea" class="hidden px-6 space-y-6">
+            <div class="space-y-4">
+                <h3 class="text-xs font-bold text-neutral-400 uppercase tracking-widest">建议依据</h3>
+                <ul class="space-y-3">
+                    <li class="flex gap-3 items-start">
+                        <div class="w-1.5 h-1.5 bg-brand-500 rounded-full mt-1.5"></div>
+                        <p class="text-sm font-medium">张三在你儿子满月宴时随了 ¥600</p>
+                    </li>
+                    <li class="flex gap-3 items-start">
+                        <div class="w-1.5 h-1.5 bg-brand-500 rounded-full mt-1.5"></div>
+                        <p class="text-sm font-medium">婚礼规格通常高于满月宴，建议持平或略高</p>
+                    </li>
+                    <li class="flex gap-3 items-start">
+                        <div class="w-1.5 h-1.5 bg-brand-500 rounded-full mt-1.5"></div>
+                        <p class="text-sm font-medium">同事关系，建议保持礼尚往来的平衡</p>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="bg-neutral-100/50 rounded-2xl p-5 space-y-2">
+                <h3 class="text-xs font-bold text-neutral-400 uppercase tracking-widest">同类参考</h3>
+                <div class="flex justify-between items-end">
+                    <p class="text-sm font-bold text-neutral-500">同事婚礼常见区间</p>
+                    <p class="text-xl font-bold">¥500 - ¥1,000</p>
+                </div>
+                <p class="text-[10px] text-neutral-400">参考区间基于文化惯例，仅供参考</p>
+            </div>
+
+            <div class="space-y-4 pt-4">
+                <h3 class="text-xs font-bold text-neutral-400 uppercase tracking-widest">选择金额</h3>
+                <div class="grid grid-cols-4 gap-3">
+                    <button class="h-12 border border-neutral-200 rounded-xl text-sm font-bold text-neutral-500">500</button>
+                    <button class="h-12 border border-neutral-200 rounded-xl text-sm font-bold text-neutral-500">600</button>
+                    <button class="h-12 bg-brand-500 text-white rounded-xl text-sm font-bold relative">
+                        800
+                        <span class="absolute -top-2 -right-1 bg-brand-600 text-[8px] px-1.5 py-0.5 rounded-full border border-white">推荐</span>
+                    </button>
+                    <button class="h-12 border border-neutral-200 rounded-xl text-sm font-bold text-neutral-500">1000</button>
+                </div>
+                <div class="bg-white border border-neutral-100 rounded-2xl p-4 flex items-center gap-3">
+                    <span class="text-neutral-400 font-bold">¥</span>
+                    <input type="number" placeholder="自定义金额" class="flex-grow bg-transparent outline-none font-bold">
+                </div>
+            </div>
+        </main>
+
+        <!-- Fixed Footer -->
+        <footer id="footerActions" class="hidden fixed bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-xl border-t border-neutral-100 z-50 flex flex-col items-center gap-4">
+            <button class="text-xs font-bold text-brand-500">设置婚礼日提醒？</button>
+            <button onclick="handleConfirm()" class="w-full h-14 bg-brand-500 text-white font-bold rounded-2xl shadow-lg shadow-brand-500/30 active:scale-[0.98] transition-all">
+                确认并记录 ¥800
+            </button>
+        </footer>
+    </div>
+
+    <!-- Success View (Hidden) -->
+    <div id="successView" class="hidden absolute inset-0 bg-neutral-50 z-[100] flex flex-col items-center justify-center p-8 text-center">
+        <div class="w-20 h-20 bg-brand-50 rounded-full flex items-center justify-center text-4xl mb-8 success-pop">✅</div>
+        <div class="space-y-2 mb-12">
+            <h2 class="text-3xl font-bold">已记录</h2>
+            <p class="text-neutral-500">张三婚礼 送 ¥800</p>
+            <p class="text-xs text-neutral-400 pt-2 font-medium">人情账已更新</p>
+        </div>
+        <div class="w-full space-y-4">
+            <button onclick="window.location.href='04.1-gift-management.html'" class="w-full h-14 bg-brand-500 text-white font-bold rounded-2xl shadow-lg active:scale-95 transition-all">查看人情账</button>
+            <button onclick="window.location.href='01.7-dashboard.html'" class="w-full h-14 text-neutral-400 font-bold active:scale-95">返回首页</button>
+        </div>
+    </div>
+
+    <script>
+        // Simulate AI Analysis
+        setTimeout(() => {
+            document.getElementById('aiLoading').classList.add('hidden');
+            document.getElementById('aiResult').classList.remove('hidden');
+            document.getElementById('detailsArea').classList.remove('hidden');
+            document.getElementById('footerActions').classList.remove('hidden');
+        }, 1500);
+
+        function handleConfirm() {
+            document.getElementById('resultContent').classList.add('hidden');
+            document.getElementById('successView').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

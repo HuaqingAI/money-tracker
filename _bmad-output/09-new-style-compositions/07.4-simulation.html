@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>了然 - 省钱模拟</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#F0F9F6',
+                            500: '#1A6B5A',
+                            600: '#155648',
+                        },
+                        neutral: {
+                            50: '#F9FAFB',
+                            100: '#F3F4F6',
+                            200: '#E5E7EB',
+                            400: '#9CA3AF',
+                            500: '#6B7280',
+                            800: '#1F2937',
+                        },
+                        accent: {
+                            orange: '#F97316',
+                            teal: '#14B8A6'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans SC', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .tab-active { color: #1A6B5A; border-bottom: 2px solid #1A6B5A; }
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #E5E7EB;
+            border-radius: 3px;
+            outline: none;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #1A6B5A;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(26, 107, 90, 0.3);
+            border: 3px solid white;
+        }
+        .area-optimized { fill: rgba(26, 107, 90, 0.1); }
+        .line-current { stroke: #D1D5DB; stroke-dasharray: 4; }
+        .line-optimized { stroke: #1A6B5A; transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="bg-neutral-50 font-sans text-neutral-800 antialiased min-h-screen pb-32">
+
+    <!-- Header -->
+    <header class="p-6 flex items-center justify-between sticky top-0 bg-neutral-50/90 backdrop-blur-md z-40">
+        <button onclick="window.history.back()" class="p-1"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg></button>
+        <h1 class="text-lg font-bold">省钱模拟</h1>
+        <div class="w-8"></div>
+    </header>
+
+    <!-- Top Tabs -->
+    <nav class="flex px-6 border-b border-neutral-100 bg-neutral-50">
+        <button onclick="switchView('sim')" id="tab-sim" class="flex-1 py-4 text-center text-sm font-bold tab-active transition-all">消费模拟</button>
+        <button onclick="switchView('peer')" id="tab-peer" class="flex-1 py-4 text-center text-sm font-bold text-neutral-400 transition-all">同类对比</button>
+    </nav>
+
+    <!-- View: Simulation -->
+    <main id="view-sim" class="p-6 space-y-8">
+        <section class="space-y-4">
+            <h3 class="text-xs font-bold text-neutral-400 uppercase tracking-widest px-1">调整你的省钱方案</h3>
+            
+            <!-- Slider 1 -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-neutral-100 space-y-4">
+                <div class="flex justify-between items-start">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl">🍜</span>
+                        <h4 class="font-bold text-sm">外卖频率</h4>
+                    </div>
+                    <span class="text-[10px] font-bold text-neutral-400 uppercase">当前 12次/月</span>
+                </div>
+                <input type="range" id="slider-1" min="0" max="12" value="8" oninput="updateSimulation()">
+                <div class="flex justify-between items-end">
+                    <span class="text-[10px] font-bold text-neutral-400">减少到 <span id="val-1" class="text-neutral-800">8</span> 次</span>
+                    <span class="text-sm font-bold text-brand-500">每月可省 ¥<span id="save-1">228</span></span>
+                </div>
+            </div>
+
+            <!-- Slider 2 -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-neutral-100 space-y-4">
+                <div class="flex justify-between items-start">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl">☕</span>
+                        <h4 class="font-bold text-sm">咖啡频率</h4>
+                    </div>
+                    <span class="text-[10px] font-bold text-neutral-400 uppercase">当前 20次/月</span>
+                </div>
+                <input type="range" id="slider-2" min="0" max="20" value="12" oninput="updateSimulation()">
+                <div class="flex justify-between items-end">
+                    <span class="text-[10px] font-bold text-neutral-400">减少到 <span id="val-2" class="text-neutral-800">12</span> 次</span>
+                    <span class="text-sm font-bold text-brand-500">每月可省 ¥<span id="save-2">144</span></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Savings Curve -->
+        <section class="bg-white rounded-[2rem] p-8 shadow-sm border border-neutral-100 space-y-6 flex flex-col items-center">
+            <div class="text-center space-y-1">
+                <h2 id="yearlyTotal" class="text-4xl font-bold tracking-tight text-neutral-800">¥ 4,464</h2>
+                <p class="text-xs font-bold text-neutral-400 uppercase tracking-widest">一年可多存</p>
+            </div>
+
+            <!-- SVG Chart Mockup -->
+            <div class="w-full h-48 relative mt-4">
+                <svg viewBox="0 0 300 120" class="w-full h-full overflow-visible">
+                    <path d="M 0 110 L 300 70" fill="none" class="line-current" stroke-width="2"/>
+                    <path id="optimizedPath" d="M 0 110 L 300 20" fill="none" class="line-optimized" stroke-width="4" stroke-linecap="round"/>
+                    <path id="optimizedArea" d="M 0 110 L 300 20 L 300 70 L 0 110 Z" class="area-optimized"/>
+                </svg>
+                <div class="flex justify-between mt-6 text-[9px] font-bold text-neutral-400 uppercase">
+                    <span>现在</span>
+                    <span>3月</span>
+                    <span>6月</span>
+                    <span>9月</span>
+                    <span>12月</span>
+                </div>
+            </div>
+
+            <div class="w-full space-y-3 pt-4 border-t border-neutral-50">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="text-lg">📅</span>
+                        <span class="text-xs font-bold text-neutral-500">3个月后</span>
+                    </div>
+                    <span id="m3Val" class="text-sm font-bold text-success">+¥1,116</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="text-lg">📅</span>
+                        <span class="text-xs font-bold text-neutral-500">12个月后</span>
+                    </div>
+                    <span id="m12Val" class="text-lg font-bold text-success">+¥4,464</span>
+                </div>
+            </div>
+        </section>
+
+        <button class="w-full h-14 border-2 border-neutral-100 rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-all text-neutral-500 font-bold">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+            分享我的省钱计划
+        </button>
+    </main>
+
+    <!-- View: Peer Comparison (Hidden) -->
+    <main id="view-peer" class="hidden p-6 space-y-8">
+        <section class="bg-brand-50/50 rounded-[2.5rem] p-8 border border-brand-100 flex flex-col items-center text-center space-y-2">
+            <h3 class="text-2xl font-bold text-neutral-800">超过 62% 的同龄人</h3>
+            <p class="text-sm font-medium text-neutral-500">在同收入人群中排 <span class="text-brand-500 font-bold">中等偏上</span></p>
+            <p class="text-[10px] text-neutral-400 pt-2 uppercase font-bold tracking-tighter">与上海、25-30岁、月入10k-15k用户对比</p>
+        </section>
+
+        <section class="space-y-4">
+            <h3 class="text-xs font-bold text-neutral-400 uppercase tracking-widest px-1">分类对比</h3>
+            
+            <div class="space-y-3">
+                <!-- Peer Item 1 -->
+                <div class="bg-white rounded-3xl p-6 border border-neutral-100 space-y-4 shadow-sm">
+                    <h4 class="font-bold text-sm">🍜 餐饮</h4>
+                    <div class="space-y-3">
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[10px] font-bold">
+                                <span class="text-brand-500">你 ¥3,200</span>
+                                <span class="text-accent-orange">高于 68% 的人</span>
+                            </div>
+                            <div class="h-3 w-full bg-neutral-100 rounded-full overflow-hidden">
+                                <div class="bg-brand-500 w-[80%] h-full"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1 opacity-50">
+                            <div class="flex justify-between text-[10px] font-bold">
+                                <span class="text-neutral-400">同类中位 ¥2,400</span>
+                            </div>
+                            <div class="h-2 w-full bg-neutral-100 rounded-full overflow-hidden">
+                                <div class="bg-neutral-300 w-[60%] h-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Peer Item 2 -->
+                <div class="bg-white rounded-3xl p-6 border border-neutral-100 space-y-4 shadow-sm">
+                    <h4 class="font-bold text-sm">🚗 交通</h4>
+                    <div class="space-y-3">
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[10px] font-bold">
+                                <span class="text-brand-500">你 ¥800</span>
+                                <span class="text-success">低于 72% 的人</span>
+                            </div>
+                            <div class="h-3 w-full bg-neutral-100 rounded-full overflow-hidden">
+                                <div class="bg-brand-500 w-[40%] h-full"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1 opacity-50">
+                            <div class="flex justify-between text-[10px] font-bold">
+                                <span class="text-neutral-400">同类中位 ¥1,100</span>
+                            </div>
+                            <div class="h-2 w-full bg-neutral-100 rounded-full overflow-hidden">
+                                <div class="bg-neutral-300 w-[55%] h-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-blue-50/50 p-5 rounded-2xl border border-blue-100 flex gap-4">
+            <span class="text-lg">ℹ️</span>
+            <div class="space-y-1">
+                <p class="text-xs font-bold text-blue-600">数据说明</p>
+                <p class="text-[10px] text-blue-500/80 leading-relaxed">基于同城市、相近收入水平的匿名用户数据。所有对比数据经脱敏处理，不包含任何个人信息。</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        function switchView(view) {
+            const tabSim = document.getElementById('tab-sim');
+            const tabPeer = document.getElementById('tab-peer');
+            const viewSim = document.getElementById('view-sim');
+            const viewPeer = document.getElementById('view-peer');
+
+            if (view === 'sim') {
+                tabSim.classList.add('tab-active');
+                tabSim.classList.remove('text-neutral-400');
+                tabPeer.classList.remove('tab-active');
+                tabPeer.classList.add('text-neutral-400');
+                viewSim.classList.remove('hidden');
+                viewPeer.classList.add('hidden');
+            } else {
+                tabPeer.classList.add('tab-active');
+                tabPeer.classList.remove('text-neutral-400');
+                tabSim.classList.remove('tab-active');
+                tabSim.classList.add('text-neutral-400');
+                viewPeer.classList.remove('hidden');
+                viewSim.classList.add('hidden');
+            }
+        }
+
+        function updateSimulation() {
+            const s1 = parseInt(document.getElementById('slider-1').value);
+            const s2 = parseInt(document.getElementById('slider-2').value);
+            
+            document.getElementById('val-1').innerText = s1;
+            document.getElementById('val-2').innerText = s2;
+
+            const save1 = (12 - s1) * 57;
+            const save2 = (20 - s2) * 18;
+            
+            document.getElementById('save-1').innerText = save1;
+            document.getElementById('save-2').innerText = save2;
+
+            const monthlyTotal = save1 + save2;
+            const yearlyTotal = monthlyTotal * 12;
+
+            document.getElementById('yearlyTotal').innerText = `¥ ${yearlyTotal.toLocaleString()}`;
+            document.getElementById('m3Val').innerText = `+¥${(monthlyTotal * 3).toLocaleString()}`;
+            document.getElementById('m12Val').innerText = `+¥${yearlyTotal.toLocaleString()}`;
+
+            // Scale path (simple visualization hack)
+            const path = document.getElementById('optimizedPath');
+            const area = document.getElementById('optimizedArea');
+            const targetY = 70 - (monthlyTotal / 1000 * 50); // Scale logic
+            path.setAttribute('d', `M 0 110 L 300 ${targetY}`);
+            area.setAttribute('d', `M 0 110 L 300 ${targetY} L 300 70 L 0 110 Z`);
+        }
+
+        window.onload = updateSimulation;
+    </script>
+</body>
+</html>

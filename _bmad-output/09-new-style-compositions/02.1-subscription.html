@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>了然 - 会员体验</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#F0F9F6',
+                            100: '#E1F2ED',
+                            200: '#B2DFD4',
+                            500: '#1A6B5A',
+                            600: '#155648',
+                        },
+                        neutral: {
+                            50: '#F9FAFB',
+                            100: '#F3F4F6',
+                            200: '#E5E7EB',
+                            400: '#9CA3AF',
+                            500: '#6B7280',
+                            800: '#1F2937',
+                        },
+                        gold: '#D4AF37'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans SC', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .feature-expand {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .feature-item.active .feature-expand {
+            max-height: 100px;
+        }
+        .success-overlay {
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-neutral-50 font-sans text-neutral-800 antialiased h-screen overflow-y-auto pb-32">
+
+    <!-- Top Bar -->
+    <header class="p-6 flex items-center justify-between sticky top-0 bg-neutral-50 z-40">
+        <button onclick="window.history.back()" class="p-1"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg></button>
+        <h1 class="text-lg font-bold">会员体验</h1>
+        <div class="w-8"></div>
+    </header>
+
+    <!-- Gift Hero -->
+    <section class="px-8 py-10 text-center space-y-6">
+        <div class="relative inline-block">
+             <div class="absolute inset-0 bg-brand-500 opacity-20 rounded-full blur-2xl"></div>
+             <div class="relative text-6xl">🎁</div>
+        </div>
+        <div class="space-y-2">
+            <h2 class="text-3xl font-bold leading-tight">送你 30 天<br>全功能会员体验</h2>
+            <p class="text-neutral-500 text-sm">你已经用了 14 天，消费一目了然，<br>现在解锁更多功能</p>
+        </div>
+    </section>
+
+    <!-- Feature Showcase -->
+    <section class="px-8 space-y-6 mb-12">
+        <h3 class="font-bold text-neutral-400 text-xs uppercase tracking-widest">你将解锁的功能</h3>
+        
+        <!-- Already have group -->
+        <div class="space-y-4 opacity-50">
+            <div class="flex items-center gap-3">
+                <div class="w-5 h-5 bg-neutral-200 rounded-full flex items-center justify-center text-white">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <span class="text-sm font-medium">账单自动导入</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="w-5 h-5 bg-neutral-200 rounded-full flex items-center justify-center text-white">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <span class="text-sm font-medium">AI 智能分类</span>
+            </div>
+        </div>
+
+        <div class="h-px bg-neutral-100"></div>
+
+        <!-- Member group -->
+        <div class="space-y-1">
+            <!-- Feature 1 -->
+            <div class="feature-item p-4 -mx-4 rounded-2xl active:bg-neutral-100 transition-colors" onclick="toggleFeature(this)">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-6 h-6 text-brand-500">★</div>
+                        <span class="font-bold">共享家庭账本</span>
+                    </div>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-neutral-300 transition-transform"><path d="m6 9 6 6 6-6"/></svg>
+                </div>
+                <div class="feature-expand">
+                    <p class="pt-2 text-xs text-neutral-500 leading-relaxed pl-9">邀请家人共同查看消费数据，各自隐私消费不共享，用同一份数字讨论家庭开支。</p>
+                </div>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="feature-item p-4 -mx-4 rounded-2xl active:bg-neutral-100 transition-colors" onclick="toggleFeature(this)">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-6 h-6 text-brand-500">★</div>
+                        <span class="font-bold">为谁花的（受益人标注）</span>
+                    </div>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-neutral-300 transition-transform"><path d="m6 9 6 6 6-6"/></svg>
+                </div>
+                <div class="feature-expand">
+                    <p class="pt-2 text-xs text-neutral-500 leading-relaxed pl-9">为每笔消费标注“为自己、为配偶、为孩子、为家庭”，AI 自动建议标签。</p>
+                </div>
+            </div>
+
+            <!-- AI Section Fold -->
+            <div class="pt-4">
+                <button class="text-sm font-bold text-brand-500 flex items-center gap-1">
+                    AI 财务管家 (5项功能) <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Signals -->
+    <section class="px-8 space-y-4 mb-10">
+        <div class="flex items-center gap-3">
+            <span class="text-lg">🔓</span>
+            <p class="text-xs font-medium text-neutral-500">完全免费，无需绑定银行卡或支付方式</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="text-lg">⏰</span>
+            <p class="text-xs font-medium text-neutral-500">体验到期后自动回到免费版，不会产生任何费用</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="text-lg">🔒</span>
+            <p class="text-xs font-medium text-neutral-500">共享账本中的隐私消费仍只有你能看到</p>
+        </div>
+    </section>
+
+    <!-- CTA Area -->
+    <footer class="fixed bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-xl border-t border-neutral-100 z-40 text-center space-y-4">
+        <div class="space-y-3">
+            <p class="text-[10px] font-bold text-brand-500 uppercase tracking-widest">30 天全功能体验 · 到期自动回到免费版</p>
+            <button onclick="handleClaim()" class="w-full h-14 bg-brand-500 text-white font-bold rounded-2xl shadow-lg shadow-brand-500/20 active:scale-[0.98] transition-all">
+                免费领取
+            </button>
+        </div>
+        <button onclick="window.history.back()" class="text-xs font-bold text-neutral-400">先不了，继续基础版</button>
+    </footer>
+
+    <!-- Claim Success Overlay -->
+    <div id="successOverlay" class="hidden fixed inset-0 z-[100] flex flex-col items-center justify-end">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeSuccess()"></div>
+        <div class="relative bg-white w-full rounded-t-[3rem] p-10 flex flex-col items-center text-center space-y-8 success-overlay">
+            <div class="w-20 h-20 bg-brand-50 rounded-full flex items-center justify-center text-4xl">✅</div>
+            <div class="space-y-2">
+                <h3 class="text-2xl font-bold">已领取，开始体验</h3>
+                <p class="text-neutral-500 text-sm font-medium">全功能会员体验 · 有效期至 2026年5月12日</p>
+            </div>
+            <p class="text-neutral-800 font-medium">现在去创建家庭账本，邀请家人一起看消费</p>
+            <div class="w-full space-y-4">
+                <button onclick="window.location.href='02.2-shared-family-ledger.html'" class="w-full h-14 bg-brand-500 text-white font-bold rounded-2xl shadow-lg shadow-brand-500/20 active:scale-[0.98] transition-all">
+                    创建家庭账本
+                </button>
+                <button onclick="closeSuccess()" class="text-sm font-bold text-neutral-400">稍后再设置</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleFeature(el) {
+            const isActive = el.classList.contains('active');
+            document.querySelectorAll('.feature-item').forEach(item => {
+                item.classList.remove('active');
+                item.querySelector('svg').style.transform = 'rotate(0deg)';
+            });
+            if (!isActive) {
+                el.classList.add('active');
+                el.querySelector('svg').style.transform = 'rotate(180deg)';
+            }
+        }
+
+        function handleClaim() {
+            const btn = document.querySelector('footer button');
+            btn.innerHTML = '领取中...';
+            btn.disabled = true;
+            setTimeout(() => {
+                document.getElementById('successOverlay').classList.remove('hidden');
+                btn.innerHTML = '免费领取';
+                btn.disabled = false;
+            }, 1000);
+        }
+
+        function closeSuccess() {
+            document.getElementById('successOverlay').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>

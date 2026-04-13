@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>了然 - 登录注册</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#EEF2FF',
+                            500: '#1A6B5A',
+                            600: '#155648',
+                        },
+                        neutral: {
+                            50: '#F9FAFB',
+                            100: '#F3F4F6',
+                            200: '#E5E7EB',
+                            300: '#D1D5DB',
+                            400: '#9CA3AF',
+                            500: '#6B7280',
+                            800: '#1F2937',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans SC', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .tab-active {
+            color: #1A6B5A;
+            border-bottom: 3px solid #1A6B5A;
+        }
+        .modal-enter {
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-neutral-50 font-sans text-neutral-800 antialiased h-screen flex flex-col">
+
+    <!-- Top Bar -->
+    <header class="p-6">
+        <button onclick="window.location.href='01.2-onboarding.html'" class="p-2 -ml-2 text-neutral-800">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+    </header>
+
+    <!-- Brand Header -->
+    <div class="px-8 pt-4 pb-8 flex flex-col items-center">
+        <div class="w-12 h-12 bg-brand-500 rounded-xl flex items-center justify-center shadow-md mb-4">
+            <svg width="28" height="28" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="8" y="8" width="24" height="24" rx="4" fill="white" fill-opacity="0.2"/>
+                <path d="M20 12V28M12 20H28" stroke="white" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <h2 class="text-lg font-medium text-neutral-500">几秒搞定，马上体验</h2>
+    </div>
+
+    <!-- Login Tabs -->
+    <div class="flex px-8 border-b border-neutral-200">
+        <button id="wechatTab" onclick="switchTab('wechat')" class="flex-1 py-4 text-center font-bold text-neutral-400 tab-active transition-all">微信登录</button>
+        <button id="phoneTab" onclick="switchTab('phone')" class="flex-1 py-4 text-center font-bold text-neutral-400 transition-all">手机号登录</button>
+    </div>
+
+    <!-- Content Area -->
+    <main class="flex-grow px-8 pt-10">
+        <!-- WeChat Section -->
+        <div id="wechatSection" class="space-y-6">
+            <button onclick="handleLogin('wechat')" class="w-full h-14 bg-[#07C160] text-white font-bold rounded-lg flex items-center justify-center gap-3 active:scale-[0.98] transition-all">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12.002 4.148c-4.47 0-8.093 3.32-8.093 7.412 0 2.27 1.112 4.312 2.87 5.672l-.726 2.147 2.454-1.22c.473.13 1.01.213 1.495.213 4.47 0 8.093-3.32 8.093-7.412s-3.623-7.412-8.093-7.412zm5.004 5.56c.404 0 .727.324.727.727 0 .403-.323.726-.727.726h-10c-.403 0-.726-.323-.726-.726 0-.403.323-.727.726-.727h10zm-10 2.503c-.403 0-.726-.324-.726-.727 0-.403.323-.726.726-.726h10c.404 0 .727.323.727.726 0 .403-.323.727-.727.727h-10zm0 2.5c-.403 0-.726-.324-.726-.727 0-.403.323-.726.726-.726h6c.403 0 .726.323.726.726 0 .403-.323.727-.726.727h-6z"/></svg>
+                微信一键登录
+            </button>
+            <p class="text-center text-sm text-neutral-400">仅用于显示你的昵称和头像</p>
+        </div>
+
+        <!-- Phone Section -->
+        <div id="phoneSection" class="hidden space-y-6">
+            <div class="space-y-4">
+                <div class="flex h-14 bg-neutral-100 rounded-lg px-4 items-center focus-within:ring-2 focus-within:ring-brand-500 transition-all">
+                    <span class="text-neutral-800 font-bold border-r border-neutral-300 pr-4 mr-4">+86</span>
+                    <input type="tel" maxlength="11" placeholder="请输入手机号" class="bg-transparent flex-grow outline-none text-neutral-800 font-medium">
+                </div>
+                <button onclick="handleLogin('phone')" class="w-full h-14 border-2 border-brand-500 text-brand-500 font-bold rounded-lg active:scale-[0.98] transition-all">
+                    获取验证码
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Agreement Footer -->
+    <footer class="p-8 pb-12">
+        <div class="flex items-start gap-3">
+            <input type="checkbox" id="agreementCheckbox" class="mt-1 w-5 h-5 accent-brand-500 rounded border-neutral-300">
+            <label for="agreementCheckbox" class="text-xs leading-relaxed text-neutral-500">
+                我已阅读并同意 <a href="#" class="text-brand-500 font-medium">《用户协议》</a> 和 <a href="#" class="text-brand-500 font-medium">《隐私政策》</a>
+            </label>
+        </div>
+    </footer>
+
+    <!-- Agreement Popup Modal -->
+    <div id="agreementModal" class="hidden fixed inset-0 z-[100]">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeModal()"></div>
+        <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2rem] p-8 modal-enter">
+            <div class="w-12 h-1 bg-neutral-200 rounded-full mx-auto mb-8"></div>
+            <h3 class="text-xl font-bold mb-4">服务协议与隐私保护</h3>
+            <p class="text-neutral-500 text-sm leading-relaxed mb-8">
+                为了更好地保护您的权益，请阅读并同意 <a href="#" class="text-brand-500 font-medium">《用户协议》</a> 和 <a href="#" class="text-brand-500 font-medium">《隐私政策》</a>
+            </p>
+            <div class="space-y-3">
+                <button onclick="agreeAndContinue()" class="w-full h-14 bg-brand-500 text-white font-bold rounded-lg active:scale-[0.98] transition-all">
+                    同意并继续
+                </button>
+                <button onclick="closeModal()" class="w-full h-14 text-neutral-400 font-bold active:scale-[0.98] transition-all">
+                    不同意
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(method) {
+            const wechatTab = document.getElementById('wechatTab');
+            const phoneTab = document.getElementById('phoneTab');
+            const wechatSection = document.getElementById('wechatSection');
+            const phoneSection = document.getElementById('phoneSection');
+
+            if (method === 'wechat') {
+                wechatTab.classList.add('tab-active');
+                phoneTab.classList.remove('tab-active');
+                wechatSection.classList.remove('hidden');
+                phoneSection.classList.add('hidden');
+            } else {
+                phoneTab.classList.add('tab-active');
+                wechatTab.classList.remove('tab-active');
+                phoneSection.classList.remove('hidden');
+                wechatSection.classList.add('hidden');
+            }
+        }
+
+        let pendingAction = null;
+
+        function handleLogin(method) {
+            const isAgreed = document.getElementById('agreementCheckbox').checked;
+            if (!isAgreed) {
+                pendingAction = method;
+                document.getElementById('agreementModal').classList.remove('hidden');
+            } else {
+                executeLogin(method);
+            }
+        }
+
+        function agreeAndContinue() {
+            document.getElementById('agreementCheckbox').checked = true;
+            closeModal();
+            if (pendingAction) {
+                executeLogin(pendingAction);
+                pendingAction = null;
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('agreementModal').classList.add('hidden');
+        }
+
+        function executeLogin(method) {
+            // Simulation of next step
+            window.location.href = '01.4-permission.html';
+        }
+    </script>
+</body>
+</html>

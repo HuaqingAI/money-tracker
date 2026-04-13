@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>了然 - 消费列表</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#F0F9F6',
+                            100: '#E1F2ED',
+                            200: '#B2DFD4',
+                            500: '#1A6B5A',
+                            600: '#155648',
+                        },
+                        neutral: {
+                            50: '#F9FAFB',
+                            100: '#F3F4F6',
+                            200: '#E5E7EB',
+                            300: '#D1D5DB',
+                            400: '#9CA3AF',
+                            500: '#6B7280',
+                            800: '#1F2937',
+                        },
+                        income: '#22C55E'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans SC', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .sticky-header { position: sticky; top: 72px; z-index: 30; }
+        .search-overlay {
+            animation: fadeIn 0.2s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-neutral-50 font-sans text-neutral-800 antialiased min-h-screen pb-24">
+
+    <!-- Header Bar -->
+    <header class="p-6 flex items-center justify-between sticky top-0 bg-neutral-50/90 backdrop-blur-md z-40">
+        <h1 class="text-xl font-bold">消费</h1>
+        <button onclick="openSearch()" class="p-2 -mr-2"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
+    </header>
+
+    <!-- Monthly Summary Bar -->
+    <section class="px-6 py-4 flex justify-between items-end bg-neutral-50">
+        <div class="space-y-1">
+            <div class="flex items-center gap-1 text-sm font-bold text-neutral-400">
+                <span>4月</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg>
+            </div>
+            <h2 class="text-3xl font-bold tracking-tight">¥ 12,847</h2>
+        </div>
+        <button class="text-xs font-bold text-brand-500 bg-brand-50 px-3 py-1.5 rounded-full">切换月份</button>
+    </section>
+
+    <!-- Category Filter Chips -->
+    <section class="overflow-x-auto no-scrollbar py-4 flex gap-3 px-6 sticky top-[72px] bg-neutral-50 z-40">
+        <button class="flex-shrink-0 px-5 py-2 bg-brand-500 text-white rounded-full text-sm font-bold shadow-sm">全部</button>
+        <button class="flex-shrink-0 px-5 py-2 bg-white border border-neutral-100 rounded-full text-sm font-bold text-neutral-500">🍽️ 餐饮</button>
+        <button class="flex-shrink-0 px-5 py-2 bg-white border border-neutral-100 rounded-full text-sm font-bold text-neutral-500">🏠 居住</button>
+        <button class="flex-shrink-0 px-5 py-2 bg-white border border-neutral-100 rounded-full text-sm font-bold text-neutral-500">🚗 交通</button>
+        <button class="flex-shrink-0 px-5 py-2 bg-white border border-neutral-100 rounded-full text-sm font-bold text-neutral-500">🛒 购物</button>
+    </section>
+
+    <!-- Transaction List -->
+    <main class="space-y-8 mt-2 px-6">
+        
+        <!-- Group: Today -->
+        <div class="space-y-4">
+            <div class="flex justify-between items-center text-xs font-bold text-neutral-400 uppercase tracking-widest sticky top-[138px] bg-neutral-50/90 py-2 z-30">
+                <span>今天 4月10日</span>
+                <span>-¥18.00</span>
+            </div>
+            <div class="bg-white rounded-3xl overflow-hidden border border-neutral-100 shadow-sm divide-y divide-neutral-50">
+                <!-- Item -->
+                <div onclick="window.location.href='03.2-transaction-detail.html'" class="flex items-center gap-4 p-4 active:bg-neutral-50 transition-colors">
+                    <div class="w-11 h-11 bg-orange-50 text-2xl flex items-center justify-center rounded-2xl">🍵</div>
+                    <div class="flex-grow">
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-bold">瑞幸咖啡</span>
+                            <div class="w-1 h-1 bg-brand-500 rounded-full"></div>
+                        </div>
+                        <p class="text-[10px] text-neutral-400 font-medium">餐饮·饮品  10:32</p>
+                    </div>
+                    <span class="font-bold text-lg">-18.00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Group: Yesterday -->
+        <div class="space-y-4">
+            <div class="flex justify-between items-center text-xs font-bold text-neutral-400 uppercase tracking-widest sticky top-[138px] bg-neutral-50/90 py-2 z-30">
+                <span>昨天 4月9日</span>
+                <span>-¥175.00</span>
+            </div>
+            <div class="bg-white rounded-3xl overflow-hidden border border-neutral-100 shadow-sm divide-y divide-neutral-50">
+                <div onclick="window.location.href='03.2-transaction-detail.html'" class="flex items-center gap-4 p-4 active:bg-neutral-50 transition-colors">
+                    <div class="w-11 h-11 bg-orange-50 text-2xl flex items-center justify-center rounded-2xl">🍜</div>
+                    <div class="flex-grow">
+                        <span class="font-bold">美团外卖</span>
+                        <p class="text-[10px] text-neutral-400 font-medium">餐饮·外卖  12:05</p>
+                    </div>
+                    <span class="font-bold text-lg">-38.00</span>
+                </div>
+                <div onclick="window.location.href='03.2-transaction-detail.html'" class="flex items-center gap-4 p-4 active:bg-neutral-50 transition-colors">
+                    <div class="w-11 h-11 bg-purple-50 text-2xl flex items-center justify-center rounded-2xl">🛒</div>
+                    <div class="flex-grow">
+                        <span class="font-bold">淘宝</span>
+                        <p class="text-[10px] text-neutral-400 font-medium">购物·服饰  21:47</p>
+                    </div>
+                    <span class="font-bold text-lg">-129.00</span>
+                </div>
+                <div onclick="window.location.href='03.2-transaction-detail.html'" class="flex items-center gap-4 p-4 active:bg-neutral-50 transition-colors">
+                    <div class="w-11 h-11 bg-orange-50 text-2xl flex items-center justify-center rounded-2xl">🧋</div>
+                    <div class="flex-grow">
+                        <span class="font-bold">蜜雪冰城</span>
+                        <p class="text-[10px] text-neutral-400 font-medium">餐饮·饮品  15:22</p>
+                    </div>
+                    <span class="font-bold text-lg">-8.00</span>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FAB -->
+    <button onclick="window.location.href='../06-manual-input-and-category-management-Prototype/06.1-ManualEntry.html'" class="fixed bottom-28 right-6 w-14 h-14 bg-brand-500 text-white rounded-full shadow-lg shadow-brand-500/40 flex items-center justify-center active:scale-90 transition-all z-50">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+
+    <!-- Bottom Tab Bar -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-neutral-100 px-6 pt-3 pb-8 flex justify-between items-center z-40">
+        <div onclick="window.location.href='01.7-dashboard.html'" class="flex flex-col items-center gap-1 text-neutral-400">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            <span class="text-[10px] font-bold">首页</span>
+        </div>
+        <div class="flex flex-col items-center gap-1 text-brand-500">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>
+            <span class="text-[10px] font-bold">消费</span>
+        </div>
+        <div class="flex flex-col items-center gap-1 text-neutral-400">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+            <span class="text-[10px] font-bold">AI</span>
+        </div>
+        <div class="flex flex-col items-center gap-1 text-neutral-400">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span class="text-[10px] font-bold">我的</span>
+        </div>
+    </nav>
+
+    <!-- Search Overlay (Hidden) -->
+    <div id="searchOverlay" class="hidden fixed inset-0 bg-neutral-50 z-[100] search-overlay">
+        <header class="p-6 flex items-center gap-4">
+            <div class="flex-grow h-12 bg-white rounded-2xl px-4 flex items-center gap-3 border border-neutral-100 shadow-sm">
+                <svg class="text-neutral-400" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input type="text" placeholder="搜索消费..." class="flex-grow bg-transparent outline-none font-medium">
+            </div>
+            <button onclick="closeSearch()" class="text-neutral-500 font-bold">取消</button>
+        </header>
+        <main class="px-8 space-y-6">
+            <h3 class="text-xs font-bold text-neutral-400 uppercase tracking-widest">最近搜索</h3>
+            <div class="flex flex-wrap gap-2">
+                <button class="px-4 py-2 bg-white border border-neutral-100 rounded-xl text-sm font-medium">瑞幸</button>
+                <button class="px-4 py-2 bg-white border border-neutral-100 rounded-xl text-sm font-medium">奶茶</button>
+                <button class="px-4 py-2 bg-white border border-neutral-100 rounded-xl text-sm font-medium">淘宝</button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function openSearch() {
+            document.getElementById('searchOverlay').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeSearch() {
+            document.getElementById('searchOverlay').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+    </script>
+</body>
+</html>

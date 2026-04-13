@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>了然 - 为谁花的</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#F0F9F6',
+                            100: '#E1F2ED',
+                            200: '#B2DFD4',
+                            500: '#1A6B5A',
+                            600: '#155648',
+                        },
+                        neutral: {
+                            50: '#F9FAFB',
+                            100: '#F3F4F6',
+                            200: '#E5E7EB',
+                            300: '#D1D5DB',
+                            400: '#9CA3AF',
+                            500: '#6B7280',
+                            800: '#1F2937',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans SC', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .rule-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .rule-card.confirmed {
+            background-color: #F9FAFB;
+            border-color: transparent;
+            opacity: 0.7;
+        }
+        .rule-card.confirmed .action-area {
+            display: none;
+        }
+        .rule-card.confirmed .confirmed-area {
+            display: flex;
+        }
+        .confirmed-area {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-neutral-50 font-sans text-neutral-800 antialiased h-screen overflow-y-auto pb-32">
+
+    <!-- Top Bar -->
+    <header class="p-6 flex items-center justify-between sticky top-0 bg-neutral-50 z-40">
+        <button onclick="handleBack()" class="p-1"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg></button>
+        <h1 id="pageTitle" class="text-lg font-bold">为谁花的</h1>
+        <button onclick="finishAll()" class="text-brand-500 font-bold">完成</button>
+    </header>
+
+    <!-- Phase 1: Rule Confirmation -->
+    <div id="phase1">
+        <header class="px-8 pt-4 pb-8 space-y-2">
+            <h2 class="text-2xl font-bold">AI 已识别你的消费模式</h2>
+            <p class="text-neutral-500">确认以下规则即可，无需逐笔标注</p>
+        </header>
+
+        <section class="px-6 space-y-4">
+            <!-- Rule 1 -->
+            <div class="rule-card bg-white border border-neutral-100 rounded-[1.5rem] p-6 shadow-sm" id="rule1">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center gap-4">
+                        <div class="text-3xl">🍽️</div>
+                        <div class="space-y-0.5">
+                            <h3 class="font-bold">工作日午餐外卖</h3>
+                            <p class="text-xs text-neutral-400">美团外卖、饿了么 等</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs font-bold text-neutral-800">12 笔</p>
+                        <p class="text-[10px] text-neutral-400">共 ¥384</p>
+                    </div>
+                </div>
+                
+                <div class="action-area space-y-4">
+                    <div class="bg-brand-50 text-brand-600 px-3 py-2 rounded-lg text-xs font-medium inline-block">
+                        AI 建议: <span class="font-bold">为自己</span>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="confirmRule('rule1', '为自己')" class="flex-1 h-12 bg-white border-2 border-brand-500 text-brand-500 font-bold rounded-xl active:scale-95 transition-all">确认 ✓</button>
+                        <button class="px-4 text-sm font-bold text-neutral-400">修改为...</button>
+                    </div>
+                </div>
+
+                <div class="confirmed-area justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="text-green-500">✓ 已确认</span>
+                        <span class="px-2 py-0.5 bg-brand-100 text-brand-600 rounded text-[10px] font-bold" id="rule1Tag">为自己</span>
+                    </div>
+                    <button onclick="undoRule('rule1')" class="text-xs font-bold text-neutral-400">撤销</button>
+                </div>
+            </div>
+
+            <!-- Rule 2 -->
+            <div class="rule-card bg-white border border-neutral-100 rounded-[1.5rem] p-6 shadow-sm" id="rule2">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center gap-4">
+                        <div class="text-3xl">🚗</div>
+                        <div class="space-y-0.5">
+                            <h3 class="font-bold">通勤交通</h3>
+                            <p class="text-xs text-neutral-400">滴滴出行、地铁 等</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs font-bold text-neutral-800">8 笔</p>
+                        <p class="text-[10px] text-neutral-400">共 ¥224</p>
+                    </div>
+                </div>
+                
+                <div class="action-area space-y-4">
+                    <div class="bg-brand-50 text-brand-600 px-3 py-2 rounded-lg text-xs font-medium inline-block">
+                        AI 建议: <span class="font-bold">为自己</span>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="confirmRule('rule2', '为自己')" class="flex-1 h-12 bg-white border-2 border-brand-500 text-brand-500 font-bold rounded-xl active:scale-95 transition-all">确认 ✓</button>
+                        <button class="px-4 text-sm font-bold text-neutral-400">修改为...</button>
+                    </div>
+                </div>
+
+                <div class="confirmed-area justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="text-green-500">✓ 已确认</span>
+                        <span class="px-2 py-0.5 bg-brand-100 text-brand-600 rounded text-[10px] font-bold" id="rule2Tag">为自己</span>
+                    </div>
+                    <button onclick="undoRule('rule2')" class="text-xs font-bold text-neutral-400">撤销</button>
+                </div>
+            </div>
+
+            <!-- Rule 3 -->
+            <div class="rule-card bg-white border border-neutral-100 rounded-[1.5rem] p-6 shadow-sm" id="rule3">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center gap-4">
+                        <div class="text-3xl">🏠</div>
+                        <div class="space-y-0.5">
+                            <h3 class="font-bold">房贷/水电/物业</h3>
+                            <p class="text-xs text-neutral-400">房贷月供、电费 等</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs font-bold text-neutral-800">3 笔</p>
+                        <p class="text-[10px] text-neutral-400">共 ¥7,200</p>
+                    </div>
+                </div>
+                
+                <div class="action-area space-y-4">
+                    <div class="bg-brand-50 text-brand-600 px-3 py-2 rounded-lg text-xs font-medium inline-block">
+                        AI 建议: <span class="font-bold">为家庭</span>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="confirmRule('rule3', '为家庭')" class="flex-1 h-12 bg-white border-2 border-brand-500 text-brand-500 font-bold rounded-xl active:scale-95 transition-all">确认 ✓</button>
+                        <button class="px-4 text-sm font-bold text-neutral-400">修改为...</button>
+                    </div>
+                </div>
+
+                <div class="confirmed-area justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="text-green-500">✓ 已确认</span>
+                        <span class="px-2 py-0.5 bg-green-100 text-green-600 rounded text-[10px] font-bold" id="rule3Tag">为家庭</span>
+                    </div>
+                    <button onclick="undoRule('rule3')" class="text-xs font-bold text-neutral-400">撤销</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="px-6 py-10 text-center space-y-4">
+            <p class="text-xs text-neutral-400">还有 5 笔 AI 不太确定</p>
+            <button onclick="gotoPhase2()" class="text-brand-500 font-bold text-sm">去看看 ></button>
+        </section>
+    </div>
+
+    <!-- Phase 2: Remaining (Hidden) -->
+    <div id="phase2" class="hidden">
+        <header class="mx-6 mt-4 mb-8 bg-brand-50 border border-brand-100 rounded-xl p-5 flex items-center gap-4">
+            <span class="text-2xl">💡</span>
+            <p class="text-sm font-bold text-brand-600">这几笔 AI 不太确定，帮忙看看？</p>
+        </header>
+
+        <section class="px-6 space-y-3">
+            <div class="bg-white border border-neutral-100 rounded-2xl p-5 space-y-4 shadow-sm">
+                <div class="flex justify-between items-center">
+                    <span class="font-bold">丝芙兰</span>
+                    <span class="font-bold">¥289.00</span>
+                </div>
+                <p class="text-[10px] text-neutral-400 font-medium">4月8日 · 购物 · 美妆</p>
+                <div class="flex flex-wrap gap-2 pt-2">
+                    <button class="px-3 py-1.5 border border-neutral-200 rounded-lg text-xs font-bold text-neutral-400">为自己</button>
+                    <button class="px-3 py-1.5 border border-neutral-200 rounded-lg text-xs font-bold text-neutral-400">为配偶</button>
+                    <button class="px-3 py-1.5 border border-neutral-200 rounded-lg text-xs font-bold text-neutral-400">为孩子</button>
+                    <button class="px-3 py-1.5 border border-neutral-200 rounded-lg text-xs font-bold text-neutral-400">为家庭</button>
+                </div>
+            </div>
+
+            <div class="bg-white border border-neutral-100 rounded-2xl p-5 space-y-4 shadow-sm">
+                <div class="flex justify-between items-center">
+                    <span class="font-bold">京东</span>
+                    <span class="font-bold">¥168.00</span>
+                </div>
+                <p class="text-[10px] text-neutral-400 font-medium">4月7日 · 购物 · 综合</p>
+                <div class="flex flex-wrap gap-2 pt-2">
+                    <button class="px-3 py-1.5 border border-neutral-200 rounded-lg text-xs font-bold text-neutral-400">为自己</button>
+                    <button class="px-3 py-1.5 border border-neutral-200 rounded-lg text-xs font-bold text-neutral-400">为配偶</button>
+                    <button class="px-3 py-1.5 border border-neutral-200 rounded-lg text-xs font-bold text-neutral-400">为孩子</button>
+                    <button class="px-3 py-1.5 border border-neutral-200 rounded-lg text-xs font-bold text-neutral-400">为家庭</button>
+                </div>
+            </div>
+        </section>
+
+        <footer class="px-6 pt-12 pb-8 flex flex-col items-center gap-4">
+             <button onclick="finishAll()" class="w-full h-14 bg-brand-500 text-white font-bold rounded-2xl shadow-lg shadow-brand-500/20 active:scale-95 transition-all">完成标注</button>
+             <button onclick="finishAll()" class="text-xs font-bold text-neutral-400">跳过剩余，以后再标注</button>
+        </footer>
+    </div>
+
+    <!-- Bottom Progress Action Bar (Phase 1) -->
+    <footer id="bottomAction" class="fixed bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-xl border-t border-neutral-100 z-40 space-y-4">
+        <div class="space-y-2">
+            <p id="progressText" class="text-[11px] font-bold text-neutral-500">已确认 0/3 条规则，覆盖 0 笔消费</p>
+            <div class="h-1.5 w-full bg-neutral-100 rounded-full overflow-hidden">
+                <div id="progressBar" class="h-full bg-brand-500 w-0 transition-all duration-300"></div>
+            </div>
+        </div>
+        <button id="confirmAllBtn" onclick="confirmAll()" class="w-full h-14 bg-brand-500 text-white font-bold rounded-2xl shadow-lg shadow-brand-500/20 active:scale-95 transition-all">
+            全部确认
+        </button>
+    </footer>
+
+    <script>
+        let confirmedCount = 0;
+        const totalRules = 3;
+        const totalTxns = 23;
+        const txnMap = { 'rule1': 12, 'rule2': 8, 'rule3': 3 };
+        let coveredTxns = 0;
+
+        function confirmRule(id, tagName) {
+            const card = document.getElementById(id);
+            if (card.classList.contains('confirmed')) return;
+
+            card.classList.add('confirmed');
+            confirmedCount++;
+            coveredTxns += txnMap[id];
+            updateProgress();
+        }
+
+        function undoRule(id) {
+            const card = document.getElementById(id);
+            card.classList.remove('confirmed');
+            confirmedCount--;
+            coveredTxns -= txnMap[id];
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const text = document.getElementById('progressText');
+            const bar = document.getElementById('progressBar');
+            const btn = document.getElementById('confirmAllBtn');
+
+            text.innerText = `已确认 ${confirmedCount}/${totalRules} 条规则，覆盖 ${coveredTxns} 笔消费`;
+            bar.style.width = (coveredTxns / totalTxns * 100) + '%';
+
+            if (confirmedCount === totalRules) {
+                btn.innerText = '完成！去看看效果';
+            } else {
+                btn.innerText = '全部确认';
+            }
+        }
+
+        function confirmAll() {
+            if (confirmedCount === totalRules) {
+                finishAll();
+                return;
+            }
+            if (confirm('接受全部 AI 建议？确认后仍可在消费详情中逐笔调整。')) {
+                document.querySelectorAll('.rule-card').forEach(card => {
+                    const id = card.id;
+                    if (!card.classList.contains('confirmed')) {
+                        confirmRule(id, 'AI建议');
+                    }
+                });
+            }
+        }
+
+        function gotoPhase2() {
+            document.getElementById('phase1').classList.add('hidden');
+            document.getElementById('bottomAction').classList.add('hidden');
+            document.getElementById('phase2').classList.remove('hidden');
+            document.getElementById('pageTitle').innerText = '剩余 5 笔';
+        }
+
+        function handleBack() {
+            if (!document.getElementById('phase2').classList.contains('hidden')) {
+                document.getElementById('phase2').classList.add('hidden');
+                document.getElementById('phase1').classList.remove('hidden');
+                document.getElementById('bottomAction').classList.remove('hidden');
+                document.getElementById('pageTitle').innerText = '为谁花的';
+            } else {
+                window.location.href = '01.7-dashboard.html';
+            }
+        }
+
+        function finishAll() {
+            window.location.href = '01.7-dashboard.html';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>了然 - 正在处理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#EEF2FF',
+                            500: '#1A6B5A',
+                        },
+                        neutral: {
+                            50: '#F9FAFB',
+                            100: '#F3F4F6',
+                            200: '#E5E7EB',
+                            500: '#6B7280',
+                            800: '#1F2937',
+                        },
+                        success: '#22C55E'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans SC', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .pulse-ring {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.2; }
+            50% { transform: scale(1.1); opacity: 0.4; }
+        }
+        .float-item {
+            animation: float-up 1.5s ease-out forwards;
+        }
+        @keyframes float-up {
+            0% { transform: translateY(40px); opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translateY(-40px); opacity: 0; }
+        }
+        .celebration-enter {
+            animation: fadeInScale 0.5s ease-out forwards;
+        }
+        @keyframes fadeInScale {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-neutral-50 font-sans text-neutral-800 antialiased h-screen overflow-hidden flex flex-col">
+
+    <!-- Processing View -->
+    <main id="processingView" class="flex-grow flex flex-col items-center justify-center p-8 transition-opacity duration-500">
+        
+        <!-- Section 1: Animation Stage -->
+        <div class="relative w-full aspect-square max-w-[300px] mb-12 flex items-center justify-center">
+            <!-- AI Brain Center -->
+            <div class="absolute inset-0 pulse-ring bg-brand-500 rounded-full"></div>
+            <div class="w-24 h-24 bg-brand-500 rounded-full flex items-center justify-center shadow-xl z-10">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><circle cx="12" cy="12" r="3"/><path d="M12 7v2m0 6v2m-5-5h2m6 0h2"/></svg>
+            </div>
+
+            <!-- Floating labels container -->
+            <div id="labelsStage" class="absolute inset-0 pointer-events-none"></div>
+
+            <!-- Category Bubbles -->
+            <div class="absolute top-0 right-4 w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center shadow-sm">🍱</div>
+            <div class="absolute bottom-8 right-0 w-14 h-14 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center shadow-sm">🚗</div>
+            <div class="absolute bottom-0 left-8 w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center shadow-sm">🛍️</div>
+        </div>
+
+        <!-- Section 2: Progress Tracker -->
+        <div class="w-full space-y-4 text-center">
+            <h2 id="counterText" class="text-xl font-bold">正在识别 0/132 笔交易...</h2>
+            <div class="h-1.5 w-full bg-neutral-100 rounded-full overflow-hidden">
+                <div id="progressBar" class="h-full bg-brand-500 w-0 transition-all duration-300"></div>
+            </div>
+            <p class="text-xs text-neutral-400">通常需要 10-20 秒</p>
+        </div>
+
+        <!-- Section 3: Live Feed -->
+        <div class="mt-12 w-full max-w-[280px]">
+            <p class="text-[11px] font-bold text-neutral-400 uppercase tracking-widest mb-3">最新识别</p>
+            <div id="liveFeed" class="space-y-2 h-32 overflow-hidden flex flex-col-reverse"></div>
+        </div>
+    </main>
+
+    <!-- Section 4: Completion Celebration (Hidden by default) -->
+    <div id="celebrationView" class="hidden absolute inset-0 bg-neutral-50 flex flex-col items-center justify-center p-8 celebration-enter">
+        <div class="w-20 h-20 bg-success text-white rounded-full flex items-center justify-center shadow-lg mb-8">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        
+        <div class="text-center space-y-2 mb-8">
+            <h2 class="text-3xl font-bold">已识别 132 笔交易</h2>
+            <p class="text-success font-bold text-xl">AI 已识别 97%</p>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-2 mb-12">
+            <span class="px-3 py-1.5 bg-orange-50 text-orange-600 rounded-full text-xs font-bold border border-orange-100">餐饮 38笔</span>
+            <span class="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-full text-xs font-bold border border-blue-100">交通 22笔</span>
+            <span class="px-3 py-1.5 bg-purple-50 text-purple-600 rounded-full text-xs font-bold border border-purple-100">购物 31笔</span>
+            <span class="px-3 py-1.5 bg-green-50 text-green-600 rounded-full text-xs font-bold border border-green-100">健康 12笔</span>
+        </div>
+
+        <p class="text-neutral-400 text-sm">即将为你展示消费全貌...</p>
+    </div>
+
+    <script>
+        const total = 132;
+        let current = 0;
+        const transactions = [
+            { name: '美团外卖', amount: '28.50', cat: '餐饮', color: 'bg-orange-100 text-orange-600' },
+            { name: '滴滴出行', amount: '15.00', cat: '交通', color: 'bg-blue-100 text-blue-600' },
+            { name: '淘宝', amount: '199.00', cat: '购物', color: 'bg-purple-100 text-purple-600' },
+            { name: '瑞幸咖啡', amount: '9.90', cat: '餐饮', color: 'bg-orange-100 text-orange-600' },
+            { name: '全家便利店', amount: '12.50', cat: '餐饮', color: 'bg-orange-100 text-orange-600' },
+            { name: 'App Store', amount: '68.00', cat: '娱乐', color: 'bg-pink-100 text-pink-600' }
+        ];
+
+        function startSimulation() {
+            const interval = setInterval(() => {
+                if (current < total) {
+                    current += Math.floor(Math.random() * 15) + 5;
+                    if (current > total) current = total;
+                    
+                    document.getElementById('counterText').innerText = `正在识别 ${current}/${total} 笔交易...`;
+                    document.getElementById('progressBar').style.width = (current / total * 100) + '%';
+
+                    // Add live feed item
+                    const tx = transactions[Math.floor(Math.random() * transactions.length)];
+                    const feed = document.getElementById('liveFeed');
+                    const item = document.createElement('div');
+                    item.className = 'flex items-center justify-between py-2 border-b border-neutral-100 slide-in';
+                    item.innerHTML = `
+                        <span class="text-sm font-medium">${tx.name} ¥${tx.amount}</span>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${tx.color}">${tx.cat}</span>
+                    `;
+                    feed.prepend(item);
+                    if (feed.children.length > 4) feed.removeChild(feed.lastChild);
+
+                    // Add floating label
+                    const stage = document.getElementById('labelsStage');
+                    const label = document.createElement('div');
+                    label.className = 'absolute bottom-0 left-1/2 -translate-x-1/2 bg-white px-3 py-1 rounded-full shadow-md text-[10px] font-bold border border-neutral-100 float-item';
+                    label.innerText = `${tx.name} ¥${tx.amount}`;
+                    stage.appendChild(label);
+                    setTimeout(() => stage.removeChild(label), 1500);
+
+                } else {
+                    clearInterval(interval);
+                    setTimeout(showCompletion, 500);
+                }
+            }, 800);
+        }
+
+        function showCompletion() {
+            document.getElementById('processingView').classList.add('opacity-0');
+            setTimeout(() => {
+                document.getElementById('processingView').classList.add('hidden');
+                document.getElementById('celebrationView').classList.remove('hidden');
+                setTimeout(() => {
+                    window.location.href = '01.7-dashboard.html';
+                }, 3000);
+            }, 500);
+        }
+
+        window.onload = startSimulation;
+    </script>
+</body>
+</html>

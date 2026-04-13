@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>了然 - 导入礼簿</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#FDF2F2',
+                            500: '#1A6B5A',
+                            600: '#155648',
+                        },
+                        neutral: {
+                            50: '#F9FAFB',
+                            100: '#F3F4F6',
+                            200: '#E5E7EB',
+                            400: '#9CA3AF',
+                            500: '#6B7280',
+                            800: '#1F2937',
+                        },
+                        warning: '#F97316'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans SC', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .camera-shutter {
+            animation: shutter 0.3s ease-out;
+        }
+        @keyframes shutter {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        .progress-pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+    </style>
+</head>
+<body class="bg-neutral-800 font-sans text-white antialiased h-screen overflow-hidden">
+
+    <!-- Step 1: Capture (Camera UI) -->
+    <div id="step1" class="h-full flex flex-col">
+        <header class="p-6 flex items-center justify-between">
+            <button onclick="window.history.back()" class="p-2 -ml-2"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg></button>
+            <h1 class="text-lg font-bold">导入礼簿</h1>
+            <button class="text-sm font-bold">选相册</button>
+        </header>
+
+        <main class="flex-grow relative px-6 py-4 flex flex-col items-center">
+            <!-- Simulated Viewfinder -->
+            <div class="w-full aspect-[3/4] border-2 border-dashed border-white/30 rounded-3xl relative flex items-center justify-center overflow-hidden bg-black/20">
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="w-64 h-80 border border-white/50 rounded-lg"></div>
+                </div>
+                <p class="text-xs text-white/60 text-center px-12">礼簿放在框内拍摄</p>
+            </div>
+            
+            <div class="mt-8 text-center space-y-2">
+                <p class="text-sm font-medium">平放礼簿，光线均匀，确保文字清晰</p>
+                <p class="text-[10px] text-white/40 uppercase tracking-widest">DeepSeek OCR 2 驱动识别</p>
+            </div>
+        </main>
+
+        <footer class="p-12 flex flex-col items-center gap-6">
+            <div class="relative">
+                <button onclick="takePhoto()" class="w-20 h-20 bg-white rounded-full p-1 border-4 border-white/20 active:scale-95 transition-all">
+                    <div class="w-full h-full bg-white rounded-full"></div>
+                </button>
+                <div id="photoCount" class="hidden absolute -top-1 -right-1 w-6 h-6 bg-brand-500 rounded-full flex items-center justify-center text-[10px] font-bold border-2 border-neutral-800">1</div>
+            </div>
+            <p class="text-xs text-white/60">多页？连续拍摄后一起识别</p>
+            <button id="startBtn" onclick="startRecognition()" class="hidden w-full h-14 bg-brand-500 text-white font-bold rounded-2xl">开始识别 (1张)</button>
+        </footer>
+    </div>
+
+    <!-- Step 2: Processing (Hidden) -->
+    <div id="step2" class="hidden h-full bg-neutral-50 flex flex-col items-center justify-center p-8 text-neutral-800">
+        <div class="w-24 h-24 bg-brand-500 rounded-full flex items-center justify-center shadow-xl mb-8 progress-pulse">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><circle cx="12" cy="12" r="3"/><path d="M12 7v2m0 6v2m-5-5h2m6 0h2"/></svg>
+        </div>
+        <h2 class="text-xl font-bold mb-2">正在识别礼簿...</h2>
+        <p class="text-sm text-neutral-400 mb-8">逐行辨认姓名和金额</p>
+        <div class="w-full max-w-[240px] space-y-4">
+            <div class="h-1.5 w-full bg-neutral-100 rounded-full overflow-hidden">
+                <div id="procBar" class="h-full bg-brand-500 w-0 transition-all duration-300"></div>
+            </div>
+            <p id="procCount" class="text-[10px] font-bold text-neutral-400 text-center uppercase tracking-widest">已识别 0 / 约50 条</p>
+        </div>
+    </div>
+
+    <!-- Step 3: Review (Hidden) -->
+    <div id="step3" class="hidden h-full bg-neutral-50 flex flex-col text-neutral-800 overflow-y-auto">
+        <header class="p-6 flex items-center justify-between sticky top-0 bg-neutral-50/90 backdrop-blur-md z-40">
+            <button onclick="resetToStep1()" class="p-1"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg></button>
+            <h1 class="text-lg font-bold">看看识别得对不对</h1>
+            <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-neutral-400">全选</span>
+                <input type="checkbox" checked class="w-5 h-5 accent-brand-500">
+            </div>
+        </header>
+
+        <section class="px-6 py-4 space-y-1">
+            <h2 class="text-2xl font-bold">识别到 52 条记录</h2>
+            <p class="text-sm text-neutral-400">总金额 ¥31,800</p>
+        </section>
+
+        <main class="flex-grow px-6 space-y-3 pb-32">
+            <!-- Row 1: High Confidence -->
+            <div class="bg-white rounded-2xl p-4 flex items-center justify-between border border-neutral-100 shadow-sm">
+                <div class="flex items-center gap-4">
+                    <input type="checkbox" checked class="w-5 h-5 accent-brand-500">
+                    <div>
+                        <p class="font-bold">张三</p>
+                        <p class="text-[10px] text-success font-bold">✅ 高置信度</p>
+                    </div>
+                </div>
+                <span class="font-bold">¥600</span>
+            </div>
+            <!-- Row 2: Low Confidence -->
+            <div class="bg-white rounded-2xl p-4 flex items-center justify-between border-2 border-warning shadow-sm">
+                <div class="flex items-center gap-4">
+                    <input type="checkbox" checked class="w-5 h-5 accent-brand-500">
+                    <div>
+                        <p class="font-bold text-warning">??? 建国</p>
+                        <p class="text-[10px] text-warning font-bold">⚠️ 姓名不确定 [修改]</p>
+                    </div>
+                </div>
+                <span class="font-bold">¥1,000</span>
+            </div>
+            <!-- Row 3: Low Confidence Amount -->
+            <div class="bg-white rounded-2xl p-4 flex items-center justify-between border-2 border-warning shadow-sm">
+                <div class="flex items-center gap-4">
+                    <input type="checkbox" checked class="w-5 h-5 accent-brand-500">
+                    <div>
+                        <p class="font-bold">赵六</p>
+                        <p class="text-[10px] text-warning font-bold">⚠️ 金额不确定 [修改]</p>
+                    </div>
+                </div>
+                <span class="font-bold text-warning">¥???</span>
+            </div>
+        </main>
+
+        <footer class="fixed bottom-0 left-0 right-0 p-6 bg-white border-t border-neutral-100 space-y-4">
+            <div class="flex items-center gap-2 text-warning text-xs font-bold justify-center">
+                <span>⚠️ 2 条需要确认</span>
+            </div>
+            <button onclick="gotoStep4()" class="w-full h-14 bg-brand-500 text-white font-bold rounded-2xl shadow-lg shadow-brand-500/30">下一步：补充事件信息</button>
+        </footer>
+    </div>
+
+    <!-- Step 4: Event Info (Hidden) -->
+    <div id="step4" class="hidden h-full bg-neutral-50 flex flex-col text-neutral-800 p-8 space-y-8">
+        <header class="flex items-center justify-between -mx-2">
+            <button onclick="backToStep3()" class="p-2"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg></button>
+            <h1 class="text-lg font-bold">补充信息</h1>
+            <div class="w-8"></div>
+        </header>
+
+        <div class="space-y-6 overflow-y-auto">
+            <h2 class="text-2xl font-bold">这些记录来自哪次事件？</h2>
+            
+            <div class="space-y-3">
+                <label class="text-xs font-bold text-neutral-400 uppercase">事件类型</label>
+                <div class="flex flex-wrap gap-2">
+                    <button class="px-4 py-2 bg-brand-500 text-white rounded-full text-xs font-bold">满月</button>
+                    <button class="px-4 py-2 bg-white border border-neutral-200 rounded-full text-xs font-bold text-neutral-500">婚礼</button>
+                    <button class="px-4 py-2 bg-white border border-neutral-200 rounded-full text-xs font-bold text-neutral-500">生日</button>
+                    <button class="px-4 py-2 bg-white border border-neutral-200 rounded-full text-xs font-bold text-neutral-500">乔迁</button>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <label class="text-xs font-bold text-neutral-400 uppercase">日期</label>
+                <div class="bg-white border border-neutral-100 rounded-2xl p-4 flex justify-between">
+                    <span class="font-bold">2025-08-15</span>
+                    <svg class="text-neutral-300" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <label class="text-xs font-bold text-neutral-400 uppercase">方向</label>
+                <div class="bg-neutral-100 p-1 rounded-xl flex gap-1">
+                    <button class="flex-1 py-2 bg-white shadow-sm rounded-lg text-sm font-bold">收到</button>
+                    <button class="flex-1 py-2 text-neutral-400 text-sm font-bold">送出</button>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <label class="text-xs font-bold text-neutral-400 uppercase">描述 (选填)</label>
+                <div class="bg-white border border-neutral-100 rounded-2xl p-4">
+                    <input type="text" value="儿子满月宴" class="w-full bg-transparent outline-none font-medium">
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-auto">
+            <button onclick="finishImport()" class="w-full h-14 bg-brand-500 text-white font-bold rounded-2xl shadow-lg shadow-brand-500/30">确认导入 52 条记录</button>
+        </div>
+    </div>
+
+    <script>
+        function takePhoto() {
+            document.getElementById('photoCount').classList.remove('hidden');
+            document.getElementById('startBtn').classList.remove('hidden');
+            document.body.classList.add('camera-shutter');
+            setTimeout(() => document.body.classList.remove('camera-shutter'), 300);
+        }
+
+        function startRecognition() {
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+            document.body.classList.remove('bg-neutral-800');
+            
+            let p = 0;
+            const interval = setInterval(() => {
+                p += Math.random() * 20;
+                if (p >= 100) {
+                    p = 100;
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        document.getElementById('step2').classList.add('hidden');
+                        document.getElementById('step3').classList.remove('hidden');
+                    }, 500);
+                }
+                document.getElementById('procBar').style.width = p + '%';
+                document.getElementById('procCount').innerText = `已识别 ${Math.floor(p/2)} / 约50 条`;
+            }, 400);
+        }
+
+        function resetToStep1() {
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('step1').classList.remove('hidden');
+            document.body.classList.add('bg-neutral-800');
+        }
+
+        function gotoStep4() {
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('step4').classList.remove('hidden');
+        }
+
+        function backToStep3() {
+            document.getElementById('step4').classList.add('hidden');
+            document.getElementById('step3').classList.remove('hidden');
+        }
+
+        function finishImport() {
+            window.location.href = '04.1-gift-management.html';
+        }
+    </script>
+</body>
+</html>

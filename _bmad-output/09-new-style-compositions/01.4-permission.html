@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>了然 - 权限开启</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#EEF2FF',
+                            500: '#1A6B5A',
+                            600: '#155648',
+                        },
+                        neutral: {
+                            50: '#F9FAFB',
+                            100: '#F3F4F6',
+                            200: '#E5E7EB',
+                            300: '#D1D5DB',
+                            400: '#9CA3AF',
+                            500: '#6B7280',
+                            800: '#1F2937',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans SC', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .commitment-card {
+            background: white;
+            border: 1px solid #F3F4F6;
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+    </style>
+</head>
+<body class="bg-neutral-50 font-sans text-neutral-800 antialiased h-screen overflow-y-auto">
+
+    <!-- Section: Permission Hero -->
+    <header class="pt-16 px-8 pb-8 text-center space-y-4">
+        <div class="inline-flex items-center justify-center w-20 h-20 bg-brand-50 rounded-full relative mb-4">
+            <!-- 3D style shield and bell icon metaphor -->
+            <div class="absolute inset-0 bg-brand-500 opacity-10 rounded-full blur-xl"></div>
+            <div class="relative z-10 text-brand-500">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M10 12h4"/><path d="M12 10v4"/></svg>
+            </div>
+        </div>
+        <h1 class="text-2xl font-bold leading-tight">要实现自动识别消费，<br>需要一个小小的权限</h1>
+        <p class="text-neutral-500">读取消费通知，自动识别你的每笔交易</p>
+    </header>
+
+    <!-- Section: Privacy Commitments -->
+    <section class="px-8 space-y-3 mb-10">
+        <div class="commitment-card">
+            <div class="w-10 h-10 bg-blue-50 text-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div>
+                <h3 class="font-bold text-neutral-800">安全提取</h3>
+                <p class="text-xs text-neutral-500 mt-1">只提取金额和商户名，原始通知内容不会被存储</p>
+            </div>
+        </div>
+
+        <div class="commitment-card">
+            <div class="w-10 h-10 bg-purple-50 text-purple-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            </div>
+            <div>
+                <h3 class="font-bold text-neutral-800">加密存储</h3>
+                <p class="text-xs text-neutral-500 mt-1">所有数据加密后存储，只有你能查看</p>
+            </div>
+        </div>
+
+        <div class="commitment-card">
+            <div class="w-10 h-10 bg-green-50 text-green-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+            </div>
+            <div>
+                <h3 class="font-bold text-neutral-800">随时可关</h3>
+                <p class="text-xs text-neutral-500 mt-1">在「设置」中一键关闭，已识别的数据不受影响</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section: Setup Guide (Simplified Android) -->
+    <section class="px-8 mb-12">
+        <div class="flex items-center gap-2 mb-6">
+            <div class="w-1 h-5 bg-brand-500 rounded-full"></div>
+            <h2 class="font-bold">如何开启</h2>
+        </div>
+        
+        <div class="bg-white border border-neutral-100 rounded-2xl p-6 space-y-6">
+            <div class="flex items-center gap-2 text-xs text-brand-500 bg-brand-50 px-3 py-1.5 rounded-full w-fit">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                检测到您的设备：Xiaomi / HyperOS
+            </div>
+
+            <div class="space-y-6">
+                <div class="flex gap-4">
+                    <div class="w-6 h-6 rounded-full bg-neutral-800 text-white text-[12px] flex items-center justify-center flex-shrink-0">1</div>
+                    <p class="text-sm">点击下方按钮，跳转到系统设置</p>
+                </div>
+                <div class="flex gap-4">
+                    <div class="w-6 h-6 rounded-full bg-neutral-800 text-white text-[12px] flex items-center justify-center flex-shrink-0">2</div>
+                    <p class="text-sm">在列表中找到 <span class="font-bold">「了然」</span>，并打开开关</p>
+                </div>
+            </div>
+
+            <div class="bg-neutral-50 rounded-xl p-4 flex justify-center">
+                 <!-- Simple SVG Illustration of notification list -->
+                 <div class="w-full max-w-[180px] bg-white rounded shadow-sm p-3 space-y-3">
+                    <div class="flex items-center justify-between border-b border-neutral-50 pb-2">
+                        <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 bg-brand-500 rounded"></div>
+                            <div class="w-12 h-2 bg-neutral-200 rounded"></div>
+                        </div>
+                        <div class="w-6 h-3 bg-brand-500 rounded-full"></div>
+                    </div>
+                    <div class="flex items-center justify-between opacity-30">
+                        <div class="flex items-center gap-2">
+                            <div class="w-4 h-4 bg-neutral-200 rounded"></div>
+                            <div class="w-12 h-2 bg-neutral-200 rounded"></div>
+                        </div>
+                        <div class="w-6 h-3 bg-neutral-200 rounded-full"></div>
+                    </div>
+                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section: CTA -->
+    <footer class="px-8 pb-12 flex flex-col items-center space-y-6">
+        <button onclick="window.location.href='01.5-bill-import.html'" class="w-full h-14 bg-brand-500 text-white font-bold rounded-lg shadow-lg shadow-brand-500/20 active:scale-[0.98] transition-all">
+            去开启通知读取
+        </button>
+        <div class="text-center">
+            <button onclick="window.location.href='01.7-dashboard.html'" class="text-neutral-400 font-bold">暂时跳过</button>
+            <p class="text-[11px] text-neutral-400 mt-1">可随时在「设置」中开启</p>
+        </div>
+    </footer>
+
+</body>
+</html>

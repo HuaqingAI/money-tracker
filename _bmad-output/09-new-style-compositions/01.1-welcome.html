@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>了然 - 欢迎</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#EEF2FF',
+                            500: '#1A6B5A', // 了然绿
+                            600: '#155648',
+                        },
+                        neutral: {
+                            50: '#F9FAFB',
+                            500: '#6B7280',
+                            800: '#1F2937',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans SC', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        'lg': '12px',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+        .hero-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body class="bg-neutral-50 font-sans text-neutral-800 antialiased h-screen flex flex-col justify-between overflow-hidden">
+
+    <!-- Section: Brand Identity -->
+    <header class="pt-12 flex flex-col items-center">
+        <div class="w-16 h-16 bg-brand-500 rounded-2xl flex items-center justify-center shadow-lg mb-4">
+            <!-- Simplified 3D-ish Logo Placeholder -->
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="8" y="8" width="24" height="24" rx="4" fill="white" fill-opacity="0.2"/>
+                <path d="M20 12V28M12 20H28" stroke="white" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <h1 class="text-xl font-bold tracking-tight text-brand-500">了然</h1>
+    </header>
+
+    <!-- Section: Hero Illustration (3D Render Style) -->
+    <main class="flex-grow flex items-center justify-center relative px-8">
+        <div class="hero-animation relative w-full max-w-[280px] aspect-square">
+            <!-- Abstract 3D Phone and Floating Cards Metaphor -->
+            <div class="absolute inset-0 bg-brand-500 opacity-10 rounded-full blur-3xl"></div>
+            
+            <!-- Floating "Card" 1 -->
+            <div class="absolute top-4 -left-4 w-32 h-20 glass-morphism rounded-xl z-20 flex flex-col p-3 transform -rotate-12">
+                <div class="w-8 h-2 bg-brand-500 opacity-20 rounded mb-2"></div>
+                <div class="w-16 h-4 bg-brand-500 opacity-40 rounded"></div>
+                <div class="mt-auto flex justify-end">
+                    <div class="w-10 h-3 bg-brand-500 opacity-60 rounded-full"></div>
+                </div>
+            </div>
+
+            <!-- Main Phone Placeholder -->
+            <div class="relative w-32 h-56 bg-neutral-800 rounded-[2.5rem] border-[6px] border-neutral-800 shadow-2xl mx-auto z-10 flex flex-col overflow-hidden">
+                <div class="h-6 w-16 bg-neutral-800 absolute top-0 left-1/2 -translate-x-1/2 rounded-b-xl z-30"></div>
+                <div class="flex-grow bg-white flex flex-col p-4 pt-10">
+                    <div class="space-y-3">
+                        <div class="h-3 bg-neutral-100 rounded w-3/4"></div>
+                        <div class="h-3 bg-neutral-100 rounded w-1/2"></div>
+                        <div class="h-20 bg-brand-50 rounded-lg flex items-center justify-center">
+                             <div class="w-8 h-8 rounded-full bg-brand-500 opacity-20"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Floating "Card" 2 -->
+            <div class="absolute bottom-10 -right-4 w-36 h-24 glass-morphism rounded-xl z-20 flex flex-col p-4 transform rotate-6 shadow-xl">
+                 <div class="flex items-center gap-2 mb-3">
+                    <div class="w-6 h-6 rounded-full bg-orange-400"></div>
+                    <div class="w-16 h-3 bg-neutral-200 rounded"></div>
+                 </div>
+                 <div class="w-24 h-5 bg-neutral-800 rounded"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Section: Value Proposition & CTA -->
+    <footer class="px-8 pb-12 space-y-8">
+        <div class="text-center space-y-3">
+            <h2 class="text-[28px] font-bold leading-tight text-neutral-800">
+                花了多少，自动知道
+            </h2>
+            <p class="text-neutral-500 text-base leading-relaxed">
+                支付宝、微信的每笔消费，<br>
+                自动归类，不用动手记
+            </p>
+        </div>
+
+        <button class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-4 rounded-lg shadow-lg shadow-brand-500/20 transition-all active:scale-[0.98]">
+            开始体验
+        </button>
+    </footer>
+
+</body>
+</html>
