@@ -1,33 +1,33 @@
 installation:
   version: 6.3.0
   installDate: 2026-04-11T07:33:40.282Z
-  lastUpdated: 2026-04-11T07:33:40.282Z
+  lastUpdated: 2026-04-12T12:48:47.697Z
 modules:
   - name: core
     version: 6.3.0
     installDate: 2026-04-11T07:33:30.661Z
-    lastUpdated: 2026-04-11T07:33:40.201Z
+    lastUpdated: 2026-04-12T12:48:47.614Z
     source: built-in
     npmPackage: null
     repoUrl: null
   - name: bmm
     version: 6.3.0
     installDate: 2026-04-11T07:33:30.925Z
-    lastUpdated: 2026-04-11T07:33:40.202Z
+    lastUpdated: 2026-04-12T12:48:47.614Z
     source: built-in
     npmPackage: null
     repoUrl: null
   - name: tea
     version: 1.7.2
     installDate: 2026-04-11T07:33:32.901Z
-    lastUpdated: 2026-04-11T07:33:40.232Z
+    lastUpdated: 2026-04-12T12:48:47.641Z
     source: external
     npmPackage: bmad-method-test-architecture-enterprise
     repoUrl: https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise
   - name: wds
     version: 0.3.1
     installDate: 2026-04-11T07:33:36.093Z
-    lastUpdated: 2026-04-11T07:33:40.281Z
+    lastUpdated: 2026-04-12T12:48:47.697Z
     source: community
     npmPackage: bmad-method-wds-expansion
     repoUrl: https://github.com/bmad-code-org/bmad-method-wds-expansion
@@ -35,3 +35,4 @@ ides:
   - claude-code
   - cursor
   - codex
+  - gemini
