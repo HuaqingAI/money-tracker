@@ -296,6 +296,12 @@ Claude Opus 4.6
 - react-native-wechat-lib plugin 在包未安装时需注释掉（已处理）
 - `pnpm turbo run build` 全部 4 个包构建成功（13m22s）
 - `pnpm turbo run test` 全部 4 个包测试通过（placeholder echo）
+- **Post-merge 调试（2026-04-20）**：
+  - 现象：`pnpm --filter mobile start` 启动正常，但真机扫码进入应用即崩溃，报 `TypeError: getDevServer is not a function (it is Object)`（iOS / Android 均复现）
+  - 初判：Metro 在 monorepo 下解析到 `react-native` 两份副本 → 为 `metro.config.js` 追加 `disableHierarchicalLookup: true` + `extraNodeModules` Proxy，强制 singleton → 未解决
+  - 二判：定位到 `@expo/metro-runtime@4.0.1/src/messageSocket.native.ts` 第 4 行 `require('react-native/Libraries/Core/Devtools/getDevServer')` 未取 `.default`，而 RN 0.81 的 `getDevServer.js` 改用 ESM `export default` → 该包自身 bug
+  - 三判（用户质疑后修正）：既然是三方包 bug，不应自行 patch；根因是 `apps/mobile/package.json` 中 Expo 生态子包版本错乱（非 SDK 54 bundle），pnpm 才拉出旧的 `@expo/metro-runtime@4.0.1`。改为按 `expo/bundledNativeModules.json` 对齐所有版本，`@expo/metro-runtime` 随之升至 `6.1.2`（已移除该 bug），最终解决
+  - 附加：保险起见将 `newArchEnabled` 由 `true` 改为 `false`（Tamagui v2 + 微信 SDK 在新架构下的兼容性 Story 0-2/0-3 再单独验证）；在 `app.config.ts` plugins 中显式登记 `expo-router`
 
 ### Completion Notes List
 
@@ -305,6 +311,8 @@ Claude Opus 4.6
 - Next.js API 构建成功，health endpoint 返回 `{ success: true }`
 - TypeScript strict mode 编译通过，跨包类型解析正常
 - wechat-lib plugin 已在 app.config.ts 中预留（注释状态，待包安装后启用）
+- **Post-merge 修复（PR #1 合并后）**：真机扫码运行时发现 `TypeError: getDevServer is not a function (it is Object)`，根因是 `apps/mobile/package.json` 中多个 Expo 生态子包版本与 SDK 54 不匹配（`expo-router` 写成 `~4.0.0` 属 SDK 52、`expo-status-bar` `~2.0.0` 属 SDK 51、`react-native-safe-area-context` `~5.4.0`、`react-native-screens` `~4.10.0`），导致 pnpm 传递依赖解析出 `@expo/metro-runtime@4.0.1`（其 `messageSocket.native.ts` 对 RN 0.81 的 `getDevServer` ESM default export 存在 CJS interop bug）。已按 `node_modules/expo/bundledNativeModules.json` 源真值将所有版本对齐 SDK 54，`@expo/metro-runtime` 随之升到 `6.1.2`，bug 消失，iOS / Android 真机均可正常运行。
+- **经验教训**：后续 Story 初始化 Expo 包时，应使用 `expo install <pkg>` 而不是手写版本号，让 Expo CLI 按 SDK 对齐版本，避免同类问题。
 
 ### File List
 
@@ -315,9 +323,9 @@ Claude Opus 4.6
 - `tsconfig.base.json` — strict mode, composite, ESNext module, bundler resolution
 - `.gitignore` — node_modules, .next, .expo, .turbo, .env*, coverage, dist
 - `.env.example` — Supabase, AI, WeChat, SMS, App URL 变量占位
-- `apps/mobile/package.json` — Expo SDK 54, React 19.1.0, RN 0.81.5
-- `apps/mobile/app.config.ts` — 动态配置, env vars, wechat plugin 预留
-- `apps/mobile/metro.config.js` — monorepo watchFolders + nodeModulesPaths
+- `apps/mobile/package.json` — Expo SDK 54, React 19.1.0, RN 0.81.5（post-merge 已将 `expo-router ~6.0.23`、`expo-status-bar ~3.0.9`、`react-native-safe-area-context ~5.6.0`、`react-native-screens ~4.16.0` 对齐 SDK 54 bundle，并新增 `react-dom 19.1.0`）
+- `apps/mobile/app.config.ts` — 动态配置, env vars, wechat plugin 预留（post-merge `newArchEnabled: false`，plugins 显式注册 `expo-router`）
+- `apps/mobile/metro.config.js` — monorepo watchFolders + nodeModulesPaths（post-merge 追加 `disableHierarchicalLookup: true` 与 `extraNodeModules` Proxy，强制 singleton 解析）
 - `apps/mobile/babel.config.js` — babel-preset-expo, Tamagui 预留
 - `apps/mobile/tsconfig.json` — extends base, paths, references shared/ui
 - `apps/mobile/app/_layout.tsx` — expo-router Stack layout
@@ -335,3 +343,23 @@ Claude Opus 4.6
 - `packages/ui/package.json` — @money-tracker/ui, depends on shared
 - `packages/ui/tsconfig.json` — composite: true, jsx: react-jsx, references shared
 - `packages/ui/src/index.ts` — 占位导出
+
+## Change Log
+
+> 所有变更均在 Story 0-1 PR #1 合并之后发生，作为 post-merge 修复直接提交到 main，再由当前 PR 回填到 Story 文档，不改动 AC。
+
+| Commit | 类型 | 说明 |
+|---|---|---|
+| `751020c` | fix(mobile) | `metro.config.js` 追加 `disableHierarchicalLookup: true` 与 `extraNodeModules` Proxy，强制 monorepo 下 `react-native` 等 singleton 包只从 `apps/mobile/node_modules` 解析，避免重复副本 |
+| `747f903` | fix(mobile) | 临时 `pnpm patch @expo/metro-runtime@4.0.1`，修正 `messageSocket.native.ts` 对 RN 0.81 `getDevServer` ESM default export 的 CJS interop；**已在后续 commit 80b48cf 中随版本升级撤销该 patch** |
+| `80b48cf` | fix(mobile) | 按 `node_modules/expo/bundledNativeModules.json` 将 `apps/mobile/package.json` 所有 Expo 生态子包对齐 SDK 54（`expo-router ~6.0.23`、`expo-status-bar ~3.0.9`、`react-native-safe-area-context ~5.6.0`、`react-native-screens ~4.16.0`），新增 `react-dom 19.1.0`；`@expo/metro-runtime` 经传递依赖升到 6.1.2，bug 消失；移除上一步的 pnpm patch |
+| `5f8ce3a` | chore(mobile) | `app.config.ts` 将 `newArchEnabled: true` 改为 `false`（Fabric/TurboModules 与 Tamagui v2 RC + 微信 SDK 的兼容性放到 Story 0-2/0-3 再验证）；在 plugins 中显式注册 `'expo-router'` |
+| `49d2847` | chore(doc) | Story 0-1 状态 `draft → review` |
+| 本 PR | docs | 将上述 4 条修复的背景、根因、经验教训回填到 Dev Agent Record / Debug Log / File List |
+
+### 治理决策：为何未触发 Correct-Course
+
+- `architecture.md` 仅约束顶层版本（Expo SDK 54、RN 0.81.5、React 19.1.0、Tamagui v2 RC），未指定 `expo-router`、`expo-status-bar`、`react-native-safe-area-context`、`react-native-screens`、`react-dom` 等子包版本
+- 本次变更全部是把 `apps/mobile/package.json` 中与 SDK 54 不匹配的子包「拉回」到 SDK 54 bundle 指定的版本，属于实现层对齐而非架构层变更
+- `newArchEnabled: false` 是运行期开关，非架构契约；若后续决定长期保持旧架构，再评估是否单独走 CC
+- 因此经用户裁决，本次不走 `bmad-correct-course`，仅以文档 PR 形式回填变更记录
