@@ -4,9 +4,17 @@
     "composite": true,
     "jsx": "react-jsx",
     "outDir": "./dist",
-    "rootDir": "."
+    "rootDir": ".",
+    // Tamagui 源文件中引用了 DOM 类型（例如 HTMLElement），
+    // 需要为 packages/ui 显式加入 DOM lib（仅类型，不影响 RN 运行时）。
+    "lib": ["ES2022", "DOM", "DOM.Iterable"]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "tamagui.config.ts",
+    "types.d.ts"
+  ],
   "exclude": ["node_modules", "dist"],
   "references": [
     { "path": "../shared" }

@@ -23,10 +23,12 @@
     "react-native-safe-area-context": "~5.6.0",
     "react-native-screens": "~4.16.0",
     "@money-tracker/shared": "workspace:*",
-    "@money-tracker/ui": "workspace:*"
+    "@money-tracker/ui": "workspace:*",
+    "tamagui": "2.0.0-rc.41"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
+    "@tamagui/babel-plugin": "2.0.0-rc.41",
     "@types/react": "~19.1.0",
     "typescript": "~5.7.3"
   }

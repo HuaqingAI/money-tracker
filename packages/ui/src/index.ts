@@ -1,4 +1,16 @@
-// Tamagui 组件统一导出 — Story 0.2 集成后填充
-// export { Button } from './button';
-// export { Card } from './card';
-// export { TextInput } from './text-input';
+/**
+ * @money-tracker/ui 统一导出桶文件（唯一对外入口）
+ *
+ * 禁止通过子路径（如 '@money-tracker/ui/src/button'）直接导入；
+ * 所有新增组件必须经此处 re-export。
+ */
+
+export { UIProvider } from './provider';
+export type { UIProviderProps } from './provider';
+
+export { Button } from './button';
+export { Text } from './text';
+export { TextInput } from './text-input';
+
+export { config, shadows } from '../tamagui.config';
+export type { Conf } from '../tamagui.config';

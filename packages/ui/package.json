@@ -11,9 +11,18 @@
     "clean": "rm -rf dist *.tsbuildinfo"
   },
   "dependencies": {
-    "@money-tracker/shared": "workspace:*"
+    "@money-tracker/shared": "workspace:*",
+    "@tamagui/animations-react-native": "2.0.0-rc.41",
+    "tamagui": "2.0.0-rc.41"
+  },
+  "peerDependencies": {
+    "react": ">=19",
+    "react-native": ">=0.81"
   },
   "devDependencies": {
+    "@tamagui/babel-plugin": "2.0.0-rc.41",
+    "@tamagui/config": "2.0.0-rc.41",
+    "@types/react": "~19.1.0",
     "typescript": "~5.7.3"
   }
 }
