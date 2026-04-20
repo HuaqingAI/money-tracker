@@ -1,0 +1,121 @@
+# generated: 2026-04-20
+# last_updated: 2026-04-20
+# project: money-tracker
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: {project-root}/_bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2026-04-20
+last_updated: 2026-04-20
+project: money-tracker
+project_key: NOKEY
+tracking_system: file-system
+story_location: "{project-root}/_bmad-output/implementation-artifacts"
+
+development_status:
+  # Epic 0: 工程基础设施 (MVP 前置)
+  epic-0: backlog
+  0-1-monorepo-skeleton: backlog
+  0-2-ui-design-system-baseline: backlog
+  0-3-database-schema-and-auth-baseline: backlog
+  0-4-dev-toolchain-and-quality-gates: backlog
+  0-5-ci-cd-pipeline: backlog
+  0-6-production-deployment: backlog
+  0-7-monitoring-and-error-tracking: backlog
+  0-8-background-tasks-and-scheduling: backlog
+  epic-0-retrospective: optional
+
+  # Epic 1: 零输入首次体验 (MVP)
+  epic-1: backlog
+  1-1-welcome-and-onboarding: backlog
+  1-2-user-registration-and-auth: backlog
+  1-3-android-notification-capture: backlog
+  1-4-csv-bill-import: backlog
+  1-5-ai-classification-and-confirmation: backlog
+  1-6-dashboard-home: backlog
+  1-7-monthly-report: backlog
+  1-8-basic-account-and-pipl-compliance: backlog
+  epic-1-retrospective: optional
+
+  # Epic 2: 交易管理与手动补录 (Phase 2)
+  epic-2: backlog
+  2-1-transaction-list-and-filter: backlog
+  2-2-transaction-detail-and-correction: backlog
+  2-3-manual-quick-entry: backlog
+  2-4-category-rules-management: backlog
+  2-5-ios-alternative-capture: backlog
+  2-6-voice-entry-and-screenshot-ocr: backlog
+  epic-2-retrospective: optional
+
+  # Epic 3: 家庭财务协同与付费 (Phase 2)
+  epic-3: backlog
+  3-1-subscription-and-pricing: backlog
+  3-2-family-ledger-and-members: backlog
+  3-3-beneficiary-tagging-and-ai-rules: backlog
+  3-4-paywall-trigger-and-unlock: backlog
+  epic-3-retrospective: optional
+
+  # Epic 4: 消费趋势与分享 (Phase 2)
+  epic-4: backlog
+  4-1-multi-month-trend-chart: backlog
+  4-2-spending-habit-radar: backlog
+  4-3-share-card-and-wechat-share: backlog
+  epic-4-retrospective: optional
+
+  # Epic 5: 人情往来账 (Phase 2)
+  epic-5: backlog
+  5-1-gift-network-and-records: backlog
+  5-2-smart-gift-suggestion-and-alert: backlog
+  5-3-gift-book-ocr-import: backlog
+  5-4-gift-book-event-association: backlog
+  epic-5-retrospective: optional
+
+  # Epic 6: 多身份核算 (Phase 2)
+  epic-6: backlog
+  6-1-identity-create-and-switch: backlog
+  6-2-identity-pnl-and-side-profit: backlog
+  epic-6-retrospective: optional
+
+  # Epic 7: AI 财务管家 (Phase 3)
+  epic-7: backlog
+  7-1-ai-chat-financial-qa: backlog
+  7-2-insights-feed-and-push: backlog
+  7-3-spending-optimization-suggestion: backlog
+  7-4-spending-simulation: backlog
+  epic-7-retrospective: optional
+
+  # Epic 8: 高级账户与个性化设置 (Phase 3)
+  epic-8: backlog
+  8-1-notification-preferences: backlog
+  8-2-subscription-management: backlog
+  8-3-advanced-privacy-and-data: backlog
+  epic-8-retrospective: optional
