@@ -44,7 +44,7 @@ story_location: "{project-root}/_bmad-output/implementation-artifacts"
 development_status:
   # Epic 0: 工程基础设施 (MVP 前置)
   epic-0: in-progress
-  0-1-monorepo-skeleton: in-progress
+  0-1-monorepo-skeleton: review
   0-2-ui-design-system-baseline: backlog
   0-3-database-schema-and-auth-baseline: backlog
   0-4-dev-toolchain-and-quality-gates: backlog
