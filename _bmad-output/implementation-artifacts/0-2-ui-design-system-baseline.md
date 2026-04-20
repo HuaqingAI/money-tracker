@@ -279,3 +279,4 @@ Claude Opus 4.6
 ### Change Log
 
 - 2026-04-20：初版实现完成；code-review 三审查员（Blind Hunter / Edge Case Hunter / Acceptance Auditor）反馈回归后提交；所有阻塞项已修复。
+- 2026-04-20（fix）：`pnpm turbo run dev` 运行时抛 `createTamagui() missing expected tokens.size/space` 级联错误，根因为 `tamagui` 包在 `NODE_ENV=development` 下硬性校验 `tokens.size/space` 必含 `true` key、`tokens.radius/zIndex` 需与 `size` key 有重叠（源码：`node_modules/.pnpm/tamagui@2.0.0-rc.41.../createTamagui.ts#L10-L69`）。修复：`tamagui.config.ts` 为 `space` / `radius` 分别补 `true` 默认键（值分别对齐 `space-4=16`、`radius-md=8`），`size` 通过 `...space` 继承 `true: 16`；`token-mapping.md` §3.1 / §4 同步补注说明。验证：模拟 Tamagui dev-mode 校验全部通过，`pnpm --filter @money-tracker/ui build` tsc 通过。

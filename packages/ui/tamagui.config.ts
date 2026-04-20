@@ -155,6 +155,9 @@ const color = {
 } as const;
 
 const space = {
+  // Tamagui dev-mode 校验要求 `true` 默认键（createTamagui 源码中硬编码 `$true`）。
+  // 取值对齐 `space-4 = 16`（设计系统默认间距），与 size.true 保持一致以符合 Tamagui 官方约定。
+  true: 16,
   1: 4,
   2: 8,
   3: 12,
@@ -183,6 +186,9 @@ const size = {
 } as const;
 
 const radius = {
+  // Tamagui dev-mode 校验要求 tokens.radius 与 tokens.size 的 key 至少有一个重叠。
+  // 通过 `true` 默认键与 size.true（16）对齐，既满足校验又保留语义化 key。取值对齐 `radius-md = 8`。
+  true: 8,
   sm: 4,
   md: 8,
   lg: 12,

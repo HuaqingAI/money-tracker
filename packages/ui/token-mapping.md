@@ -108,8 +108,11 @@
 | `space-5` | `5` | 20 | Section 间距 |
 | `space-6` | `6` | 24 | Modal padding、大间距 |
 | `space-8` | `8` | 32 | Section 大间距 |
+| _（默认键）_ | `true` | 16 | **Tamagui 框架要求**的默认刻度键；值对齐 `space-4`。业务代码不应直接使用 `$true`，仅供 Tamagui 内部 `size="$true"` 回退。 |
 
 > **说明**：Tamagui 约定数字字符串 key（如 `'1'`、`'2'`）为设计系统标准刻度；不使用 `space1` 这类拼接 key，保持与 Tamagui preset 一致，便于在 styled 组件中用 `$2` / `$4` 书写。
+>
+> **`true` 默认键**（dev 模式强制）：`tamagui` 包 `createTamagui()` 在 `NODE_ENV=development` 下校验 `tokens.size` 与 `tokens.space` 必须包含 `true` key，否则抛 `missing expected tokens.*`。本 config 将 `space.true` / `size.true` 都设为 16（= `space-4`），与 Tamagui 官方 preset 约定一致。
 
 ### 3.2 Component Heights (→ `tokens.size.*` 仅)
 
@@ -141,6 +144,7 @@
 | `radius-lg` | `lg` | 12 | 卡片、Primary Button、输入框 |
 | `radius-xl` | `xl` | 16 | Modal、Sheet |
 | `radius-full` | `full` | 9999 | 圆形（Avatar、FAB、Chip、Dot） |
+| _（默认键）_ | `true` | 8 | **Tamagui 框架要求**与 `tokens.size` 至少有一个 key 重叠；`true` 与 `size.true` 对齐。值对齐 `radius-md`。业务代码不应使用 `$true`，直接用 `$sm` / `$md` / `$lg` / `$xl` / `$full`。 |
 
 ---
 
