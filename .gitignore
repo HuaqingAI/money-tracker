@@ -11,6 +11,9 @@ android/
 # Turbo
 .turbo/
 
+# Tamagui compiler output
+.tamagui/
+
 # Environment files
 .env
 .env.local

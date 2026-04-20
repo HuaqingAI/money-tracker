@@ -6,6 +6,10 @@ const monorepoRoot = path.resolve(projectRoot, '../..');
 
 const config = getDefaultConfig(projectRoot);
 
+// Tamagui 兼容：Metro 的 package exports 解析与 Tamagui RC 存在已知冲突，
+// 显式关闭以避免模块解析错误（Story 0.2 集成时启用）。
+config.resolver.unstable_enablePackageExports = false;
+
 // monorepo: 监听整个 workspace 的文件变更
 config.watchFolders = [monorepoRoot];
 
