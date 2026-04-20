@@ -19,7 +19,7 @@ AI驱动的零记账智能财务管家 -- 通过AI自动捕获和智能管理，
 - 金额使用分（cents）存储，整数运算，展示时 /100
 - 日期时间 UTC 存储，展示时转用户时区
 - 数据库变更必须通过 Supabase migration
-- API 响应格式：`{ success: boolean, data?: T, error?: string }`
+- API 响应格式：`{ success: boolean, data?: T, error?: { code: string, message: string } }`
 
 ---
 <!-- bmad-project-config -->

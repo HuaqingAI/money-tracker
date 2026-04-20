@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "了然",
+    "slug": "money-tracker",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "money-tracker",
+    "platforms": ["ios", "android"],
+    "newArchEnabled": true
+  }
+}
