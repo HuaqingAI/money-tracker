@@ -8,8 +8,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   orientation: 'portrait',
   scheme: 'money-tracker',
   platforms: ['ios', 'android'],
-  newArchEnabled: true,
+  newArchEnabled: false,
   plugins: [
+    'expo-router',
     // 预留 Tamagui plugin 位置（Story 0.2 集成）
     // 微信 SDK — 安装 react-native-wechat-lib 后取消注释
     // ['react-native-wechat-lib', { appId: process.env.WECHAT_APP_ID || '' }],
