@@ -258,6 +258,13 @@ Claude Opus 4.6
 
 ### Completion Notes List
 
+### Review Findings
+
+- [x] [Review][Patch] Add API health route smoke test [`apps/api/app/api/health/route.test.ts`] ? added a co-located Vitest smoke test so `apps/api` no longer fails `pnpm test` due to zero matching test files.
+- [x] [Review][Patch] Add UI barrel export smoke test [`packages/ui/src/index.test.ts`] ? added a minimal public-API test so `packages/ui` participates in `pnpm test` with a real assertion instead of failing on missing test files.
+- [x] [Review][Patch] Fix ESLint flat-config coverage for Node/CommonJS config files [`eslint.config.mjs`] ? declared `module` / `require` / `__dirname` / `process` globals for `*.config.{js,cjs,mjs}` and disabled `@typescript-eslint/no-require-imports` there so `pnpm lint` passes on mobile/api config files.
+- [x] [Review][Patch] Normalize lint-driven ordering fixes [`apps/mobile/app.config.ts`, `packages/ui/src/index.ts`] ? applied import/export ordering changes required by the story's own `simple-import-sort` gate so lint is green.
+- [x] [Review][Defer] Defer Expo/Hermes Win64 build failure [`pnpm build` -> `apps/mobile#build`] ? deferred as environment/platform-specific; `expo export` fails with `react-native/sdks/hermesc/win64-bin/hermesc.exe ENOENT` after successful install, while lint/test pass and the branch does not directly modify Hermes build plumbing.
 - 使用 ESLint 9 flat config (`eslint.config.mjs`) 而非传统 `.eslintrc.js`，因为 ESLint 9 是当前版本
 - `typescript-eslint` 包替代了 `@typescript-eslint/parser` + `@typescript-eslint/eslint-plugin` 分离安装
 - 环境 `pnpm install` 在 linking 阶段极慢（长路径导致），运行时验证跳过，配置文件已全部就位
