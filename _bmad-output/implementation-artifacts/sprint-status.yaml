@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-20
-last_updated: 2026-04-20
+last_updated: 2026-04-21
 project: money-tracker
 project_key: NOKEY
 tracking_system: file-system
@@ -46,8 +46,8 @@ development_status:
   epic-0: in-progress
   0-1-monorepo-skeleton: review
   0-2-ui-design-system-baseline: review
-  0-3-database-schema-and-auth-baseline: review
-  0-4-dev-toolchain-and-quality-gates: backlog
+  0-3-database-schema-and-auth-baseline: done
+  0-4-dev-toolchain-and-quality-gates: done
   0-5-ci-cd-pipeline: backlog
   0-6-production-deployment: backlog
   0-7-monitoring-and-error-tracking: backlog

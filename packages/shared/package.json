@@ -6,8 +6,9 @@
   "types": "./index.ts",
   "scripts": {
     "build": "tsc --build",
-    "lint": "echo 'lint not configured yet'",
-    "test": "echo 'test not configured yet'",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "test": "vitest run",
     "clean": "rm -rf dist *.tsbuildinfo"
   },
   "dependencies": {
