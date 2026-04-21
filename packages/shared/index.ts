@@ -4,9 +4,10 @@ export type {
   Database,
   Tables,
   Json,
-  TransactionStatus,
-  SubscriptionProvider,
-  CategoryRuleSource,
+  TablesInsert,
+  TablesUpdate,
+  Enums,
+  CompositeTypes,
 } from './types/database';
 
 // 占位导出 — 后续 Story 逐步填充
