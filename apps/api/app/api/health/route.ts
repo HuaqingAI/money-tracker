@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
-import { withRequestLogging } from '@/lib/middleware/request-logger';
+import { withRequestLogging } from '../../../lib/middleware/request-logger';
 
 /**
  * 健康检查端点 — `GET /api/health`
@@ -79,7 +79,7 @@ function checkAi(): ServiceStatus {
 
 export function GET(request: NextRequest): Promise<Response> {
   return withRequestLogging(request, async () => {
-    const [database, ai] = await Promise.all([checkDatabase(), checkAi()]);
+    const [database, ai] = [await checkDatabase(), checkAi()];
     const services = { database, ai } as const;
     const success = database === 'ok' && ai === 'ok';
 

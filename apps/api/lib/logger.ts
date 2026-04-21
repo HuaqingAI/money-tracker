@@ -55,9 +55,6 @@ export const logger: Logger = pino({
     env: process.env.NODE_ENV ?? 'development',
   },
   timestamp: pino.stdTimeFunctions.isoTime,
-  formatters: {
-    level: (label) => ({ level: label }),
-  },
   transport: buildTransport(),
 });
 

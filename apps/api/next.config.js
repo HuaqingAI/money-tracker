@@ -3,6 +3,7 @@ const { withSentryConfig } = require('@sentry/nextjs');
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: ['@money-tracker/shared', '@money-tracker/ui'],
+  serverExternalPackages: ['pino', 'pino-roll', 'pino-pretty'],
 };
 
 /**
