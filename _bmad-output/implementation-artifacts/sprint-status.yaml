@@ -1,5 +1,5 @@
 # generated: 2026-04-20
-# last_updated: 2026-04-20
+# last_updated: 2026-04-20 (Story 0-3 → review)
 # project: money-tracker
 # project_key: NOKEY
 # tracking_system: file-system
@@ -46,7 +46,7 @@ development_status:
   epic-0: in-progress
   0-1-monorepo-skeleton: review
   0-2-ui-design-system-baseline: review
-  0-3-database-schema-and-auth-baseline: backlog
+  0-3-database-schema-and-auth-baseline: done
   0-4-dev-toolchain-and-quality-gates: done
   0-5-ci-cd-pipeline: backlog
   0-6-production-deployment: backlog
