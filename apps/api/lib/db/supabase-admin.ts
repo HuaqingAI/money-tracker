@@ -1,5 +1,5 @@
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@money-tracker/shared/types/database';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 /**
  * Server-only Supabase admin client.

@@ -9,7 +9,7 @@
     "build": "expo export",
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
-    "test": "echo 'No tests yet'",
+    "test": "pnpm exec vitest run --config ../../vitest.config.ts --dir .",
     "clean": "rm -rf .expo dist"
   },
   "dependencies": {
@@ -25,6 +25,7 @@
     "react-native-screens": "~4.16.0",
     "@money-tracker/shared": "workspace:*",
     "@money-tracker/ui": "workspace:*",
+    "@sentry/react-native": "~6.3.0",
     "tamagui": "2.0.0-rc.41"
   },
   "devDependencies": {

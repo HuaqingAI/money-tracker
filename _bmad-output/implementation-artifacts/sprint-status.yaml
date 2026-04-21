@@ -50,7 +50,7 @@ development_status:
   0-4-dev-toolchain-and-quality-gates: done
   0-5-ci-cd-pipeline: backlog
   0-6-production-deployment: backlog
-  0-7-monitoring-and-error-tracking: backlog
+  0-7-monitoring-and-error-tracking: review
   0-8-background-tasks-and-scheduling: backlog
   epic-0-retrospective: optional
 
