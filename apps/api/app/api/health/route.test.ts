@@ -1,0 +1,12 @@
+import { describe, expect, it } from 'vitest';
+
+import { GET } from './route';
+
+describe('GET /api/health', () => {
+  it('returns a successful health payload', async () => {
+    const response = await GET();
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ success: true });
+  });
+});

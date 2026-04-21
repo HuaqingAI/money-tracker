@@ -45,6 +45,22 @@ export default tseslint.config(
     },
   },
 
+  // Node/CommonJS config files
+  {
+    files: ['**/*.config.js', '**/*.config.cjs', '**/*.config.mjs'],
+    languageOptions: {
+      globals: {
+        __dirname: 'readonly',
+        module: 'readonly',
+        process: 'readonly',
+        require: 'readonly',
+      },
+    },
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
+
   // Import sorting for all TS/TSX files
   {
     files: ['**/*.ts', '**/*.tsx'],
