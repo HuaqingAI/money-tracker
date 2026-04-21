@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
     "test": "pnpm exec vitest run --config ../../vitest.config.ts --dir .",
     "clean": "rm -rf .next"
   },
@@ -18,7 +19,8 @@
     "@sentry/nextjs": "^8.47.0",
     "pino": "^9.5.0",
     "pino-roll": "^3.0.0",
-    "pino-pretty": "^13.0.0"
+    "pino-pretty": "^13.0.0",
+    "@supabase/supabase-js": "^2.47.10"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

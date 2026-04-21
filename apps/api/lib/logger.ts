@@ -15,7 +15,7 @@
  * - LOG_FILE_MAX_SIZE: 单文件最大大小（默认 10m）
  * - LOG_FILE_MAX_FILES: 保留文件数（默认 7）
  */
-import { pino, type Logger, type LoggerOptions, type TransportTargetOptions } from 'pino';
+import { type Logger, type LoggerOptions, pino, type TransportTargetOptions } from 'pino';
 
 const isProduction = process.env.NODE_ENV === 'production';
 const logLevel = process.env.LOG_LEVEL ?? (isProduction ? 'info' : 'debug');

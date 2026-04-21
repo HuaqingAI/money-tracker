@@ -5,12 +5,10 @@
  * 所有新增组件必须经此处 re-export。
  */
 
-export { UIProvider } from './provider';
-export type { UIProviderProps } from './provider';
-
+export type { Conf } from '../tamagui.config';
+export { config, shadows } from '../tamagui.config';
 export { Button } from './button';
+export type { UIProviderProps } from './provider';
+export { UIProvider } from './provider';
 export { Text } from './text';
 export { TextInput } from './text-input';
-
-export { config, shadows } from '../tamagui.config';
-export type { Conf } from '../tamagui.config';

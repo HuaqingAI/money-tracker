@@ -7,7 +7,8 @@
     "start": "expo start",
     "dev": "expo start",
     "build": "expo export",
-    "lint": "echo 'lint not configured yet'",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
     "test": "pnpm exec vitest run --config ../../vitest.config.ts --dir .",
     "clean": "rm -rf .expo dist"
   },
