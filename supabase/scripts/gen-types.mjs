@@ -45,6 +45,10 @@ function requireEnv(name) {
   return value;
 }
 
+function shellEscapeSingleQuoted(value) {
+  return value.replace(/'/g, `'"'"'`);
+}
+
 loadEnvFile(defaultEnvPath);
 
 const dbUrl =
@@ -52,15 +56,23 @@ const dbUrl =
   `postgresql://${process.env.SUPABASE_DB_USER || 'supabase_admin'}:${encodeURIComponent(requireEnv('POSTGRES_PASSWORD'))}` +
     `@${process.env.SUPABASE_DB_HOST || 'db'}:${process.env.POSTGRES_PORT || '5432'}/${process.env.POSTGRES_DB || 'postgres'}`;
 
+const dockerSocketMount =
+  process.env.SUPABASE_DOCKER_SOCKET_MOUNT ||
+  (process.platform === 'win32'
+    ? '//var/run/docker.sock:/var/run/docker.sock'
+    : '/var/run/docker.sock:/var/run/docker.sock');
+
+const dockerNetwork = process.env.SUPABASE_DOCKER_NETWORK || 'supabase-slim_default';
+
 const result = spawnSync(
   'docker',
   [
     'run',
     '--rm',
     '--network',
-    process.env.SUPABASE_DOCKER_NETWORK || 'supabase-slim_default',
+    dockerNetwork,
     '-v',
-    '//var/run/docker.sock:/var/run/docker.sock',
+    dockerSocketMount,
     '-v',
     `${repoRoot.replace(/\\/g, '/') }:/workspace`,
     '-w',
@@ -68,7 +80,7 @@ const result = spawnSync(
     'node:22-alpine',
     'sh',
     '-lc',
-    `npx supabase gen types typescript --db-url '${dbUrl}' --schema auth,billing,analytics --network-id '${process.env.SUPABASE_DOCKER_NETWORK || 'supabase-slim_default'}'`,
+    `npx supabase gen types typescript --db-url '${shellEscapeSingleQuoted(dbUrl)}' --schema auth,billing,analytics --network-id '${shellEscapeSingleQuoted(dockerNetwork)}'`,
   ],
   {
     cwd: repoRoot,
