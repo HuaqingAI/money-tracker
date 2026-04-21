@@ -1,0 +1,120 @@
+# Supabase self-hosted — slim stack
+#
+# Kept: PostgreSQL 15, GoTrue (Auth), PostgREST, Kong (API gateway)
+# Removed: Realtime, Storage, imgproxy, Edge Runtime, Studio, Logflare, Vector,
+#          Supavisor, postgres-meta
+# Target memory: ~1.1 GB to fit the 2-core / 4 GB ECS production budget.
+#
+# Migrations under ./migrations/ are mounted into the db container's
+# /docker-entrypoint-initdb.d in a flat layout. PostgreSQL's initdb.d only
+# iterates the root directory (it does NOT recurse into subdirectories), so
+# every migration is mounted as an individual file with a numeric prefix that
+# guarantees lexicographic ordering. The seed file uses a `99_` prefix to run
+# strictly after all migrations.
+
+name: supabase-slim
+
+services:
+  db:
+    image: supabase/postgres:15.8.1.020
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXP: ${JWT_EXPIRY:-3600}
+      # pgcrypto symmetric key used by application-level pgp_sym_encrypt / pgp_sym_decrypt.
+      # Exposed via ALTER DATABASE SET in migration 000_configure_database.sql.
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      # Password for the PostgREST `authenticator` login role. Must be different
+      # from POSTGRES_PASSWORD so the postgres superuser credential is not shared.
+      AUTHENTICATOR_PASSWORD: ${AUTHENTICATOR_PASSWORD}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      # Flat initdb.d layout — postgres entrypoint does not recurse into subdirs.
+      - ./migrations/000_configure_database.sql:/docker-entrypoint-initdb.d/000_configure_database.sql:ro
+      - ./migrations:/docker-entrypoint-initdb.d/app-migrations:ro
+      - ./seed.sql:/docker-entrypoint-initdb.d/app-seed/seed.sql:ro
+      - ./run-app-migrations.sh:/docker-entrypoint-initdb.d/zzz_run_app_migrations.sh:ro
+      - ./postgresql.schema.sql:/etc/postgresql.schema.sql:ro
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  auth:
+    image: supabase/gotrue:v2.162.0
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: 9999
+      API_EXTERNAL_URL: ${API_EXTERNAL_URL}
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://supabase_auth_admin:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-postgres}
+      GOTRUE_SITE_URL: ${SITE_URL}
+      GOTRUE_DISABLE_SIGNUP: ${GOTRUE_DISABLE_SIGNUP:-false}
+      GOTRUE_JWT_SECRET: ${JWT_SECRET}
+      GOTRUE_JWT_EXP: ${JWT_EXPIRY:-3600}
+      GOTRUE_JWT_AUD: ${GOTRUE_JWT_AUD:-authenticated}
+      GOTRUE_JWT_ADMIN_ROLES: ${GOTRUE_JWT_ADMIN_ROLES:-service_role}
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: ${GOTRUE_JWT_DEFAULT_GROUP_NAME:-authenticated}
+      # Local dev: auto-confirm signups so the absence of SMTP does not trap users.
+      # Production must set GOTRUE_MAILER_AUTOCONFIRM=false and configure SMTP.
+      GOTRUE_MAILER_AUTOCONFIRM: ${GOTRUE_MAILER_AUTOCONFIRM:-true}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9999/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  rest:
+    image: postgrest/postgrest:v12.2.0
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # `authenticator` and its password are created by migration 008_create_service_roles.sql.
+      PGRST_DB_URI: postgres://authenticator:${AUTHENTICATOR_PASSWORD}@db:5432/${POSTGRES_DB:-postgres}
+      # Only expose schemas that actually exist in the slim stack.
+      PGRST_DB_SCHEMAS: public,billing,analytics
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_JWT_SECRET: ${JWT_SECRET}
+      PGRST_DB_USE_LEGACY_GUCS: "false"
+    healthcheck:
+      test: ["CMD", "/bin/postgrest", "--help"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  kong:
+    image: kong:2.8.1
+    restart: unless-stopped
+    depends_on:
+      auth:
+        condition: service_healthy
+      rest:
+        condition: service_healthy
+    ports:
+      - "${KONG_HTTP_PORT:-8000}:8000"
+      - "${KONG_HTTPS_PORT:-8443}:8443"
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /var/lib/kong/kong.yml
+      KONG_DNS_ORDER: LAST,A,CNAME
+      # Only load plugins that are actually declared in kong.yml to avoid implying
+      # key-auth/acl are enforced when they are not wired to any route.
+      KONG_PLUGINS: request-transformer,cors
+      KONG_NGINX_PROXY_PROXY_BUFFER_SIZE: 160k
+      KONG_NGINX_PROXY_PROXY_BUFFERS: 64 160k
+    volumes:
+      - ./kong.yml:/var/lib/kong/kong.yml:ro
+
+volumes:
+  db-data:
