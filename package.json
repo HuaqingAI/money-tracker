@@ -6,7 +6,8 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "clean": "turbo run clean && rm -rf node_modules"
+    "clean": "turbo run clean && rm -rf node_modules",
+    "db:types": "node supabase/scripts/gen-types.mjs"
   },
   "devDependencies": {
     "turbo": "^2.9.6",

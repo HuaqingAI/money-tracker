@@ -1,0 +1,9 @@
+project_id = "money-tracker-local"
+
+[api]
+enabled = true
+port = 8000
+
+[db]
+port = 5432
+major_version = 15

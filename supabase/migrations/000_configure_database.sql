@@ -18,15 +18,22 @@
 \set encryption_key `echo "$ENCRYPTION_KEY"`
 \set authenticator_password `echo "$AUTHENTICATOR_PASSWORD"`
 
-do $$
-begin
-  if :'encryption_key' is null or :'encryption_key' = '' then
-    raise exception 'ENCRYPTION_KEY environment variable is not set — refusing to initialise database';
-  end if;
-  if :'authenticator_password' is null or :'authenticator_password' = '' then
-    raise exception 'AUTHENTICATOR_PASSWORD environment variable is not set — refusing to initialise database';
-  end if;
-end $$;
+-- psql variable interpolation does not occur inside a DO $$ ... $$ body, so
+-- validation must stay at the top level where :'variable' is expanded before
+-- PostgreSQL parses the statement.
+select case when length(:'encryption_key') > 0 then 'true' else 'false' end as encryption_key_present \gset
+\if :encryption_key_present
+\else
+\echo 'ENCRYPTION_KEY environment variable is not set — refusing to initialise database'
+\quit 1
+\endif
+
+select case when length(:'authenticator_password') > 0 then 'true' else 'false' end as authenticator_password_present \gset
+\if :authenticator_password_present
+\else
+\echo 'AUTHENTICATOR_PASSWORD environment variable is not set — refusing to initialise database'
+\quit 1
+\endif
 
 -- Persist the values as database-scoped GUCs, readable via current_setting()
 -- from every future session. Uses dynamic SQL so the literal is safely quoted.
