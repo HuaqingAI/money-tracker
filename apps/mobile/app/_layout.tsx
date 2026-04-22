@@ -1,7 +1,7 @@
 import { UIProvider } from '@money-tracker/ui';
 import { Stack } from 'expo-router';
 
-import { Sentry, initSentry } from '../lib/sentry';
+import { initSentry, Sentry } from '../lib/sentry';
 
 // 应用启动时初始化 Sentry（必须在渲染前调用）
 initSentry();
