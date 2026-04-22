@@ -1,0 +1,33 @@
+{
+  "cli": {
+    "version": ">= 12.6.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "preview": {
+      "developmentClient": false,
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "production": {
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "ios": {
+        "simulator": false
+      }
+    },
+    "production-local": {
+      "extends": "production",
+      "android": {
+        "buildType": "app-bundle",
+        "withoutCredentials": true
+      },
+      "ios": {
+        "simulator": true
+      }
+    }
+  }
+}
