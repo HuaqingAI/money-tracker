@@ -1,20 +1,205 @@
+name: money-tracker-prod
+
 services:
-  worker:
-    image: ${API_IMAGE:-money-tracker-api:latest}
-    command: node apps/api/dist/worker/index.js
+  api:
+    image: ${API_IMAGE:-money-tracker-api:local}
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
     restart: unless-stopped
+    depends_on:
+      kong:
+        condition: service_started
+      db:
+        condition: service_healthy
     environment:
       NODE_ENV: production
-      SUPABASE_URL: ${SUPABASE_URL}
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+      SUPABASE_URL: http://kong:8000
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
-      SENTRY_DSN: ${SENTRY_DSN}
+      SUPABASE_JWT_SECRET: ${SUPABASE_JWT_SECRET}
+      AI_PRIMARY_API_KEY: ${AI_PRIMARY_API_KEY}
+      AI_PRIMARY_BASE_URL: ${AI_PRIMARY_BASE_URL}
+      AI_FALLBACK_API_KEY: ${AI_FALLBACK_API_KEY:-}
+      AI_FALLBACK_BASE_URL: ${AI_FALLBACK_BASE_URL:-}
+      WECHAT_APP_ID: ${WECHAT_APP_ID:-}
+      WECHAT_APP_SECRET: ${WECHAT_APP_SECRET:-}
+      SMS_ACCESS_KEY_ID: ${SMS_ACCESS_KEY_ID:-}
+      SMS_ACCESS_KEY_SECRET: ${SMS_ACCESS_KEY_SECRET:-}
+      SMS_SIGN_NAME: ${SMS_SIGN_NAME:-}
+      SMS_TEMPLATE_CODE: ${SMS_TEMPLATE_CODE:-}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-production}
+      SENTRY_TRACES_SAMPLE_RATE: ${SENTRY_TRACES_SAMPLE_RATE:-0.1}
+      SENTRY_ORG: ${SENTRY_ORG:-}
+      SENTRY_PROJECT_API: ${SENTRY_PROJECT_API:-}
+      SENTRY_PROJECT_MOBILE: ${SENTRY_PROJECT_MOBILE:-}
+      SENTRY_AUTH_TOKEN: ${SENTRY_AUTH_TOKEN:-}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      LOG_FILE_PATH: ${LOG_FILE_PATH:-./logs/app.log}
+      LOG_FILE_MAX_SIZE: ${LOG_FILE_MAX_SIZE:-10m}
+      LOG_FILE_MAX_FILES: ${LOG_FILE_MAX_FILES:-7}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://127.0.0.1:3000/api/health').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))\"",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    mem_limit: 768m
+    mem_reservation: 512m
+
+  worker:
+    image: ${API_IMAGE:-money-tracker-api:local}
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+    command: node apps/api/dist/worker/index.js
+    restart: unless-stopped
+    depends_on:
+      kong:
+        condition: service_started
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      SUPABASE_URL: http://kong:8000
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      SENTRY_DSN: ${SENTRY_DSN:-}
       SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-production}
       SENTRY_TRACES_SAMPLE_RATE: ${SENTRY_TRACES_SAMPLE_RATE:-0.1}
       LOG_LEVEL: ${LOG_LEVEL:-info}
       LOG_FILE_PATH: ${LOG_FILE_PATH:-./logs/app.log}
       LOG_FILE_MAX_SIZE: ${LOG_FILE_MAX_SIZE:-10m}
       LOG_FILE_MAX_FILES: ${LOG_FILE_MAX_FILES:-7}
-    deploy:
-      resources:
-        limits:
-          memory: 256M
+    mem_limit: 256m
+    mem_reservation: 192m
+
+  db:
+    image: supabase/postgres:15.8.1.020
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXP: ${JWT_EXPIRY:-3600}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      AUTHENTICATOR_PASSWORD: ${AUTHENTICATOR_PASSWORD}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ../supabase/migrations/000_configure_database.sql:/docker-entrypoint-initdb.d/000_configure_database.sql:ro
+      - ../supabase/migrations:/docker-entrypoint-initdb.d/app-migrations:ro
+      - ../supabase/seed.sql:/docker-entrypoint-initdb.d/app-seed/seed.sql:ro
+      - ../supabase/run-app-migrations.sh:/docker-entrypoint-initdb.d/zzz_run_app_migrations.sh:ro
+      - ../supabase/postgresql.schema.sql:/etc/postgresql.schema.sql:ro
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    mem_limit: 1024m
+    mem_reservation: 800m
+
+  auth:
+    image: supabase/gotrue:v2.162.0
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: 9999
+      API_EXTERNAL_URL: ${API_EXTERNAL_URL}
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://supabase_auth_admin:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-postgres}
+      GOTRUE_SITE_URL: ${SITE_URL}
+      GOTRUE_DISABLE_SIGNUP: ${GOTRUE_DISABLE_SIGNUP:-false}
+      GOTRUE_JWT_SECRET: ${JWT_SECRET}
+      GOTRUE_JWT_EXP: ${JWT_EXPIRY:-3600}
+      GOTRUE_JWT_AUD: ${GOTRUE_JWT_AUD:-authenticated}
+      GOTRUE_JWT_ADMIN_ROLES: ${GOTRUE_JWT_ADMIN_ROLES:-service_role}
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: ${GOTRUE_JWT_DEFAULT_GROUP_NAME:-authenticated}
+      GOTRUE_MAILER_AUTOCONFIRM: ${GOTRUE_MAILER_AUTOCONFIRM:-false}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9999/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    mem_limit: 160m
+    mem_reservation: 96m
+
+  rest:
+    image: postgrest/postgrest:v12.2.0
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGRST_DB_URI: postgres://authenticator:${AUTHENTICATOR_PASSWORD}@db:5432/${POSTGRES_DB:-postgres}
+      PGRST_DB_SCHEMAS: public,billing,analytics
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_JWT_SECRET: ${JWT_SECRET}
+      PGRST_DB_USE_LEGACY_GUCS: "false"
+    healthcheck:
+      test: ["CMD", "/bin/postgrest", "--help"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    mem_limit: 128m
+    mem_reservation: 64m
+
+  kong:
+    image: kong:2.8.1
+    restart: unless-stopped
+    depends_on:
+      auth:
+        condition: service_healthy
+      rest:
+        condition: service_healthy
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /var/lib/kong/kong.yml
+      KONG_DNS_ORDER: LAST,A,CNAME
+      KONG_PLUGINS: request-transformer,cors
+      KONG_NGINX_PROXY_PROXY_BUFFER_SIZE: 160k
+      KONG_NGINX_PROXY_PROXY_BUFFERS: 64 160k
+    volumes:
+      - ../supabase/kong.yml:/var/lib/kong/kong.yml:ro
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8000/rest/v1/"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    mem_limit: 256m
+    mem_reservation: 128m
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+      kong:
+        condition: service_started
+    ports:
+      - "${NGINX_HTTP_PORT:-80}:80"
+      - "${NGINX_HTTPS_PORT:-443}:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ${DEPLOY_CERTS_DIR:-./nginx/certs}:/etc/nginx/certs:ro
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    mem_limit: 128m
+    mem_reservation: 64m
+
+volumes:
+  db-data:

@@ -49,7 +49,7 @@ development_status:
   0-3-database-schema-and-auth-baseline: done
   0-4-dev-toolchain-and-quality-gates: done
   0-5-ci-cd-pipeline: in-progress
-  0-6-production-deployment: backlog
+  0-6-production-deployment: review
   0-7-monitoring-and-error-tracking: done
   0-8-background-tasks-and-scheduling: done
   epic-0-retrospective: optional
