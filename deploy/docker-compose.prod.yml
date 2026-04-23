@@ -1,7 +1,7 @@
 services:
   worker:
     image: ${API_IMAGE:-money-tracker-api:latest}
-    command: pnpm --filter api worker:start
+    command: node apps/api/dist/worker/index.js
     restart: unless-stopped
     environment:
       NODE_ENV: production

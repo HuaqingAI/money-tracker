@@ -1,6 +1,6 @@
 # Story 0.8: 后台任务与定时调度基础设施
 
-Status: review
+Status: done
 
 ## Story
 
@@ -65,6 +65,11 @@ So that 洞察推送、季节预警等需要定期分析的功能有运行环境
   - [x] 5.1 编写/补充 worker 相关单元测试
   - [x] 5.2 运行构建验证、测试验证与必要的手动执行验证
   - [x] 5.3 更新 `_bmad-output/implementation-artifacts/sprint-status.yaml` 状态流转
+
+### Review Findings
+
+- [x] [Review][Patch] Worker 容器将无法按当前镜像启动 [apps/api/Dockerfile:43]
+- [x] [Review][Patch] 任务注册仍是硬编码列表，未实现 story 要求的自动扫描 [apps/api/worker/tasks/index.ts:3]
 
 ## Dev Notes
 
