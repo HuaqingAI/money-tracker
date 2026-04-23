@@ -29,7 +29,7 @@ ENV NEXT_PUBLIC_API_URL=http://localhost:3000
 ENV SUPABASE_URL=http://localhost:54321
 ENV SUPABASE_ANON_KEY=ci-placeholder-anon-key
 
-RUN pnpm --filter api build
+RUN cd apps/api && ../../node_modules/.bin/next build
 
 FROM node:20-bookworm-slim AS runner
 
