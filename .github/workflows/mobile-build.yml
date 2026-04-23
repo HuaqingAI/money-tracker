@@ -1,0 +1,67 @@
+name: Mobile build strategy
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-mobile-signing-contract:
+    name: Validate Expo and Android signing secrets
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Setup Expo and EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Decode Android keystore from GitHub Secrets
+        run: |
+          install -d "$RUNNER_TEMP/mobile-signing"
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/mobile-signing/release.keystore"
+          test -s "$RUNNER_TEMP/mobile-signing/release.keystore"
+
+      - name: Summarize mobile CI strategy
+        run: |
+          cat <<EOF >> "$GITHUB_STEP_SUMMARY"
+          ## Mobile CI strategy
+
+          - Expo authentication is sourced from \
+            `EXPO_TOKEN`.
+          - Android signing material is sourced from GitHub Secrets and decoded only into the runner temp directory.
+          - EAS profiles are defined in \
+            \
+            	`eas.json` (`preview`, `production`, `production-local`).
+          - The domestic-network fallback remains a trusted self-managed run of:
+            \
+            	`eas build --platform android --profile production-local --local`
+
+          This workflow intentionally validates the signing contract without auto-releasing mobile binaries.
+          EOF
