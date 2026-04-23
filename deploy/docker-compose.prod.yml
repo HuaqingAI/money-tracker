@@ -1,0 +1,20 @@
+services:
+  worker:
+    image: ${API_IMAGE:-money-tracker-api:latest}
+    command: pnpm --filter api worker:start
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      SENTRY_DSN: ${SENTRY_DSN}
+      SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-production}
+      SENTRY_TRACES_SAMPLE_RATE: ${SENTRY_TRACES_SAMPLE_RATE:-0.1}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      LOG_FILE_PATH: ${LOG_FILE_PATH:-./logs/app.log}
+      LOG_FILE_MAX_SIZE: ${LOG_FILE_MAX_SIZE:-10m}
+      LOG_FILE_MAX_FILES: ${LOG_FILE_MAX_FILES:-7}
+    deploy:
+      resources:
+        limits:
+          memory: 256M
