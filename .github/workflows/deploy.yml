@@ -1,0 +1,83 @@
+name: Deploy API
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-api
+  cancel-in-progress: true
+
+jobs:
+  deploy-api:
+    name: Build, push, and deploy API image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    env:
+      IMAGE_TAG: ${{ github.sha }}
+      IMAGE_REPOSITORY: ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NAMESPACE }}/money-tracker-api
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to Alibaba Cloud ACR
+        uses: aliyun/acr-login@v1
+        with:
+          login-server: ${{ secrets.ACR_REGISTRY }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build API image
+        run: |
+          docker build \
+            --file apps/api/Dockerfile \
+            --tag "$IMAGE_REPOSITORY:$IMAGE_TAG" \
+            .
+
+      - name: Push API image
+        run: docker push "$IMAGE_REPOSITORY:$IMAGE_TAG"
+
+      - name: Configure SSH
+        env:
+          ECS_SSH_PRIVATE_KEY: ${{ secrets.ECS_SSH_PRIVATE_KEY }}
+          ECS_KNOWN_HOSTS: ${{ secrets.ECS_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$ECS_SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$ECS_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Roll out on ECS
+        env:
+          ECS_HOST: ${{ secrets.ECS_HOST }}
+          ECS_USER: ${{ secrets.ECS_USER }}
+          ECS_DEPLOY_PATH: ${{ secrets.ECS_DEPLOY_PATH }}
+          ACR_REGISTRY: ${{ secrets.ACR_REGISTRY }}
+          ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
+          ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
+        run: |
+          ssh "$ECS_USER@$ECS_HOST" \
+            "set -euo pipefail && export IMAGE_TAG=$IMAGE_TAG IMAGE_REPOSITORY=$IMAGE_REPOSITORY ACR_REGISTRY=$ACR_REGISTRY ACR_USERNAME=$ACR_USERNAME && cd '$ECS_DEPLOY_PATH' && printf '%s' '$ACR_PASSWORD' | docker login '$ACR_REGISTRY' --username '$ACR_USERNAME' --password-stdin && docker compose pull api && docker compose up -d api"
+
+      - name: Health check
+        if: vars.API_HEALTHCHECK_URL != ''
+        env:
+          API_HEALTHCHECK_URL: ${{ vars.API_HEALTHCHECK_URL }}
+        run: curl --fail --silent --show-error "$API_HEALTHCHECK_URL"
+
+      - name: Deployment summary
+        run: |
+          cat <<EOF >> "$GITHUB_STEP_SUMMARY"
+          ## Deployment summary
+
+          - Image: $IMAGE_REPOSITORY:$IMAGE_TAG
+          - Target host: ${{ secrets.ECS_HOST }}
+          - Compose path: ${{ secrets.ECS_DEPLOY_PATH }}
+          EOF

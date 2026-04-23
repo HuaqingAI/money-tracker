@@ -1,13 +1,13 @@
 // Types
 export type { ApiResponse } from './types/api-response';
 export type {
+  CompositeTypes,
   Database,
-  Tables,
+  Enums,
   Json,
+  Tables,
   TablesInsert,
   TablesUpdate,
-  Enums,
-  CompositeTypes,
 } from './types/database';
 
 // 占位导出 — 后续 Story 逐步填充
