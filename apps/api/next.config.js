@@ -1,7 +1,10 @@
+const path = require('path');
 const { withSentryConfig } = require('@sentry/nextjs');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
+  outputFileTracingRoot: path.join(__dirname, '../../'),
   transpilePackages: ['@money-tracker/shared', '@money-tracker/ui'],
   serverExternalPackages: ['pino', 'pino-roll', 'pino-pretty'],
 };
