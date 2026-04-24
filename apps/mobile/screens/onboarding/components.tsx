@@ -1,14 +1,14 @@
-import { Button, shadows,Text } from '@money-tracker/ui';
+import { Button, shadows, Text } from '@money-tracker/ui';
 import * as React from 'react';
 import { AccessibilityInfo, Pressable } from 'react-native';
-import { Circle, Separator, Stack, XStack, YStack } from 'tamagui';
+import { Circle, Separator, XStack, YStack } from 'tamagui';
 
 import type { OnboardingVisualTone } from './content';
 
 export function BrandLockup() {
   return (
     <YStack ai="center" gap="$3">
-      <Stack
+      <YStack
         width={64}
         height={64}
         br="$xl"
@@ -17,7 +17,7 @@ export function BrandLockup() {
         ai="center"
         style={shadows.md}
       >
-        <Stack
+        <YStack
           width={32}
           height={32}
           br="$md"
@@ -30,8 +30,8 @@ export function BrandLockup() {
           <Text color="$surfacePrimary" fontSize={18} fontWeight="700">
             +
           </Text>
-        </Stack>
-      </Stack>
+        </YStack>
+      </YStack>
       <Text variant="h2" color="$brand500">
         了然
       </Text>
@@ -131,7 +131,7 @@ export function ProgressDots({
         const isActive = index === currentIndex;
 
         return (
-          <Stack
+          <YStack
             key={index}
             width={isActive ? 20 : 8}
             height={isActive ? 10 : 8}
@@ -147,7 +147,7 @@ export function ProgressDots({
 
 export function WelcomeHero() {
   return (
-    <Stack width={292} height={320} ai="center" jc="center">
+    <YStack width={292} height={320} ai="center" jc="center">
       <Circle
         size={220}
         bg="$brand100"
@@ -170,7 +170,7 @@ export function WelcomeHero() {
         </YStack>
       </FloatingCard>
 
-      <Stack
+      <YStack
         width={150}
         height={272}
         br={36}
@@ -179,7 +179,7 @@ export function WelcomeHero() {
         borderColor="$neutral800"
         style={shadows.lg}
       >
-        <Stack
+        <YStack
           width={64}
           height={16}
           br="$lg"
@@ -207,7 +207,7 @@ export function WelcomeHero() {
             </Text>
           </YStack>
         </YStack>
-      </Stack>
+      </YStack>
 
       <FloatingCard side="right" bottom={38} rotate="8deg">
         <YStack gap="$2">
@@ -225,7 +225,7 @@ export function WelcomeHero() {
           </Text>
         </YStack>
       </FloatingCard>
-    </Stack>
+    </YStack>
   );
 }
 
@@ -329,7 +329,7 @@ function MetricPill({
 
 function CaptureVisual() {
   return (
-    <Stack width={292} height={300} ai="center" jc="center">
+    <YStack width={292} height={300} ai="center" jc="center">
       <Circle size={232} bg="$brand50" pos="absolute" top={32} opacity={0.95} />
       <FloatingBadge left={18} top={36} bg="$success" label="支付宝" />
       <FloatingBadge right={18} bottom={72} bg="$brand500" label="微信支付" />
@@ -340,13 +340,13 @@ function CaptureVisual() {
           <FeedCard label="超市" amount="-¥58" accent="$catShopping" />
         </YStack>
       </PhoneShell>
-    </Stack>
+    </YStack>
   );
 }
 
 function CategorizeVisual() {
   return (
-    <Stack width={292} height={300} ai="center" jc="center">
+    <YStack width={292} height={300} ai="center" jc="center">
       <Circle size={224} bg="$warmTint" pos="absolute" top={36} opacity={0.95} />
       <XStack pos="absolute" top={34} gap="$2">
         <CategoryChip bg="$catDining" label="餐饮" />
@@ -377,13 +377,13 @@ function CategorizeVisual() {
           </Text>
         </XStack>
       </YStack>
-    </Stack>
+    </YStack>
   );
 }
 
 function AssistantVisual() {
   return (
-    <Stack width={300} height={300} ai="center" jc="center">
+    <YStack width={300} height={300} ai="center" jc="center">
       <Circle size={228} bg="$brand50" pos="absolute" top={36} opacity={0.95} />
       <YStack
         width={220}
@@ -430,7 +430,7 @@ function AssistantVisual() {
           本月餐饮支出比上月多出 15%
         </Text>
       </YStack>
-    </Stack>
+    </YStack>
   );
 }
 
@@ -473,7 +473,7 @@ function FloatingBadge({
 
 function PhoneShell({ children }: React.PropsWithChildren) {
   return (
-    <Stack
+    <YStack
       width={168}
       height={276}
       br={36}
@@ -482,7 +482,7 @@ function PhoneShell({ children }: React.PropsWithChildren) {
       borderColor="$neutral800"
       style={shadows.lg}
     >
-      <Stack
+      <YStack
         width={68}
         height={16}
         br="$lg"
@@ -496,7 +496,7 @@ function PhoneShell({ children }: React.PropsWithChildren) {
       <YStack flex={1} bg="$surfacePrimary" br={30} px="$4" pt={40} pb="$4">
         {children}
       </YStack>
-    </Stack>
+    </YStack>
   );
 }
 
@@ -566,9 +566,9 @@ function CategoryRow({
           已整理
         </Text>
       </XStack>
-      <Stack height={8} br="$full" bg="$neutral100" overflow="hidden">
-        <Stack height="100%" width={width} bg={color} br="$full" />
-      </Stack>
+      <YStack height={8} br="$full" bg="$neutral100" overflow="hidden">
+        <YStack height="100%" width={width} bg={color} br="$full" />
+      </YStack>
     </YStack>
   );
 }

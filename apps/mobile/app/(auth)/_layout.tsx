@@ -1,5 +1,9 @@
 import { Stack } from 'expo-router';
 
+export const unstable_settings = {
+  initialRouteName: 'welcome',
+};
+
 export default function AuthLayout() {
   return (
     <Stack
@@ -9,6 +13,10 @@ export default function AuthLayout() {
           backgroundColor: '#F9FAFB',
         },
       }}
-    />
+    >
+      <Stack.Screen name="welcome" />
+      <Stack.Screen name="onboarding" />
+      <Stack.Screen name="register" />
+    </Stack>
   );
 }
