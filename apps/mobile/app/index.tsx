@@ -1,21 +1,34 @@
-import { Button, Text, TextInput } from '@money-tracker/ui';
-import { useState } from 'react';
+import { Button, Text } from '@money-tracker/ui';
+import { Redirect, router } from 'expo-router';
 import { YStack } from 'tamagui';
 
+import { useAuthStore } from '../stores/auth-store';
+
 export default function HomeScreen() {
-  const [value, setValue] = useState('');
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const hasHydrated = useAuthStore((state) => state.hasHydrated);
+
+  if (hasHydrated && accessToken) {
+    return <Redirect href="/me" />;
+  }
 
   return (
-    <YStack flex={1} jc="center" ai="center" gap="$4" padding="$4" bg="$surfacePage">
-      <Text variant="h1">了然 — Money Tracker</Text>
-      <Text variant="caption">Story 0.2 · Tamagui v2 RC 基础组件验证</Text>
-      <TextInput
-        placeholder="测试输入"
-        value={value}
-        onChangeText={setValue}
-        width={240}
-      />
-      <Button onPress={() => setValue('')}>确认</Button>
+    <YStack
+      alignItems="center"
+      backgroundColor="$surfacePage"
+      flex={1}
+      gap="$4"
+      justifyContent="center"
+      padding="$4"
+    >
+      <Text variant="h1">Money Tracker</Text>
+      <Text variant="caption">
+        Story 1.8 wires the account area, profile editing, settings, and delete-account flow.
+      </Text>
+      <Text variant="caption">
+        When a local JWT exists, the app redirects into the account area automatically.
+      </Text>
+      <Button onPress={() => router.push('/me')}>Open Account Area</Button>
     </YStack>
   );
 }

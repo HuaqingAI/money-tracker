@@ -43,23 +43,25 @@ describe('request-logger', () => {
   it('generates a request id when header is missing', () => {
     const randomUUIDSpy = vi
       .spyOn(globalThis.crypto, 'randomUUID')
-      .mockReturnValue('generated-id');
+      .mockReturnValue('00000000-0000-0000-0000-000000000001');
 
     const request = new Request('https://example.com/api/health');
 
-    expect(getRequestId(request)).toBe('generated-id');
+    expect(getRequestId(request)).toBe('00000000-0000-0000-0000-000000000001');
     expect(randomUUIDSpy).toHaveBeenCalledOnce();
   });
 
   it('logs request lifecycle and injects response header', async () => {
-    vi.spyOn(globalThis.crypto, 'randomUUID').mockReturnValue('req-123');
+    vi.spyOn(globalThis.crypto, 'randomUUID').mockReturnValue(
+      '00000000-0000-0000-0000-000000000002',
+    );
 
     const request = new Request('https://example.com/api/health', {
       method: 'GET',
     });
 
     const response = await withRequestLogging(request, async ({ requestId }) => {
-      expect(requestId).toBe('req-123');
+      expect(requestId).toBe('00000000-0000-0000-0000-000000000002');
       return new Response(JSON.stringify({ ok: true }), {
         status: 200,
         headers: {
@@ -68,7 +70,9 @@ describe('request-logger', () => {
       });
     });
 
-    expect(createRequestLoggerMock).toHaveBeenCalledWith('req-123');
+    expect(createRequestLoggerMock).toHaveBeenCalledWith(
+      '00000000-0000-0000-0000-000000000002',
+    );
     expect(loggerMock.info).toHaveBeenNthCalledWith(
       1,
       { method: 'GET', url: 'https://example.com/api/health' },
@@ -84,12 +88,16 @@ describe('request-logger', () => {
       }),
       'request:end',
     );
-    expect(response.headers.get('X-Request-Id')).toBe('req-123');
+    expect(response.headers.get('X-Request-Id')).toBe(
+      '00000000-0000-0000-0000-000000000002',
+    );
     expect(await response.json()).toEqual({ ok: true });
   });
 
   it('logs and rethrows handler errors', async () => {
-    vi.spyOn(globalThis.crypto, 'randomUUID').mockReturnValue('req-err');
+    vi.spyOn(globalThis.crypto, 'randomUUID').mockReturnValue(
+      '00000000-0000-0000-0000-000000000003',
+    );
 
     const request = new Request('https://example.com/api/health', {
       method: 'GET',
