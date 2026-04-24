@@ -1,5 +1,21 @@
 import { ConfigContext, ExpoConfig } from 'expo/config';
 
+function resolveApiUrl(): string | undefined {
+  if (process.env.EXPO_PUBLIC_API_URL) {
+    return process.env.EXPO_PUBLIC_API_URL;
+  }
+
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+
+  if (process.env.EXPO_PACKAGER_HOSTNAME) {
+    return `http://${process.env.EXPO_PACKAGER_HOSTNAME}:3000`;
+  }
+
+  return undefined;
+}
+
 /**
  * Sentry Expo plugin 配置
  *
@@ -38,6 +54,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   extra: {
     supabaseUrl: process.env.SUPABASE_URL,
     supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
-    apiUrl: process.env.NEXT_PUBLIC_API_URL,
+    apiUrl: resolveApiUrl(),
   },
 });

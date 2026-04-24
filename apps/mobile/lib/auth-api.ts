@@ -11,9 +11,29 @@ import type {
 } from '@money-tracker/shared';
 import Constants from 'expo-constants';
 
+function normalizeLocalhost(url: string): string {
+  const hostUri =
+    Constants.expoConfig?.hostUri
+    ?? (Constants as unknown as { manifest2?: { extra?: { expoClient?: { hostUri?: string } } } })
+      .manifest2?.extra?.expoClient?.hostUri
+    ?? (Constants as unknown as { manifest?: { debuggerHost?: string } }).manifest?.debuggerHost
+    ?? null;
+
+  if (!hostUri || !/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i.test(url)) {
+    return url;
+  }
+
+  const [host] = hostUri.split(':');
+  if (!host) {
+    return url;
+  }
+
+  return url.replace(/(localhost|127\.0\.0\.1)/i, host);
+}
+
 function getApiBaseUrl(): string {
   const extra = Constants.expoConfig?.extra as { apiUrl?: string | undefined } | undefined;
-  return extra?.apiUrl ?? 'http://localhost:3000';
+  return normalizeLocalhost(extra?.apiUrl ?? 'http://localhost:3000');
 }
 
 async function postJson<TResponse, TRequest>(path: string, payload: TRequest): Promise<TResponse> {
