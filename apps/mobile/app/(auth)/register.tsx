@@ -1,7 +1,7 @@
 import { Text, TextInput } from '@money-tracker/ui';
 import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { Alert, KeyboardAvoidingView, Linking, Platform } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { XStack, YStack } from 'tamagui';
 
@@ -156,16 +156,8 @@ export default function RegisterScreen() {
           <AgreementCheckbox
             checked={agreementChecked}
             onToggle={() => setAgreementChecked((value) => !value)}
-            onOpenTerms={() =>
-              void Linking.openURL('https://example.com/terms').catch(() => {
-                Alert.alert('提示', '用户协议链接待补充');
-              })
-            }
-            onOpenPrivacy={() =>
-              void Linking.openURL('https://example.com/privacy').catch(() => {
-                Alert.alert('提示', '隐私政策链接待补充');
-              })
-            }
+            onOpenTerms={() => router.push('/(auth)/legal?type=terms')}
+            onOpenPrivacy={() => router.push('/(auth)/legal?type=privacy')}
           />
         </YStack>
       </KeyboardAvoidingView>
