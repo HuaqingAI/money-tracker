@@ -86,7 +86,12 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'money-tracker-auth',
-      onRehydrateStorage: () => (state) => {
+      onRehydrateStorage: () => (state, error) => {
+        if (error) {
+          state?.clearSession();
+          return;
+        }
+
         state?.markHydrated(true);
       },
       partialize: (state) => ({
@@ -94,7 +99,23 @@ export const useAuthStore = create<AuthState>()(
         refreshToken: state.refreshToken,
         user: state.user,
       }),
+      skipHydration: true,
       storage: createJSONStorage(() => AsyncStorage),
     },
   ),
 );
+
+export async function hydrateAuthStore(): Promise<void> {
+  if (useAuthStore.getState().hasHydrated) {
+    return;
+  }
+
+  try {
+    await useAuthStore.persist.rehydrate();
+  } catch {
+    useAuthStore.getState().clearSession();
+  } finally {
+    useAuthStore.getState().markHydrated(true);
+  }
+}
+

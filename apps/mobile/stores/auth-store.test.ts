@@ -17,13 +17,14 @@ vi.mock('@react-native-async-storage/async-storage', () => ({
   },
 }));
 
-import { useAuthStore } from './auth-store';
+import { hydrateAuthStore, useAuthStore } from './auth-store';
 
 describe('auth-store', () => {
   beforeEach(async () => {
     memoryStorage.clear();
     useAuthStore.getState().clearSession();
     await useAuthStore.persist.clearStorage();
+    useAuthStore.getState().markHydrated(false);
   });
 
   it('stores an authenticated session', () => {
@@ -52,7 +53,7 @@ describe('auth-store', () => {
       createdAt: null,
       loginMethod: 'wechat',
       maskedPhoneNumber: '138****5678',
-      nickname: '了然用户',
+      nickname: 'Profile User',
       updatedAt: null,
       userId: 'user-1',
     });
@@ -62,7 +63,7 @@ describe('auth-store', () => {
     expect(state.user).toEqual({
       avatarUrl: 'https://example.com/avatar.png',
       loginMethod: 'wechat',
-      nickname: '了然用户',
+      nickname: 'Profile User',
       userId: 'user-1',
     });
   });
@@ -82,5 +83,11 @@ describe('auth-store', () => {
     expect(state.accessToken).toBeNull();
     expect(state.refreshToken).toBeNull();
     expect(state.user.userId).toBeNull();
+  });
+
+  it('marks the store hydrated when rehydrate completes', async () => {
+    await hydrateAuthStore();
+
+    expect(useAuthStore.getState().hasHydrated).toBe(true);
   });
 });
