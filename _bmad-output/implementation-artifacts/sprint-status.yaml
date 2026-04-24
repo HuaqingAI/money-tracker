@@ -52,7 +52,7 @@ development_status:
   0-6-production-deployment: done
   0-7-monitoring-and-error-tracking: done
   0-8-background-tasks-and-scheduling: done
-  epic-0-retrospective: optional
+  epic-0-retrospective: done
 
   # Epic 1: 零输入首次体验 (MVP)
   epic-1: backlog
