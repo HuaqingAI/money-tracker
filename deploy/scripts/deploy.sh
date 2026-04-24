@@ -162,7 +162,7 @@ rollback() {
 
   log "开始回滚到上一版 API 镜像: ${PREVIOUS_API_IMAGE}"
   export API_IMAGE="${PREVIOUS_API_IMAGE}"
-  compose up -d --no-deps api nginx
+  compose up -d --no-deps api worker nginx
 
   if wait_for_healthcheck; then
     log '回滚成功'
