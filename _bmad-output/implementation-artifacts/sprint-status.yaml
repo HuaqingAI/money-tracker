@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-20
-last_updated: 2026-04-23
+last_updated: 2026-04-24
 project: money-tracker
 project_key: NOKEY
 tracking_system: file-system
@@ -43,13 +43,13 @@ story_location: "{project-root}/_bmad-output/implementation-artifacts"
 
 development_status:
   # Epic 0: 工程基础设施 (MVP 前置)
-  epic-0: in-progress
+  epic-0: done
   0-1-monorepo-skeleton: done
   0-2-ui-design-system-baseline: done
   0-3-database-schema-and-auth-baseline: done
   0-4-dev-toolchain-and-quality-gates: done
-  0-5-ci-cd-pipeline: in-progress
-  0-6-production-deployment: review
+  0-5-ci-cd-pipeline: done
+  0-6-production-deployment: done
   0-7-monitoring-and-error-tracking: done
   0-8-background-tasks-and-scheduling: done
   epic-0-retrospective: optional
