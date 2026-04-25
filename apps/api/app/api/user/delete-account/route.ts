@@ -13,10 +13,6 @@ function toErrorResponse(error: unknown): Response {
     return errorResponse(error.code, error.message, error.status);
   }
 
-  if (error instanceof Error) {
-    return errorResponse('DELETE_ACCOUNT_FAILED', error.message, 500);
-  }
-
   return errorResponse('DELETE_ACCOUNT_FAILED', 'Failed to delete account.', 500);
 }
 

@@ -84,13 +84,20 @@ so that 我对自己的账户和数据有掌控感，符合个人信息保护要
   - [x] 6.3 为移动端 auth-store 补测试；页面交互以 lint + type-check + build 验证为主
   - [x] 6.4 运行 story 范围内构建、测试、lint，并记录结果
 
+### Review Findings
+
+- [x] [Review][Decision] 隐私协议查看入口当前只提供摘要页，是否接受为 MVP 范围？ - 决策：接受 MVP 范围，但入口改为与登录协议一致的 WebView 承载隐私说明，后续可直接替换为完整隐私说明页面内容。
+- [x] [Review][Patch] 未登录或会话失效用户可停留在受保护的 `(main)` 页面 [apps/mobile/app/_layout.tsx:68]
+- [x] [Review][Patch] 服务端 500 响应会把 Supabase/数据库底层错误信息返回给客户端 [apps/api/app/api/user/profile/route.ts:17]
+- [x] [Review][Patch] “我的”页退出登录入口缺少 AC5 要求的确认流程 [apps/mobile/app/(main)/me.tsx:59]
+
 ## Dev Notes
 
 ### 实现摘要
 
 - `packages/shared` 新增用户资料类型、Zod schema 和手机号脱敏工具。
 - `apps/api` 新增 `GET/PUT /api/user/profile` 与 `DELETE /api/user/delete-account`，并补齐 repository / service / mapper / auth middleware 最小链路。
-- `apps/mobile` 新增 QueryClient、auth-store、API client、账户区路由、我的页、资料编辑页、设置页、隐私摘要页。
+- `apps/mobile` 新增 QueryClient、auth-store、API client、账户区路由、我的页、资料编辑页、设置页、隐私说明 WebView 页。
 - “我的”页支持显示昵称、脱敏手机号、登录方式、头像 URL 渲染/回退头像，并提供编辑资料、设置、直接退出登录入口。
 - 设置页提供隐私摘要入口、删除账户入口、当前登录方式、应用版本；删除成功和退出登录都会清空 QueryClient 与持久化 auth-store。
 

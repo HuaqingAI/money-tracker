@@ -83,6 +83,29 @@ describe('GET /api/user/profile', () => {
       }),
     });
   });
+
+  it('does not expose internal errors to the client', async () => {
+    requireAuthenticatedUserMock.mockResolvedValue({
+      accessToken: 'token',
+      user: createUser(),
+    });
+    getUserProfileMock.mockRejectedValue(
+      new Error('Failed to load user profile: relation auth.user_profiles does not exist'),
+    );
+
+    const response = await GET(
+      new Request('https://example.com/api/user/profile') as never,
+    );
+
+    expect(response.status).toBe(500);
+    await expect(response.json()).resolves.toEqual({
+      success: false,
+      error: {
+        code: 'USER_PROFILE_FAILED',
+        message: 'Failed to handle user profile.',
+      },
+    });
+  });
 });
 
 describe('PUT /api/user/profile', () => {

@@ -2,7 +2,7 @@ import { Button, Text } from '@money-tracker/ui';
 import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import type { ReactNode } from 'react';
-import { ActivityIndicator, Image, ScrollView, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, ScrollView, View } from 'react-native';
 import { XStack, YStack } from 'tamagui';
 
 import { fetchUserProfile } from '../../lib/api-client';
@@ -61,6 +61,19 @@ export default function MeScreen() {
     router.replace('/');
   }
 
+  function confirmLogout(): void {
+    Alert.alert('Log out', 'Do you want to log out of the current account?', [
+      { style: 'cancel', text: 'Cancel' },
+      {
+        style: 'destructive',
+        text: 'Log out',
+        onPress: () => {
+          void onLogout();
+        },
+      },
+    ]);
+  }
+
   return (
     <ScrollView contentContainerStyle={{ padding: 16 }}>
       <YStack gap="$4">
@@ -113,7 +126,7 @@ export default function MeScreen() {
           <Divider />
           <Button onPress={() => router.push('/(main)/profile')}>Edit Profile</Button>
           <Button onPress={() => router.push('/(main)/settings')}>Basic Settings</Button>
-          <Button onPress={() => void onLogout()}>Log Out</Button>
+          <Button onPress={confirmLogout}>Log Out</Button>
         </AccountCard>
       </YStack>
     </ScrollView>

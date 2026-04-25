@@ -1,29 +1,44 @@
-import { Text } from '@money-tracker/ui';
-import { ScrollView } from 'react-native';
+import { Button, Text } from '@money-tracker/ui';
+import { Stack, useRouter } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import WebView from 'react-native-webview';
 import { YStack } from 'tamagui';
 
+import { getLegalDocument } from '../../lib/legal-documents';
+
 export default function PrivacyScreen() {
+  const router = useRouter();
+  const document = getLegalDocument('privacy');
+
   return (
-    <ScrollView contentContainerStyle={{ padding: 16 }}>
-      <YStack
-        backgroundColor="$surfacePrimary"
-        borderColor="$neutral200"
-        borderRadius="$lg"
-        borderWidth={1}
-        gap="$3"
-        padding="$4"
-      >
-        <Text variant="h2">隐私协议摘要</Text>
-        <Text variant="body">
-          了然仅在完成记账和账户服务所需范围内处理个人数据，敏感信息遵循最小化原则存储。
-        </Text>
-        <Text variant="body">
-          你可以在设置页发起删除账户请求，系统将删除账户主体记录，并通过现有外键级联清理关联账务与统计数据。
-        </Text>
-        <Text variant="body">
-          本页面是 MVP 阶段的应用内查看入口；完整协议文本将在后续 Web 隐私页上线后同步接入。
-        </Text>
+    <SafeAreaView style={{ flex: 1 }}>
+      <Stack.Screen
+        options={{
+          title: document.title,
+          headerShown: true,
+        }}
+      />
+      <YStack flex={1} backgroundColor="$surfacePage">
+        <YStack paddingHorizontal="$4" paddingTop="$3">
+          <Button alignSelf="flex-start" size="$3" onPress={() => router.back()}>
+            Back
+          </Button>
+        </YStack>
+        <YStack flex={1} marginTop="$2" overflow="hidden">
+          <WebView
+            originWhitelist={['*']}
+            renderError={(errorName) => (
+              <YStack alignItems="center" flex={1} gap="$3" justifyContent="center" padding="$5">
+                <Text variant="h2">Page failed to load</Text>
+                <Text variant="body">{errorName}</Text>
+              </YStack>
+            )}
+            setSupportMultipleWindows={false}
+            source={{ html: document.html }}
+            startInLoadingState
+          />
+        </YStack>
       </YStack>
-    </ScrollView>
+    </SafeAreaView>
   );
 }

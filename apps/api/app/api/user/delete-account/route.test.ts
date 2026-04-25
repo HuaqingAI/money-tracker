@@ -74,4 +74,29 @@ describe('DELETE /api/user/delete-account', () => {
       },
     });
   });
+
+  it('does not expose internal deletion errors to the client', async () => {
+    requireAuthenticatedUserMock.mockResolvedValue({
+      accessToken: 'token',
+      user: createUser(),
+    });
+    deleteUserAccountMock.mockRejectedValue(
+      new Error('Failed to delete user: service_role key is invalid'),
+    );
+
+    const response = await DELETE(
+      new Request('https://example.com/api/user/delete-account', {
+        method: 'DELETE',
+      }) as never,
+    );
+
+    expect(response.status).toBe(500);
+    await expect(response.json()).resolves.toEqual({
+      success: false,
+      error: {
+        code: 'DELETE_ACCOUNT_FAILED',
+        message: 'Failed to delete account.',
+      },
+    });
+  });
 });

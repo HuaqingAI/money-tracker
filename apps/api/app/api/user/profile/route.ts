@@ -14,10 +14,6 @@ function toErrorResponse(error: unknown): Response {
     return errorResponse(error.code, error.message, error.status);
   }
 
-  if (error instanceof Error) {
-    return errorResponse('USER_PROFILE_FAILED', error.message, 500);
-  }
-
   return errorResponse('USER_PROFILE_FAILED', 'Failed to handle user profile.', 500);
 }
 

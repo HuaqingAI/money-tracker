@@ -15,6 +15,24 @@ export const unstable_settings = {
 
 initSentry();
 
+function isRouteGroupAllowed(
+  activeGroup: string | undefined,
+  nextPath: string,
+): boolean {
+  if (nextPath === AUTH_ROUTE_PATHS.permissions) {
+    return activeGroup === '(setup)';
+  }
+
+  if (
+    nextPath === AUTH_ROUTE_PATHS.me ||
+    nextPath === AUTH_ROUTE_PATHS.dashboard
+  ) {
+    return activeGroup === '(main)';
+  }
+
+  return activeGroup === '(auth)';
+}
+
 function RootLayout() {
   const hydrated = useAuthStore((state) => state.hydrated);
   const nextPath = useAuthStore((state) => state.getNextPath());
@@ -65,15 +83,7 @@ function RootLayout() {
       return;
     }
 
-    const activeGroup = segments[0];
-    const currentPath =
-      activeGroup === '(setup)'
-        ? AUTH_ROUTE_PATHS.permissions
-        : activeGroup === '(main)'
-          ? nextPath
-          : AUTH_ROUTE_PATHS.register;
-
-    if (currentPath !== nextPath) {
+    if (!isRouteGroupAllowed(segments[0], nextPath)) {
       router.replace(nextPath);
     }
   }, [hydrated, needsTokenRefresh, nextPath, router, segments]);
