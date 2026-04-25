@@ -4,7 +4,7 @@ import * as React from 'react';
 import { startTransition, useCallback } from 'react';
 import { BackHandler, ScrollView, StyleSheet, useWindowDimensions } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { YStack } from 'tamagui';
+import { View, YStack } from 'tamagui';
 
 import {
   GhostTextButton,
@@ -24,13 +24,12 @@ export function OnboardingScreen() {
   const reduceMotionEnabled = useReducedMotionPreference();
   const scrollViewRef = React.useRef<ScrollView>(null);
   const [currentIndex, setCurrentIndex] = React.useState(0);
-  const usableHeight = Math.max(0, height - insets.top - insets.bottom);
-  const isShortViewport = usableHeight < 700;
-  const topBarHeight = isShortViewport ? 36 : 44;
-  const imageFrameHeight = isShortViewport ? 294 : 340;
+  const isShortViewport = height < 760;
+  const topBarHeight = isShortViewport ? 40 : 48;
+  const imageFrameHeight = isShortViewport ? 312 : 356;
   const slideTextHeight = isShortViewport ? 132 : 146;
-  const bottomControlsHeight = isShortViewport ? 88 : 104;
-  const imageMaxHeight = isShortViewport ? 242 : 282;
+  const bottomClearance = insets.bottom + 132;
+  const imageMaxHeight = isShortViewport ? 258 : 292;
 
   const goToSlide = useCallback(
     (nextIndex: number) => {
@@ -77,17 +76,12 @@ export function OnboardingScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <YStack
-        height={usableHeight}
-        bg="$surfacePage"
-        pt={isShortViewport ? '$2' : '$3'}
-        pb={Math.max(insets.bottom, isShortViewport ? 10 : 18)}
-      >
-        <YStack ai="flex-end" height={topBarHeight} px="$6">
+      <View style={styles.screen}>
+        <YStack height={topBarHeight} ai="flex-end" jc="center" px="$6">
           <GhostTextButton label={ONBOARDING_ACTION_LABELS.skip} onPress={goToRegister} />
         </YStack>
 
-        <YStack flex={1} minHeight={0}>
+        <YStack flex={1} minHeight={0} pb={bottomClearance}>
           <ScrollView
             ref={scrollViewRef}
             horizontal
@@ -107,7 +101,7 @@ export function OnboardingScreen() {
           >
             {ONBOARDING_SLIDES.map((slide) => (
               <YStack key={slide.key} width={pageWidth} height="100%" px="$5">
-                <YStack height={imageFrameHeight} ai="center" jc="center">
+                <YStack height={imageFrameHeight} ai="center" jc="center" shrink={0}>
                   <OnboardingVisual maxHeight={imageMaxHeight} tone={slide.tone} />
                 </YStack>
                 <YStack
@@ -135,17 +129,13 @@ export function OnboardingScreen() {
                     {slide.subtitle}
                   </Text>
                 </YStack>
+                <YStack flex={1} minHeight={0} />
               </YStack>
             ))}
           </ScrollView>
         </YStack>
 
-        <YStack
-          height={bottomControlsHeight}
-          gap={isShortViewport ? '$3' : '$4'}
-          jc="flex-end"
-          px="$6"
-        >
+        <YStack style={[styles.bottomBar, { bottom: insets.bottom + 24 }]} gap="$4">
           <ProgressDots currentIndex={currentIndex} total={ONBOARDING_SLIDES.length} />
           {activeSlide.href ? (
             <PrimaryActionButton label={activeSlide.ctaLabel} onPress={goToRegister} />
@@ -156,15 +146,25 @@ export function OnboardingScreen() {
             />
           )}
         </YStack>
-      </YStack>
+      </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  bottomBar: {
+    left: 24,
+    position: 'absolute',
+    right: 24,
+  },
   safeArea: {
     flex: 1,
     backgroundColor: '#F9FAFB',
+  },
+  screen: {
+    backgroundColor: '#F9FAFB',
+    flex: 1,
+    position: 'relative',
   },
   scrollContent: {
     flexGrow: 1,
