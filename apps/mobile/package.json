@@ -6,13 +6,17 @@
   "scripts": {
     "start": "node scripts/start-expo-dev.mjs",
     "dev": "node scripts/start-expo-dev.mjs",
-    "build": "expo export",
+    "build": "expo export --no-bytecode",
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
     "test": "pnpm exec vitest run --config ../../vitest.config.ts --dir .",
     "clean": "rm -rf .expo dist"
   },
   "dependencies": {
+    "@money-tracker/shared": "workspace:*",
+    "@money-tracker/ui": "workspace:*",
+    "@react-native-async-storage/async-storage": "^2.1.2",
+    "@sentry/react-native": "~6.3.0",
     "expo": "~54.0.0",
     "expo-constants": "~18.0.13",
     "expo-linking": "~8.0.8",
@@ -23,10 +27,9 @@
     "react-native": "0.81.5",
     "react-native-safe-area-context": "~5.6.0",
     "react-native-screens": "~4.16.0",
-    "@money-tracker/shared": "workspace:*",
-    "@money-tracker/ui": "workspace:*",
-    "@sentry/react-native": "~6.3.0",
-    "tamagui": "2.0.0-rc.41"
+    "react-native-webview": "^13.16.1",
+    "tamagui": "2.0.0-rc.41",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",

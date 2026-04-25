@@ -1,6 +1,15 @@
 // Types
 export type { ApiResponse } from './types/api-response';
 export type {
+  AuthMethod,
+  AuthSession,
+  AuthUser,
+  RefreshSessionResult,
+  SendOtpResult,
+  VerifyOtpResult,
+  WechatCallbackResult,
+} from './types/auth';
+export type {
   CompositeTypes,
   Database,
   Enums,
@@ -10,8 +19,32 @@ export type {
   TablesUpdate,
 } from './types/database';
 
-// 占位导出 — 后续 Story 逐步填充
-// export * from './schemas';
-// export * from './utils';
-// export * from './constants';
-// export * from './api';
+// Constants
+export type { AuthErrorCode, AuthRoutePath } from './constants/auth';
+export {
+  AUTH_ACCESS_TOKEN_TTL_SECONDS,
+  AUTH_ERROR_CODES,
+  AUTH_OTP_RESEND_SECONDS,
+  AUTH_OTP_TTL_SECONDS,
+  AUTH_REFRESH_TOKEN_TTL_SECONDS,
+  AUTH_ROUTE_PATHS,
+} from './constants/auth';
+
+// Schemas
+export type {
+  OtpSendRequest,
+  OtpVerifyRequest,
+  RefreshSessionRequest,
+  WechatCallbackRequest,
+} from './schemas/auth';
+export {
+  mainlandChinaPhoneSchema,
+  otpCodeSchema,
+  otpSendRequestSchema,
+  otpVerifyRequestSchema,
+  refreshSessionRequestSchema,
+  wechatCallbackRequestSchema,
+} from './schemas/auth';
+
+// Utils
+export { formatAmountCents } from './utils/format-amount';

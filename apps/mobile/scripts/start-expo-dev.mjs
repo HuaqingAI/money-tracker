@@ -45,6 +45,7 @@ if (port !== startPort) {
 const child = spawn('expo', ['start', '--port', `${port}`], {
   env: {
     ...process.env,
+    EXPO_OFFLINE: process.env.EXPO_OFFLINE ?? '1',
     RCT_METRO_PORT: `${port}`,
   },
   shell: true,
