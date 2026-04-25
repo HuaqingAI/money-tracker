@@ -19,6 +19,8 @@ import { useAuthStore } from './auth-store';
 describe('auth-store', () => {
   beforeEach(() => {
     storage.clear();
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-04-24T00:00:00.000Z'));
     useAuthStore.setState({
       hydrated: true,
       session: null,
@@ -70,6 +72,79 @@ describe('auth-store', () => {
     useAuthStore.getState().clearSession();
 
     const state = useAuthStore.getState();
+    expect(state.session).toBeNull();
+    expect(state.getNextPath()).toBe('/(auth)/register');
+  });
+
+  it('routes expired sessions back to registration', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-04-24T00:20:00.000Z'));
+
+    useAuthStore.getState().setSession({
+      accessToken: 'access',
+      refreshToken: 'refresh',
+      accessTokenExpiresAt: '2026-04-24T00:10:00.000Z',
+      refreshTokenExpiresAt: '2026-04-24T00:19:00.000Z',
+      user: {
+        id: 'user-1',
+        phone: '13800138000',
+        displayName: null,
+        consentAt: '2026-04-24T00:00:00.000Z',
+        lastSignInAt: '2026-04-24T00:00:00.000Z',
+        authMethod: 'otp',
+        needsOnboarding: false,
+      },
+    });
+
+    expect(useAuthStore.getState().getNextPath()).toBe('/(auth)/register');
+    expect(useAuthStore.getState().needsTokenRefresh()).toBe(false);
+  });
+
+  it('marks sessions with expired access tokens as refreshable', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-04-24T00:20:00.000Z'));
+
+    useAuthStore.getState().setSession({
+      accessToken: 'access',
+      refreshToken: 'refresh',
+      accessTokenExpiresAt: '2026-04-24T00:10:00.000Z',
+      refreshTokenExpiresAt: '2026-04-25T00:00:00.000Z',
+      user: {
+        id: 'user-1',
+        phone: '13800138000',
+        displayName: null,
+        consentAt: '2026-04-24T00:00:00.000Z',
+        lastSignInAt: '2026-04-24T00:00:00.000Z',
+        authMethod: 'otp',
+        needsOnboarding: false,
+      },
+    });
+
+    expect(useAuthStore.getState().needsTokenRefresh()).toBe(true);
+    expect(useAuthStore.getState().getNextPath()).toBe('/(auth)/register');
+  });
+
+  it('recovers from hydration errors', () => {
+    useAuthStore.getState().setSession({
+      accessToken: 'access',
+      refreshToken: 'refresh',
+      accessTokenExpiresAt: '2026-04-24T00:15:00.000Z',
+      refreshTokenExpiresAt: '2026-05-01T00:00:00.000Z',
+      user: {
+        id: 'user-1',
+        phone: '13800138000',
+        displayName: null,
+        consentAt: '2026-04-24T00:00:00.000Z',
+        lastSignInAt: '2026-04-24T00:00:00.000Z',
+        authMethod: 'otp',
+        needsOnboarding: false,
+      },
+    });
+
+    useAuthStore.getState().recoverFromHydrationError();
+
+    const state = useAuthStore.getState();
+    expect(state.hydrated).toBe(true);
     expect(state.session).toBeNull();
     expect(state.getNextPath()).toBe('/(auth)/register');
   });

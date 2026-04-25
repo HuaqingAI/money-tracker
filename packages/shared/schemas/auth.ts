@@ -28,6 +28,7 @@ export const refreshSessionRequestSchema = z.object({
 export const wechatCallbackRequestSchema = z.object({
   code: z.string().trim().min(1, 'code 不能为空'),
   state: z.string().trim().optional(),
+  consentAccepted: z.boolean(),
 });
 
 export type OtpSendRequest = z.infer<typeof otpSendRequestSchema>;

@@ -114,8 +114,23 @@ describe('auth-api', () => {
       }),
     );
 
-    await expect(wechatCallback({ code: 'dev-code' })).resolves.toEqual({
+    await expect(wechatCallback({ code: 'dev-code', consentAccepted: true })).resolves.toEqual({
       featureEnabled: false,
     });
+  });
+
+  it('surfaces non-JSON error responses as stable exceptions', async () => {
+    vi.mocked(globalThis.fetch).mockResolvedValue(
+      new Response('<html>bad gateway</html>', {
+        status: 502,
+        headers: {
+          'content-type': 'text/html',
+        },
+      }),
+    );
+
+    await expect(sendOtp({ phone: '13800138000' })).rejects.toThrow(
+      '服务暂时不可用，请稍后重试',
+    );
   });
 });

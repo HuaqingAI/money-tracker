@@ -45,9 +45,20 @@ async function postJson<TResponse, TRequest>(path: string, payload: TRequest): P
     body: JSON.stringify(payload),
   });
 
-  const json = (await response.json()) as ApiResponse<TResponse>;
+  let json: ApiResponse<TResponse>;
+
+  try {
+    json = (await response.json()) as ApiResponse<TResponse>;
+  } catch {
+    throw new Error(response.ok ? '服务器响应格式异常' : '服务暂时不可用，请稍后重试');
+  }
+
   if (!json.success) {
     throw new Error(json.error.message);
+  }
+
+  if (!response.ok) {
+    throw new Error('服务暂时不可用，请稍后重试');
   }
 
   return json.data;

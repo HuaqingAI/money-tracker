@@ -73,6 +73,25 @@ describe('auth routes', () => {
     });
   });
 
+  it('returns a unified invalid input response for malformed JSON', async () => {
+    const response = await postOtpSend(
+      new Request('https://example.com/api/auth/otp-send', {
+        method: 'POST',
+        body: '{',
+      }) as never,
+    );
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      success: false,
+      error: {
+        code: 'AUTH_INVALID_INPUT',
+        message: '请求体必须是合法 JSON',
+      },
+    });
+    expect(sendOtpMock).not.toHaveBeenCalled();
+  });
+
   it('returns verification session payload', async () => {
     verifyOtpMock.mockResolvedValue({
       session: {
@@ -157,7 +176,7 @@ describe('auth routes', () => {
     const response = await postWechatCallback(
       new Request('https://example.com/api/auth/wechat-callback', {
         method: 'POST',
-        body: JSON.stringify({ code: 'dev-code' }),
+        body: JSON.stringify({ code: 'dev-code', consentAccepted: true }),
       }) as never,
     );
 
@@ -166,6 +185,29 @@ describe('auth routes', () => {
       success: true,
       data: {
         featureEnabled: false,
+      },
+    });
+  });
+
+  it('returns auth errors from wechat callback in the unified response format', async () => {
+    const { AuthError } = await import('../../../lib/auth/service');
+    handleWechatCallbackMock.mockRejectedValue(
+      new AuthError('AUTH_CONSENT_REQUIRED', '请先同意用户协议和隐私政策', 400),
+    );
+
+    const response = await postWechatCallback(
+      new Request('https://example.com/api/auth/wechat-callback', {
+        method: 'POST',
+        body: JSON.stringify({ code: 'dev-code', consentAccepted: false }),
+      }) as never,
+    );
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      success: false,
+      error: {
+        code: 'AUTH_CONSENT_REQUIRED',
+        message: '请先同意用户协议和隐私政策',
       },
     });
   });

@@ -1,30 +1,19 @@
 import {
   type ApiResponse,
-  AUTH_ERROR_CODES,
   refreshSessionRequestSchema,
   type RefreshSessionResult,
 } from '@money-tracker/shared';
-import { type NextRequest,NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 
+import { parseJsonRequest } from '../../../../lib/api/request-body';
 import { AuthError, getAuthService } from '../../../../lib/auth/service';
 import { withRequestLogging } from '../../../../lib/middleware/request-logger';
 
 export function POST(request: NextRequest): Promise<Response> {
   return withRequestLogging(request, async () => {
-    const body = await request.json();
-    const parsed = refreshSessionRequestSchema.safeParse(body);
-
+    const parsed = await parseJsonRequest(request, refreshSessionRequestSchema);
     if (!parsed.success) {
-      return NextResponse.json<ApiResponse<never>>(
-        {
-          success: false,
-          error: {
-            code: AUTH_ERROR_CODES.invalidInput,
-            message: parsed.error.issues[0]?.message ?? '请求参数不合法',
-          },
-        },
-        { status: 400 },
-      );
+      return parsed.response;
     }
 
     try {

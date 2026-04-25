@@ -86,9 +86,17 @@ export default function RegisterScreen() {
   }
 
   async function handleWechatLogin() {
+    if (!agreementChecked) {
+      Alert.alert('请先同意协议', '继续登录前，请先阅读并同意用户协议和隐私政策');
+      return;
+    }
+
     try {
       setWechatLoading(true);
-      const result = await wechatCallback({ code: 'dev-wechat-code' });
+      const result = await wechatCallback({
+        code: 'dev-wechat-code',
+        consentAccepted: agreementChecked,
+      });
       if (!result.featureEnabled) {
         Alert.alert('暂未开放', '微信登录入口已预留，后续会接入原生授权');
         return;

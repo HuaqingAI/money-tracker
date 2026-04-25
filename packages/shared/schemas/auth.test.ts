@@ -57,9 +57,11 @@ describe('auth schemas', () => {
     expect(
       wechatCallbackRequestSchema.parse({
         code: 'dev-code',
+        consentAccepted: true,
       }),
     ).toEqual({
       code: 'dev-code',
+      consentAccepted: true,
     });
   });
 });

@@ -115,6 +115,32 @@ class InMemoryAuthRepository implements AuthRepository {
   async revokeRefreshToken(token: string): Promise<void> {
     this.refreshTokens.delete(token);
   }
+
+  async replaceRefreshToken(params: {
+    currentToken: string;
+    userId: string;
+    newToken: string;
+    expiresAt: string;
+    now: Date;
+  }): Promise<boolean> {
+    const existing = this.refreshTokens.get(params.currentToken);
+    if (!existing || existing.userId !== params.userId) {
+      return false;
+    }
+
+    if (new Date(existing.expiresAt).getTime() <= params.now.getTime()) {
+      this.refreshTokens.delete(params.currentToken);
+      return false;
+    }
+
+    this.refreshTokens.delete(params.currentToken);
+    this.refreshTokens.set(params.newToken, {
+      token: params.newToken,
+      userId: params.userId,
+      expiresAt: params.expiresAt,
+    });
+    return true;
+  }
 }
 
 const globalRepository = new InMemoryAuthRepository();

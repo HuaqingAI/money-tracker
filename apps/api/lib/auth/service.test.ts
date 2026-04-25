@@ -90,4 +90,48 @@ describe('AuthService', () => {
     expect(secondLogin.nextPath).toBe(AUTH_ROUTE_PATHS.dashboard);
     expect(secondLogin.session.user.needsOnboarding).toBe(false);
   });
+
+  it('rejects reused refresh tokens after rotation', async () => {
+    const service = new AuthService();
+    await service.sendOtp('13800138004');
+
+    const challenge = (
+      service as unknown as {
+        repository: { getOtpChallengeByPhone(phone: string): Promise<{ code: string } | null> };
+      }
+    ).repository;
+    const record = await challenge.getOtpChallengeByPhone('13800138004');
+
+    const login = await service.verifyOtp({
+      phone: '13800138004',
+      code: record?.code ?? '',
+      consentAccepted: true,
+    });
+
+    await expect(service.refreshSession(login.session.refreshToken)).resolves.toEqual(
+      expect.objectContaining({
+        session: expect.objectContaining({
+          refreshToken: expect.not.stringMatching(login.session.refreshToken),
+        }),
+      }),
+    );
+    await expect(service.refreshSession(login.session.refreshToken)).rejects.toMatchObject({
+      code: AUTH_ERROR_CODES.refreshInvalid,
+      status: 401,
+    });
+  });
+
+  it('requires consent before handling wechat callback', async () => {
+    const service = new AuthService();
+
+    await expect(
+      service.handleWechatCallback({
+        code: 'dev-code',
+        consentAccepted: false,
+      }),
+    ).rejects.toMatchObject({
+      code: AUTH_ERROR_CODES.consentRequired,
+      status: 400,
+    });
+  });
 });

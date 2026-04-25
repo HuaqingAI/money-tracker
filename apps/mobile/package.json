@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node scripts/start-expo-dev.mjs",
     "dev": "node scripts/start-expo-dev.mjs",
-    "build": "expo export",
+    "build": "expo export --no-bytecode",
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
     "test": "pnpm exec vitest run --config ../../vitest.config.ts --dir .",

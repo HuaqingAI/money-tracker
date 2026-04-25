@@ -10,8 +10,33 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 const AUTH_STORAGE_KEY = 'money-tracker/auth-session';
 
-function getNextPathFromSession(session: AuthSession | null): AuthRoutePath {
+function hasExpired(isoDate: string): boolean {
+  const timestamp = new Date(isoDate).getTime();
+  return Number.isNaN(timestamp) || timestamp <= Date.now();
+}
+
+function hasActiveSession(session: AuthSession | null): session is AuthSession {
   if (!session) {
+    return false;
+  }
+
+  return !hasExpired(session.refreshTokenExpiresAt) && !hasExpired(session.accessTokenExpiresAt);
+}
+
+function canRefreshSession(session: AuthSession | null): session is AuthSession {
+  if (!session) {
+    return false;
+  }
+
+  return hasExpired(session.accessTokenExpiresAt) && !hasExpired(session.refreshTokenExpiresAt);
+}
+
+function hasRefreshableOrActiveSession(session: AuthSession | null): session is AuthSession {
+  return hasActiveSession(session) || canRefreshSession(session);
+}
+
+function getNextPathFromSession(session: AuthSession | null): AuthRoutePath {
+  if (!hasActiveSession(session)) {
     return AUTH_ROUTE_PATHS.register;
   }
 
@@ -27,6 +52,8 @@ export interface AuthState {
   setSession: (session: AuthSession) => void;
   clearSession: () => void;
   markHydrated: () => void;
+  recoverFromHydrationError: () => void;
+  needsTokenRefresh: () => boolean;
   getNextPath: () => AuthRoutePath;
 }
 
@@ -53,6 +80,15 @@ export const useAuthStore = create<AuthState>()(
           user: null,
         }),
       markHydrated: () => set({ hydrated: true }),
+      recoverFromHydrationError: () =>
+        set({
+          hydrated: true,
+          session: null,
+          accessToken: null,
+          refreshToken: null,
+          user: null,
+        }),
+      needsTokenRefresh: () => canRefreshSession(get().session),
       getNextPath: () => getNextPathFromSession(get().session),
     }),
     {
@@ -64,8 +100,17 @@ export const useAuthStore = create<AuthState>()(
         refreshToken: state.refreshToken,
         user: state.user,
       }),
-      onRehydrateStorage: () => (state) => {
-        state?.markHydrated();
+      onRehydrateStorage: () => (state, error) => {
+        if (error || !state) {
+          useAuthStore.getState().recoverFromHydrationError();
+          return;
+        }
+
+        if (!hasRefreshableOrActiveSession(state.session)) {
+          state.clearSession();
+        }
+
+        state.markHydrated();
       },
     },
   ),

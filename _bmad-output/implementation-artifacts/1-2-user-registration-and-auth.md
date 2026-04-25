@@ -1,6 +1,6 @@
 # Story 1.2: 用户注册与认证
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -37,9 +37,19 @@ so that 我可以用最少操作进入后续首次使用流程。
   - [x] 4.2 运行 `pnpm build`、`pnpm test`、`pnpm lint` 并修复失败项
   - [x] 4.3 根据 AI 代码审查结果修补必须处理的问题
 
+### Review Findings
+
+- [x] [Review][Patch] 微信新用户可绕过隐私协议勾选并被自动记录 `consentAt` [apps/mobile/app/(auth)/register.tsx:88]
+- [x] [Review][Patch] 冷启动路由守卫信任已过期的持久化 session [apps/mobile/stores/auth-store.ts:13]
+- [x] [Review][Patch] 持久化恢复失败时 `hydrated` 可能永远为 false，认证守卫不会运行 [apps/mobile/stores/auth-store.ts:67]
+- [x] [Review][Patch] 认证 API 对非法 JSON 请求会绕过统一 `ApiResponse` 错误格式 [apps/api/app/api/auth/otp-send/route.ts:14]
+- [x] [Review][Patch] refresh token 轮换不是原子操作，可能重复签发或撤销后失败 [apps/api/lib/auth/service.ts:156]
+- [x] [Review][Dismissed] 未登录入口仍跳转到 onboarding welcome，违背 Story 1.2 注册页优先约束 [apps/mobile/app/index.tsx:5] — dismissed: 当前分支已合入 Story 1.1 welcome/onboarding，入口应先进入 welcome 页面
+- [x] [Review][Patch] 移动端认证 API 客户端无法稳定处理非 JSON 错误响应 [apps/mobile/lib/auth-api.ts:48]
+
 ## Dev Notes
 
-- 当前仓库还没有 Story 1.1 的 Welcome / Onboarding 实现，路由守卫需优先保证未登录用户进入注册页，而不是依赖不存在的欢迎页。
+- 当前分支已包含 Story 1.1 的 Welcome / Onboarding 实现，未登录用户应先进入 welcome 页面，再通过首次使用流程进入注册页。
 - 认证实现必须遵守现有 monorepo 边界：`apps/mobile -> packages/shared`，`apps/api -> packages/shared`，禁止从 `packages/*` 反向依赖应用代码。
 - API 层继续沿用 `withRequestLogging()`、`ApiResponse<T>`、业务错误码大写蛇形命名。
 - Expo Router 路径以架构文档为准：`/(auth)/register`、`/(setup)/permissions`、`/(main)/dashboard`。

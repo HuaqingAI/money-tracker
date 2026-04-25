@@ -1,36 +1,42 @@
 import {
   type ApiResponse,
-  AUTH_ERROR_CODES,
   wechatCallbackRequestSchema,
   type WechatCallbackResult,
 } from '@money-tracker/shared';
-import { type NextRequest,NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 
-import { getAuthService } from '../../../../lib/auth/service';
+import { parseJsonRequest } from '../../../../lib/api/request-body';
+import { AuthError, getAuthService } from '../../../../lib/auth/service';
 import { withRequestLogging } from '../../../../lib/middleware/request-logger';
 
 export function POST(request: NextRequest): Promise<Response> {
   return withRequestLogging(request, async () => {
-    const body = await request.json();
-    const parsed = wechatCallbackRequestSchema.safeParse(body);
-
+    const parsed = await parseJsonRequest(request, wechatCallbackRequestSchema);
     if (!parsed.success) {
-      return NextResponse.json<ApiResponse<never>>(
-        {
-          success: false,
-          error: {
-            code: AUTH_ERROR_CODES.invalidInput,
-            message: parsed.error.issues[0]?.message ?? '请求参数不合法',
-          },
-        },
-        { status: 400 },
-      );
+      return parsed.response;
     }
 
-    const data = await getAuthService().handleWechatCallback(parsed.data);
-    return NextResponse.json<ApiResponse<WechatCallbackResult>>({
-      success: true,
-      data,
-    });
+    try {
+      const data = await getAuthService().handleWechatCallback(parsed.data);
+      return NextResponse.json<ApiResponse<WechatCallbackResult>>({
+        success: true,
+        data,
+      });
+    } catch (error) {
+      if (error instanceof AuthError) {
+        return NextResponse.json<ApiResponse<never>>(
+          {
+            success: false,
+            error: {
+              code: error.code,
+              message: error.message,
+            },
+          },
+          { status: error.status },
+        );
+      }
+
+      throw error;
+    }
   });
 }

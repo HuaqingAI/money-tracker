@@ -42,6 +42,13 @@ export interface AuthRepository {
   createRefreshToken(userId: string, token: string, expiresAt: string): Promise<void>;
   getRefreshToken(token: string): Promise<RefreshTokenRecord | null>;
   revokeRefreshToken(token: string): Promise<void>;
+  replaceRefreshToken(params: {
+    currentToken: string;
+    userId: string;
+    newToken: string;
+    expiresAt: string;
+    now: Date;
+  }): Promise<boolean>;
 }
 
 export interface IssueSessionResult {
@@ -52,6 +59,7 @@ export interface IssueSessionResult {
 export interface WechatCallbackParams {
   code: string;
   state?: string | undefined;
+  consentAccepted: boolean;
 }
 
 export interface WechatCallbackResponse {

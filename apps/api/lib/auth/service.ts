@@ -154,16 +154,15 @@ export class AuthService {
   }
 
   async refreshSession(refreshToken: string): Promise<RefreshSessionResult> {
+    const now = new Date();
     const tokenRecord = await this.repository.getRefreshToken(refreshToken);
-    if (!tokenRecord || new Date(tokenRecord.expiresAt).getTime() <= Date.now()) {
+    if (!tokenRecord || new Date(tokenRecord.expiresAt).getTime() <= now.getTime()) {
       throw new AuthError(
         AUTH_ERROR_CODES.refreshInvalid,
         '登录已过期，请重新登录',
         401,
       );
     }
-
-    await this.repository.revokeRefreshToken(refreshToken);
 
     const user = await this.repository.getUserById(tokenRecord.userId);
     if (!user) {
@@ -174,7 +173,25 @@ export class AuthService {
       );
     }
 
-    const session = await this.issueSession(user, false);
+    const newRefreshToken = createRefreshTokenValue();
+    const refreshTokenExpiresAt = getRefreshTokenExpiry(now);
+    const replaced = await this.repository.replaceRefreshToken({
+      currentToken: refreshToken,
+      userId: tokenRecord.userId,
+      newToken: newRefreshToken,
+      expiresAt: refreshTokenExpiresAt,
+      now,
+    });
+
+    if (!replaced) {
+      throw new AuthError(
+        AUTH_ERROR_CODES.refreshInvalid,
+        '登录已过期，请重新登录',
+        401,
+      );
+    }
+
+    const session = this.buildSession(user, false, newRefreshToken, refreshTokenExpiresAt);
     return {
       session,
       nextPath: getNextPath(session.user.needsOnboarding),
@@ -184,7 +201,16 @@ export class AuthService {
   async handleWechatCallback(params: {
     code: string;
     state?: string | undefined;
+    consentAccepted: boolean;
   }): Promise<WechatCallbackResult> {
+    if (!params.consentAccepted) {
+      throw new AuthError(
+        AUTH_ERROR_CODES.consentRequired,
+        '请先同意用户协议和隐私政策',
+        400,
+      );
+    }
+
     const enabled = Boolean(process.env.WECHAT_APP_ID && process.env.WECHAT_APP_SECRET);
     if (!enabled) {
       return {
@@ -223,6 +249,28 @@ export class AuthService {
       ...user,
       needsOnboarding: isNewUser || user.needsOnboarding,
     };
+    const refreshToken = createRefreshTokenValue();
+    const refreshTokenExpiresAt = getRefreshTokenExpiry();
+
+    await this.repository.createRefreshToken(
+      normalizedUser.id,
+      refreshToken,
+      refreshTokenExpiresAt,
+    );
+
+    return this.buildSession(normalizedUser, false, refreshToken, refreshTokenExpiresAt);
+  }
+
+  private buildSession(
+    user: AuthIdentityRecord,
+    isNewUser: boolean,
+    refreshToken: string,
+    refreshTokenExpiresAt: string,
+  ): AuthSession {
+    const normalizedUser: AuthIdentityRecord = {
+      ...user,
+      needsOnboarding: isNewUser || user.needsOnboarding,
+    };
     const accessToken = createAccessToken(
       {
         sub: normalizedUser.id,
@@ -231,14 +279,6 @@ export class AuthService {
         needsOnboarding: normalizedUser.needsOnboarding,
       },
       getAuthSecret(),
-    );
-    const refreshToken = createRefreshTokenValue();
-    const refreshTokenExpiresAt = getRefreshTokenExpiry();
-
-    await this.repository.createRefreshToken(
-      normalizedUser.id,
-      refreshToken,
-      refreshTokenExpiresAt,
     );
 
     return {
