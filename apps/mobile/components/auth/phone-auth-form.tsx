@@ -31,48 +31,73 @@ export function PhoneAuthForm({
   const otpRequested = countdown > 0 || code.length > 0;
 
   return (
-    <YStack gap="$3">
-      <YStack gap="$2">
-        <Text variant="caption">手机号</Text>
+    <YStack gap="$4">
+      <YStack gap="$3">
         <YStack
           borderWidth={1}
-          borderColor="$neutral200"
-          borderRadius="$lg"
-          backgroundColor="$surfacePrimary"
+          borderColor="$neutral300"
+          borderRadius="$xl"
+          backgroundColor="$neutral100"
           paddingHorizontal="$4"
           paddingVertical="$3"
           gap="$2"
         >
-          <Text variant="caption">+86</Text>
+          <Text variant="bodyMedium" color="$neutral500">
+            +86
+          </Text>
           <TextInput
             keyboardType="number-pad"
             maxLength={11}
             placeholder="输入手机号"
             value={phone}
             onChangeText={onPhoneChange}
+            backgroundColor="$surfacePrimary"
+            borderColor="$neutral200"
+            borderRadius="$xl"
+            height={56}
+            fontSize="$6"
           />
         </YStack>
       </YStack>
 
-      <Button disabled={!canSendOtp || sendingOtp} onPress={onSendOtp}>
+      <Button
+        disabled={!canSendOtp || sendingOtp}
+        onPress={onSendOtp}
+        borderRadius="$xl"
+        height={56}
+        backgroundColor={canSendOtp && !sendingOtp ? '$brand500' : '#C9CBF8'}
+        pressStyle={{
+          backgroundColor: '$brand600',
+          scale: 0.98,
+        }}
+      >
         {sendingOtp
           ? '发送中...'
           : countdown > 0
-            ? `重新获取 (${countdown}s)`
+            ? `重新获取(${countdown}s)`
             : '获取验证码'}
       </Button>
 
       {otpRequested ? (
-        <YStack gap="$2">
-          <Text variant="caption">验证码</Text>
+        <YStack gap="$3">
           <TextInput
             keyboardType="number-pad"
             maxLength={6}
             placeholder="输入 6 位验证码"
             value={code}
             onChangeText={onCodeChange}
+            backgroundColor="$surfacePrimary"
+            borderColor="$neutral300"
+            borderRadius="$xl"
+            height={56}
+            fontSize="$6"
           />
-          <Button disabled={!canVerifyOtp || verifyingOtp} onPress={onVerifyOtp}>
+          <Button
+            disabled={!canVerifyOtp || verifyingOtp}
+            onPress={onVerifyOtp}
+            borderRadius="$xl"
+            height={56}
+          >
             {verifyingOtp ? '验证中...' : '登录 / 注册'}
           </Button>
         </YStack>

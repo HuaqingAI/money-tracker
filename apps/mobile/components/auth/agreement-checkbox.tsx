@@ -16,22 +16,23 @@ export function AgreementCheckbox({
   onOpenPrivacy,
 }: AgreementCheckboxProps) {
   return (
-    <XStack alignItems="flex-start" gap="$3">
+    <XStack alignItems="flex-start" gap="$2" justifyContent="center">
       <Pressable accessibilityRole="checkbox" accessibilityState={{ checked }} onPress={onToggle}>
         <XStack
-          width={20}
-          height={20}
-          borderRadius="$md"
+          width={22}
+          height={22}
+          borderRadius={11}
           borderColor={checked ? '$brand500' : '$neutral300'}
           borderWidth={1}
           backgroundColor={checked ? '$brand500' : '$surfacePrimary'}
           alignItems="center"
           justifyContent="center"
+          marginTop={2}
         >
-          {checked ? <Text color="$surfacePrimary">✓</Text> : null}
+          {checked ? <Text color="$surfacePrimary" fontSize="$2">✓</Text> : null}
         </XStack>
       </Pressable>
-      <Text variant="caption" flex={1}>
+      <Text variant="small" flex={1} color="$neutral400">
         登录即代表同意{' '}
         <Text variant="caption" color="$brand500" onPress={onOpenTerms}>
           《用户协议》
