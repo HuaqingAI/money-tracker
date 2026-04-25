@@ -1,6 +1,6 @@
 import { Text } from '@money-tracker/ui';
 import * as React from 'react';
-import { AccessibilityInfo, Image, Pressable, useWindowDimensions } from 'react-native';
+import { AccessibilityInfo, Image, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
 import { XStack, YStack } from 'tamagui';
 
 import appLogo from '../../assets/onboarding/app-logo-house-receipt.png';
@@ -70,24 +70,15 @@ export function SecondaryActionButton({ label, onPress }: { label: string; onPre
       accessibilityLabel={label}
       accessibilityRole="button"
       onPress={onPress}
-      style={({ pressed }) => ({
-        transform: [{ scale: pressed ? 0.98 : 1 }],
-      })}
+      style={({ pressed }) => [
+        styles.actionButton,
+        styles.secondaryActionButton,
+        pressed ? styles.actionButtonPressed : undefined,
+      ]}
     >
-      <XStack
-        width="100%"
-        height={56}
-        br={12}
-        borderWidth={2}
-        borderColor={BRAND_GREEN}
-        bg="#FFFFFF"
-        ai="center"
-        jc="center"
-      >
-        <Text fontSize={16} fontWeight="700" color={BRAND_GREEN}>
-          {label}
-        </Text>
-      </XStack>
+      <Text fontSize={16} fontWeight="700" color={BRAND_GREEN} textAlign="center">
+        {label}
+      </Text>
     </Pressable>
   );
 }
@@ -98,24 +89,16 @@ export function PrimaryActionButton({ label, onPress }: { label: string; onPress
       accessibilityLabel={label}
       accessibilityRole="button"
       onPress={onPress}
-      style={({ pressed }) => ({
-        opacity: pressed ? 0.96 : 1,
-        transform: [{ scale: pressed ? 0.98 : 1 }],
-      })}
+      style={({ pressed }) => [
+        styles.actionButton,
+        styles.primaryActionButton,
+        primaryButtonShadow,
+        pressed ? styles.actionButtonPressed : undefined,
+      ]}
     >
-      <XStack
-        width="100%"
-        height={56}
-        br={12}
-        bg={BRAND_GREEN}
-        ai="center"
-        jc="center"
-        style={primaryButtonShadow}
-      >
-        <Text fontSize={16} fontWeight="700" color="#FFFFFF">
-          {label}
-        </Text>
-      </XStack>
+      <Text fontSize={16} fontWeight="700" color="#FFFFFF" textAlign="center">
+        {label}
+      </Text>
     </Pressable>
   );
 }
@@ -255,3 +238,26 @@ const primaryButtonShadow = {
   shadowRadius: 18,
   elevation: 6,
 } as const;
+
+const styles = StyleSheet.create({
+  actionButton: {
+    alignItems: 'center',
+    borderRadius: 12,
+    height: 56,
+    justifyContent: 'center',
+    overflow: 'hidden',
+    width: '100%',
+  },
+  actionButtonPressed: {
+    opacity: 0.96,
+    transform: [{ scale: 0.98 }],
+  },
+  primaryActionButton: {
+    backgroundColor: BRAND_GREEN,
+  },
+  secondaryActionButton: {
+    backgroundColor: '#FFFFFF',
+    borderColor: BRAND_GREEN,
+    borderWidth: 2,
+  },
+});
