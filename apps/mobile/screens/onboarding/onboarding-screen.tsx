@@ -18,11 +18,19 @@ import { AUTH_ROUTES, ONBOARDING_ACTION_LABELS, ONBOARDING_SLIDES } from './cont
 
 export function OnboardingScreen() {
   const router = useRouter();
-  const { width } = useWindowDimensions();
+  const { height, width } = useWindowDimensions();
   const pageWidth = Math.max(width, 0);
   const reduceMotionEnabled = useReducedMotionPreference();
   const scrollViewRef = React.useRef<ScrollView>(null);
   const [currentIndex, setCurrentIndex] = React.useState(0);
+  const isShortViewport = height < 700;
+  const topBarHeight = isShortViewport ? 36 : 44;
+  const bottomControlsHeight = isShortViewport ? 104 : 124;
+  const slideTextHeight = isShortViewport ? 132 : 150;
+  const imageMaxHeight = Math.max(
+    178,
+    height - topBarHeight - bottomControlsHeight - slideTextHeight - (isShortViewport ? 56 : 84),
+  );
 
   const goToSlide = useCallback(
     (nextIndex: number) => {
@@ -69,12 +77,17 @@ export function OnboardingScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-      <YStack flex={1} bg="$surfacePage" pt="$4" pb="$8">
-        <YStack ai="flex-end" minHeight={44} px="$6">
+      <YStack
+        flex={1}
+        bg="$surfacePage"
+        pt={isShortViewport ? '$2' : '$3'}
+        pb={isShortViewport ? '$3' : '$5'}
+      >
+        <YStack ai="flex-end" height={topBarHeight} px="$6">
           <GhostTextButton label={ONBOARDING_ACTION_LABELS.skip} onPress={goToRegister} />
         </YStack>
 
-        <YStack flex={1}>
+        <YStack flex={1} minHeight={0}>
           <ScrollView
             ref={scrollViewRef}
             horizontal
@@ -89,24 +102,36 @@ export function OnboardingScreen() {
             }}
             scrollEventThrottle={16}
             showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
             style={styles.scrollView}
           >
             {ONBOARDING_SLIDES.map((slide) => (
-              <YStack key={slide.key} width={pageWidth} flex={1} px="$8">
-                <YStack flex={1} ai="center" jc="center">
-                  <OnboardingVisual tone={slide.tone} />
+              <YStack key={slide.key} width={pageWidth} height="100%" px="$5">
+                <YStack flex={1} minHeight={0} ai="center" jc="center">
+                  <OnboardingVisual maxHeight={imageMaxHeight} tone={slide.tone} />
                 </YStack>
-                <YStack gap="$4" pb="$8">
+                <YStack
+                  height={slideTextHeight}
+                  gap={isShortViewport ? '$2' : '$3'}
+                  jc="flex-start"
+                  px="$3"
+                  pt={isShortViewport ? '$1' : '$2'}
+                >
                   <Text
-                    fontSize={24}
+                    fontSize={isShortViewport ? 21 : 23}
                     fontWeight="700"
                     color="#1F2937"
                     textAlign="center"
-                    lineHeight={31}
+                    lineHeight={isShortViewport ? 27 : 30}
                   >
                     {slide.title}
                   </Text>
-                  <Text fontSize={15} color="#6B7280" textAlign="center" lineHeight={24}>
+                  <Text
+                    fontSize={isShortViewport ? 14 : 15}
+                    color="#6B7280"
+                    textAlign="center"
+                    lineHeight={isShortViewport ? 21 : 23}
+                  >
                     {slide.subtitle}
                   </Text>
                 </YStack>
@@ -115,7 +140,12 @@ export function OnboardingScreen() {
           </ScrollView>
         </YStack>
 
-        <YStack gap="$8" px="$8">
+        <YStack
+          height={bottomControlsHeight}
+          gap={isShortViewport ? '$4' : '$6'}
+          jc="flex-end"
+          px="$8"
+        >
           <ProgressDots currentIndex={currentIndex} total={ONBOARDING_SLIDES.length} />
           {activeSlide.href ? (
             <PrimaryActionButton label={activeSlide.ctaLabel} onPress={goToRegister} />
@@ -135,6 +165,9 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#F9FAFB',
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   scrollView: {
     flex: 1,

@@ -1,7 +1,7 @@
 import { Text } from '@money-tracker/ui';
 import { useRouter } from 'expo-router';
 import * as React from 'react';
-import { Animated, Easing, StyleSheet } from 'react-native';
+import { Animated, Easing, StyleSheet, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { YStack } from 'tamagui';
 
@@ -15,12 +15,15 @@ import { WELCOME_CONTENT } from './content';
 
 export function WelcomeScreen() {
   const router = useRouter();
+  const { height } = useWindowDimensions();
   const reduceMotionEnabled = useReducedMotionPreference();
   const [brandOpacity] = React.useState(() => new Animated.Value(0));
   const [heroOpacity] = React.useState(() => new Animated.Value(0));
   const [copyOpacity] = React.useState(() => new Animated.Value(0));
   const [ctaOpacity] = React.useState(() => new Animated.Value(0));
   const [floatingOffset] = React.useState(() => new Animated.Value(0));
+  const isShortViewport = height < 700;
+  const heroMaxHeight = Math.min(isShortViewport ? 210 : 264, Math.round(height * 0.34));
 
   React.useEffect(() => {
     if (reduceMotionEnabled) {
@@ -67,12 +70,18 @@ export function WelcomeScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-      <YStack flex={1} bg="$surfacePage" px="$8" pt="$8" pb="$8">
+      <YStack
+        flex={1}
+        bg="$surfacePage"
+        px={isShortViewport ? '$5' : '$6'}
+        pt={isShortViewport ? '$3' : '$5'}
+        pb={isShortViewport ? '$3' : '$5'}
+      >
         <Animated.View style={[createAnimatedStyle(brandOpacity, 0), styles.brandWrapper]}>
-          <BrandLockup />
+          <BrandLockup compact={isShortViewport} />
         </Animated.View>
 
-        <YStack flex={1} ai="center" jc="center" px="$2">
+        <YStack flex={1} ai="center" jc="center" minHeight={0} py={isShortViewport ? '$2' : '$4'}>
           <Animated.View style={[createAnimatedStyle(heroOpacity, 16), styles.heroWrapper]}>
             <Animated.View
               style={
@@ -83,35 +92,42 @@ export function WelcomeScreen() {
                   : undefined
               }
             >
-              <WelcomeHero />
+              <WelcomeHero maxHeight={heroMaxHeight} />
             </Animated.View>
           </Animated.View>
         </YStack>
 
-        <YStack gap="$8">
+        <YStack gap={isShortViewport ? '$4' : '$5'}>
           <Animated.View style={createAnimatedStyle(copyOpacity, 18)}>
-            <YStack gap="$3" ai="center">
+            <YStack gap={isShortViewport ? '$2' : '$3'} ai="center">
               <Text
-                fontSize={28}
+                fontSize={isShortViewport ? 25 : 28}
                 fontWeight="700"
                 color="#1F2937"
                 textAlign="center"
-                lineHeight={34}
+                lineHeight={isShortViewport ? 31 : 34}
               >
                 {WELCOME_CONTENT.title}
               </Text>
-              <Text fontSize={16} color="#6B7280" textAlign="center" lineHeight={25}>
+              <Text
+                fontSize={isShortViewport ? 15 : 16}
+                color="#6B7280"
+                textAlign="center"
+                lineHeight={isShortViewport ? 22 : 25}
+              >
                 {WELCOME_CONTENT.subtitle}
               </Text>
             </YStack>
           </Animated.View>
 
-          <Animated.View style={createAnimatedStyle(ctaOpacity, 18)}>
-            <PrimaryActionButton
-              label={WELCOME_CONTENT.cta.label}
-              onPress={() => router.push(WELCOME_CONTENT.cta.href)}
-            />
-          </Animated.View>
+          <YStack minHeight={56}>
+            <Animated.View style={createAnimatedStyle(ctaOpacity, 18)}>
+              <PrimaryActionButton
+                label={WELCOME_CONTENT.cta.label}
+                onPress={() => router.push(WELCOME_CONTENT.cta.href)}
+              />
+            </Animated.View>
+          </YStack>
         </YStack>
       </YStack>
     </SafeAreaView>
