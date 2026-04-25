@@ -2,12 +2,7 @@ import { Text } from '@money-tracker/ui';
 import { useRouter } from 'expo-router';
 import * as React from 'react';
 import { startTransition, useCallback } from 'react';
-import {
-  BackHandler,
-  ScrollView,
-  StyleSheet,
-  useWindowDimensions,
-} from 'react-native';
+import { BackHandler, ScrollView, StyleSheet, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { YStack } from 'tamagui';
 
@@ -24,17 +19,14 @@ import { AUTH_ROUTES, ONBOARDING_ACTION_LABELS, ONBOARDING_SLIDES } from './cont
 export function OnboardingScreen() {
   const router = useRouter();
   const { width } = useWindowDimensions();
-  const pageWidth = Math.max(width - 32, 0);
+  const pageWidth = Math.max(width, 0);
   const reduceMotionEnabled = useReducedMotionPreference();
   const scrollViewRef = React.useRef<ScrollView>(null);
   const [currentIndex, setCurrentIndex] = React.useState(0);
 
   const goToSlide = useCallback(
     (nextIndex: number) => {
-      const clampedIndex = Math.max(
-        0,
-        Math.min(nextIndex, ONBOARDING_SLIDES.length - 1),
-      );
+      const clampedIndex = Math.max(0, Math.min(nextIndex, ONBOARDING_SLIDES.length - 1));
 
       startTransition(() => {
         setCurrentIndex(clampedIndex);
@@ -77,12 +69,9 @@ export function OnboardingScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-      <YStack flex={1} bg="$surfacePage" px="$4" pt="$2" pb="$4">
-        <YStack ai="flex-end" minHeight={44}>
-          <GhostTextButton
-            label={ONBOARDING_ACTION_LABELS.skip}
-            onPress={goToRegister}
-          />
+      <YStack flex={1} bg="$surfacePage" pt="$4" pb="$8">
+        <YStack ai="flex-end" minHeight={44} px="$6">
+          <GhostTextButton label={ONBOARDING_ACTION_LABELS.skip} onPress={goToRegister} />
         </YStack>
 
         <YStack flex={1}>
@@ -92,9 +81,7 @@ export function OnboardingScreen() {
             pagingEnabled
             bounces={false}
             onMomentumScrollEnd={(event) => {
-              const nextIndex = Math.round(
-                event.nativeEvent.contentOffset.x / pageWidth,
-              );
+              const nextIndex = Math.round(event.nativeEvent.contentOffset.x / pageWidth);
 
               startTransition(() => {
                 setCurrentIndex(nextIndex);
@@ -105,25 +92,21 @@ export function OnboardingScreen() {
             style={styles.scrollView}
           >
             {ONBOARDING_SLIDES.map((slide) => (
-              <YStack key={slide.key} width={pageWidth} flex={1} px="$1">
-                <YStack flex={1} ai="center" jc="center" pb="$4">
+              <YStack key={slide.key} width={pageWidth} flex={1} px="$8">
+                <YStack flex={1} ai="center" jc="center">
                   <OnboardingVisual tone={slide.tone} />
                 </YStack>
-                <YStack gap="$3" pb="$8">
+                <YStack gap="$4" pb="$8">
                   <Text
-                    variant="h1"
-                    color="$neutral900"
+                    fontSize={24}
+                    fontWeight="700"
+                    color="#1F2937"
                     textAlign="center"
-                    lineHeight={32}
+                    lineHeight={31}
                   >
                     {slide.title}
                   </Text>
-                  <Text
-                    variant="body"
-                    color="$neutral500"
-                    textAlign="center"
-                    lineHeight={24}
-                  >
+                  <Text fontSize={15} color="#6B7280" textAlign="center" lineHeight={24}>
                     {slide.subtitle}
                   </Text>
                 </YStack>
@@ -132,7 +115,7 @@ export function OnboardingScreen() {
           </ScrollView>
         </YStack>
 
-        <YStack gap="$5">
+        <YStack gap="$8" px="$8">
           <ProgressDots currentIndex={currentIndex} total={ONBOARDING_SLIDES.length} />
           {activeSlide.href ? (
             <PrimaryActionButton label={activeSlide.ctaLabel} onPress={goToRegister} />

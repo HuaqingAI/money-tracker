@@ -67,12 +67,12 @@ export function WelcomeScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-      <YStack flex={1} bg="$surfacePage" px="$4" pt="$4" pb="$4">
+      <YStack flex={1} bg="$surfacePage" px="$8" pt="$8" pb="$8">
         <Animated.View style={[createAnimatedStyle(brandOpacity, 0), styles.brandWrapper]}>
           <BrandLockup />
         </Animated.View>
 
-        <YStack flex={1} ai="center" jc="center">
+        <YStack flex={1} ai="center" jc="center" px="$2">
           <Animated.View style={[createAnimatedStyle(heroOpacity, 16), styles.heroWrapper]}>
             <Animated.View
               style={
@@ -88,23 +88,19 @@ export function WelcomeScreen() {
           </Animated.View>
         </YStack>
 
-        <YStack gap="$6" pb="$2">
+        <YStack gap="$8">
           <Animated.View style={createAnimatedStyle(copyOpacity, 18)}>
             <YStack gap="$3" ai="center">
               <Text
-                variant="h1"
-                color="$neutral900"
+                fontSize={28}
+                fontWeight="700"
+                color="#1F2937"
                 textAlign="center"
-                lineHeight={32}
+                lineHeight={34}
               >
                 {WELCOME_CONTENT.title}
               </Text>
-              <Text
-                variant="body"
-                color="$neutral500"
-                textAlign="center"
-                lineHeight={24}
-              >
+              <Text fontSize={16} color="#6B7280" textAlign="center" lineHeight={25}>
                 {WELCOME_CONTENT.subtitle}
               </Text>
             </YStack>
