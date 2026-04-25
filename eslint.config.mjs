@@ -47,10 +47,11 @@ export default tseslint.config(
 
   // Node/CommonJS config files
   {
-    files: ['**/*.config.js', '**/*.config.cjs', '**/*.config.mjs'],
+    files: ['**/*.config.js', '**/*.config.cjs', '**/*.config.mjs', '**/scripts/*.mjs'],
     languageOptions: {
       globals: {
         __dirname: 'readonly',
+        console: 'readonly',
         module: 'readonly',
         process: 'readonly',
         require: 'readonly',

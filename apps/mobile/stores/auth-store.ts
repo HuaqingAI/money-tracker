@@ -1,7 +1,16 @@
-import type { LoginMethod, UserProfile } from '@money-tracker/shared';
+import {
+  AUTH_ROUTE_PATHS,
+  type AuthRoutePath,
+  type AuthSession,
+  type AuthUser,
+  type LoginMethod,
+  type UserProfile,
+} from '@money-tracker/shared';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+
+const AUTH_STORAGE_KEY = 'money-tracker/auth-session';
 
 export interface AuthSummary {
   avatarUrl: string | null;
@@ -10,22 +19,50 @@ export interface AuthSummary {
   userId: string | null;
 }
 
-interface AuthSessionInput {
-  accessToken: string;
-  loginMethod?: LoginMethod;
-  refreshToken?: string | null;
-  user?: Partial<AuthSummary>;
+function hasExpired(isoDate: string): boolean {
+  const timestamp = new Date(isoDate).getTime();
+  return Number.isNaN(timestamp) || timestamp <= Date.now();
 }
 
-interface AuthState {
-  accessToken: string | null;
-  hasHydrated: boolean;
-  refreshToken: string | null;
-  user: AuthSummary;
-  clearSession: () => void;
-  markHydrated: (value: boolean) => void;
-  setSession: (session: AuthSessionInput) => void;
-  setUserProfile: (profile: UserProfile) => void;
+function hasActiveSession(session: AuthSession | null): session is AuthSession {
+  if (!session) {
+    return false;
+  }
+
+  return !hasExpired(session.refreshTokenExpiresAt) && !hasExpired(session.accessTokenExpiresAt);
+}
+
+function canRefreshSession(session: AuthSession | null): session is AuthSession {
+  if (!session) {
+    return false;
+  }
+
+  return hasExpired(session.accessTokenExpiresAt) && !hasExpired(session.refreshTokenExpiresAt);
+}
+
+function hasRefreshableOrActiveSession(session: AuthSession | null): session is AuthSession {
+  return hasActiveSession(session) || canRefreshSession(session);
+}
+
+function toLoginMethod(authMethod: AuthUser['authMethod']): LoginMethod {
+  return authMethod === 'wechat' ? 'wechat' : 'phone';
+}
+
+function toAuthSummary(user: AuthUser): AuthSummary {
+  return {
+    avatarUrl: null,
+    loginMethod: toLoginMethod(user.authMethod),
+    nickname: user.displayName,
+    userId: user.id,
+  };
+}
+
+function getNextPathFromSession(session: AuthSession | null): AuthRoutePath {
+  if (!hasActiveSession(session)) {
+    return AUTH_ROUTE_PATHS.register;
+  }
+
+  return session.user.needsOnboarding ? AUTH_ROUTE_PATHS.permissions : AUTH_ROUTE_PATHS.me;
 }
 
 const initialUser: AuthSummary = {
@@ -35,43 +72,41 @@ const initialUser: AuthSummary = {
   userId: null,
 };
 
-function createInitialState(): Omit<
-  AuthState,
-  'clearSession' | 'markHydrated' | 'setSession' | 'setUserProfile'
-> {
-  return {
-    accessToken: null,
-    hasHydrated: false,
-    refreshToken: null,
-    user: initialUser,
-  };
+export interface AuthState {
+  hydrated: boolean;
+  session: AuthSession | null;
+  accessToken: string | null;
+  refreshToken: string | null;
+  user: AuthSummary;
+  authUser: AuthUser | null;
+  setSession: (session: AuthSession) => void;
+  setUserProfile: (profile: UserProfile) => void;
+  clearSession: () => void;
+  markHydrated: () => void;
+  recoverFromHydrationError: () => void;
+  needsTokenRefresh: () => boolean;
+  getNextPath: () => AuthRoutePath;
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
-      ...createInitialState(),
-      clearSession: () =>
-        set(() => ({
-          ...createInitialState(),
-          hasHydrated: true,
-        })),
-      markHydrated: (value) =>
-        set((state) => ({
-          ...state,
-          hasHydrated: value,
-        })),
+    (set, get) => ({
+      hydrated: false,
+      session: null,
+      accessToken: null,
+      refreshToken: null,
+      user: initialUser,
+      authUser: null,
       setSession: (session) =>
         set((state) => ({
-          ...state,
+          session,
           accessToken: session.accessToken,
-          refreshToken: session.refreshToken ?? null,
+          refreshToken: session.refreshToken,
           user: {
-            avatarUrl: session.user?.avatarUrl ?? state.user.avatarUrl,
-            loginMethod: session.loginMethod ?? state.user.loginMethod,
-            nickname: session.user?.nickname ?? state.user.nickname,
-            userId: session.user?.userId ?? state.user.userId,
+            ...toAuthSummary(session.user),
+            avatarUrl: state.user.avatarUrl,
           },
+          authUser: session.user,
         })),
       setUserProfile: (profile) =>
         set((state) => ({
@@ -83,39 +118,49 @@ export const useAuthStore = create<AuthState>()(
             userId: profile.userId,
           },
         })),
+      clearSession: () =>
+        set({
+          session: null,
+          accessToken: null,
+          refreshToken: null,
+          user: initialUser,
+          authUser: null,
+        }),
+      markHydrated: () => set({ hydrated: true }),
+      recoverFromHydrationError: () =>
+        set({
+          hydrated: true,
+          session: null,
+          accessToken: null,
+          refreshToken: null,
+          user: initialUser,
+          authUser: null,
+        }),
+      needsTokenRefresh: () => canRefreshSession(get().session),
+      getNextPath: () => getNextPathFromSession(get().session),
     }),
     {
-      name: 'money-tracker-auth',
-      onRehydrateStorage: () => (state, error) => {
-        if (error) {
-          state?.clearSession();
-          return;
-        }
-
-        state?.markHydrated(true);
-      },
+      name: AUTH_STORAGE_KEY,
+      storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({
+        session: state.session,
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,
         user: state.user,
+        authUser: state.authUser,
       }),
-      skipHydration: true,
-      storage: createJSONStorage(() => AsyncStorage),
+      onRehydrateStorage: () => (state, error) => {
+        if (error || !state) {
+          useAuthStore.getState().recoverFromHydrationError();
+          return;
+        }
+
+        if (!hasRefreshableOrActiveSession(state.session)) {
+          state.clearSession();
+        }
+
+        state.markHydrated();
+      },
     },
   ),
 );
-
-export async function hydrateAuthStore(): Promise<void> {
-  if (useAuthStore.getState().hasHydrated) {
-    return;
-  }
-
-  try {
-    await useAuthStore.persist.rehydrate();
-  } catch {
-    useAuthStore.getState().clearSession();
-  } finally {
-    useAuthStore.getState().markHydrated(true);
-  }
-}
-

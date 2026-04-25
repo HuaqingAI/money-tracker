@@ -1,9 +1,12 @@
 const path = require('path');
 const { withSentryConfig } = require('@sentry/nextjs');
 
+const shouldUseStandalone =
+  process.env.NEXT_STANDALONE === 'true' || process.platform !== 'win32';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  output: shouldUseStandalone ? 'standalone' : undefined,
   outputFileTracingRoot: path.join(__dirname, '../../'),
   transpilePackages: ['@money-tracker/shared', '@money-tracker/ui'],
   serverExternalPackages: ['pino', 'pino-roll', 'pino-pretty'],

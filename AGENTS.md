@@ -22,6 +22,9 @@ AI驱动的零记账智能财务管家 -- 通过AI自动捕获和智能管理，
 - API 响应格式：`{ success: boolean, data?: T, error?: { code: string, message: string } }`
 
 ---
+- AI Agent 与文档、沟通输出默认使用中文，除非用户明确要求其他语言
+
+---
 <!-- bmad-project-config -->
 ## Workflow Commands
 

@@ -111,8 +111,8 @@ export default function MeScreen() {
         <AccountCard>
           <Text variant="bodyMedium">Account</Text>
           <Divider />
-          <Button onPress={() => router.push('/profile')}>Edit Profile</Button>
-          <Button onPress={() => router.push('/settings')}>Basic Settings</Button>
+          <Button onPress={() => router.push('/(main)/profile')}>Edit Profile</Button>
+          <Button onPress={() => router.push('/(main)/settings')}>Basic Settings</Button>
           <Button onPress={() => void onLogout()}>Log Out</Button>
         </AccountCard>
       </YStack>

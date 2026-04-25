@@ -90,7 +90,7 @@ export default function SettingsScreen() {
         <Text variant="bodyMedium">Basic Settings</Text>
         <Divider />
 
-        <Button onPress={() => router.push('/privacy')}>Privacy Summary</Button>
+        <Button onPress={() => router.push('/(main)/privacy')}>Privacy Summary</Button>
         <Text variant="caption">Login method: {loginMethod}</Text>
         <Text variant="caption">App version: {getAppVersion()}</Text>
 
