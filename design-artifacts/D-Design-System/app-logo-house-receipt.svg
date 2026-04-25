@@ -1,0 +1,71 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Money Tracker App Logo</title>
+  <desc id="desc">A rounded teal app icon with a soft home shape, scan frame, receipt card, and AI sparkle.</desc>
+  <defs>
+    <linearGradient id="bg-gradient" x1="154" y1="846" x2="899" y2="149" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#26BCD7"/>
+      <stop offset="0.48" stop-color="#69DDD2"/>
+      <stop offset="1" stop-color="#C9F4D8"/>
+    </linearGradient>
+    <linearGradient id="home-gradient" x1="333" y1="306" x2="750" y2="760" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="0.57" stop-color="#F4FFFB" stop-opacity="0.76"/>
+      <stop offset="1" stop-color="#D9F7EF" stop-opacity="0.52"/>
+    </linearGradient>
+    <linearGradient id="receipt-gradient" x1="340" y1="385" x2="700" y2="786" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="0.58" stop-color="#F8FFFE"/>
+      <stop offset="1" stop-color="#E7F8F5"/>
+    </linearGradient>
+    <linearGradient id="spark-gradient" x1="732" y1="455" x2="842" y2="589" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF9C7"/>
+      <stop offset="0.47" stop-color="#FFE58E"/>
+      <stop offset="1" stop-color="#FFC95E"/>
+    </linearGradient>
+    <filter id="soft-shadow" x="-20%" y="-20%" width="140%" height="150%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#008C94" flood-opacity="0.22"/>
+    </filter>
+    <filter id="white-lift" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#0A92A3" flood-opacity="0.18"/>
+    </filter>
+    <clipPath id="icon-clip">
+      <rect x="60" y="60" width="904" height="904" rx="220"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#icon-clip)">
+    <rect x="60" y="60" width="904" height="904" rx="220" fill="url(#bg-gradient)"/>
+    <circle cx="298" cy="802" r="312" fill="#1BAEC7" opacity="0.24"/>
+    <circle cx="730" cy="238" r="310" fill="#D9FBDD" opacity="0.25"/>
+
+    <g opacity="0.96" filter="url(#white-lift)">
+      <path d="M216 333C216 273.353 264.353 225 324 225H340" stroke="white" stroke-width="30" stroke-linecap="round"/>
+      <path d="M216 333V385" stroke="white" stroke-width="30" stroke-linecap="round"/>
+      <path d="M684 225H700C759.647 225 808 273.353 808 333" stroke="white" stroke-width="30" stroke-linecap="round"/>
+      <path d="M808 333V385" stroke="white" stroke-width="30" stroke-linecap="round"/>
+      <path d="M216 691C216 750.647 264.353 799 324 799H340" stroke="white" stroke-width="30" stroke-linecap="round"/>
+      <path d="M216 691V655" stroke="white" stroke-width="30" stroke-linecap="round"/>
+      <path d="M684 799H700C759.647 799 808 750.647 808 691" stroke="white" stroke-width="30" stroke-linecap="round"/>
+      <path d="M808 691V655" stroke="white" stroke-width="30" stroke-linecap="round"/>
+    </g>
+
+    <g filter="url(#soft-shadow)">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M524.145 232.823C502.997 214.392 471.493 214.392 450.345 232.823L232.79 422.451C213.067 439.64 225.225 472.116 251.383 472.116H285.694V655.665C285.694 687.259 311.305 712.87 342.899 712.87H650.904C682.498 712.87 708.109 687.259 708.109 655.665V472.116H747.615C773.87 472.116 785.984 439.44 766.067 422.335L704.178 369.183V300.18C704.178 291.513 697.152 284.486 688.484 284.486H651.225C642.558 284.486 635.532 291.513 635.532 300.18V310.221L524.145 232.823Z" fill="url(#home-gradient)" opacity="0.84"/>
+    </g>
+
+    <g filter="url(#soft-shadow)">
+      <path d="M335 433C335 399.863 361.863 373 395 373H631C664.137 373 691 399.863 691 433V724C691 743.169 668.851 753.865 653.831 741.958L625.065 719.155C616.725 712.544 604.77 713.066 597.036 720.379L573.093 743.014C564.275 751.35 550.472 751.209 541.827 742.694L517.371 718.6C509.048 710.4 495.674 710.4 487.351 718.6L462.895 742.694C454.251 751.209 440.447 751.35 431.629 743.014L407.707 720.399C399.967 713.079 387.998 712.565 379.658 719.195L350.944 742.023C335.936 753.956 313.762 743.27 313.762 724.089L335 433Z" fill="url(#receipt-gradient)"/>
+    </g>
+
+    <circle cx="420" cy="493" r="42" fill="#64D7C6"/>
+    <rect x="490" y="474" width="136" height="22" rx="11" fill="#64D7C6"/>
+    <rect x="490" y="518" width="88" height="22" rx="11" fill="#64D7C6"/>
+    <rect x="384" y="591" width="252" height="22" rx="11" fill="#BCE4E4"/>
+    <rect x="384" y="651" width="210" height="22" rx="11" fill="#BCE4E4"/>
+
+    <path d="M787.166 478.987C789.51 468.338 804.689 468.338 807.033 478.987L814.242 511.737C817.173 525.055 827.575 535.458 840.893 538.389L873.644 545.598C884.292 547.942 884.292 563.121 873.644 565.464L840.893 572.674C827.575 575.605 817.173 586.007 814.242 599.325L807.033 632.075C804.689 642.724 789.51 642.724 787.166 632.075L779.957 599.325C777.026 586.007 766.623 575.605 753.305 572.674L720.555 565.464C709.906 563.121 709.906 547.942 720.555 545.598L753.305 538.389C766.623 535.458 777.026 525.055 779.957 511.737L787.166 478.987Z" fill="url(#spark-gradient)"/>
+    <path d="M797.1 505.643L802.443 529.916C805.374 543.234 815.776 553.637 829.094 556.568L853.367 561.91L829.094 567.253C815.776 570.184 805.374 580.586 802.443 593.904L797.1 618.177L791.757 593.904C788.826 580.586 778.424 570.184 765.106 567.253L740.833 561.91L765.106 556.568C778.424 553.637 788.826 543.234 791.757 529.916L797.1 505.643Z" fill="#FFF6C8" opacity="0.65"/>
+    <path d="M740 621L753 608" stroke="white" stroke-width="14" stroke-linecap="round"/>
+    <path d="M771 651L784 628" stroke="white" stroke-width="14" stroke-linecap="round"/>
+  </g>
+</svg>

@@ -3,13 +3,24 @@ import { Stack } from 'expo-router';
 
 import { initSentry, Sentry } from '../lib/sentry';
 
+export const unstable_settings = {
+  initialRouteName: 'index',
+};
+
 // 应用启动时初始化 Sentry（必须在渲染前调用）
 initSentry();
 
 function RootLayout() {
   return (
     <UIProvider defaultTheme="light">
-      <Stack />
+      <Stack
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        <Stack.Screen name="index" />
+        <Stack.Screen name="(auth)" />
+      </Stack>
     </UIProvider>
   );
 }
