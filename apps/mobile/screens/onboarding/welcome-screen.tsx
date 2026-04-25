@@ -68,12 +68,12 @@ export function WelcomeScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <YStack flex={1} bg="$surfacePage" px="$4" pt="$4" pb="$4">
-        <Animated.View style={createAnimatedStyle(brandOpacity, 0)}>
+        <Animated.View style={[createAnimatedStyle(brandOpacity, 0), styles.brandWrapper]}>
           <BrandLockup />
         </Animated.View>
 
         <YStack flex={1} ai="center" jc="center">
-          <Animated.View style={createAnimatedStyle(heroOpacity, 16)}>
+          <Animated.View style={[createAnimatedStyle(heroOpacity, 16), styles.heroWrapper]}>
             <Animated.View
               style={
                 !reduceMotionEnabled
@@ -151,5 +151,11 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#F9FAFB',
+  },
+  brandWrapper: {
+    alignSelf: 'center',
+  },
+  heroWrapper: {
+    alignSelf: 'center',
   },
 });

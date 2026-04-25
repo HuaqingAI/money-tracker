@@ -1,7 +1,7 @@
 import { Button, shadows, Text } from '@money-tracker/ui';
 import * as React from 'react';
-import { AccessibilityInfo, Pressable } from 'react-native';
-import { Circle, Separator, XStack, YStack } from 'tamagui';
+import { AccessibilityInfo, Pressable, useWindowDimensions } from 'react-native';
+import { Circle, Separator, View, XStack, YStack } from 'tamagui';
 
 import type { OnboardingVisualTone } from './content';
 
@@ -146,8 +146,18 @@ export function ProgressDots({
 }
 
 export function WelcomeHero() {
+  const scale = useVisualScale(320);
+
   return (
-    <YStack width={292} height={320} ai="center" jc="center">
+    <View
+      width={292}
+      height={320}
+      ai="center"
+      jc="center"
+      style={{
+        transform: [{ scale }],
+      }}
+    >
       <Circle
         size={220}
         bg="$brand100"
@@ -170,7 +180,7 @@ export function WelcomeHero() {
         </YStack>
       </FloatingCard>
 
-      <YStack
+      <View
         width={150}
         height={272}
         br={36}
@@ -179,7 +189,7 @@ export function WelcomeHero() {
         borderColor="$neutral800"
         style={shadows.lg}
       >
-        <YStack
+        <View
           width={64}
           height={16}
           br="$lg"
@@ -207,7 +217,7 @@ export function WelcomeHero() {
             </Text>
           </YStack>
         </YStack>
-      </YStack>
+      </View>
 
       <FloatingCard side="right" bottom={38} rotate="8deg">
         <YStack gap="$2">
@@ -225,20 +235,22 @@ export function WelcomeHero() {
           </Text>
         </YStack>
       </FloatingCard>
-    </YStack>
+    </View>
   );
 }
 
 export function OnboardingVisual({ tone }: { tone: OnboardingVisualTone }) {
+  const scale = useVisualScale(312);
+
   if (tone === 'capture') {
-    return <CaptureVisual />;
+    return <CaptureVisual scale={scale} />;
   }
 
   if (tone === 'categorize') {
-    return <CategorizeVisual />;
+    return <CategorizeVisual scale={scale} />;
   }
 
-  return <AssistantVisual />;
+  return <AssistantVisual scale={scale} />;
 }
 
 export function useReducedMotionPreference() {
@@ -280,7 +292,7 @@ function FloatingCard({
   rotate: string;
 }>) {
   return (
-    <YStack
+    <View
       pos="absolute"
       top={top}
       bottom={bottom}
@@ -301,7 +313,7 @@ function FloatingCard({
       ]}
     >
       {children}
-    </YStack>
+    </View>
   );
 }
 
@@ -327,9 +339,17 @@ function MetricPill({
   );
 }
 
-function CaptureVisual() {
+function CaptureVisual({ scale }: { scale: number }) {
   return (
-    <YStack width={292} height={300} ai="center" jc="center">
+    <View
+      width={292}
+      height={300}
+      ai="center"
+      jc="center"
+      style={{
+        transform: [{ scale }],
+      }}
+    >
       <Circle size={232} bg="$brand50" pos="absolute" top={32} opacity={0.95} />
       <FloatingBadge left={18} top={36} bg="$success" label="支付宝" />
       <FloatingBadge right={18} bottom={72} bg="$brand500" label="微信支付" />
@@ -340,13 +360,21 @@ function CaptureVisual() {
           <FeedCard label="超市" amount="-¥58" accent="$catShopping" />
         </YStack>
       </PhoneShell>
-    </YStack>
+    </View>
   );
 }
 
-function CategorizeVisual() {
+function CategorizeVisual({ scale }: { scale: number }) {
   return (
-    <YStack width={292} height={300} ai="center" jc="center">
+    <View
+      width={292}
+      height={300}
+      ai="center"
+      jc="center"
+      style={{
+        transform: [{ scale }],
+      }}
+    >
       <Circle size={224} bg="$warmTint" pos="absolute" top={36} opacity={0.95} />
       <XStack pos="absolute" top={34} gap="$2">
         <CategoryChip bg="$catDining" label="餐饮" />
@@ -377,13 +405,21 @@ function CategorizeVisual() {
           </Text>
         </XStack>
       </YStack>
-    </YStack>
+    </View>
   );
 }
 
-function AssistantVisual() {
+function AssistantVisual({ scale }: { scale: number }) {
   return (
-    <YStack width={300} height={300} ai="center" jc="center">
+    <View
+      width={300}
+      height={300}
+      ai="center"
+      jc="center"
+      style={{
+        transform: [{ scale }],
+      }}
+    >
       <Circle size={228} bg="$brand50" pos="absolute" top={36} opacity={0.95} />
       <YStack
         width={220}
@@ -430,7 +466,7 @@ function AssistantVisual() {
           本月餐饮支出比上月多出 15%
         </Text>
       </YStack>
-    </YStack>
+    </View>
   );
 }
 
@@ -473,7 +509,7 @@ function FloatingBadge({
 
 function PhoneShell({ children }: React.PropsWithChildren) {
   return (
-    <YStack
+    <View
       width={168}
       height={276}
       br={36}
@@ -482,7 +518,7 @@ function PhoneShell({ children }: React.PropsWithChildren) {
       borderColor="$neutral800"
       style={shadows.lg}
     >
-      <YStack
+      <View
         width={68}
         height={16}
         br="$lg"
@@ -496,7 +532,7 @@ function PhoneShell({ children }: React.PropsWithChildren) {
       <YStack flex={1} bg="$surfacePrimary" br={30} px="$4" pt={40} pb="$4">
         {children}
       </YStack>
-    </YStack>
+    </View>
   );
 }
 
@@ -566,9 +602,15 @@ function CategoryRow({
           已整理
         </Text>
       </XStack>
-      <YStack height={8} br="$full" bg="$neutral100" overflow="hidden">
-        <YStack height="100%" width={width} bg={color} br="$full" />
-      </YStack>
+      <View height={8} br="$full" bg="$neutral100" overflow="hidden">
+        <View height="100%" width={width} bg={color} br="$full" />
+      </View>
     </YStack>
   );
+}
+
+function useVisualScale(designWidth: number) {
+  const { width } = useWindowDimensions();
+  const availableWidth = Math.max(width - 32, 280);
+  return Math.min(1, availableWidth / designWidth);
 }

@@ -102,6 +102,7 @@ export function OnboardingScreen() {
             }}
             scrollEventThrottle={16}
             showsHorizontalScrollIndicator={false}
+            style={styles.scrollView}
           >
             {ONBOARDING_SLIDES.map((slide) => (
               <YStack key={slide.key} width={pageWidth} flex={1} px="$1">
@@ -151,5 +152,8 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#F9FAFB',
+  },
+  scrollView: {
+    flex: 1,
   },
 });

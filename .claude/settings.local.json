@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(pnpm --filter mobile exec vitest run)",
+      "Bash(pnpm --filter mobile lint)",
+      "Bash(pnpm --filter mobile build)"
     ]
   }
 }

@@ -13,7 +13,11 @@ initSentry();
 function RootLayout() {
   return (
     <UIProvider defaultTheme="light">
-      <Stack>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
         <Stack.Screen name="index" />
         <Stack.Screen name="(auth)" />
       </Stack>
