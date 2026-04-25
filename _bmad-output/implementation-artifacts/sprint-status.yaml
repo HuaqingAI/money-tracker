@@ -56,7 +56,7 @@ development_status:
 
   # Epic 1: 零输入首次体验 (MVP)
   epic-1: in-progress
-  1-1-welcome-and-onboarding: backlog
+  1-1-welcome-and-onboarding: in-progress
   1-2-user-registration-and-auth: review
   1-3-android-notification-capture: backlog
   1-4-csv-bill-import: backlog

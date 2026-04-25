@@ -1,5 +1,7 @@
 import { Redirect } from 'expo-router';
 
-export default function HomeScreen() {
-  return <Redirect href="/(auth)/register" />;
+import { AUTH_ROUTES } from '../screens/onboarding/content';
+
+export default function IndexRoute() {
+  return <Redirect href={AUTH_ROUTES.welcome} />;
 }
