@@ -18,6 +18,8 @@ export default function RegisterScreen() {
 
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
+  const [otpChallengeId, setOtpChallengeId] = useState<string | null>(null);
+  const [otpPhone, setOtpPhone] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState('');
   const [countdown, setCountdown] = useState(0);
   const [agreementChecked, setAgreementChecked] = useState(false);
@@ -42,14 +44,25 @@ export default function RegisterScreen() {
     [countdown, phone],
   );
   const canVerifyOtp = useMemo(
-    () => /^\d{6}$/.test(code),
-    [code],
+    () => /^\d{6}$/.test(code) && otpChallengeId !== null && otpPhone === phone,
+    [code, otpChallengeId, otpPhone, phone],
   );
+
+  function handlePhoneChange(value: string) {
+    setPhone(value);
+    if (otpPhone !== value) {
+      setCode('');
+      setOtpChallengeId(null);
+      setOtpPhone(null);
+    }
+  }
 
   async function handleSendOtp() {
     try {
       setSendingOtp(true);
       const result = await sendOtp({ phone });
+      setOtpChallengeId(result.challengeId);
+      setOtpPhone(phone);
       setCountdown(result.resendAfterSeconds);
       if (result.devCode) {
         setCode(result.devCode);
@@ -72,6 +85,7 @@ export default function RegisterScreen() {
       setVerifyingOtp(true);
       const result = await verifyOtp({
         phone,
+        challengeId: otpChallengeId ?? undefined,
         code,
         consentAccepted: agreementChecked,
         displayName: displayName.trim() || undefined,
@@ -261,12 +275,13 @@ export default function RegisterScreen() {
                   countdown={countdown}
                   sendingOtp={sendingOtp}
                   verifyingOtp={verifyingOtp}
-                  onPhoneChange={setPhone}
+                  onPhoneChange={handlePhoneChange}
                   onCodeChange={setCode}
                   onSendOtp={handleSendOtp}
                   onVerifyOtp={handleVerifyOtp}
                   canSendOtp={canSendOtp}
                   canVerifyOtp={canVerifyOtp}
+                  otpRequested={otpChallengeId !== null && otpPhone === phone}
                 />
               </YStack>
             )}

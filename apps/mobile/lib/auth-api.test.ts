@@ -70,6 +70,53 @@ describe('auth-api', () => {
     ).rejects.toThrow('验证码错误');
   });
 
+  it('posts challenge ids when verifying OTP codes', async () => {
+    vi.mocked(globalThis.fetch).mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          success: true,
+          data: {
+            session: {
+              accessToken: 'a',
+              refreshToken: 'b',
+              accessTokenExpiresAt: '2026-04-24T00:15:00.000Z',
+              refreshTokenExpiresAt: '2026-05-01T00:00:00.000Z',
+              user: {
+                id: 'user-1',
+                phone: '13800138000',
+                displayName: null,
+                consentAt: '2026-04-24T00:00:00.000Z',
+                lastSignInAt: '2026-04-24T00:00:00.000Z',
+                authMethod: 'otp',
+                needsOnboarding: false,
+              },
+            },
+            nextPath: '/(main)/me',
+          },
+        }),
+      ),
+    );
+
+    await verifyOtp({
+      phone: '13800138000',
+      challengeId: 'challenge-1',
+      code: '123456',
+      consentAccepted: true,
+    });
+
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      'https://api.example.com/api/auth/otp-verify',
+      expect.objectContaining({
+        body: JSON.stringify({
+          phone: '13800138000',
+          challengeId: 'challenge-1',
+          code: '123456',
+          consentAccepted: true,
+        }),
+      }),
+    );
+  });
+
   it('supports refresh and wechat callback contracts', async () => {
     vi.mocked(globalThis.fetch)
       .mockResolvedValueOnce(

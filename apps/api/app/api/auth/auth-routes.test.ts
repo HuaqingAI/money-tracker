@@ -117,11 +117,19 @@ describe('auth routes', () => {
         method: 'POST',
         body: JSON.stringify({
           phone: '13800138000',
+          challengeId: 'challenge-1',
           code: '123456',
           consentAccepted: true,
         }),
       }) as never,
     );
+
+    expect(verifyOtpMock).toHaveBeenCalledWith({
+      phone: '13800138000',
+      challengeId: 'challenge-1',
+      code: '123456',
+      consentAccepted: true,
+    });
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({

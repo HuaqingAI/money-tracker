@@ -93,6 +93,7 @@ export class AuthService {
 
   async verifyOtp(params: {
     phone: string;
+    challengeId?: string | undefined;
     code: string;
     consentAccepted: boolean;
     displayName?: string | undefined;
@@ -108,8 +109,10 @@ export class AuthService {
       );
     }
 
-    const challenge = await this.repository.getOtpChallengeByPhone(params.phone);
-    if (!challenge) {
+    const challenge = params.challengeId
+      ? await this.repository.getOtpChallengeById(params.challengeId)
+      : await this.repository.getOtpChallengeByPhone(params.phone);
+    if (!challenge || challenge.phone !== params.phone) {
       throw new AuthError(
         AUTH_ERROR_CODES.otpNotRequested,
         '请先获取验证码',

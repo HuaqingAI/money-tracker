@@ -29,6 +29,7 @@ export interface RefreshTokenRecord {
 
 export interface AuthRepository {
   createOtpChallenge(phone: string, code: string, now: Date): Promise<OtpChallengeRecord>;
+  getOtpChallengeById(id: string): Promise<OtpChallengeRecord | null>;
   getOtpChallengeByPhone(phone: string): Promise<OtpChallengeRecord | null>;
   consumeOtpChallenge(id: string): Promise<void>;
   getUserByPhone(phone: string): Promise<AuthIdentityRecord | null>;
