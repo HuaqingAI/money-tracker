@@ -3,12 +3,21 @@ import {
   type AuthRoutePath,
   type AuthSession,
   type AuthUser,
+  type LoginMethod,
+  type UserProfile,
 } from '@money-tracker/shared';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 const AUTH_STORAGE_KEY = 'money-tracker/auth-session';
+
+export interface AuthSummary {
+  avatarUrl: string | null;
+  loginMethod: LoginMethod;
+  nickname: string | null;
+  userId: string | null;
+}
 
 function hasExpired(isoDate: string): boolean {
   const timestamp = new Date(isoDate).getTime();
@@ -35,21 +44,43 @@ function hasRefreshableOrActiveSession(session: AuthSession | null): session is 
   return hasActiveSession(session) || canRefreshSession(session);
 }
 
+function toLoginMethod(authMethod: AuthUser['authMethod']): LoginMethod {
+  return authMethod === 'wechat' ? 'wechat' : 'phone';
+}
+
+function toAuthSummary(user: AuthUser): AuthSummary {
+  return {
+    avatarUrl: null,
+    loginMethod: toLoginMethod(user.authMethod),
+    nickname: user.displayName,
+    userId: user.id,
+  };
+}
+
 function getNextPathFromSession(session: AuthSession | null): AuthRoutePath {
   if (!hasActiveSession(session)) {
     return AUTH_ROUTE_PATHS.register;
   }
 
-  return session.user.needsOnboarding ? AUTH_ROUTE_PATHS.permissions : AUTH_ROUTE_PATHS.dashboard;
+  return session.user.needsOnboarding ? AUTH_ROUTE_PATHS.permissions : AUTH_ROUTE_PATHS.me;
 }
+
+const initialUser: AuthSummary = {
+  avatarUrl: null,
+  loginMethod: 'unknown',
+  nickname: null,
+  userId: null,
+};
 
 export interface AuthState {
   hydrated: boolean;
   session: AuthSession | null;
   accessToken: string | null;
   refreshToken: string | null;
-  user: AuthUser | null;
+  user: AuthSummary;
+  authUser: AuthUser | null;
   setSession: (session: AuthSession) => void;
+  setUserProfile: (profile: UserProfile) => void;
   clearSession: () => void;
   markHydrated: () => void;
   recoverFromHydrationError: () => void;
@@ -64,20 +95,36 @@ export const useAuthStore = create<AuthState>()(
       session: null,
       accessToken: null,
       refreshToken: null,
-      user: null,
+      user: initialUser,
+      authUser: null,
       setSession: (session) =>
-        set({
+        set((state) => ({
           session,
           accessToken: session.accessToken,
           refreshToken: session.refreshToken,
-          user: session.user,
-        }),
+          user: {
+            ...toAuthSummary(session.user),
+            avatarUrl: state.user.avatarUrl,
+          },
+          authUser: session.user,
+        })),
+      setUserProfile: (profile) =>
+        set((state) => ({
+          ...state,
+          user: {
+            avatarUrl: profile.avatarUrl,
+            loginMethod: profile.loginMethod,
+            nickname: profile.nickname,
+            userId: profile.userId,
+          },
+        })),
       clearSession: () =>
         set({
           session: null,
           accessToken: null,
           refreshToken: null,
-          user: null,
+          user: initialUser,
+          authUser: null,
         }),
       markHydrated: () => set({ hydrated: true }),
       recoverFromHydrationError: () =>
@@ -86,7 +133,8 @@ export const useAuthStore = create<AuthState>()(
           session: null,
           accessToken: null,
           refreshToken: null,
-          user: null,
+          user: initialUser,
+          authUser: null,
         }),
       needsTokenRefresh: () => canRefreshSession(get().session),
       getNextPath: () => getNextPathFromSession(get().session),
@@ -99,6 +147,7 @@ export const useAuthStore = create<AuthState>()(
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,
         user: state.user,
+        authUser: state.authUser,
       }),
       onRehydrateStorage: () => (state, error) => {
         if (error || !state) {

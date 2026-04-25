@@ -2,7 +2,7 @@ import { Text } from '@money-tracker/ui';
 import { useRouter } from 'expo-router';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Stack, YStack } from 'tamagui';
+import { YStack } from 'tamagui';
 
 import { GhostTextButton, PrimaryActionButton } from './components';
 import { AUTH_ROUTES } from './content';
@@ -12,27 +12,34 @@ export function RegisterPlaceholderScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-      <YStack flex={1} bg="$surfacePage" px="$4" pt="$3" pb="$4" gap="$8">
-        <Stack ai="flex-start">
+      <YStack
+        backgroundColor="$surfacePage"
+        flex={1}
+        gap="$8"
+        paddingBottom="$4"
+        paddingHorizontal="$4"
+        paddingTop="$3"
+      >
+        <YStack alignItems="flex-start">
           <GhostTextButton
             label="返回欢迎页"
             onPress={() => router.replace(AUTH_ROUTES.welcome)}
           />
-        </Stack>
+        </YStack>
 
-        <YStack flex={1} jc="center" gap="$5">
-          <Stack
-            px="$4"
-            py="$4"
-            br="$xl"
-            bg="$surfacePrimary"
+        <YStack flex={1} gap="$5" justifyContent="center">
+          <YStack
+            backgroundColor="$surfacePrimary"
             borderWidth={1}
             borderColor="$neutral100"
+            borderRadius="$xl"
+            paddingHorizontal="$4"
+            paddingVertical="$4"
           >
             <Text variant="caption" color="$brand500">
               Story 1.1 占位页
             </Text>
-          </Stack>
+          </YStack>
 
           <YStack gap="$3">
             <Text variant="h1" color="$neutral900" lineHeight={32}>

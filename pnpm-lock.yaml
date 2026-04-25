@@ -102,6 +102,9 @@ importers:
       '@sentry/react-native':
         specifier: ~6.3.0
         version: 6.3.0(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@react-native/metro-config@0.85.1(@babel/core@7.29.0))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+      '@tanstack/react-query':
+        specifier: ^5.100.1
+        version: 5.100.3(react@19.1.0)
       expo:
         specifier: ~54.0.0
         version: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native-webview@13.16.1(react-native@0.81.5(@babel/core@7.29.0)(@react-native/metro-config@0.85.1(@babel/core@7.29.0))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.29.0)(@react-native/metro-config@0.85.1(@babel/core@7.29.0))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)(typescript@5.7.3)
@@ -2987,6 +2990,14 @@ packages:
     resolution: {integrity: sha512-SaXBwbbKnFy6+H7cLf6RvL5AVprmywFnTkdUHoDBgpWAEhnSWZBeru4iVkxDEriG0xBRDYb/LM0aip3s7wyw2w==}
     peerDependencies:
       react: '>=19'
+
+  '@tanstack/query-core@5.100.3':
+    resolution: {integrity: sha512-oMO1imV4qStH+GqddafkI7Q7r2ktPL7/0Mu74W1XEhfHHd3oTIrwP3OOIsbtpnnbe8y/IU+8Lm7Bi2LlMhVdNA==}
+
+  '@tanstack/react-query@5.100.3':
+    resolution: {integrity: sha512-8Fgb4vKmBHllRHUjz3ZOwgV0v9b7cxCdN5T0iFQvvWJJVs6xvaxHERO1BclTL03bbK8vZAuXVKN3IeVS1sUdeQ==}
+    peerDependencies:
+      react: ^18 || ^19
 
   '@turbo/darwin-64@2.9.6':
     resolution: {integrity: sha512-X/56SnVXIQZBLKwniGTwEQTGmtE5brSACnKMBWpY3YafuxVYefrC2acamfjgxP7BG5w3I+6jf0UrLoSzgPcSJg==}
@@ -11494,6 +11505,13 @@ snapshots:
 
   '@tamagui/z-index-stack@2.0.0-rc.41(react@19.1.0)':
     dependencies:
+      react: 19.1.0
+
+  '@tanstack/query-core@5.100.3': {}
+
+  '@tanstack/react-query@5.100.3(react@19.1.0)':
+    dependencies:
+      '@tanstack/query-core': 5.100.3
       react: 19.1.0
 
   '@turbo/darwin-64@2.9.6':

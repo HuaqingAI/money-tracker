@@ -1,9 +1,11 @@
 import { AUTH_ROUTE_PATHS } from '@money-tracker/shared';
 import { UIProvider } from '@money-tracker/ui';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { useEffect, useRef } from 'react';
 
 import { refreshSession } from '../lib/auth-api';
+import { getQueryClient } from '../lib/query-client';
 import { initSentry, Sentry } from '../lib/sentry';
 import { useAuthStore } from '../stores/auth-store';
 
@@ -11,8 +13,25 @@ export const unstable_settings = {
   initialRouteName: 'index',
 };
 
-// 应用启动时初始化 Sentry（必须在渲染前调用）
 initSentry();
+
+function isRouteGroupAllowed(
+  activeGroup: string | undefined,
+  nextPath: string,
+): boolean {
+  if (nextPath === AUTH_ROUTE_PATHS.permissions) {
+    return activeGroup === '(setup)';
+  }
+
+  if (
+    nextPath === AUTH_ROUTE_PATHS.me ||
+    nextPath === AUTH_ROUTE_PATHS.dashboard
+  ) {
+    return activeGroup === '(main)';
+  }
+
+  return activeGroup === '(auth)';
+}
 
 function RootLayout() {
   const hydrated = useAuthStore((state) => state.hydrated);
@@ -64,32 +83,27 @@ function RootLayout() {
       return;
     }
 
-    const activeGroup = segments[0];
-    const currentPath =
-      activeGroup === '(setup)'
-        ? AUTH_ROUTE_PATHS.permissions
-        : activeGroup === '(main)'
-          ? AUTH_ROUTE_PATHS.dashboard
-          : AUTH_ROUTE_PATHS.register;
-
-    if (currentPath !== nextPath) {
+    if (!isRouteGroupAllowed(segments[0], nextPath)) {
       router.replace(nextPath);
     }
   }, [hydrated, needsTokenRefresh, nextPath, router, segments]);
 
   return (
-    <UIProvider defaultTheme="light">
-      <Stack
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        <Stack.Screen name="index" />
-        <Stack.Screen name="(auth)" />
-      </Stack>
-    </UIProvider>
+    <QueryClientProvider client={getQueryClient()}>
+      <UIProvider defaultTheme="light">
+        <Stack
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          <Stack.Screen name="index" />
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(setup)" />
+          <Stack.Screen name="(main)" />
+        </Stack>
+      </UIProvider>
+    </QueryClientProvider>
   );
 }
 
-// Sentry.wrap 捕获 React 错误边界事件和未处理的 Promise rejection
 export default Sentry.wrap(RootLayout);

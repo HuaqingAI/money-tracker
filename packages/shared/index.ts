@@ -18,6 +18,7 @@ export type {
   TablesInsert,
   TablesUpdate,
 } from './types/database';
+export type { LoginMethod, UserProfile } from './types/user';
 
 // Constants
 export type { AuthErrorCode, AuthRoutePath } from './constants/auth';
@@ -45,6 +46,9 @@ export {
   refreshSessionRequestSchema,
   wechatCallbackRequestSchema,
 } from './schemas/auth';
+export type { UpdateUserProfileInput } from './schemas/user';
+export { updateUserProfileSchema } from './schemas/user';
 
 // Utils
 export { formatAmountCents } from './utils/format-amount';
+export { maskPhoneNumber } from './utils/mask-phone-number';

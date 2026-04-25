@@ -16,6 +16,7 @@ export const otpSendRequestSchema = z.object({
 
 export const otpVerifyRequestSchema = z.object({
   phone: mainlandChinaPhoneSchema,
+  challengeId: z.string().trim().min(1, 'challengeId 不能为空').optional(),
   code: otpCodeSchema,
   consentAccepted: z.boolean(),
   displayName: z.string().trim().min(1).max(30).optional(),

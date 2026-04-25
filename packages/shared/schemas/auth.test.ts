@@ -36,11 +36,13 @@ describe('auth schemas', () => {
     expect(
       otpVerifyRequestSchema.parse({
         phone: '13800138000',
+        challengeId: 'challenge-1',
         code: '123456',
         consentAccepted: true,
       }),
     ).toEqual({
       phone: '13800138000',
+      challengeId: 'challenge-1',
       code: '123456',
       consentAccepted: true,
     });

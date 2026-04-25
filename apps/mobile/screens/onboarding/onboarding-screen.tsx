@@ -72,16 +72,26 @@ export function OnboardingScreen() {
     return () => subscription.remove();
   }, [currentIndex, goToSlide, router]);
 
-  const activeSlide = ONBOARDING_SLIDES[currentIndex] ?? ONBOARDING_SLIDES[0];
+  const fallbackSlide = ONBOARDING_SLIDES[0];
+  if (!fallbackSlide) {
+    throw new Error('Onboarding requires at least one slide.');
+  }
+
+  const activeSlide = ONBOARDING_SLIDES[currentIndex] ?? fallbackSlide;
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.screen}>
-        <YStack height={topBarHeight} ai="flex-end" jc="center" px="$6">
+        <YStack
+          alignItems="flex-end"
+          height={topBarHeight}
+          justifyContent="center"
+          paddingHorizontal="$6"
+        >
           <GhostTextButton label={ONBOARDING_ACTION_LABELS.skip} onPress={goToRegister} />
         </YStack>
 
-        <YStack flex={1} minHeight={0} pb={bottomClearance}>
+        <YStack flex={1} minHeight={0} paddingBottom={bottomClearance}>
           <ScrollView
             ref={scrollViewRef}
             horizontal
@@ -100,16 +110,26 @@ export function OnboardingScreen() {
             style={styles.scrollView}
           >
             {ONBOARDING_SLIDES.map((slide) => (
-              <YStack key={slide.key} width={pageWidth} height="100%" px="$5">
-                <YStack height={imageFrameHeight} ai="center" jc="center" shrink={0}>
+              <YStack
+                key={slide.key}
+                height="100%"
+                paddingHorizontal="$5"
+                width={pageWidth}
+              >
+                <YStack
+                  alignItems="center"
+                  height={imageFrameHeight}
+                  justifyContent="center"
+                  flexShrink={0}
+                >
                   <OnboardingVisual maxHeight={imageMaxHeight} tone={slide.tone} />
                 </YStack>
                 <YStack
                   height={slideTextHeight}
                   gap={isShortViewport ? '$2' : '$3'}
-                  jc="flex-start"
-                  px="$3"
-                  pt={isShortViewport ? '$2' : '$3'}
+                  justifyContent="flex-start"
+                  paddingHorizontal="$3"
+                  paddingTop={isShortViewport ? '$2' : '$3'}
                 >
                   <Text
                     fontSize={isShortViewport ? 21 : 23}

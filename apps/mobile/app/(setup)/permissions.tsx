@@ -34,7 +34,7 @@ export default function PermissionsScreen() {
                 },
               });
             }
-            router.replace(AUTH_ROUTE_PATHS.dashboard);
+            router.replace(AUTH_ROUTE_PATHS.me);
           }}
         >
           我知道了，进入 Dashboard
