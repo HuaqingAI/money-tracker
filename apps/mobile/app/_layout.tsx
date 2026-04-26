@@ -20,8 +20,23 @@ function isRouteGroupAllowed(
   activeGroup: string | undefined,
   nextPath: string,
 ): boolean {
+  if (activeGroup === 'import') {
+    return (
+      nextPath === AUTH_ROUTE_PATHS.me ||
+      nextPath === AUTH_ROUTE_PATHS.dashboard
+    );
+  }
+
+  if (activeGroup === '(setup)') {
+    return (
+      nextPath === AUTH_ROUTE_PATHS.permissions ||
+      nextPath === AUTH_ROUTE_PATHS.me ||
+      nextPath === AUTH_ROUTE_PATHS.dashboard
+    );
+  }
+
   if (nextPath === AUTH_ROUTE_PATHS.permissions) {
-    return activeGroup === '(setup)';
+    return false;
   }
 
   if (

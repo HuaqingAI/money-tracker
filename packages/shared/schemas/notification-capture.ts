@@ -21,7 +21,19 @@ export const notificationPatternRuleSchema = z.object({
   platform: notificationPlatformSchema,
   packageNames: z.array(z.string().min(1)),
   titleKeywords: z.array(z.string().min(1)),
-  textPattern: z.string().min(1),
+  textPattern: z.string().min(1).refine(
+    (pattern) => {
+      try {
+        new RegExp(pattern, 'u');
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    {
+      message: 'Notification text pattern must be a valid unicode regex',
+    },
+  ),
   timeStrategy: notificationTimeStrategySchema,
 });
 

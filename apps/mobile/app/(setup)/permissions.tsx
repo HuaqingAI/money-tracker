@@ -1,4 +1,3 @@
-import { AUTH_ROUTE_PATHS } from '@money-tracker/shared';
 import { Button, Text } from '@money-tracker/ui';
 import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
@@ -67,7 +66,7 @@ export default function PermissionsScreen() {
       });
     }
 
-    router.replace(AUTH_ROUTE_PATHS.me);
+    router.replace('/import');
   }
 
   async function handleOpenSettings(): Promise<void> {
@@ -179,7 +178,7 @@ export default function PermissionsScreen() {
               {opening ? '正在打开设置...' : '去开启通知读取'}
             </Button>
             <Button chromeless onPress={completeSetup}>
-              稍后设置，进入首页
+              稍后设置，进入账单导入
             </Button>
             <Text variant="caption">
               跳过后仍可继续使用账单导入，之后可以从设置页重新开启自动记账。

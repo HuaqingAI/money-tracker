@@ -53,6 +53,45 @@ function resolvePostedAtDate(postedAt?: string): Date {
   return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
 }
 
+function resolveChinaDateParts(date: Date): {
+  day: number;
+  month: number;
+  year: number;
+} {
+  const shifted = new Date(
+    date.getTime() + CHINA_UTC_OFFSET_HOURS * 60 * 60 * 1000,
+  );
+
+  return {
+    day: shifted.getUTCDate(),
+    month: shifted.getUTCMonth() + 1,
+    year: shifted.getUTCFullYear(),
+  };
+}
+
+function parseMonthDayTime(
+  matchedTime: string,
+  postedAtDate: Date,
+): string | null {
+  const parts = matchedTime.match(
+    /(?<month>\d{2})-(?<day>\d{2}) (?<hour>\d{2}):(?<minute>\d{2})/u,
+  );
+  const groups = parts?.groups;
+
+  if (!groups?.month || !groups.day || !groups.hour || !groups.minute) {
+    return null;
+  }
+
+  const { year } = resolveChinaDateParts(postedAtDate);
+  return buildChinaIsoString(
+    year,
+    Number.parseInt(groups.month, 10),
+    Number.parseInt(groups.day, 10),
+    Number.parseInt(groups.hour, 10),
+    Number.parseInt(groups.minute, 10),
+  );
+}
+
 function resolveTransactionTime(
   matchedTime: string | undefined,
   postedAt: string | undefined,
@@ -61,6 +100,8 @@ function resolveTransactionTime(
   if (strategy === 'posted-at' || !matchedTime) {
     return resolvePostedAtDate(postedAt).toISOString();
   }
+
+  const postedAtDate = resolvePostedAtDate(postedAt);
 
   if (strategy === 'yyyy-mm-dd hh:mm') {
     const parts = matchedTime.match(
@@ -83,25 +124,17 @@ function resolveTransactionTime(
         Number.parseInt(groups.minute, 10),
       );
     }
+
+    const monthDayTime = parseMonthDayTime(matchedTime, postedAtDate);
+    if (monthDayTime) {
+      return monthDayTime;
+    }
   }
 
-  const postedAtDate = resolvePostedAtDate(postedAt);
-  const year = postedAtDate.getUTCFullYear();
-
   if (strategy === 'mm-dd hh:mm') {
-    const parts = matchedTime.match(
-      /(?<month>\d{2})-(?<day>\d{2}) (?<hour>\d{2}):(?<minute>\d{2})/u,
-    );
-    const groups = parts?.groups;
-
-    if (groups?.month && groups.day && groups.hour && groups.minute) {
-      return buildChinaIsoString(
-        year,
-        Number.parseInt(groups.month, 10),
-        Number.parseInt(groups.day, 10),
-        Number.parseInt(groups.hour, 10),
-        Number.parseInt(groups.minute, 10),
-      );
+    const monthDayTime = parseMonthDayTime(matchedTime, postedAtDate);
+    if (monthDayTime) {
+      return monthDayTime;
     }
   }
 
@@ -110,10 +143,12 @@ function resolveTransactionTime(
     const groups = parts?.groups;
 
     if (groups?.hour && groups.minute) {
+      const { day, month, year } = resolveChinaDateParts(postedAtDate);
+
       return buildChinaIsoString(
         year,
-        postedAtDate.getUTCMonth() + 1,
-        postedAtDate.getUTCDate(),
+        month,
+        day,
         Number.parseInt(groups.hour, 10),
         Number.parseInt(groups.minute, 10),
       );
@@ -169,7 +204,12 @@ export function extractNotificationCapture(
       continue;
     }
 
-    const matcher = new RegExp(rule.textPattern, 'u');
+    let matcher: RegExp;
+    try {
+      matcher = new RegExp(rule.textPattern, 'u');
+    } catch {
+      continue;
+    }
     const matched = matcher.exec(normalizedSource);
 
     const amount = matched?.groups?.amount;

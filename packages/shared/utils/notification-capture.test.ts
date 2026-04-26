@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
 import { defaultNotificationRuleSet } from '../constants/default-notification-rules';
-import type { NotificationEnvelope } from '../schemas/notification-capture';
+import {
+  type NotificationEnvelope,
+  notificationPatternRuleSchema,
+} from '../schemas/notification-capture';
 import {
   extractNotificationCapture,
   isDuplicateNotificationCapture,
@@ -111,6 +114,94 @@ describe('extractNotificationCapture', () => {
         postedAt: '2026-04-24T05:20:00.000Z',
       }),
     ).toBeNull();
+  });
+
+  it('falls back from full-date strategy to month-day timestamps', () => {
+    expect(
+      extractNotificationCapture(
+        {
+          packageName: 'com.eg.android.AlipayGphone',
+          title: '支付宝',
+          text: '支付宝成功收款12.34元，付款方：瑞幸咖啡，时间：04-24 09:30',
+          postedAt: '2026-04-23T16:30:00.000Z',
+        },
+        {
+          version: 'test',
+          updatedAt: '2026-04-24T00:00:00.000Z',
+          rules: [
+            {
+              id: 'alipay-month-day',
+              packageNames: ['com.eg.android.AlipayGphone'],
+              platform: 'alipay',
+              textPattern:
+                '支付宝.*?(?<amount>\\d+(?:\\.\\d{1,2})?)元.*?付款方[:：]?(?<merchant>[^，]+).*?(?<time>\\d{2}-\\d{2} \\d{2}:\\d{2})',
+              timeStrategy: 'yyyy-mm-dd hh:mm',
+              titleKeywords: ['支付宝'],
+            },
+          ],
+        },
+      ),
+    ).toEqual({
+      amountCents: 1234,
+      merchantName: '瑞幸咖啡',
+      platform: 'alipay',
+      transactionTime: '2026-04-24T01:30:00.000Z',
+    });
+  });
+
+  it('uses China-local date parts for time-only timestamps', () => {
+    expect(
+      extractNotificationCapture(
+        {
+          title: '银行',
+          text: '商户瑞幸咖啡消费12.34元，时间09:30',
+          postedAt: '2026-12-31T16:30:00.000Z',
+        },
+        {
+          version: 'test',
+          updatedAt: '2026-04-24T00:00:00.000Z',
+          rules: [
+            {
+              id: 'time-only',
+              packageNames: [],
+              platform: 'bank',
+              textPattern:
+                '商户(?<merchant>.*?)消费(?<amount>\\d+(?:\\.\\d{1,2})?)元.*?时间(?<time>\\d{2}:\\d{2})',
+              timeStrategy: 'hh:mm',
+              titleKeywords: ['银行'],
+            },
+          ],
+        },
+      ),
+    ).toEqual({
+      amountCents: 1234,
+      merchantName: '瑞幸咖啡',
+      platform: 'bank',
+      transactionTime: '2027-01-01T01:30:00.000Z',
+    });
+  });
+
+  it('does not capture ICBC income notifications as expenses', () => {
+    expect(
+      extractNotificationCapture({
+        title: '中国工商银行',
+        text: '【工商银行】您尾号1234卡收入88.50元，商户：工资，时间：04-24 11:00',
+        postedAt: '2026-04-24T03:00:00.000Z',
+      }),
+    ).toBeNull();
+  });
+
+  it('rejects invalid regex patterns in rule schemas', () => {
+    expect(
+      notificationPatternRuleSchema.safeParse({
+        id: 'bad',
+        packageNames: [],
+        platform: 'bank',
+        textPattern: '(',
+        timeStrategy: 'posted-at',
+        titleKeywords: ['银行'],
+      }).success,
+    ).toBe(false);
   });
 });
 

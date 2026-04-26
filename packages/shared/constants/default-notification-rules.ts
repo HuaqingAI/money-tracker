@@ -28,7 +28,7 @@ export const defaultNotificationRuleSet: NotificationRuleSet = {
       packageNames: [],
       titleKeywords: ['工商银行'],
       textPattern:
-        '工商银行.*?(?:消费|支出|收入).*?(?<amount>\\d+(?:\\.\\d{1,2})?)元.*?(?:商户|对方户名|付款对象)[:：]?(?<merchant>[^，。；;]+?)(?:[，。；;]|$).*?(?:时间[:：]?(?<time>\\d{2}-\\d{2} \\d{2}:\\d{2}))?',
+        '工商银行.*?(?:消费|支出).*?(?<amount>\\d+(?:\\.\\d{1,2})?)元.*?(?:商户|对方户名|付款对象)[:：]?(?<merchant>[^，。；;]+?)(?:[，。；;]|$).*?(?:时间[:：]?(?<time>\\d{2}-\\d{2} \\d{2}:\\d{2}))?',
       timeStrategy: 'mm-dd hh:mm',
     },
     {

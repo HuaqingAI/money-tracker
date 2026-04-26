@@ -6,42 +6,85 @@ import {
 } from '@money-tracker/shared';
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { storeNotificationCapture } from '../../../../lib/capture-store';
+import { parseJsonRequest } from '../../../../lib/api/request-body';
+import { errorResponse } from '../../../../lib/api-response';
+import { notificationCaptureRepository } from '../../../../lib/db/repositories/notification-capture-repo';
 import { withRequestLogging } from '../../../../lib/middleware/request-logger';
+import {
+  AuthenticatedUserError,
+  requireAuthenticatedUser,
+} from '../../../../lib/middleware/require-authenticated-user';
+
+function toErrorResponse(error: unknown): Response {
+  const authError =
+    error instanceof AuthenticatedUserError ||
+    (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      'status' in error &&
+      typeof error.code === 'string' &&
+      typeof error.status === 'number'
+    );
+
+  if (authError) {
+    const { code, message, status } = error as AuthenticatedUserError;
+    return errorResponse(code, message, status);
+  }
+
+  return errorResponse(
+    'NOTIFICATION_CAPTURE_FAILED',
+    'Failed to store notification capture.',
+    500,
+  );
+}
 
 export function POST(request: NextRequest): Promise<Response> {
   return withRequestLogging(request, async ({ logger }) => {
-    const parsedBody = notificationCaptureUploadSchema.parse(
-      await request.json(),
-    );
+    try {
+      const { user } = await requireAuthenticatedUser(request);
+      const parsedBody = await parseJsonRequest(
+        request,
+        notificationCaptureUploadSchema,
+      );
 
-    const storedCapture = storeNotificationCapture(
-      parsedBody.capture,
-      parsedBody.deviceId,
-    );
+      if (!parsedBody.success) {
+        return parsedBody.response;
+      }
 
-    const data = notificationCaptureResultSchema.parse({
-      duplicate: storedCapture.duplicate,
-      normalized: storedCapture.normalized,
-      receivedAt: new Date().toISOString(),
-    });
+      const storedCapture = await notificationCaptureRepository.store({
+        capture: parsedBody.data.capture,
+        capturedAt: parsedBody.data.capturedAt,
+        deviceId: parsedBody.data.deviceId,
+        userId: user.id,
+      });
 
-    logger.info(
-      {
-        duplicate: data.duplicate,
-        platform: data.normalized.platform,
-        amountCents: data.normalized.amountCents,
-      },
-      'billing:capture:accepted',
-    );
+      const data = notificationCaptureResultSchema.parse({
+        duplicate: storedCapture.duplicate,
+        normalized: storedCapture.normalized,
+        receivedAt: new Date().toISOString(),
+      });
 
-    const body: ApiResponse<NotificationCaptureResult> = {
-      success: true,
-      data,
-    };
+      logger.info(
+        {
+          duplicate: data.duplicate,
+          platform: data.normalized.platform,
+          amountCents: data.normalized.amountCents,
+          userId: user.id,
+        },
+        'billing:capture:accepted',
+      );
 
-    return NextResponse.json(body, {
-      status: storedCapture.duplicate ? 200 : 201,
-    });
+      const body: ApiResponse<NotificationCaptureResult> = {
+        success: true,
+        data,
+      };
+
+      return NextResponse.json(body, {
+        status: storedCapture.duplicate ? 200 : 201,
+      });
+    } catch (error) {
+      return toErrorResponse(error);
+    }
   });
 }

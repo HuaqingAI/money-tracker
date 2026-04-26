@@ -1,13 +1,15 @@
 import {
+  type ApiResponse,
   defaultNotificationRuleSet,
   extractNotificationCapture,
   type NotificationCapture,
+  type NotificationCaptureResult,
   type NotificationEnvelope,
   type NotificationRuleSet,
   notificationRuleSetSchema,
 } from '@money-tracker/shared';
 import Constants from 'expo-constants';
-import * as Linking from 'expo-linking';
+import { Linking, NativeModules, Platform } from 'react-native';
 
 import localNotificationRules from '../config/notification-patterns.json';
 
@@ -20,10 +22,21 @@ export interface AndroidDeviceProfile {
 }
 
 const fallbackDeviceProfile: AndroidDeviceProfile = {
-  manufacturer: 'Xiaomi',
-  model: '13',
+  manufacturer: 'Android',
+  model: 'Device',
   osName: 'Android',
 };
+
+interface NotificationListenerNativeModule {
+  getPermissionStatus?: () => Promise<NotificationPermissionStatus>;
+}
+
+function getNotificationListenerNativeModule(): NotificationListenerNativeModule | null {
+  return (
+    (NativeModules.NotificationListenerSettings as NotificationListenerNativeModule | undefined) ??
+    null
+  );
+}
 
 function resolveApiBaseUrl(): string | null {
   const configuredApiUrl =
@@ -61,6 +74,7 @@ export async function fetchRemoteNotificationRules(): Promise<NotificationRuleSe
 export async function uploadStructuredCapture(
   capture: NotificationCapture,
   deviceId: string,
+  accessToken?: string | null,
 ): Promise<void> {
   const apiBaseUrl = resolveApiBaseUrl();
 
@@ -68,9 +82,14 @@ export async function uploadStructuredCapture(
     return;
   }
 
-  await fetch(`${apiBaseUrl}/api/billing/capture`, {
+  if (!accessToken) {
+    throw new Error('Cannot upload notification capture without an access token.');
+  }
+
+  const response = await fetch(`${apiBaseUrl}/api/billing/capture`, {
     method: 'POST',
     headers: {
+      Authorization: `Bearer ${accessToken}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -79,30 +98,79 @@ export async function uploadStructuredCapture(
       capturedAt: new Date().toISOString(),
     }),
   });
+
+  let payload: ApiResponse<NotificationCaptureResult>;
+  try {
+    payload = (await response.json()) as ApiResponse<NotificationCaptureResult>;
+  } catch {
+    throw new Error('Notification capture upload returned an invalid response.');
+  }
+
+  if (!response.ok || !payload.success) {
+    const message = payload.success
+      ? 'Notification capture upload failed.'
+      : payload.error.message;
+    throw new Error(message);
+  }
 }
 
 export async function getAndroidDeviceProfile(): Promise<AndroidDeviceProfile> {
-  const expoDeviceName =
-    Constants.platform?.android?.model || fallbackDeviceProfile.model;
+  if (Platform.OS !== 'android') {
+    return fallbackDeviceProfile;
+  }
+
+  const androidConstants = Platform.constants as typeof Platform.constants & {
+    Brand?: string;
+    Manufacturer?: string;
+    Model?: string;
+    Release?: string;
+  };
+  const manufacturer =
+    androidConstants.Manufacturer ||
+    androidConstants.Brand ||
+    fallbackDeviceProfile.manufacturer;
+  const model =
+    androidConstants.Model ||
+    Constants.platform?.android?.model ||
+    fallbackDeviceProfile.model;
 
   return {
-    manufacturer: fallbackDeviceProfile.manufacturer,
-    model: expoDeviceName,
-    osName: fallbackDeviceProfile.osName,
+    manufacturer,
+    model,
+    osName: androidConstants.Release
+      ? `Android ${androidConstants.Release}`
+      : fallbackDeviceProfile.osName,
   };
 }
 
 export async function getNotificationPermissionStatus(): Promise<NotificationPermissionStatus> {
-  return 'disabled';
+  const nativeModule = getNotificationListenerNativeModule();
+
+  if (!nativeModule?.getPermissionStatus) {
+    return 'unknown';
+  }
+
+  const status = await nativeModule.getPermissionStatus();
+  return status === 'enabled' || status === 'disabled' ? status : 'unknown';
 }
 
 export async function openNotificationListenerSettings(): Promise<void> {
-  await Linking.openSettings();
+  if (Platform.OS !== 'android') {
+    await Linking.openSettings();
+    return;
+  }
+
+  try {
+    await Linking.sendIntent('android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS');
+  } catch {
+    await Linking.openSettings();
+  }
 }
 
 export async function extractAndUploadNotification(
   envelope: NotificationEnvelope,
   deviceId = 'mock-device',
+  accessToken?: string | null,
 ): Promise<NotificationCapture | null> {
   const rules = await fetchRemoteNotificationRules();
   const capture = extractNotificationCapture(envelope, rules);
@@ -111,6 +179,6 @@ export async function extractAndUploadNotification(
     return null;
   }
 
-  await uploadStructuredCapture(capture, deviceId);
+  await uploadStructuredCapture(capture, deviceId, accessToken);
   return capture;
 }

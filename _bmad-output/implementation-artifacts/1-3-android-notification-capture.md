@@ -1,6 +1,6 @@
 # Story 1.3: Android 通知权限与捕获设置
 
-Status: review
+Status: done
 
 ## Story
 
@@ -75,6 +75,22 @@ So that 应用能自动捕获我的消费记录，无需手动输入。
   - [x] 4.2 新增 `apps/mobile/config/notification-patterns.json` 作为本地回退规则源
   - [x] 4.3 创建 Story 1.3 文档并更新 `sprint-status.yaml`
 
+### Review Findings
+
+- [x] [Review][Patch] 捕获与去重必须本轮持久化到数据库 [`apps/api/lib/capture-store.ts:7`] — 决策：本 PR 直接接入数据库持久化和去重，替换进程内 `Map`。
+- [x] [Review][Patch] 捕获接口未鉴权，任意调用方可写入财务记录 [`apps/api/app/api/billing/capture/route.ts:12`]
+- [x] [Review][Patch] 捕获接口对非法 JSON/schema 抛 500，而不是结构化 400 [`apps/api/app/api/billing/capture/route.ts:14`]
+- [x] [Review][Patch] 移动端上传失败仍被当作捕获成功，可能静默丢账 [`apps/mobile/lib/android-notification.ts:71`]
+- [x] [Review][Patch] 授权按钮打开应用设置，而不是 Android 通知监听设置 [`apps/mobile/lib/android-notification.ts:99`]
+- [x] [Review][Patch] 厂商检测硬编码为 Xiaomi，非小米设备会展示错误引导 [`apps/mobile/lib/android-notification.ts:84`]
+- [x] [Review][Patch] 权限状态永远为 `disabled`，用户授权后 UI 仍显示未开启 [`apps/mobile/lib/android-notification.ts:95`]
+- [x] [Review][Patch] “稍后设置”跳到我的页，而不是 AC5 要求的账单导入页 [`apps/mobile/app/(setup)/permissions.tsx:59`]
+- [x] [Review][Patch] 首页/设置没有可用的权限页重新入口，设置页仍显示 unavailable [`apps/mobile/app/(main)/settings.tsx:251`]
+- [x] [Review][Patch] 远程或环境规则中的非法 regex 会中断通知提取 [`packages/shared/utils/notification-capture.ts:172`]
+- [x] [Review][Patch] 默认支付宝/微信规则允许月日时间，但完整日期策略会回退到 `postedAt` [`packages/shared/utils/notification-capture.ts:65`]
+- [x] [Review][Patch] `mm-dd` / `hh:mm` 时间使用 UTC 日期拼中国时间，跨天/跨年可能错日或错年 [`packages/shared/utils/notification-capture.ts:88`]
+- [x] [Review][Patch] 工商银行规则匹配“收入”，但捕获 schema 没有方向字段，会把收入当支出 [`packages/shared/constants/default-notification-rules.ts:31`]
+
 ## Dev Notes
 
 ### 架构约束
@@ -129,7 +145,7 @@ GPT-5 Codex
 - `apps/api/app/api/billing/capture/route.ts`
 - `apps/api/app/api/billing/capture/route.test.ts`
 - `apps/mobile/app/index.tsx`
-- `apps/mobile/app/permission.tsx`
+- `apps/mobile/app/(setup)/permissions.tsx`
 - `apps/mobile/app/import.tsx`
 - `apps/mobile/lib/android-notification.ts`
 - `apps/mobile/lib/android-notification.test.ts`

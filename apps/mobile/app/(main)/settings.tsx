@@ -249,9 +249,9 @@ export default function SettingsScreen() {
             </View>
           ) : null}
           <Row
-            badge="已开启"
+            badge="管理"
             icon="🔔"
-            onPress={() => showUnavailable('通知权限管理')}
+            onPress={() => router.push('/(setup)/permissions')}
             title="通知权限管理"
           />
           <Row
