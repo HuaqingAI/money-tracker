@@ -1,4 +1,24 @@
-// Types
+export { defaultNotificationRuleSet } from './constants/default-notification-rules';
+export type {
+  NotificationCapture,
+  NotificationCaptureResult,
+  NotificationCaptureUpload,
+  NotificationEnvelope,
+  NotificationPatternRule,
+  NotificationPlatform,
+  NotificationRuleSet,
+  NotificationTimeStrategy,
+} from './schemas/notification-capture';
+export {
+  notificationCaptureResultSchema,
+  notificationCaptureSchema,
+  notificationCaptureUploadSchema,
+  notificationEnvelopeSchema,
+  notificationPatternRuleSchema,
+  notificationPlatformSchema,
+  notificationRuleSetSchema,
+  notificationTimeStrategySchema,
+} from './schemas/notification-capture';
 export type { ApiResponse } from './types/api-response';
 export type {
   BillingCsvColumnMapping,
@@ -89,3 +109,11 @@ export {
 // Utils
 export { formatAmountCents } from './utils/format-amount';
 export { maskPhoneNumber } from './utils/mask-phone-number';
+export {
+  amountTextToCents,
+  extractNotificationCapture,
+  isDuplicateNotificationCapture,
+  normalizeMerchantName,
+  normalizeNotificationCapture,
+  normalizeNotificationText,
+} from './utils/notification-capture';
