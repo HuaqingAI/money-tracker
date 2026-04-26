@@ -924,6 +924,45 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_captures: {
+        Row: {
+          amount_cents: number
+          captured_at: string
+          created_at: string
+          device_id: string
+          id: string
+          merchant: string
+          merchant_key: string
+          platform: string
+          transaction_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_cents: number
+          captured_at?: string
+          created_at?: string
+          device_id: string
+          id?: string
+          merchant: string
+          merchant_key: string
+          platform: string
+          transaction_at: string
+          user_id: string
+        }
+        Update: {
+          amount_cents?: number
+          captured_at?: string
+          created_at?: string
+          device_id?: string
+          id?: string
+          merchant?: string
+          merchant_key?: string
+          platform?: string
+          transaction_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       transactions: {
         Row: {
           amount_cents: number

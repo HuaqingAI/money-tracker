@@ -16,6 +16,11 @@ function resolveApiUrl(): string | undefined {
   return undefined;
 }
 
+function resolveNotificationRulesUrl(): string {
+  const apiUrl = resolveApiUrl() ?? 'http://localhost:3000';
+  return `${apiUrl.replace(/\/+$/u, '')}/api/config/notification-rules`;
+}
+
 const sentryPlugin: [string, Record<string, string | undefined>] = [
   '@sentry/react-native/expo',
   {
@@ -46,5 +51,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     supabaseUrl: process.env.SUPABASE_URL,
     supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
     apiUrl: resolveApiUrl(),
+    notificationRulesUrl: resolveNotificationRulesUrl(),
   },
 });
