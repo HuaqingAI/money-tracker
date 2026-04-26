@@ -51,6 +51,16 @@ class FakeTransactionRepository implements BillingTransactionRepository {
   }
 }
 
+class ThrowingTransactionRepository implements BillingTransactionRepository {
+  findExisting(): Promise<ExistingTransactionKey[]> {
+    throw new Error('SUPABASE_SERVICE_ROLE_KEY is not set');
+  }
+
+  insertTransactions(): Promise<void> {
+    throw new Error('SUPABASE_SERVICE_ROLE_KEY is not set');
+  }
+}
+
 function encodeUtf8(text: string): Uint8Array {
   return new TextEncoder().encode(text);
 }
@@ -124,5 +134,31 @@ describe('BillingImportService', () => {
       status: 400,
     });
   });
-});
 
+  it('can complete a development import when persistence is unavailable', async () => {
+    vi.stubEnv('NODE_ENV', 'development');
+    const csv = [
+      '交易时间,交易对方,商品,收/支,金额(元),当前状态',
+      '2026-04-26 10:30:00,便利店,早餐,支出,12.34,支付成功',
+    ].join('\n');
+    const service = new BillingImportService(
+      new FakeRuleRepository(DEFAULT_CSV_PARSE_RULES),
+      new ThrowingTransactionRepository(),
+    );
+
+    await expect(
+      service.importCsv({
+        bytes: encodeUtf8(csv),
+        fileName: 'wechat.csv',
+        userId: 'user-1',
+      }),
+    ).resolves.toEqual({
+      totalCount: 1,
+      importedCount: 1,
+      duplicateCount: 0,
+      failedCount: 0,
+      importId: 'import-1',
+      platform: 'wechat',
+    });
+  });
+});

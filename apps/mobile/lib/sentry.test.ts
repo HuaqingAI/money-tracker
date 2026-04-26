@@ -17,12 +17,17 @@ describe('initSentry', () => {
     vi.unstubAllEnvs();
   });
 
-  it('skips initialization when DSN is missing', () => {
+  it('initializes disabled sentry when DSN is missing', () => {
     vi.stubEnv('EXPO_PUBLIC_SENTRY_DSN', '');
 
     initSentry();
 
-    expect(initMock).not.toHaveBeenCalled();
+    expect(initMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dsn: '',
+        enabled: false,
+      }),
+    );
   });
 
   it('initializes sentry with safe defaults', () => {
@@ -39,6 +44,7 @@ describe('initSentry', () => {
       enableAutoSessionTracking: true,
       sendDefaultPii: false,
       debug: false,
+      enabled: true,
     });
   });
 

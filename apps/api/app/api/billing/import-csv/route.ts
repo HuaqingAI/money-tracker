@@ -8,6 +8,7 @@ import type { NextRequest } from 'next/server';
 import { errorResponse, successResponse } from '../../../../lib/api-response';
 import { BillingImportError } from '../../../../lib/billing/errors';
 import { getBillingImportService } from '../../../../lib/billing/import-service';
+import { logger } from '../../../../lib/logger';
 import { withRequestLogging } from '../../../../lib/middleware/request-logger';
 import {
   AuthenticatedUserError,
@@ -22,6 +23,8 @@ function toErrorResponse(error: unknown): Response {
   if (error instanceof BillingImportError) {
     return errorResponse(error.code, error.message, error.status);
   }
+
+  logger.error({ err: error }, 'billing import failed');
 
   return errorResponse(
     BILLING_IMPORT_ERROR_CODES.importServiceUnavailable,
@@ -77,4 +80,3 @@ export function POST(request: NextRequest): Promise<Response> {
     }
   });
 }
-

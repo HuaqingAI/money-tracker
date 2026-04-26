@@ -100,6 +100,8 @@ GPT-5 Codex
 
 ### Completion Notes List
 
+- 2026-04-26: 修复本地上传 CSV 时 API 500：API dev 输出目录改为 `.next-dev` 避免 `pnpm build` 覆盖运行中的 dev 产物；开发环境下导入规则/交易持久化不可用时使用受控 fallback 让验证流程可继续，生产环境仍返回服务不可用；移动端 Sentry 无 DSN 时初始化为 disabled，消除 `Sentry.wrap` 早于 init 的 warning。
+
 - 2026-04-26: 登录成功后的 `apps/mobile/app/(main)/me.tsx` Account 菜单新增“账单导入”入口，跳转 `/(setup)/bill-import`，便于跳过后再次进入导入流程；新增 `docs/demo-bill-import-wechat.csv` 作为微信 CSV 验证样例。
 
 - 建立 shared billing 契约：CSV 平台/来源/错误码/路由/10MB 限制常量，Zod schema 和导出桶。
@@ -125,6 +127,9 @@ GPT-5 Codex
 - `apps/api/lib/billing/errors.ts`
 - `apps/api/lib/billing/import-service.test.ts`
 - `apps/api/lib/billing/import-service.ts`
+- `apps/api/next.config.js`
+- `apps/api/package.json`
+- `apps/api/tsconfig.json`
 - `apps/mobile/app/(setup)/bill-import.tsx`
 - `apps/mobile/app/(setup)/import-processing.tsx`
 - `apps/mobile/app/(setup)/permissions.tsx`
@@ -133,7 +138,10 @@ GPT-5 Codex
 - `apps/mobile/components/billing/types.ts`
 - `apps/mobile/lib/billing-api.test.ts`
 - `apps/mobile/lib/billing-api.ts`
+- `apps/mobile/lib/sentry.test.ts`
+- `apps/mobile/lib/sentry.ts`
 - `apps/mobile/package.json`
+- `.gitignore`
 - `docs/demo-bill-import-wechat.csv`
 - `packages/shared/constants/billing.ts`
 - `packages/shared/index.ts`
@@ -144,6 +152,8 @@ GPT-5 Codex
 - `supabase/migrations/010_seed_csv_parse_rules.sql`
 
 ### Change Log
+
+- 2026-04-26: 修复上传接口本地 500、API dev/build 产物互相覆盖和移动端 Sentry 初始化 warning；`pnpm build`、`pnpm test` 通过。
 
 - 2026-04-26: 为登录成功后的 Me 页面补充“账单导入”入口，并新增可用于验证的微信 CSV demo 文件。
 

@@ -46,13 +46,28 @@ function parseRuleRow(row: CsvRuleRow): BillingCsvParseRule {
 
 export class SupabaseCsvRuleRepository implements CsvRuleRepository {
   async getActiveRules(): Promise<BillingCsvParseRule[]> {
-    const { data, error } = await getSupabaseAdmin()
-      .schema('billing')
-      .from('csv_parse_rules')
-      .select('*')
-      .eq('is_active', true)
-      .order('updated_at', { ascending: false })
-      .order('created_at', { ascending: false });
+    let queryResult: {
+      data: CsvRuleRow[] | null;
+      error: { message: string } | null;
+    };
+
+    try {
+      queryResult = await getSupabaseAdmin()
+        .schema('billing')
+        .from('csv_parse_rules')
+        .select('*')
+        .eq('is_active', true)
+        .order('updated_at', { ascending: false })
+        .order('created_at', { ascending: false });
+    } catch (error) {
+      if (shouldUseDevelopmentFallback()) {
+        return DEFAULT_CSV_PARSE_RULES;
+      }
+
+      throw error;
+    }
+
+    const { data, error } = queryResult;
 
     if (error) {
       if (shouldUseDevelopmentFallback()) {
@@ -142,4 +157,3 @@ export class SupabaseCsvRuleRepository implements CsvRuleRepository {
 export function getCsvRuleRepository(): CsvRuleRepository {
   return new SupabaseCsvRuleRepository();
 }
-

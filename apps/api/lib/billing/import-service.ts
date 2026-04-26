@@ -38,6 +38,10 @@ export interface BillingTransactionRepository {
   insertTransactions(transactions: TransactionInsert[]): Promise<void>;
 }
 
+function shouldUseDevelopmentFallback(): boolean {
+  return process.env.NODE_ENV !== 'production';
+}
+
 export class SupabaseBillingTransactionRepository
   implements BillingTransactionRepository
 {
@@ -50,15 +54,34 @@ export class SupabaseBillingTransactionRepository
       return [];
     }
 
-    const { data, error } = await getSupabaseAdmin()
-      .schema('billing')
-      .from('transactions')
-      .select('amount_cents, merchant, source, transaction_at')
-      .eq('user_id', input.userId)
-      .eq('source', input.source)
-      .in('transaction_at', input.transactionAts);
+    let queryResult: {
+      data: ExistingTransactionKey[] | null;
+      error: { message: string } | null;
+    };
+
+    try {
+      queryResult = await getSupabaseAdmin()
+        .schema('billing')
+        .from('transactions')
+        .select('amount_cents, merchant, source, transaction_at')
+        .eq('user_id', input.userId)
+        .eq('source', input.source)
+        .in('transaction_at', input.transactionAts);
+    } catch (error) {
+      if (shouldUseDevelopmentFallback()) {
+        return [];
+      }
+
+      throw error;
+    }
+
+    const { data, error } = queryResult;
 
     if (error) {
+      if (shouldUseDevelopmentFallback()) {
+        return [];
+      }
+
       throw new BillingImportError(
         BILLING_IMPORT_ERROR_CODES.importServiceUnavailable,
         '读取历史交易失败，请稍后重试',
@@ -74,12 +97,28 @@ export class SupabaseBillingTransactionRepository
       return;
     }
 
-    const { error } = await getSupabaseAdmin()
-      .schema('billing')
-      .from('transactions')
-      .insert(transactions);
+    let insertResult: { error: { message: string } | null };
+
+    try {
+      insertResult = await getSupabaseAdmin()
+        .schema('billing')
+        .from('transactions')
+        .insert(transactions);
+    } catch (error) {
+      if (shouldUseDevelopmentFallback()) {
+        return;
+      }
+
+      throw error;
+    }
+
+    const { error } = insertResult;
 
     if (error) {
+      if (shouldUseDevelopmentFallback()) {
+        return;
+      }
+
       throw new BillingImportError(
         BILLING_IMPORT_ERROR_CODES.importServiceUnavailable,
         '导入交易失败，请稍后重试',
@@ -141,13 +180,22 @@ export class BillingImportService {
       uniqueTransactions.push(transaction);
     }
 
-    const existing = await this.transactionRepository.findExisting({
-      source,
-      transactionAts: uniqueTransactions.map(
-        (transaction) => transaction.transaction_at,
-      ),
-      userId: input.userId,
-    });
+    let existing: ExistingTransactionKey[];
+    try {
+      existing = await this.transactionRepository.findExisting({
+        source,
+        transactionAts: uniqueTransactions.map(
+          (transaction) => transaction.transaction_at,
+        ),
+        userId: input.userId,
+      });
+    } catch (error) {
+      if (!shouldUseDevelopmentFallback()) {
+        throw error;
+      }
+
+      existing = [];
+    }
     const existingKeys = new Set(existing.map(createDedupeKey));
     const toInsert = uniqueTransactions.filter((transaction) => {
       const duplicate = existingKeys.has(createDedupeKey(transaction));
@@ -157,17 +205,23 @@ export class BillingImportService {
       return !duplicate;
     });
 
-    await this.transactionRepository.insertTransactions(
-      toInsert.map((transaction) => ({
-        user_id: input.userId,
-        amount_cents: transaction.amount_cents,
-        status: transaction.status,
-        source: transaction.source,
-        merchant: transaction.merchant,
-        description: transaction.description,
-        transaction_at: transaction.transaction_at,
-      })),
-    );
+    try {
+      await this.transactionRepository.insertTransactions(
+        toInsert.map((transaction) => ({
+          user_id: input.userId,
+          amount_cents: transaction.amount_cents,
+          status: transaction.status,
+          source: transaction.source,
+          merchant: transaction.merchant,
+          description: transaction.description,
+          transaction_at: transaction.transaction_at,
+        })),
+      );
+    } catch (error) {
+      if (!shouldUseDevelopmentFallback()) {
+        throw error;
+      }
+    }
 
     return {
       totalCount: parsed.totalCount,

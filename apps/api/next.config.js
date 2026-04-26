@@ -1,16 +1,25 @@
 const path = require('path');
 const { withSentryConfig } = require('@sentry/nextjs');
+const { PHASE_DEVELOPMENT_SERVER } = require('next/constants');
 
 const shouldUseStandalone =
   process.env.NEXT_STANDALONE === 'true' || process.platform !== 'win32';
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  output: shouldUseStandalone ? 'standalone' : undefined,
-  outputFileTracingRoot: path.join(__dirname, '../../'),
-  transpilePackages: ['@money-tracker/shared', '@money-tracker/ui'],
-  serverExternalPackages: ['pino', 'pino-roll', 'pino-pretty'],
-};
+/**
+ * @param {string} phase
+ * @returns {import('next').NextConfig}
+ */
+function createNextConfig(phase) {
+  const isDevServer = phase === PHASE_DEVELOPMENT_SERVER;
+
+  return {
+    distDir: isDevServer ? '.next-dev' : '.next',
+    output: shouldUseStandalone ? 'standalone' : undefined,
+    outputFileTracingRoot: path.join(__dirname, '../../'),
+    transpilePackages: ['@money-tracker/shared', '@money-tracker/ui'],
+    serverExternalPackages: ['pino', 'pino-roll', 'pino-pretty'],
+  };
+}
 
 /**
  * Sentry build 选项 — 处理 source map 上传等构建时任务。
@@ -31,4 +40,5 @@ const sentryBuildOptions = {
   disableLogger: true,
 };
 
-module.exports = withSentryConfig(nextConfig, sentryBuildOptions);
+module.exports = (phase) =>
+  withSentryConfig(createNextConfig(phase), sentryBuildOptions);
