@@ -7,6 +7,7 @@ import {
 } from '@money-tracker/shared';
 
 import { getSupabaseAdmin } from '../db/supabase-admin';
+import { logger } from '../logger';
 import { parseBillingCsv } from './csv-parser';
 import { type CsvRuleRepository, getCsvRuleRepository } from './csv-rule-repository';
 import { BillingImportError } from './errors';
@@ -110,13 +111,15 @@ export class SupabaseBillingTransactionRepository
           .eq('user_id', input.userId)
           .eq('source', input.source)
           .in('import_dedupe_key', importDedupeKeys);
-      } catch {
+      } catch (error) {
+        logger.error({ err: error }, 'billing import existing query threw');
         throw toServiceUnavailable('读取历史交易失败，请稍后重试');
       }
 
       const { data, error } = queryResult;
 
       if (error) {
+        logger.error({ err: error }, 'billing import existing query failed');
         if (
           shouldUseDevelopmentSchemaFallback() &&
           isMissingImportDedupeSchema(error)
@@ -153,6 +156,7 @@ export class SupabaseBillingTransactionRepository
         .in('transaction_at', transactionAts);
 
       if (error) {
+        logger.error({ err: error }, 'billing import legacy existing query failed');
         throw toServiceUnavailable('读取历史交易失败，请稍后重试');
       }
 
@@ -187,13 +191,15 @@ export class SupabaseBillingTransactionRepository
           onConflict: 'user_id,source,import_dedupe_key',
         })
         .select('import_dedupe_key');
-    } catch {
+    } catch (error) {
+      logger.error({ err: error }, 'billing import insert threw');
       throw toServiceUnavailable('导入交易失败，请稍后重试');
     }
 
     const { data, error } = insertResult;
 
     if (error) {
+      logger.error({ err: error }, 'billing import insert failed');
       if (
         shouldUseDevelopmentSchemaFallback() &&
         isMissingImportDedupeSchema(error)
@@ -224,6 +230,7 @@ export class SupabaseBillingTransactionRepository
       .insert(legacyTransactions);
 
     if (error) {
+      logger.error({ err: error }, 'billing import legacy insert failed');
       throw toServiceUnavailable('导入交易失败，请稍后重试');
     }
 
