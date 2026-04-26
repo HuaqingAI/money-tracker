@@ -13,6 +13,7 @@ interface PhoneAuthFormProps {
   onVerifyOtp: () => void;
   canSendOtp: boolean;
   canVerifyOtp: boolean;
+  otpRequested: boolean;
 }
 
 export function PhoneAuthForm({
@@ -27,9 +28,8 @@ export function PhoneAuthForm({
   onVerifyOtp,
   canSendOtp,
   canVerifyOtp,
+  otpRequested,
 }: PhoneAuthFormProps) {
-  const otpRequested = countdown > 0 || code.length > 0;
-
   return (
     <YStack gap="$4">
       <YStack gap="$3">

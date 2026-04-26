@@ -1,4 +1,4 @@
-import { createHmac, randomBytes } from 'node:crypto';
+import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 
 import {
   AUTH_ACCESS_TOKEN_TTL_SECONDS,
@@ -71,4 +71,43 @@ export function readAccessTokenPayload<T extends Record<string, unknown>>(
   } catch {
     return null;
   }
+}
+
+export function verifyAccessTokenPayload<T extends Record<string, unknown>>(
+  token: string,
+  secret: string,
+  now = new Date(),
+): T | null {
+  const parts = token.split('.');
+  if (parts.length !== 3) {
+    return null;
+  }
+
+  const [encodedHeader, encodedPayload, encodedSignature] = parts;
+  if (!encodedHeader || !encodedPayload || !encodedSignature) {
+    return null;
+  }
+
+  const expectedSignature = toBase64Url(
+    createHmac('sha256', secret)
+      .update(`${encodedHeader}.${encodedPayload}`)
+      .digest(),
+  );
+  const actualBuffer = Buffer.from(encodedSignature);
+  const expectedBuffer = Buffer.from(expectedSignature);
+
+  if (
+    actualBuffer.length !== expectedBuffer.length ||
+    !timingSafeEqual(actualBuffer, expectedBuffer)
+  ) {
+    return null;
+  }
+
+  const payload = readAccessTokenPayload<T>(token);
+  const exp = payload?.exp;
+  if (typeof exp !== 'number' || exp * 1000 <= now.getTime()) {
+    return null;
+  }
+
+  return payload;
 }

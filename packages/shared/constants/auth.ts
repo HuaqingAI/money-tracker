@@ -1,7 +1,9 @@
 export const AUTH_ROUTE_PATHS = {
+  welcome: '/(auth)/welcome',
   register: '/(auth)/register',
   permissions: '/(setup)/permissions',
   dashboard: '/(main)/dashboard',
+  me: '/(main)/me',
 } as const;
 
 export type AuthRoutePath =

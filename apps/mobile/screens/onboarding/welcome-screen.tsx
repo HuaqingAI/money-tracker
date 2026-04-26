@@ -74,15 +74,15 @@ export function WelcomeScreen() {
       <View style={styles.screen}>
         <YStack
           flex={1}
-          px={isShortViewport ? '$5' : '$6'}
-          pt={isShortViewport ? '$2' : '$4'}
-          pb={insets.bottom + 108}
+          paddingBottom={insets.bottom + 108}
+          paddingHorizontal={isShortViewport ? '$5' : '$6'}
+          paddingTop={isShortViewport ? '$2' : '$4'}
         >
           <Animated.View style={[createAnimatedStyle(brandOpacity, 0), styles.brandWrapper]}>
             <BrandLockup compact={isShortViewport} />
           </Animated.View>
 
-          <YStack flex={1} ai="center" jc="center" minHeight={0}>
+          <YStack alignItems="center" flex={1} justifyContent="center" minHeight={0}>
             <Animated.View style={[createAnimatedStyle(heroOpacity, 16), styles.heroWrapper]}>
               <Animated.View
                 style={
@@ -99,7 +99,7 @@ export function WelcomeScreen() {
           </YStack>
 
           <Animated.View style={createAnimatedStyle(copyOpacity, 18)}>
-            <YStack gap={isShortViewport ? '$2' : '$3'} ai="center">
+            <YStack alignItems="center" gap={isShortViewport ? '$2' : '$3'}>
               <Text
                 fontSize={isShortViewport ? 25 : 28}
                 fontWeight="700"

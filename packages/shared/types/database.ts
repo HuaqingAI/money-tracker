@@ -633,8 +633,10 @@ export type Database = {
       user_profiles: {
         Row: {
           avatar_url: string | null
+          birthday: string | null
           consent_at: string
           created_at: string
+          gender: string | null
           id: string
           nickname: string | null
           phone_number: string | null
@@ -645,8 +647,10 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          birthday?: string | null
           consent_at: string
           created_at?: string
+          gender?: string | null
           id?: string
           nickname?: string | null
           phone_number?: string | null
@@ -657,8 +661,10 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          birthday?: string | null
           consent_at?: string
           created_at?: string
+          gender?: string | null
           id?: string
           nickname?: string | null
           phone_number?: string | null

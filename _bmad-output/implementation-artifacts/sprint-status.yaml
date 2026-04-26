@@ -63,7 +63,7 @@ development_status:
   1-5-ai-classification-and-confirmation: backlog
   1-6-dashboard-home: backlog
   1-7-monthly-report: backlog
-  1-8-basic-account-and-pipl-compliance: backlog
+  1-8-basic-account-and-pipl-compliance: done
   epic-1-retrospective: optional
 
   # Epic 2: 交易管理与手动补录 (Phase 2)

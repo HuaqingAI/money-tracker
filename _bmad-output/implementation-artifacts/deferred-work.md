@@ -13,3 +13,10 @@ Items deferred during development or code review. Track here so they surface in 
 ## Deferred from: code review of story-0-4-dev-toolchain-and-quality-gates (2026-04-21)
 
 - Expo mobile build on Windows fails during `expo export` because `react-native/sdks/hermesc/win64-bin/hermesc.exe` is missing (`ENOENT`). Treat as infrastructure/environment follow-up for Expo SDK 54 + React Native 0.81 + pnpm on Win64 rather than a code defect in Story 0.4.
+
+## Deferred from: post-review of story-1-8-basic-account-and-pipl-compliance (2026-04-26)
+
+- **认证来源统一需要上层架构决策** - Story 1.2 已实现应用自签 JWT，Story 1.8 初版仍按 Supabase Auth token 假设 profile API。当前已兼容 app JWT + Supabase fallback，但后续 story 应在 architecture/auth 章节明确“移动端业务 API 使用哪种 token、服务端如何验签、何时落 Supabase Auth”。
+- **头像长期持久化仍需 Supabase Storage 能力** - 当前资料页使用系统图片选择器，并允许 `file://` / `content://` URI 作为 MVP 本机会话展示与保存输入；跨设备、重装后恢复、CDN 访问应在后续 story 实现上传、访问控制、删除账户时清理 Storage object。
+- **高保真原型字段必须进入 story AC/数据模型审查** - Story 1.8 的 AC2 只写昵称/头像，但原型还有性别/生日，导致初版 review 未要求落库。后续 story review 前应增加“原型字段逐项映射到 AC、schema、API payload、UI 状态”的检查项。
+- **真机验收路径需要纳入移动端 Definition of Done** - 本次资料保存失败包含 Expo 真机访问 `localhost` 的环境问题。移动端 story 的 DoD 应包含至少一次真机或等效网络路径验证，覆盖登录后业务 API 保存类操作。

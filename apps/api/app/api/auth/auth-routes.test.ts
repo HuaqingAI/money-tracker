@@ -117,11 +117,19 @@ describe('auth routes', () => {
         method: 'POST',
         body: JSON.stringify({
           phone: '13800138000',
+          challengeId: 'challenge-1',
           code: '123456',
           consentAccepted: true,
         }),
       }) as never,
     );
+
+    expect(verifyOtpMock).toHaveBeenCalledWith({
+      phone: '13800138000',
+      challengeId: 'challenge-1',
+      code: '123456',
+      consentAccepted: true,
+    });
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
@@ -149,7 +157,7 @@ describe('auth routes', () => {
           needsOnboarding: false,
         },
       },
-      nextPath: '/(main)/dashboard',
+      nextPath: '/(main)/me',
     });
 
     const response = await postRefresh(
@@ -163,7 +171,7 @@ describe('auth routes', () => {
     await expect(response.json()).resolves.toEqual({
       success: true,
       data: expect.objectContaining({
-        nextPath: '/(main)/dashboard',
+        nextPath: '/(main)/me',
       }),
     });
   });

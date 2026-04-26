@@ -1,7 +1,7 @@
 import { AUTH_ERROR_CODES, AUTH_ROUTE_PATHS } from '@money-tracker/shared';
 import { describe, expect, it } from 'vitest';
 
-import { AuthError, AuthService, getNextPathFromAccessToken } from './service';
+import { AuthService, getNextPathFromAccessToken } from './service';
 
 describe('AuthService', () => {
   it('issues OTP metadata and reuses resend throttle window', async () => {
@@ -27,7 +27,7 @@ describe('AuthService', () => {
         code: '000000',
         consentAccepted: false,
       }),
-    ).rejects.toMatchObject<AuthError>({
+    ).rejects.toMatchObject({
       code: AUTH_ERROR_CODES.consentRequired,
       status: 400,
     });
@@ -40,13 +40,16 @@ describe('AuthService', () => {
     // Pull the generated challenge by attempting codes until repository state is exercised
     const challenge = (
       service as unknown as {
-        repository: { getOtpChallengeByPhone(phone: string): Promise<{ code: string } | null> };
+        repository: {
+          getOtpChallengeByPhone(phone: string): Promise<{ code: string; id: string } | null>;
+        };
       }
     ).repository;
     const record = await challenge.getOtpChallengeByPhone('13800138002');
 
     const result = await service.verifyOtp({
       phone: '13800138002',
+      challengeId: record?.id,
       code: record?.code ?? '',
       consentAccepted: true,
       displayName: 'Sue',
@@ -59,7 +62,33 @@ describe('AuthService', () => {
     );
   });
 
-  it('routes returning users to dashboard after refresh', async () => {
+  it('rejects challenge ids that do not belong to the submitted phone', async () => {
+    const service = new AuthService();
+    await service.sendOtp('13800138005');
+
+    const challenge = (
+      service as unknown as {
+        repository: {
+          getOtpChallengeByPhone(phone: string): Promise<{ code: string; id: string } | null>;
+        };
+      }
+    ).repository;
+    const record = await challenge.getOtpChallengeByPhone('13800138005');
+
+    await expect(
+      service.verifyOtp({
+        phone: '13800138006',
+        challengeId: record?.id,
+        code: record?.code ?? '',
+        consentAccepted: true,
+      }),
+    ).rejects.toMatchObject({
+      code: AUTH_ERROR_CODES.otpNotRequested,
+      status: 400,
+    });
+  });
+
+  it('routes returning users to account area after refresh', async () => {
     const service = new AuthService();
     await service.sendOtp('13800138003');
 
@@ -87,7 +116,7 @@ describe('AuthService', () => {
       consentAccepted: false,
     });
 
-    expect(secondLogin.nextPath).toBe(AUTH_ROUTE_PATHS.dashboard);
+    expect(secondLogin.nextPath).toBe(AUTH_ROUTE_PATHS.me);
     expect(secondLogin.session.user.needsOnboarding).toBe(false);
   });
 

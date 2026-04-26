@@ -25,7 +25,7 @@ export function BrandLockup({ compact = false }: { compact?: boolean }) {
   const logoSize = compact ? 48 : 56;
 
   return (
-    <XStack ai="center" jc="center" gap="$3">
+    <XStack alignItems="center" gap="$3" justifyContent="center">
       <Image
         accessibilityIgnoresInvertColors
         accessibilityLabel="了然应用图标"
@@ -55,7 +55,7 @@ export function GhostTextButton({ label, onPress }: { label: string; onPress: ()
         opacity: pressed ? 0.72 : 1,
       })}
     >
-      <XStack px="$2" py="$2">
+      <XStack paddingHorizontal="$2" paddingVertical="$2">
         <Text fontSize={16} fontWeight="500" color={NEUTRAL_500}>
           {label}
         </Text>
@@ -108,9 +108,9 @@ export function ProgressDots({ currentIndex, total }: { currentIndex: number; to
     <XStack
       accessibilityLabel={`第 ${currentIndex + 1} 页，共 ${total} 页`}
       accessibilityRole="progressbar"
-      ai="center"
-      jc="center"
+      alignItems="center"
       gap={8}
+      justifyContent="center"
     >
       {Array.from({ length: total }, (_, index) => {
         const isActive = index === currentIndex;
@@ -120,8 +120,8 @@ export function ProgressDots({ currentIndex, total }: { currentIndex: number; to
             key={index}
             width={isActive ? 24 : 8}
             height={8}
-            br="$full"
-            bg={isActive ? BRAND_GREEN : NEUTRAL_200}
+            backgroundColor={isActive ? BRAND_GREEN : NEUTRAL_200}
+            borderRadius="$full"
           />
         );
       })}

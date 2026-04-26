@@ -8,7 +8,8 @@ import type {
 } from './types';
 
 class InMemoryAuthRepository implements AuthRepository {
-  private readonly otpChallenges = new Map<string, OtpChallengeRecord>();
+  private readonly otpChallengesById = new Map<string, OtpChallengeRecord>();
+  private readonly otpChallengeIdsByPhone = new Map<string, string>();
   private readonly usersByPhone = new Map<string, AuthIdentityRecord>();
   private readonly refreshTokens = new Map<string, RefreshTokenRecord>();
 
@@ -28,20 +29,38 @@ class InMemoryAuthRepository implements AuthRepository {
       expiresAt,
       resendAvailableAt,
     };
-    this.otpChallenges.set(phone, record);
+    const previousChallengeId = this.otpChallengeIdsByPhone.get(phone);
+    if (previousChallengeId) {
+      this.otpChallengesById.delete(previousChallengeId);
+    }
+
+    this.otpChallengesById.set(record.id, record);
+    this.otpChallengeIdsByPhone.set(phone, record.id);
     return record;
   }
 
+  async getOtpChallengeById(id: string): Promise<OtpChallengeRecord | null> {
+    return this.otpChallengesById.get(id) ?? null;
+  }
+
   async getOtpChallengeByPhone(phone: string): Promise<OtpChallengeRecord | null> {
-    return this.otpChallenges.get(phone) ?? null;
+    const challengeId = this.otpChallengeIdsByPhone.get(phone);
+    if (!challengeId) {
+      return null;
+    }
+
+    return this.otpChallengesById.get(challengeId) ?? null;
   }
 
   async consumeOtpChallenge(id: string): Promise<void> {
-    for (const [phone, record] of this.otpChallenges.entries()) {
-      if (record.id === id) {
-        this.otpChallenges.delete(phone);
-        return;
-      }
+    const record = this.otpChallengesById.get(id);
+    if (!record) {
+      return;
+    }
+
+    this.otpChallengesById.delete(id);
+    if (this.otpChallengeIdsByPhone.get(record.phone) === id) {
+      this.otpChallengeIdsByPhone.delete(record.phone);
     }
   }
 
@@ -96,6 +115,69 @@ class InMemoryAuthRepository implements AuthRepository {
     return { user: created, isNewUser: true };
   }
 
+  async upsertUserProfileSnapshot(params: {
+    userId: string;
+    phone: string | null;
+    authMethod: AuthIdentityRecord['authMethod'];
+    consentAt: string | null;
+    displayName: string;
+    avatarUrl: string | null;
+    gender: string | null;
+    birthday: string | null;
+    createdAt: string;
+    now: Date;
+  }): Promise<AuthIdentityRecord> {
+    const timestamp = params.now.toISOString();
+    const existing = await this.getUserById(params.userId);
+    const updated: AuthIdentityRecord = {
+      id: params.userId,
+      phone: params.phone,
+      authMethod: params.authMethod,
+      consentAt: existing?.consentAt ?? params.consentAt,
+      lastSignInAt: existing?.lastSignInAt ?? timestamp,
+      needsOnboarding: existing?.needsOnboarding ?? false,
+      createdAt: existing?.createdAt ?? params.createdAt,
+      updatedAt: timestamp,
+      displayName: params.displayName,
+      avatarUrl: params.avatarUrl,
+      gender: params.gender,
+      birthday: params.birthday,
+    };
+    const key = updated.phone ?? `user:${updated.id}`;
+    this.usersByPhone.set(key, updated);
+    return updated;
+  }
+
+  async updateUserProfile(
+    userId: string,
+    input: {
+      avatarUrl: string | null;
+      birthday: string | null;
+      displayName: string;
+      gender: string | null;
+      now: Date;
+    },
+  ): Promise<AuthIdentityRecord | null> {
+    for (const [phone, user] of this.usersByPhone.entries()) {
+      if (user.id !== userId) {
+        continue;
+      }
+
+      const updated: AuthIdentityRecord = {
+        ...user,
+        avatarUrl: input.avatarUrl,
+        birthday: input.birthday,
+        displayName: input.displayName,
+        gender: input.gender,
+        updatedAt: input.now.toISOString(),
+      };
+      this.usersByPhone.set(phone, updated);
+      return updated;
+    }
+
+    return null;
+  }
+
   async createRefreshToken(
     userId: string,
     token: string,
@@ -143,7 +225,13 @@ class InMemoryAuthRepository implements AuthRepository {
   }
 }
 
-const globalRepository = new InMemoryAuthRepository();
+const globalForAuthRepository = globalThis as typeof globalThis & {
+  __moneyTrackerAuthRepository?: AuthRepository;
+};
+
+const globalRepository =
+  globalForAuthRepository.__moneyTrackerAuthRepository ?? new InMemoryAuthRepository();
+globalForAuthRepository.__moneyTrackerAuthRepository = globalRepository;
 
 export function getAuthRepository(): AuthRepository {
   return globalRepository;

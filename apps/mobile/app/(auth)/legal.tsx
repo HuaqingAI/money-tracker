@@ -37,7 +37,7 @@ export default function LegalDocumentScreen() {
             setSupportMultipleWindows={false}
             startInLoadingState
             renderError={(errorName) => (
-              <YStack flex={1} jc="center" ai="center" padding="$5" gap="$3">
+              <YStack alignItems="center" flex={1} gap="$3" justifyContent="center" padding="$5">
                 <Text variant="h2">页面加载失败</Text>
                 <Text variant="body">{errorName}</Text>
               </YStack>
