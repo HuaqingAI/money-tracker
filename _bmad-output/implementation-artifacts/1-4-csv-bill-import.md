@@ -100,6 +100,8 @@ GPT-5 Codex
 
 ### Completion Notes List
 
+- 2026-04-26: 登录成功后的 `apps/mobile/app/(main)/me.tsx` Account 菜单新增“账单导入”入口，跳转 `/(setup)/bill-import`，便于跳过后再次进入导入流程；新增 `docs/demo-bill-import-wechat.csv` 作为微信 CSV 验证样例。
+
 - 建立 shared billing 契约：CSV 平台/来源/错误码/路由/10MB 限制常量，Zod schema 和导出桶。
 - 实现后端 CSV 导入链路：动态读取 active 解析规则、开发态默认规则 fallback、CSV 解析、GB18030/GBK/UTF-8 编码回退、金额整数分、北京时间转 UTC ISO、同用户同来源同金额同商户同时间去重、批量写入 `billing.transactions`。
 - 新增 `POST /api/billing/import-csv` multipart API 与 `PUT /api/admin/csv-rules` 热更新 API；管理员规则写入由 `CSV_RULES_ADMIN_TOKEN` 保护，未配置或错误 token 不会静默成功。
@@ -126,11 +128,13 @@ GPT-5 Codex
 - `apps/mobile/app/(setup)/bill-import.tsx`
 - `apps/mobile/app/(setup)/import-processing.tsx`
 - `apps/mobile/app/(setup)/permissions.tsx`
+- `apps/mobile/app/(main)/me.tsx`
 - `apps/mobile/components/billing/bill-import-source-card.tsx`
 - `apps/mobile/components/billing/types.ts`
 - `apps/mobile/lib/billing-api.test.ts`
 - `apps/mobile/lib/billing-api.ts`
 - `apps/mobile/package.json`
+- `docs/demo-bill-import-wechat.csv`
 - `packages/shared/constants/billing.ts`
 - `packages/shared/index.ts`
 - `packages/shared/schemas/billing.test.ts`
@@ -140,6 +144,8 @@ GPT-5 Codex
 - `supabase/migrations/010_seed_csv_parse_rules.sql`
 
 ### Change Log
+
+- 2026-04-26: 为登录成功后的 Me 页面补充“账单导入”入口，并新增可用于验证的微信 CSV demo 文件。
 
 - 2026-04-26: 创建 Story 1.4 开发规格，状态设为 ready-for-dev。
 - 2026-04-26: 完成 CSV 账单导入 shared/API/mobile/migration 实现与单元测试，`pnpm build`、`pnpm test` 通过，状态推进到 review。
