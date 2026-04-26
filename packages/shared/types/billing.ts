@@ -29,6 +29,7 @@ export interface BillingCsvColumnMapping {
   merchant?: string;
   description?: string;
   direction?: string;
+  externalId?: string;
   status?: string;
 }
 
@@ -45,6 +46,7 @@ export interface BillingCsvParseRule {
 export interface BillingNormalizedTransaction {
   amount_cents: number;
   transaction_at: string;
+  external_transaction_id: string | null;
   merchant: string | null;
   description: string | null;
   source: BillingTransactionSource;
@@ -66,4 +68,3 @@ export interface CsvRuleUpdateInput {
   ruleConfig: BillingCsvParseRule;
   isActive?: boolean;
 }
-

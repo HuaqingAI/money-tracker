@@ -104,43 +104,14 @@ export class SupabaseCsvRuleRepository implements CsvRuleRepository {
   }
 
   async upsertRule(input: CsvRuleUpdateInput): Promise<CsvRuleRow> {
-    if (input.isActive !== false) {
-      const { error: deactivateError } = await getSupabaseAdmin()
-        .schema('billing')
-        .from('csv_parse_rules')
-        .update({
-          is_active: false,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('platform', input.platform)
-        .eq('is_active', true);
-
-      if (deactivateError) {
-        throw new BillingImportError(
-          BILLING_IMPORT_ERROR_CODES.csvRulesUpdateFailed,
-          '更新 CSV 解析规则失败',
-          500,
-        );
-      }
-    }
-
     const { data, error } = await getSupabaseAdmin()
       .schema('billing')
-      .from('csv_parse_rules')
-      .upsert(
-        {
-          platform: input.platform,
-          version: input.version,
-          rule_config: sanitizeRuleConfig(input.ruleConfig),
-          is_active: input.isActive ?? true,
-          updated_at: new Date().toISOString(),
-        },
-        {
-          onConflict: 'platform,version',
-        },
-      )
-      .select('*')
-      .single();
+      .rpc('upsert_csv_parse_rule', {
+        p_platform: input.platform,
+        p_version: input.version,
+        p_rule_config: sanitizeRuleConfig(input.ruleConfig),
+        p_is_active: input.isActive ?? true,
+      });
 
     if (error || !data) {
       throw new BillingImportError(

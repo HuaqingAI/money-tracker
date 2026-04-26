@@ -151,7 +151,13 @@ export default function BillImportScreen() {
     }
   };
 
-  const canUpload = status !== 'picking' && status !== 'uploading';
+  const selectedFileIsValid =
+    selectedFile !== null &&
+    selectedFile.name.toLowerCase().endsWith('.csv') &&
+    (typeof selectedFile.size !== 'number' ||
+      selectedFile.size <= BILLING_IMPORT_MAX_FILE_SIZE_BYTES);
+  const canUpload =
+    selectedFileIsValid && status !== 'picking' && status !== 'uploading';
 
   return (
     <SafeAreaView style={styles.safeArea}>

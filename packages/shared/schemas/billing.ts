@@ -19,6 +19,7 @@ export const billingCsvColumnMappingSchema = z.object({
   merchant: z.string().trim().min(1).optional(),
   description: z.string().trim().min(1).optional(),
   direction: z.string().trim().min(1).optional(),
+  externalId: z.string().trim().min(1).optional(),
   status: z.string().trim().min(1).optional(),
 });
 
@@ -35,6 +36,7 @@ export const billingCsvParseRuleSchema = z.object({
 export const billingNormalizedTransactionSchema = z.object({
   amount_cents: z.number().int(),
   transaction_at: z.string().datetime(),
+  external_transaction_id: z.string().nullable(),
   merchant: z.string().nullable(),
   description: z.string().nullable(),
   source: z.enum([
@@ -67,4 +69,3 @@ export type BillingNormalizedTransactionInput = z.infer<
 >;
 export type ImportCsvResultInput = z.infer<typeof importCsvResultSchema>;
 export type CsvRuleUpdateInputSchema = z.infer<typeof csvRuleUpdateInputSchema>;
-

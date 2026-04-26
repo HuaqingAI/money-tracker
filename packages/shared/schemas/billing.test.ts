@@ -40,6 +40,7 @@ describe('billing schemas', () => {
       billingNormalizedTransactionSchema.parse({
         amount_cents: -1234,
         transaction_at: '2026-04-26T02:30:00.000Z',
+        external_transaction_id: 'wx-1',
         merchant: '便利店',
         description: '早餐',
         source: 'alipay_csv',
@@ -48,6 +49,7 @@ describe('billing schemas', () => {
     ).toEqual({
       amount_cents: -1234,
       transaction_at: '2026-04-26T02:30:00.000Z',
+      external_transaction_id: 'wx-1',
       merchant: '便利店',
       description: '早餐',
       source: 'alipay_csv',
@@ -58,6 +60,7 @@ describe('billing schemas', () => {
       billingNormalizedTransactionSchema.parse({
         amount_cents: 12.34,
         transaction_at: '2026-04-26 10:30:00',
+        external_transaction_id: null,
         merchant: null,
         description: null,
         source: 'alipay_csv',
@@ -93,4 +96,3 @@ describe('billing schemas', () => {
     });
   });
 });
-

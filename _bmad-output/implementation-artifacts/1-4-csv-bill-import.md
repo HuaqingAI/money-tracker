@@ -1,6 +1,6 @@
 # Story 1.4: CSV 账单导入
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -46,6 +46,20 @@ so that 我的历史消费记录能被快速导入到应用中。
   - [x] 5.2 运行 `pnpm build` 与 `pnpm test`，修复失败项
   - [x] 5.3 更新本 Story 的 Dev Agent Record、File List、Change Log，并将 Story 状态推进到 `review`
 
+### Review Findings
+
+- [x] [Review][Patch] 重复 Supabase migration 版本会导致 CSV 规则 seed 不可靠 [supabase/migrations/011_seed_csv_parse_rules.sql:1]
+- [x] [Review][Patch] 非 production Supabase 持久化失败会返回“导入成功” [apps/api/lib/billing/import-service.ts:43]
+- [x] [Review][Patch] 非成功/关闭交易会被导入为真实待确认交易 [apps/api/lib/billing/csv-parser.ts:383]
+- [x] [Review][Patch] `dateFormat` 规则字段没有参与解析，热更新能力不完整 [apps/api/lib/billing/csv-parser.ts:267]
+- [x] [Review][Patch] CSV 规则更新不是原子操作，upsert 失败会清空当前 active 规则 [apps/api/lib/billing/csv-rule-repository.ts:107]
+- [x] [Review][Patch] 应用层去重存在并发重复写入窗口 [apps/api/lib/billing/import-service.ts:118]
+- [x] [Review][Patch] 去重键缺少账单交易号，可能误删真实交易 [apps/api/lib/billing/import-service.ts:144]
+- [x] [Review][Patch] 表头存在但无有效交易时仍返回成功 [apps/api/lib/billing/import-service.ts:178]
+- [x] [Review][Patch] 金额解析会接受被任意字符污染的金额 [apps/api/lib/billing/csv-parser.ts:216]
+- [x] [Review][Patch] 客户端未校验 API JSON shape，异常响应会变成 TypeError [apps/mobile/lib/billing-api.ts:47]
+- [x] [Review][Patch] 移动端选择无效文件后上传按钮仍可点击 [apps/mobile/app/(setup)/bill-import.tsx:154]
+
 ## Dev Notes
 
 - 本 Story 工作目录必须使用 worktree：`C:\Users\boil\.codex\worktrees\3a70\worktrees\story\1-4-csv-bill-import`，分支 `story/1-4-csv-bill-import`。原目录 `C:\Users\boil\.codex\worktrees\3a70\money-tracker` 是 detached HEAD，不要在原目录开发。
@@ -67,7 +81,7 @@ so that 我的历史消费记录能被快速导入到应用中。
 - 移动端页面：`apps/mobile/app/(setup)/bill-import.tsx`、`apps/mobile/app/(setup)/import-processing.tsx`
 - 移动端组件：`apps/mobile/components/billing/`
 - 移动端 API：`apps/mobile/lib/billing-api.ts`
-- 数据库变更：`supabase/migrations/010_seed_csv_parse_rules.sql` 或后续顺序号，避免改写已发布 migration
+- 数据库变更：`supabase/migrations/011_seed_csv_parse_rules.sql`、`supabase/migrations/012_harden_csv_import.sql` 或后续顺序号，避免改写已发布 migration
 
 ### References
 
@@ -100,14 +114,16 @@ GPT-5 Codex
 
 ### Completion Notes List
 
-- 2026-04-26: 修复本地上传 CSV 时 API 500：API dev 输出目录改为 `.next-dev` 避免 `pnpm build` 覆盖运行中的 dev 产物；开发环境下导入规则/交易持久化不可用时使用受控 fallback 让验证流程可继续，生产环境仍返回服务不可用；移动端 Sentry 无 DSN 时初始化为 disabled，消除 `Sentry.wrap` 早于 init 的 warning。
+- 2026-04-26: Code review 后修复 11 项发现：迁移编号改为唯一序号，新增 CSV 导入幂等键/外部交易号与数据库唯一约束，规则更新改用原子 RPC，持久化失败不再返回假成功，解析器按状态过滤非成功交易、按 `dateFormat` 解析日期、收紧金额格式校验，移动端校验 API 响应结构并禁用无效文件上传；`pnpm build`、`pnpm test` 通过。
+
+- 2026-04-26: 修复本地上传 CSV 时 API 500：API dev 输出目录改为 `.next-dev` 避免 `pnpm build` 覆盖运行中的 dev 产物；生产环境持久化失败返回服务不可用；移动端 Sentry 无 DSN 时初始化为 disabled，消除 `Sentry.wrap` 早于 init 的 warning。
 
 - 2026-04-26: 登录成功后的 `apps/mobile/app/(main)/me.tsx` Account 菜单新增“账单导入”入口，跳转 `/(setup)/bill-import`，便于跳过后再次进入导入流程；新增 `docs/demo-bill-import-wechat.csv` 作为微信 CSV 验证样例。
 
 - 建立 shared billing 契约：CSV 平台/来源/错误码/路由/10MB 限制常量，Zod schema 和导出桶。
 - 实现后端 CSV 导入链路：动态读取 active 解析规则、开发态默认规则 fallback、CSV 解析、GB18030/GBK/UTF-8 编码回退、金额整数分、北京时间转 UTC ISO、同用户同来源同金额同商户同时间去重、批量写入 `billing.transactions`。
 - 新增 `POST /api/billing/import-csv` multipart API 与 `PUT /api/admin/csv-rules` 热更新 API；管理员规则写入由 `CSV_RULES_ADMIN_TOKEN` 保护，未配置或错误 token 不会静默成功。
-- 新增 Supabase migration `010_seed_csv_parse_rules.sql` 写入支付宝/微信默认 active 规则；`packages/shared/types/database.ts` 已有目标表结构，本 Story 无需更新。
+- 新增 Supabase migration `011_seed_csv_parse_rules.sql` 写入支付宝/微信默认 active 规则；新增 `012_harden_csv_import.sql` 写入 CSV 导入幂等约束和原子规则更新 RPC，并同步 `packages/shared/types/database.ts`。
 - 移动端新增 Expo DocumentPicker CSV 选择、multipart Bearer 上传、错误兜底、账单导入页、导入处理摘要页；权限页下一步改为进入导入页，跳过/完成导入后再进入 Dashboard。
 - 新增依赖：`apps/mobile` 添加 Expo 54 兼容版本 `expo-document-picker@~14.0.8`，并同步 `pnpm-lock.yaml`。
 - 验证通过：`pnpm build`、`pnpm test`。
@@ -148,11 +164,14 @@ GPT-5 Codex
 - `packages/shared/schemas/billing.test.ts`
 - `packages/shared/schemas/billing.ts`
 - `packages/shared/types/billing.ts`
+- `packages/shared/types/database.ts`
 - `pnpm-lock.yaml`
-- `supabase/migrations/010_seed_csv_parse_rules.sql`
+- `supabase/migrations/011_seed_csv_parse_rules.sql`
+- `supabase/migrations/012_harden_csv_import.sql`
 
 ### Change Log
 
+- 2026-04-26: Code review 修复完成并验证通过，Story 状态推进到 done。
 - 2026-04-26: 修复上传接口本地 500、API dev/build 产物互相覆盖和移动端 Sentry 初始化 warning；`pnpm build`、`pnpm test` 通过。
 
 - 2026-04-26: 为登录成功后的 Me 页面补充“账单导入”入口，并新增可用于验证的微信 CSV demo 文件。

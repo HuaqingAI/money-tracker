@@ -13,6 +13,7 @@ values
       "columnMapping": {
         "amount": "交易金额",
         "transactionAt": "交易时间",
+        "externalId": "交易号",
         "merchant": "交易对方",
         "description": "商品说明",
         "direction": "收/支",
@@ -34,6 +35,7 @@ values
       "columnMapping": {
         "amount": "金额(元)",
         "transactionAt": "交易时间",
+        "externalId": "交易单号",
         "merchant": "交易对方",
         "description": "商品",
         "direction": "收/支",
@@ -49,4 +51,3 @@ set
   rule_config = excluded.rule_config,
   is_active = excluded.is_active,
   updated_at = now();
-

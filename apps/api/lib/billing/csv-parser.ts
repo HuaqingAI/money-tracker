@@ -30,6 +30,17 @@ interface ParsedCsvText {
 }
 
 const ENCODING_FALLBACKS: BillingCsvEncoding[] = ['utf-8', 'gb18030', 'gbk'];
+const SUCCESS_STATUS_KEYWORDS = ['支付成功', '交易成功', '已入账', '已收钱', '收款成功'];
+const NON_IMPORTABLE_STATUS_KEYWORDS = [
+  '关闭',
+  '失败',
+  '退款',
+  '退还',
+  '撤销',
+  '取消',
+  '处理中',
+  '待支付',
+];
 
 function normalizeHeader(value: string): string {
   return value.replace(/^\uFEFF/, '').trim();
@@ -198,11 +209,17 @@ function readCell(row: string[], index: number | null): string {
 
 function parseAmountCents(value: string, direction: string): number {
   const trimmed = value.trim();
+  if (!/^[\s,，￥¥元()（）+\-\d.]+$/.test(trimmed)) {
+    throw new Error('金额格式无效');
+  }
+
   const negativeFromValue =
-    trimmed.startsWith('-') || (trimmed.startsWith('(') && trimmed.endsWith(')'));
+    trimmed.startsWith('-') ||
+    ((trimmed.startsWith('(') && trimmed.endsWith(')')) ||
+      (trimmed.startsWith('（') && trimmed.endsWith('）')));
   const numeric = trimmed
     .replace(/[,，\s￥¥元]/g, '')
-    .replace(/[()]/g, '')
+    .replace(/[()（）]/g, '')
     .replace(/[^\d.+-]/g, '');
   const match = numeric.match(/^-?\d+(?:\.\d{1,2})?$/);
 
@@ -232,18 +249,72 @@ function parseAmountCents(value: string, direction: string): number {
     : absoluteCents;
 }
 
-function parseChinaLocalDateToUtcIso(value: string): string {
-  const match = value
-    .trim()
-    .match(
-      /^(\d{4})[-/](\d{1,2})[-/](\d{1,2})[ T](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$/,
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function tokenPattern(token: string): string {
+  switch (token) {
+    case 'yyyy':
+      return '(?<year>\\d{4})';
+    case 'MM':
+      return '(?<month>\\d{2})';
+    case 'M':
+      return '(?<month>\\d{1,2})';
+    case 'dd':
+      return '(?<day>\\d{2})';
+    case 'd':
+      return '(?<day>\\d{1,2})';
+    case 'HH':
+      return '(?<hour>\\d{2})';
+    case 'H':
+      return '(?<hour>\\d{1,2})';
+    case 'mm':
+      return '(?<minute>\\d{2})';
+    case 'm':
+      return '(?<minute>\\d{1,2})';
+    case 'ss':
+      return '(?<second>\\d{2})';
+    case 's':
+      return '(?<second>\\d{1,2})';
+    default:
+      return escapeRegExp(token);
+  }
+}
+
+function createDateFormatRegex(dateFormat: string): RegExp {
+  const tokens = ['yyyy', 'MM', 'dd', 'HH', 'mm', 'ss', 'M', 'd', 'H', 'm', 's'];
+  let pattern = '';
+  for (let index = 0; index < dateFormat.length;) {
+    const token = tokens.find((candidate) =>
+      dateFormat.slice(index).startsWith(candidate),
     );
+    if (token) {
+      pattern += tokenPattern(token);
+      index += token.length;
+    } else {
+      pattern += escapeRegExp(dateFormat[index] ?? '');
+      index += 1;
+    }
+  }
+  return new RegExp(`^${pattern}$`);
+}
+
+function parseChinaLocalDateToUtcIso(value: string, dateFormat: string): string {
+  const match = value.trim().match(createDateFormatRegex(dateFormat));
 
   if (!match) {
     throw new Error('交易时间格式无效');
   }
 
-  const [, yearRaw, monthRaw, dayRaw, hourRaw, minuteRaw, secondRaw = '0'] = match;
+  const {
+    year: yearRaw,
+    month: monthRaw,
+    day: dayRaw,
+    hour: hourRaw,
+    minute: minuteRaw,
+    second: secondRaw = '0',
+  } = match.groups ?? {};
   if (!yearRaw || !monthRaw || !dayRaw || !hourRaw || !minuteRaw) {
     throw new Error('交易时间格式无效');
   }
@@ -284,6 +355,19 @@ function normalizeNullable(value: string): string | null {
   return trimmed.length > 0 ? trimmed : null;
 }
 
+function isImportableStatus(value: string): boolean {
+  const status = value.trim();
+  if (!status) {
+    return true;
+  }
+
+  if (NON_IMPORTABLE_STATUS_KEYWORDS.some((keyword) => status.includes(keyword))) {
+    return false;
+  }
+
+  return SUCCESS_STATUS_KEYWORDS.some((keyword) => status.includes(keyword));
+}
+
 export function parseBillingCsv(
   input: ParseBillingCsvInput,
 ): ParseBillingCsvResult {
@@ -313,6 +397,8 @@ export function parseBillingCsv(
   const merchantIndex = getColumnIndex(headers, mapping.merchant);
   const descriptionIndex = getColumnIndex(headers, mapping.description);
   const directionIndex = getColumnIndex(headers, mapping.direction);
+  const externalIdIndex = getColumnIndex(headers, mapping.externalId);
+  const statusIndex = getColumnIndex(headers, mapping.status);
 
   if (amountIndex === null || transactionAtIndex === null) {
     throw new BillingImportError(
@@ -331,9 +417,16 @@ export function parseBillingCsv(
       const amount = readCell(row, amountIndex);
       const transactionAt = readCell(row, transactionAtIndex);
       const direction = readCell(row, directionIndex);
+      const rowStatus = readCell(row, statusIndex);
+      if (!isImportableStatus(rowStatus)) {
+        failedCount += 1;
+        continue;
+      }
+
       transactions.push({
         amount_cents: parseAmountCents(amount, direction),
-        transaction_at: parseChinaLocalDateToUtcIso(transactionAt),
+        transaction_at: parseChinaLocalDateToUtcIso(transactionAt, rule.dateFormat),
+        external_transaction_id: normalizeNullable(readCell(row, externalIdIndex)),
         merchant: normalizeNullable(readCell(row, merchantIndex)),
         description: normalizeNullable(readCell(row, descriptionIndex)),
         source: getSource(rule.platform),

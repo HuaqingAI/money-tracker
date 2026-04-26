@@ -91,6 +91,11 @@ describe('billing-api', () => {
         new Response('<html>bad gateway</html>', {
           status: 502,
         }),
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({}), {
+          status: 502,
+        }),
       );
 
     await expect(
@@ -106,6 +111,12 @@ describe('billing-api', () => {
         uri: 'file:///bill.csv',
       }),
     ).rejects.toThrow('服务暂时不可用，请稍后重试');
+
+    await expect(
+      uploadBillingCsv('access-token', {
+        name: 'bill.csv',
+        uri: 'file:///bill.csv',
+      }),
+    ).rejects.toThrow('服务暂时不可用，请稍后重试');
   });
 });
-

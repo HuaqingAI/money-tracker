@@ -37,17 +37,17 @@ class FakeTransactionRepository implements BillingTransactionRepository {
   constructor(private readonly existing: ExistingTransactionKey[] = []) {}
 
   findExisting(input: {
+    importDedupeKeys: string[];
     source: BillingTransactionSource;
-    transactionAts: string[];
     userId: string;
   }): Promise<ExistingTransactionKey[]> {
     this.source = input.source;
     return Promise.resolve(this.existing);
   }
 
-  insertTransactions(transactions: TransactionInsert[]): Promise<void> {
+  insertTransactions(transactions: TransactionInsert[]): Promise<number> {
     this.inserted = transactions;
-    return Promise.resolve();
+    return Promise.resolve(transactions.length);
   }
 }
 
@@ -56,8 +56,15 @@ class ThrowingTransactionRepository implements BillingTransactionRepository {
     throw new Error('SUPABASE_SERVICE_ROLE_KEY is not set');
   }
 
-  insertTransactions(): Promise<void> {
+  insertTransactions(): Promise<number> {
     throw new Error('SUPABASE_SERVICE_ROLE_KEY is not set');
+  }
+}
+
+class RaceDuplicateTransactionRepository extends FakeTransactionRepository {
+  insertTransactions(transactions: TransactionInsert[]): Promise<number> {
+    this.inserted = transactions;
+    return Promise.resolve(0);
   }
 }
 
@@ -80,6 +87,9 @@ describe('BillingImportService', () => {
     const transactionRepository = new FakeTransactionRepository([
       {
         amount_cents: -1234,
+        external_transaction_id: null,
+        import_dedupe_key:
+          'fingerprint|wechat_csv|-1234|便利店|2026-04-26T02:30:00.000Z',
         merchant: '便利店',
         source: 'wechat_csv',
         transaction_at: '2026-04-26T02:30:00.000Z',
@@ -108,6 +118,9 @@ describe('BillingImportService', () => {
     expect(transactionRepository.inserted).toEqual([
       expect.objectContaining({
         amount_cents: -1800,
+        external_transaction_id: null,
+        import_dedupe_key:
+          'fingerprint|wechat_csv|-1800|咖啡店|2026-04-26T03:00:00.000Z',
         merchant: '咖啡店',
         source: 'wechat_csv',
         status: 'pending_confirmation',
@@ -135,8 +148,7 @@ describe('BillingImportService', () => {
     });
   });
 
-  it('can complete a development import when persistence is unavailable', async () => {
-    vi.stubEnv('NODE_ENV', 'development');
+  it('fails when persistence is unavailable instead of reporting a fake success', async () => {
     const csv = [
       '交易时间,交易对方,商品,收/支,金额(元),当前状态',
       '2026-04-26 10:30:00,便利店,早餐,支出,12.34,支付成功',
@@ -152,13 +164,51 @@ describe('BillingImportService', () => {
         fileName: 'wechat.csv',
         userId: 'user-1',
       }),
-    ).resolves.toEqual({
-      totalCount: 1,
-      importedCount: 1,
-      duplicateCount: 0,
-      failedCount: 0,
-      importId: 'import-1',
-      platform: 'wechat',
+    ).rejects.toThrow('SUPABASE_SERVICE_ROLE_KEY is not set');
+  });
+
+  it('counts database ignored inserts as duplicates', async () => {
+    const csv = [
+      '交易时间,交易对方,商品,收/支,金额(元),当前状态',
+      '2026-04-26 10:30:00,便利店,早餐,支出,12.34,支付成功',
+    ].join('\n');
+    const transactionRepository = new RaceDuplicateTransactionRepository();
+    const service = new BillingImportService(
+      new FakeRuleRepository(DEFAULT_CSV_PARSE_RULES),
+      transactionRepository,
+    );
+
+    await expect(
+      service.importCsv({
+        bytes: encodeUtf8(csv),
+        fileName: 'wechat.csv',
+        userId: 'user-1',
+      }),
+    ).resolves.toMatchObject({
+      importedCount: 0,
+      duplicateCount: 1,
+    });
+  });
+
+  it('rejects files with no valid importable rows', async () => {
+    const csv = [
+      '交易时间,交易对方,商品,收/支,金额(元),当前状态',
+      'bad-date,坏行,坏行,支出,not-money,支付成功',
+    ].join('\n');
+    const service = new BillingImportService(
+      new FakeRuleRepository(DEFAULT_CSV_PARSE_RULES),
+      new FakeTransactionRepository(),
+    );
+
+    await expect(
+      service.importCsv({
+        bytes: encodeUtf8(csv),
+        fileName: 'wechat.csv',
+        userId: 'user-1',
+      }),
+    ).rejects.toMatchObject({
+      code: 'IMPORT_PARSE_ERROR',
+      status: 400,
     });
   });
 });

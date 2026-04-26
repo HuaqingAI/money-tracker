@@ -25,6 +25,41 @@ function createCsvFormData(file: BillingCsvUploadFile): FormData {
   return formData;
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isImportCsvResult(value: unknown): value is ImportCsvResult {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.totalCount === 'number' &&
+    typeof value.importedCount === 'number' &&
+    typeof value.duplicateCount === 'number' &&
+    typeof value.failedCount === 'number' &&
+    typeof value.importId === 'string' &&
+    (value.platform === 'alipay' || value.platform === 'wechat')
+  );
+}
+
+function isApiResponse(value: unknown): value is ApiResponse<ImportCsvResult> {
+  if (!isRecord(value) || typeof value.success !== 'boolean') {
+    return false;
+  }
+
+  if (value.success) {
+    return isImportCsvResult(value.data);
+  }
+
+  return (
+    isRecord(value.error) &&
+    typeof value.error.code === 'string' &&
+    typeof value.error.message === 'string'
+  );
+}
+
 async function parseResponse(response: Response): Promise<ApiResponse<ImportCsvResult>> {
   let json: unknown;
 
@@ -38,7 +73,15 @@ async function parseResponse(response: Response): Promise<ApiResponse<ImportCsvR
     );
   }
 
-  return json as ApiResponse<ImportCsvResult>;
+  if (!isApiResponse(json)) {
+    throw new ApiClientError(
+      'INVALID_RESPONSE',
+      response.status,
+      response.ok ? '服务端返回了不可识别的响应' : '服务暂时不可用，请稍后重试',
+    );
+  }
+
+  return json;
 }
 
 export async function uploadBillingCsv(
@@ -73,4 +116,3 @@ export async function uploadBillingCsv(
 
   return payload.data;
 }
-
