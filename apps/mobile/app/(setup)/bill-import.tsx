@@ -101,8 +101,10 @@ export default function BillImportScreen() {
       setSelectedFile(file);
       setStatus('idle');
       if (typeof file.size === 'number' && file.size > BILLING_IMPORT_MAX_FILE_SIZE_BYTES) {
+        setStatus('error');
         setMessage('CSV 文件不能超过 10MB');
       } else if (!file.name.toLowerCase().endsWith('.csv')) {
+        setStatus('error');
         setMessage('请选择 .csv 格式的账单文件');
       } else {
         setMessage('文件已就绪，可以开始导入');
@@ -115,6 +117,7 @@ export default function BillImportScreen() {
 
   const uploadFile = async () => {
     if (!selectedFile) {
+      setStatus('error');
       setMessage('请先选择 CSV 账单文件');
       return;
     }

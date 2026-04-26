@@ -35,9 +35,33 @@ export interface BillingTransactionRepository {
   findExisting(input: {
     importDedupeKeys: string[];
     source: BillingTransactionSource;
+    transactionAts: string[];
     userId: string;
   }): Promise<ExistingTransactionKey[]>;
   insertTransactions(transactions: TransactionInsert[]): Promise<number>;
+}
+
+function shouldUseDevelopmentSchemaFallback(): boolean {
+  return process.env.NODE_ENV !== 'production';
+}
+
+function getErrorMessage(error: unknown): string {
+  if (error && typeof error === 'object' && 'message' in error) {
+    const message = (error as { message?: unknown }).message;
+    return typeof message === 'string' ? message : '';
+  }
+
+  return '';
+}
+
+function isMissingImportDedupeSchema(error: unknown): boolean {
+  const message = getErrorMessage(error).toLowerCase();
+  return (
+    message.includes('import_dedupe_key') ||
+    message.includes('external_transaction_id') ||
+    message.includes('no unique or exclusion constraint') ||
+    message.includes('schema cache')
+  );
 }
 
 function toServiceUnavailable(message: string): BillingImportError {
@@ -62,6 +86,7 @@ export class SupabaseBillingTransactionRepository
   async findExisting(input: {
     importDedupeKeys: string[];
     source: BillingTransactionSource;
+    transactionAts: string[];
     userId: string;
   }): Promise<ExistingTransactionKey[]> {
     if (input.importDedupeKeys.length === 0) {
@@ -92,10 +117,52 @@ export class SupabaseBillingTransactionRepository
       const { data, error } = queryResult;
 
       if (error) {
+        if (
+          shouldUseDevelopmentSchemaFallback() &&
+          isMissingImportDedupeSchema(error)
+        ) {
+          return this.findExistingLegacy(input);
+        }
+
         throw toServiceUnavailable('读取历史交易失败，请稍后重试');
       }
 
       existing.push(...(data ?? []));
+    }
+
+    return existing;
+  }
+
+  private async findExistingLegacy(input: {
+    source: BillingTransactionSource;
+    transactionAts: string[];
+    userId: string;
+  }): Promise<ExistingTransactionKey[]> {
+    if (input.transactionAts.length === 0) {
+      return [];
+    }
+
+    const existing: ExistingTransactionKey[] = [];
+    for (const transactionAts of chunk(input.transactionAts, 200)) {
+      const { data, error } = await getSupabaseAdmin()
+        .schema('billing')
+        .from('transactions')
+        .select('amount_cents, merchant, source, transaction_at')
+        .eq('user_id', input.userId)
+        .eq('source', input.source)
+        .in('transaction_at', transactionAts);
+
+      if (error) {
+        throw toServiceUnavailable('读取历史交易失败，请稍后重试');
+      }
+
+      existing.push(
+        ...(data ?? []).map((transaction) => ({
+          ...transaction,
+          external_transaction_id: null,
+          import_dedupe_key: null,
+        })),
+      );
     }
 
     return existing;
@@ -127,24 +194,68 @@ export class SupabaseBillingTransactionRepository
     const { data, error } = insertResult;
 
     if (error) {
+      if (
+        shouldUseDevelopmentSchemaFallback() &&
+        isMissingImportDedupeSchema(error)
+      ) {
+        return this.insertTransactionsLegacy(transactions);
+      }
+
       throw toServiceUnavailable('导入交易失败，请稍后重试');
     }
 
     return data?.length ?? 0;
   }
+
+  private async insertTransactionsLegacy(
+    transactions: TransactionInsert[],
+  ): Promise<number> {
+    const legacyTransactions = transactions.map((transaction) => {
+      const {
+        external_transaction_id: _externalTransactionId,
+        import_dedupe_key: _importDedupeKey,
+        ...legacyTransaction
+      } = transaction;
+      return legacyTransaction;
+    });
+    const { error } = await getSupabaseAdmin()
+      .schema('billing')
+      .from('transactions')
+      .insert(legacyTransactions);
+
+    if (error) {
+      throw toServiceUnavailable('导入交易失败，请稍后重试');
+    }
+
+    return legacyTransactions.length;
+  }
 }
 
-function createDedupeKey(input: {
+function createImportDedupeKey(input: {
   amount_cents: number;
   external_transaction_id?: string | null;
+  import_dedupe_key?: string | null;
   merchant: string | null;
   source: string | null;
   transaction_at: string;
 }): string {
+  if (input.import_dedupe_key) {
+    return input.import_dedupe_key;
+  }
+
   if (input.external_transaction_id) {
     return `external:${input.external_transaction_id}`;
   }
 
+  return createLegacyFingerprintKey(input);
+}
+
+function createLegacyFingerprintKey(input: {
+  amount_cents: number;
+  merchant: string | null;
+  source: string | null;
+  transaction_at: string;
+}): string {
   return [
     'fingerprint',
     input.source ?? '',
@@ -190,7 +301,7 @@ export class BillingImportService {
     let duplicateCount = 0;
 
     for (const transaction of parsed.transactions) {
-      const key = createDedupeKey(transaction);
+      const key = createImportDedupeKey(transaction);
       if (seen.has(key)) {
         duplicateCount += 1;
         continue;
@@ -201,13 +312,19 @@ export class BillingImportService {
     }
 
     const existing = await this.transactionRepository.findExisting({
-      importDedupeKeys: uniqueTransactions.map(createDedupeKey),
+      importDedupeKeys: uniqueTransactions.map(createImportDedupeKey),
       source,
+      transactionAts: uniqueTransactions.map(
+        (transaction) => transaction.transaction_at,
+      ),
       userId: input.userId,
     });
-    const existingKeys = new Set(existing.map(createDedupeKey));
+    const existingKeys = new Set(existing.map(createImportDedupeKey));
+    const existingLegacyKeys = new Set(existing.map(createLegacyFingerprintKey));
     const toInsert = uniqueTransactions.filter((transaction) => {
-      const duplicate = existingKeys.has(createDedupeKey(transaction));
+      const duplicate =
+        existingKeys.has(createImportDedupeKey(transaction)) ||
+        existingLegacyKeys.has(createLegacyFingerprintKey(transaction));
       if (duplicate) {
         duplicateCount += 1;
       }
@@ -221,7 +338,7 @@ export class BillingImportService {
         status: transaction.status,
         source: transaction.source,
         external_transaction_id: transaction.external_transaction_id,
-        import_dedupe_key: createDedupeKey(transaction),
+        import_dedupe_key: createImportDedupeKey(transaction),
         merchant: transaction.merchant,
         description: transaction.description,
         transaction_at: transaction.transaction_at,

@@ -39,6 +39,7 @@ class FakeTransactionRepository implements BillingTransactionRepository {
   findExisting(input: {
     importDedupeKeys: string[];
     source: BillingTransactionSource;
+    transactionAts: string[];
     userId: string;
   }): Promise<ExistingTransactionKey[]> {
     this.source = input.source;
@@ -75,6 +76,38 @@ function encodeUtf8(text: string): Uint8Array {
 describe('BillingImportService', () => {
   beforeEach(() => {
     vi.spyOn(crypto, 'randomUUID').mockReturnValue('import-1');
+  });
+
+  it('deduplicates existing rows from development legacy schema fallback', async () => {
+    const csv = [
+      '交易时间,交易对方,商品,收/支,金额(元),当前状态',
+      '2026-04-26 10:30:00,便利店,早餐,支出,12.34,支付成功',
+    ].join('\n');
+    const transactionRepository = new FakeTransactionRepository([
+      {
+        amount_cents: -1234,
+        external_transaction_id: null,
+        import_dedupe_key: null,
+        merchant: '便利店',
+        source: 'wechat_csv',
+        transaction_at: '2026-04-26T02:30:00.000Z',
+      },
+    ]);
+    const service = new BillingImportService(
+      new FakeRuleRepository(DEFAULT_CSV_PARSE_RULES),
+      transactionRepository,
+    );
+
+    await expect(
+      service.importCsv({
+        bytes: encodeUtf8(csv),
+        fileName: 'wechat.csv',
+        userId: 'user-1',
+      }),
+    ).resolves.toMatchObject({
+      importedCount: 0,
+      duplicateCount: 1,
+    });
   });
 
   it('deduplicates rows already present for the same user/source/amount/merchant/time', async () => {
