@@ -12,7 +12,7 @@
     "test": "pnpm exec vitest run --config ../../vitest.config.ts --dir .",
     "worker": "tsx worker/index.ts",
     "worker:start": "node dist/worker/index.js",
-    "clean": "rm -rf .next dist"
+    "clean": "rm -rf .next .next-dev dist"
   },
   "dependencies": {
     "@money-tracker/shared": "workspace:*",

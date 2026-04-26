@@ -16,7 +16,6 @@ import {
   type NotificationPermissionStatus,
   openNotificationListenerSettings,
 } from '../../lib/android-notification';
-import { useAuthStore } from '../../stores/auth-store';
 
 function resolveGuide(manufacturer: string): AndroidNotificationGuide {
   const normalizedManufacturer = manufacturer.toLowerCase();
@@ -32,8 +31,6 @@ function resolveGuide(manufacturer: string): AndroidNotificationGuide {
 
 export default function PermissionsScreen() {
   const router = useRouter();
-  const session = useAuthStore((state) => state.session);
-  const setSession = useAuthStore((state) => state.setSession);
   const [permissionStatus, setPermissionStatus] =
     useState<NotificationPermissionStatus>('unknown');
   const [manufacturer, setManufacturer] = useState('Android');
@@ -55,18 +52,8 @@ export default function PermissionsScreen() {
 
   const guide = useMemo(() => resolveGuide(manufacturer), [manufacturer]);
 
-  function completeSetup(): void {
-    if (session) {
-      setSession({
-        ...session,
-        user: {
-          ...session.user,
-          needsOnboarding: false,
-        },
-      });
-    }
-
-    router.replace('/import');
+  function goToBillImport(): void {
+    router.replace('/(setup)/bill-import');
   }
 
   async function handleOpenSettings(): Promise<void> {
@@ -177,7 +164,7 @@ export default function PermissionsScreen() {
             <Button disabled={opening} onPress={() => void handleOpenSettings()}>
               {opening ? '正在打开设置...' : '去开启通知读取'}
             </Button>
-            <Button chromeless onPress={completeSetup}>
+            <Button chromeless onPress={goToBillImport}>
               稍后设置，进入账单导入
             </Button>
             <Text variant="caption">
