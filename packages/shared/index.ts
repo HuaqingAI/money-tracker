@@ -18,7 +18,7 @@ export type {
   TablesInsert,
   TablesUpdate,
 } from './types/database';
-export type { LoginMethod, UserProfile } from './types/user';
+export type { LoginMethod, UserGender, UserProfile } from './types/user';
 
 // Constants
 export type { AuthErrorCode, AuthRoutePath } from './constants/auth';

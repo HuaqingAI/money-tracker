@@ -1,4 +1,5 @@
 import type { Database } from '@money-tracker/shared';
+import type { User } from '@supabase/supabase-js';
 
 import { getSupabaseAdmin } from '../supabase-admin';
 
@@ -8,6 +9,8 @@ export interface SaveUserProfileInput {
   userId: string;
   nickname: string;
   avatarUrl: string | null;
+  gender: string | null;
+  birthday: string | null;
   consentAt: string;
 }
 
@@ -36,6 +39,8 @@ export class UserRepository {
           user_id: input.userId,
           nickname: input.nickname,
           avatar_url: input.avatarUrl,
+          gender: input.gender,
+          birthday: input.birthday,
           consent_at: input.consentAt,
         },
         {
@@ -50,6 +55,26 @@ export class UserRepository {
     }
 
     return data;
+  }
+
+  async updateAuthUserMetadata(
+    userId: string,
+    metadata: Record<string, unknown>,
+  ): Promise<User> {
+    const { data, error } = await getSupabaseAdmin().auth.admin.updateUserById(
+      userId,
+      {
+        user_metadata: metadata,
+      },
+    );
+
+    if (error || !data.user) {
+      throw new Error(
+        `Failed to update auth user metadata: ${error?.message ?? 'User not found'}`,
+      );
+    }
+
+    return data.user;
   }
 
   async deleteUserById(userId: string): Promise<void> {

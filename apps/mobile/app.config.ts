@@ -33,6 +33,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   orientation: 'portrait',
   scheme: 'money-tracker',
   platforms: ['ios', 'android'],
+  android: {
+    permissions: ['READ_MEDIA_IMAGES'],
+  },
+  ios: {
+    infoPlist: {
+      NSPhotoLibraryUsageDescription: '\u7528\u4e8e\u9009\u62e9\u4f60\u7684\u8d26\u6237\u5934\u50cf\u3002',
+    },
+  },
   plugins: ['expo-router', sentryPlugin],
   extra: {
     supabaseUrl: process.env.SUPABASE_URL,

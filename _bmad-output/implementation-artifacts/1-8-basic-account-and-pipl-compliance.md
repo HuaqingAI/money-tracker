@@ -90,6 +90,10 @@ so that 我对自己的账户和数据有掌控感，符合个人信息保护要
 - [x] [Review][Patch] 未登录或会话失效用户可停留在受保护的 `(main)` 页面 [apps/mobile/app/_layout.tsx:68]
 - [x] [Review][Patch] 服务端 500 响应会把 Supabase/数据库底层错误信息返回给客户端 [apps/api/app/api/user/profile/route.ts:17]
 - [x] [Review][Patch] “我的”页退出登录入口缺少 AC5 要求的确认流程 [apps/mobile/app/(main)/me.tsx:59]
+- [x] [Post-Review][Patch] 资料页保存失败：Story 1.8 初版默认使用 Supabase Auth token，但 Story 1.2 实际登录态为应用自签 JWT；`requireAuthenticatedUser` 与 `user-service` 已补齐 app JWT 用户识别、资料更新和 Supabase metadata fallback。
+- [x] [Post-Review][Patch] 高保真原型包含性别/生日，但 AC2 只明确昵称/头像，导致字段没有进入 shared schema、数据库模型和 PUT payload；已通过 migration `009_add_user_profile_demographics.sql`、shared 类型/schema、API repo/service 和 mobile 保存链路补齐。
+- [x] [Post-Review][Patch] 真机开发时资料 API 仍访问 `localhost:3000`，登录 API 已单独做过 Expo host IP 替换；已统一到 `runtime-config.getApiUrl()`，避免真机保存请求打到设备本机。
+- [x] [Post-Review][Patch] 头像编辑交互与原型不一致，初版使用 URL 输入；已改为系统图片选择器。MVP 当前保存本地图片 URI，跨设备/长期持久头像上传留作后续 Storage 能力。
 
 ## Dev Notes
 
@@ -100,6 +104,15 @@ so that 我对自己的账户和数据有掌控感，符合个人信息保护要
 - `apps/mobile` 新增 QueryClient、auth-store、API client、账户区路由、我的页、资料编辑页、设置页、隐私说明 WebView 页。
 - “我的”页支持显示昵称、脱敏手机号、登录方式、头像 URL 渲染/回退头像，并提供编辑资料、设置、直接退出登录入口。
 - 设置页提供隐私摘要入口、删除账户入口、当前登录方式、应用版本；删除成功和退出登录都会清空 QueryClient 与持久化 auth-store。
+- 2026-04-26 追补：资料页按高保真原型补齐头像图片选择、性别选择、生日三列选择器；性别/生日正式进入 `auth.user_profiles`、shared schema/type、API PUT payload 和移动端保存状态。
+- 2026-04-26 追补：资料 API 认证逻辑以 Story 1.2 的应用自签 JWT 为主，兼容 Supabase Auth fallback；移动端登录 API 与资料 API 统一 runtime API URL 解析，修复真机 `localhost` 保存失败。
+
+### Review Gap Retro
+
+- 本次 dev review “通过后仍有问题”的根因不是单一实现疏忽，而是验收输入不完整：AC2 只写“昵称与头像”，没有把高保真原型里的性别/生日列为必须落库字段。
+- 架构上下文断层：Story 1.8 初版按 Supabase Auth token 设计资料接口，但 Story 1.2 已落地应用自签 JWT，review 没有显式检查“认证来源是否与既有登录链路一致”。
+- 交互验收缺失：review 主要覆盖 AC 和代码风险，没有做高保真逐项对照和真机保存路径验证，导致头像 URL 输入、生日输入框、真机 API 地址这类问题漏出。
+- 结论：本次发现应回写 Story 1.8；同时把“认证来源统一”和“资料字段/头像持久化策略”作为上层 deferred work，避免后续 story 继续各自假设。
 
 ### Verification
 
@@ -111,6 +124,12 @@ so that 我对自己的账户和数据有掌控感，符合个人信息保护要
 - PASS: `pnpm --filter api exec tsc --noEmit`
 - PASS: `pnpm --filter mobile exec tsc --noEmit`
 - PASS: `pnpm --filter mobile lint`
+- PASS: `pnpm --filter @money-tracker/shared exec tsc --noEmit`
+- PASS: `pnpm --filter @money-tracker/shared lint`
+- PASS: `pnpm --filter api lint`
+- PASS: `pnpm --filter @money-tracker/shared test -- schemas/user.test.ts`
+- PASS: `pnpm --filter api test -- lib/services/user-service.test.ts app/api/user/profile/route.test.ts lib/middleware/require-authenticated-user.test.ts`
+- PASS: `pnpm --filter mobile test -- lib/api-client.test.ts stores/auth-store.test.ts`
 - PASS: root `pnpm test`
 - PASS with review follow-up: 我的页补上直接退出登录入口，并支持头像 URL 实际渲染
 - BUILD BLOCKED BY ENVIRONMENT: root `pnpm build` 中 `apps/api` 的 Next standalone traced files 复制阶段在 Windows 下因 `symlink` 权限报 `EPERM`；`next build` 的 compile / lint / type-check 已完成，失败发生在 `.next/standalone` 文件复制阶段
@@ -136,6 +155,10 @@ GPT-5 Codex
   - 交付用户资料 API、删除账户 API 和最小认证识别链路
   - 交付共享 schema / 类型 / 脱敏工具与对应测试
   - 根据 review 收口 AC：我的页补充直接退出登录入口与头像 URL 渲染
+- 2026-04-26 Post-review 修复：
+  - 修正资料保存链路：app JWT 认证、API URL 真机解析、本地头像 URI schema 校验。
+  - 按高保真补齐性别/生日交互，并通过 Supabase migration + shared 类型/schema + API + mobile payload 正式落库。
+  - 回写 review 漏洞：AC 与原型字段不一致、认证架构假设未对齐、缺少真机/高保真逐项验收。
 
 ### File List
 
@@ -171,6 +194,7 @@ GPT-5 Codex
 - `packages/shared/types/user.ts`
 - `packages/shared/schemas/user.ts`
 - `packages/shared/schemas/user.test.ts`
+- `supabase/migrations/009_add_user_profile_demographics.sql`
 - `packages/shared/utils/mask-phone-number.ts`
 - `packages/shared/utils/mask-phone-number.test.ts`
 - `pnpm-lock.yaml`

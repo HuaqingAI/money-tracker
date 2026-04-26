@@ -4,6 +4,9 @@ export interface AuthIdentityRecord {
   id: string;
   phone: string | null;
   displayName: string | null;
+  avatarUrl?: string | null | undefined;
+  gender?: string | null | undefined;
+  birthday?: string | null | undefined;
   consentAt: string | null;
   lastSignInAt: string | null;
   authMethod: AuthMethod;
@@ -40,6 +43,28 @@ export interface AuthRepository {
     displayName?: string | undefined;
     now: Date;
   }): Promise<{ user: AuthIdentityRecord; isNewUser: boolean }>;
+  upsertUserProfileSnapshot(params: {
+    userId: string;
+    phone: string | null;
+    authMethod: AuthMethod;
+    consentAt: string | null;
+    displayName: string;
+    avatarUrl: string | null;
+    gender: string | null;
+    birthday: string | null;
+    createdAt: string;
+    now: Date;
+  }): Promise<AuthIdentityRecord>;
+  updateUserProfile(
+    userId: string,
+    input: {
+      avatarUrl: string | null;
+      birthday: string | null;
+      displayName: string;
+      gender: string | null;
+      now: Date;
+    },
+  ): Promise<AuthIdentityRecord | null>;
   createRefreshToken(userId: string, token: string, expiresAt: string): Promise<void>;
   getRefreshToken(token: string): Promise<RefreshTokenRecord | null>;
   revokeRefreshToken(token: string): Promise<void>;

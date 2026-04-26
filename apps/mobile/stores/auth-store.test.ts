@@ -90,8 +90,10 @@ describe('auth-store', () => {
   it('updates the profile summary from fetched user data', () => {
     useAuthStore.getState().setUserProfile({
       avatarUrl: 'https://example.com/avatar.png',
+      birthday: null,
       consentAt: null,
       createdAt: null,
+      gender: null,
       loginMethod: 'wechat',
       maskedPhoneNumber: '138****5678',
       nickname: 'Profile User',
@@ -115,10 +117,10 @@ describe('auth-store', () => {
     const state = useAuthStore.getState();
     expect(state.session).toBeNull();
     expect(state.user.userId).toBeNull();
-    expect(state.getNextPath()).toBe('/(auth)/register');
+    expect(state.getNextPath()).toBe('/(auth)/welcome');
   });
 
-  it('routes expired sessions back to registration', () => {
+  it('routes expired sessions back to welcome', () => {
     vi.setSystemTime(new Date('2026-04-24T00:20:00.000Z'));
 
     useAuthStore.getState().setSession(
@@ -128,7 +130,7 @@ describe('auth-store', () => {
       }),
     );
 
-    expect(useAuthStore.getState().getNextPath()).toBe('/(auth)/register');
+    expect(useAuthStore.getState().getNextPath()).toBe('/(auth)/welcome');
     expect(useAuthStore.getState().needsTokenRefresh()).toBe(false);
   });
 
@@ -143,7 +145,7 @@ describe('auth-store', () => {
     );
 
     expect(useAuthStore.getState().needsTokenRefresh()).toBe(true);
-    expect(useAuthStore.getState().getNextPath()).toBe('/(auth)/register');
+    expect(useAuthStore.getState().getNextPath()).toBe('/(auth)/welcome');
   });
 
   it('recovers from hydration errors', () => {
@@ -154,6 +156,6 @@ describe('auth-store', () => {
     const state = useAuthStore.getState();
     expect(state.hydrated).toBe(true);
     expect(state.session).toBeNull();
-    expect(state.getNextPath()).toBe('/(auth)/register');
+    expect(state.getNextPath()).toBe('/(auth)/welcome');
   });
 });

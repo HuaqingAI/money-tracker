@@ -59,7 +59,7 @@ function toAuthSummary(user: AuthUser): AuthSummary {
 
 function getNextPathFromSession(session: AuthSession | null): AuthRoutePath {
   if (!hasActiveSession(session)) {
-    return AUTH_ROUTE_PATHS.register;
+    return AUTH_ROUTE_PATHS.welcome;
   }
 
   return session.user.needsOnboarding ? AUTH_ROUTE_PATHS.permissions : AUTH_ROUTE_PATHS.me;

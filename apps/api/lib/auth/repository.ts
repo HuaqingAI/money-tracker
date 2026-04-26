@@ -115,6 +115,69 @@ class InMemoryAuthRepository implements AuthRepository {
     return { user: created, isNewUser: true };
   }
 
+  async upsertUserProfileSnapshot(params: {
+    userId: string;
+    phone: string | null;
+    authMethod: AuthIdentityRecord['authMethod'];
+    consentAt: string | null;
+    displayName: string;
+    avatarUrl: string | null;
+    gender: string | null;
+    birthday: string | null;
+    createdAt: string;
+    now: Date;
+  }): Promise<AuthIdentityRecord> {
+    const timestamp = params.now.toISOString();
+    const existing = await this.getUserById(params.userId);
+    const updated: AuthIdentityRecord = {
+      id: params.userId,
+      phone: params.phone,
+      authMethod: params.authMethod,
+      consentAt: existing?.consentAt ?? params.consentAt,
+      lastSignInAt: existing?.lastSignInAt ?? timestamp,
+      needsOnboarding: existing?.needsOnboarding ?? false,
+      createdAt: existing?.createdAt ?? params.createdAt,
+      updatedAt: timestamp,
+      displayName: params.displayName,
+      avatarUrl: params.avatarUrl,
+      gender: params.gender,
+      birthday: params.birthday,
+    };
+    const key = updated.phone ?? `user:${updated.id}`;
+    this.usersByPhone.set(key, updated);
+    return updated;
+  }
+
+  async updateUserProfile(
+    userId: string,
+    input: {
+      avatarUrl: string | null;
+      birthday: string | null;
+      displayName: string;
+      gender: string | null;
+      now: Date;
+    },
+  ): Promise<AuthIdentityRecord | null> {
+    for (const [phone, user] of this.usersByPhone.entries()) {
+      if (user.id !== userId) {
+        continue;
+      }
+
+      const updated: AuthIdentityRecord = {
+        ...user,
+        avatarUrl: input.avatarUrl,
+        birthday: input.birthday,
+        displayName: input.displayName,
+        gender: input.gender,
+        updatedAt: input.now.toISOString(),
+      };
+      this.usersByPhone.set(phone, updated);
+      return updated;
+    }
+
+    return null;
+  }
+
   async createRefreshToken(
     userId: string,
     token: string,

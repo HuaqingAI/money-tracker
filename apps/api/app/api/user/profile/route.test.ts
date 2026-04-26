@@ -61,8 +61,10 @@ describe('GET /api/user/profile', () => {
     });
     getUserProfileMock.mockResolvedValue({
       avatarUrl: null,
+      birthday: null,
       consentAt: null,
       createdAt: null,
+      gender: null,
       loginMethod: 'phone',
       maskedPhoneNumber: '138****5678',
       nickname: 'Sue',
@@ -150,8 +152,10 @@ describe('PUT /api/user/profile', () => {
     });
     updateUserProfileMock.mockResolvedValue({
       avatarUrl: 'https://example.com/avatar.png',
+      birthday: '1996-03-15',
       consentAt: null,
       createdAt: null,
+      gender: 'female',
       loginMethod: 'phone',
       maskedPhoneNumber: '138****5678',
       nickname: 'New Nickname',
@@ -163,6 +167,8 @@ describe('PUT /api/user/profile', () => {
       new Request('https://example.com/api/user/profile', {
         body: JSON.stringify({
           avatarUrl: 'https://example.com/avatar.png',
+          birthday: '1996-03-15',
+          gender: 'female',
           nickname: 'New Nickname',
         }),
         headers: {
@@ -174,6 +180,8 @@ describe('PUT /api/user/profile', () => {
 
     expect(updateUserProfileMock).toHaveBeenCalledWith(createUser(), {
       avatarUrl: 'https://example.com/avatar.png',
+      birthday: '1996-03-15',
+      gender: 'female',
       nickname: 'New Nickname',
     });
     expect(response.status).toBe(200);

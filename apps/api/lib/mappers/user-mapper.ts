@@ -1,4 +1,9 @@
-import type { Database, LoginMethod, UserProfile } from '@money-tracker/shared';
+import type {
+  Database,
+  LoginMethod,
+  UserGender,
+  UserProfile,
+} from '@money-tracker/shared';
 import { maskPhoneNumber } from '@money-tracker/shared';
 import type { User } from '@supabase/supabase-js';
 
@@ -34,6 +39,12 @@ function inferLoginMethod(user: User): LoginMethod {
   return 'unknown';
 }
 
+function normalizeGender(value: unknown): UserGender | null {
+  return value === 'male' || value === 'female' || value === 'undisclosed'
+    ? value
+    : null;
+}
+
 export function mapUserProfile(
   authUser: User,
   profileRow: UserProfileRow | null,
@@ -51,11 +62,18 @@ export function mapUserProfile(
     userMetadata && typeof userMetadata.avatar_url === 'string'
       ? userMetadata.avatar_url
       : null;
+  const metadataGender = userMetadata ? normalizeGender(userMetadata.gender) : null;
+  const metadataBirthday =
+    userMetadata && typeof userMetadata.birthday === 'string'
+      ? userMetadata.birthday
+      : null;
 
   return {
     userId: authUser.id,
     nickname: profileRow?.nickname ?? metadataNickname,
     avatarUrl: profileRow?.avatar_url ?? metadataAvatarUrl,
+    gender: normalizeGender(profileRow?.gender) ?? metadataGender,
+    birthday: profileRow?.birthday ?? metadataBirthday,
     maskedPhoneNumber: maskPhoneNumber(authUser.phone),
     loginMethod: inferLoginMethod(authUser),
     consentAt: profileRow?.consent_at ?? authUser.created_at ?? null,

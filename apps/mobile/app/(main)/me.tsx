@@ -58,7 +58,6 @@ export default function MeScreen() {
 
   async function onLogout(): Promise<void> {
     await clearClientSession();
-    router.replace('/');
   }
 
   function confirmLogout(): void {
