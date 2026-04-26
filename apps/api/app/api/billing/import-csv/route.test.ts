@@ -1,12 +1,17 @@
 import type { User } from '@supabase/supabase-js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { requireAuthenticatedUserMock, withRequestLoggingMock, importCsvMock } =
-  vi.hoisted(() => ({
+const {
+  requireAuthenticatedUserMock,
+  withRequestLoggingMock,
+  ensurePersistentUserMock,
+  importCsvMock,
+} = vi.hoisted(() => ({
     requireAuthenticatedUserMock: vi.fn(),
     withRequestLoggingMock: vi.fn(
       async (_request: Request, handler: () => Promise<Response>) => handler(),
     ),
+    ensurePersistentUserMock: vi.fn(),
     importCsvMock: vi.fn(),
   }));
 
@@ -25,6 +30,10 @@ vi.mock('../../../../lib/middleware/require-authenticated-user', () => ({
     }
   },
   requireAuthenticatedUser: requireAuthenticatedUserMock,
+}));
+
+vi.mock('../../../../lib/auth/ensure-persistent-user', () => ({
+  ensurePersistentUser: ensurePersistentUserMock,
 }));
 
 vi.mock('../../../../lib/billing/import-service', () => ({
@@ -63,6 +72,7 @@ describe('POST /api/billing/import-csv', () => {
       accessToken: 'token',
       user: createUser(),
     });
+    ensurePersistentUserMock.mockResolvedValue(undefined);
   });
 
   it('imports a CSV file for the authenticated user', async () => {
@@ -87,6 +97,11 @@ describe('POST /api/billing/import-csv', () => {
       expect.objectContaining({
         fileName: 'bill.csv',
         userId: 'user-1',
+      }),
+    );
+    expect(ensurePersistentUserMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'user-1',
       }),
     );
     expect(response.status).toBe(200);
@@ -130,4 +145,3 @@ describe('POST /api/billing/import-csv', () => {
     });
   });
 });
-

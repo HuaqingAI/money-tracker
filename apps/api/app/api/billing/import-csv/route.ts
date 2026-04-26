@@ -6,6 +6,7 @@ import {
 import type { NextRequest } from 'next/server';
 
 import { errorResponse, successResponse } from '../../../../lib/api-response';
+import { ensurePersistentUser } from '../../../../lib/auth/ensure-persistent-user';
 import { BillingImportError } from '../../../../lib/billing/errors';
 import { getBillingImportService } from '../../../../lib/billing/import-service';
 import { logger } from '../../../../lib/logger';
@@ -41,6 +42,8 @@ export function POST(request: NextRequest): Promise<Response> {
   return withRequestLogging(request, async () => {
     try {
       const { user } = await requireAuthenticatedUser(request);
+      await ensurePersistentUser(user);
+
       const formData = await request.formData();
       const file = formData.get('file');
 
