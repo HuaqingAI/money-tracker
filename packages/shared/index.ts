@@ -21,6 +21,15 @@ export {
 } from './schemas/notification-capture';
 export type { ApiResponse } from './types/api-response';
 export type {
+  AuthMethod,
+  AuthSession,
+  AuthUser,
+  RefreshSessionResult,
+  SendOtpResult,
+  VerifyOtpResult,
+  WechatCallbackResult,
+} from './types/auth';
+export type {
   BillingCsvColumnMapping,
   BillingCsvEncoding,
   BillingCsvParseRule,
@@ -33,15 +42,6 @@ export type {
   CsvRuleUpdateInput,
   ImportCsvResult,
 } from './types/billing';
-export type {
-  AuthMethod,
-  AuthSession,
-  AuthUser,
-  RefreshSessionResult,
-  SendOtpResult,
-  VerifyOtpResult,
-  WechatCallbackResult,
-} from './types/auth';
 export type {
   CompositeTypes,
   Database,
@@ -87,8 +87,6 @@ export {
   refreshSessionRequestSchema,
   wechatCallbackRequestSchema,
 } from './schemas/auth';
-export type { UpdateUserProfileInput } from './schemas/user';
-export { updateUserProfileSchema } from './schemas/user';
 export type {
   BillingCsvParseRuleInput,
   BillingCsvPlatformInput,
@@ -105,6 +103,8 @@ export {
   csvRuleUpdateInputSchema,
   importCsvResultSchema,
 } from './schemas/billing';
+export type { UpdateUserProfileInput } from './schemas/user';
+export { updateUserProfileSchema } from './schemas/user';
 
 // Utils
 export { formatAmountCents } from './utils/format-amount';

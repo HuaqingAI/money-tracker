@@ -12,7 +12,10 @@ import {
 } from '../../components/billing/bill-import-source-card';
 import type { BillingImportSource } from '../../components/billing/types';
 import { ApiClientError } from '../../lib/api-client';
-import { uploadBillingCsv, type BillingCsvUploadFile } from '../../lib/billing-api';
+import {
+  type BillingCsvUploadFile,
+  uploadBillingCsv,
+} from '../../lib/billing-api';
 import { useAuthStore } from '../../stores/auth-store';
 
 type UploadState = 'idle' | 'picking' | 'uploading' | 'success' | 'error';
