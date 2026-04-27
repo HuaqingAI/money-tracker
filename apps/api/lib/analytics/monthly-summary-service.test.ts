@@ -102,12 +102,12 @@ describe('monthly-summary-service', () => {
   it('falls back to live confirmed transactions when no precomputed summary exists', async () => {
     queryState.transactionRows = [
       {
-        amount_cents: 3200,
+        amount_cents: -3200,
         categories: { name: '餐饮' },
         category_id: 'cat-food',
       },
       {
-        amount_cents: 1800,
+        amount_cents: -1800,
         categories: { name: '交通' },
         category_id: 'cat-transport',
       },
@@ -178,6 +178,36 @@ describe('monthly-summary-service', () => {
         percentage: 25,
         transactionCount: 1,
       },
+    ]);
+  });
+
+  it('falls back to live transactions when a precomputed summary is empty', async () => {
+    queryState.monthlyRows = [
+      {
+        category_breakdown: {},
+        month: '2026-04-01',
+        total_cents: 0,
+      },
+    ];
+    queryState.transactionRows = [
+      {
+        amount_cents: -4200,
+        categories: { name: '餐饮' },
+        category_id: 'cat-food',
+      },
+    ];
+
+    const summary = await getMonthlySummary('user-1', '2026-04');
+
+    expect(summary.source).toBe('live');
+    expect(summary.totalExpenseCents).toBe(4200);
+    expect(summary.transactionCount).toBe(1);
+    expect(summary.categories).toEqual([
+      expect.objectContaining({
+        amountCents: 4200,
+        categoryId: 'cat-food',
+        transactionCount: 1,
+      }),
     ]);
   });
 

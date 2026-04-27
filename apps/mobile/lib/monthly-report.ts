@@ -1,4 +1,7 @@
-import { shiftMonth } from '@money-tracker/shared';
+import {
+  type MonthlyReportSummary,
+  shiftMonth,
+} from '@money-tracker/shared';
 
 export function getCurrentMonth(): string {
   const now = new Date();
@@ -16,4 +19,14 @@ export function formatMonthTitle(month: string): string {
 
 export function canGoNextMonth(month: string, nowMonth = getCurrentMonth()): boolean {
   return month < nowMonth;
+}
+
+export function hasMonthlyReportData(
+  summary: MonthlyReportSummary | undefined,
+): boolean {
+  return (
+    (summary?.transactionCount ?? 0) > 0 ||
+    Math.abs(summary?.totalExpenseCents ?? 0) > 0 ||
+    (summary?.categories.length ?? 0) > 0
+  );
 }

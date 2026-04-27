@@ -1,3 +1,4 @@
+import type { MonthlyReportSummary } from '@money-tracker/shared';
 import { describe, expect, it, vi } from 'vitest';
 
 import {
@@ -5,6 +6,7 @@ import {
   formatMonthTitle,
   getAdjacentMonth,
   getCurrentMonth,
+  hasMonthlyReportData,
 } from './monthly-report';
 
 describe('mobile monthly-report helpers', () => {
@@ -29,5 +31,25 @@ describe('mobile monthly-report helpers', () => {
     expect(getCurrentMonth()).toBe('2026-04');
 
     vi.useRealTimers();
+  });
+
+  it('treats non-zero totals as report data even when transaction counts are missing', () => {
+    const summary: MonthlyReportSummary = {
+      categories: [],
+      comparisons: {
+        previousMonth: null,
+        yearOverYear: null,
+      },
+      generatedAt: '2026-04-27T00:00:00.000Z',
+      month: '2026-04',
+      monthEnd: '2026-05-01T00:00:00.000Z',
+      monthStart: '2026-04-01T00:00:00.000Z',
+      source: 'precomputed',
+      totalExpenseCents: 1200,
+      transactionCount: 0,
+    };
+
+    expect(hasMonthlyReportData(summary)).toBe(true);
+    expect(hasMonthlyReportData(undefined)).toBe(false);
   });
 });

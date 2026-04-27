@@ -4,6 +4,7 @@ import {
   calculatePercentage,
   getUtcMonthRange,
   type Json,
+  type MonthlyCategoryInput,
   type MonthlyReportCategory,
   type MonthlyReportSummary,
   type MonthlyTrend,
@@ -16,7 +17,7 @@ import { getSupabaseAdmin } from '../db/supabase-admin';
 interface TransactionSummaryRow {
   amount_cents: number;
   category_id: string | null;
-  categories: { name: string } | null;
+  categories: { name: string } | Array<{ name: string }> | null;
 }
 
 interface MonthlySummaryRow {
@@ -58,6 +59,53 @@ function toNumber(value: unknown): number {
   return typeof value === 'number' && Number.isFinite(value) ? value : 0;
 }
 
+function toExpenseCents(value: number): number {
+  return Math.abs(value);
+}
+
+function getCategoryName(
+  categories: TransactionSummaryRow['categories'],
+): string | null {
+  if (Array.isArray(categories)) {
+    return categories[0]?.name ?? null;
+  }
+
+  return categories?.name ?? null;
+}
+
+function shouldTreatPositiveAmountsAsExpenses(
+  rows: TransactionSummaryRow[],
+): boolean {
+  return rows.every((row) => row.amount_cents >= 0);
+}
+
+function getLiveExpenseRows(rows: TransactionSummaryRow[]): MonthlyCategoryInput[] {
+  const positiveAmountsAreExpenses = shouldTreatPositiveAmountsAsExpenses(rows);
+
+  return rows
+    .map((row) => {
+      if (row.amount_cents > 0 && !positiveAmountsAreExpenses) {
+        return null;
+      }
+
+      const amountCents = toExpenseCents(row.amount_cents);
+      if (amountCents <= 0) {
+        return null;
+      }
+
+      return {
+        amountCents,
+        categoryId: row.category_id,
+        categoryName: getCategoryName(row.categories),
+      };
+    })
+    .filter((row): row is MonthlyCategoryInput => row !== null);
+}
+
+function sumExpenseCents(rows: MonthlyCategoryInput[]): number {
+  return rows.reduce((sum, row) => sum + row.amountCents, 0);
+}
+
 function sumCategoryTransactions(categories: MonthlyReportCategory[]): number {
   return categories.reduce(
     (sum, category) => sum + category.transactionCount,
@@ -76,7 +124,9 @@ function parseCategoryBreakdown(
   const categories: MonthlyReportCategory[] = Object.entries(categoryBreakdown).map(
     ([key, rawValue]) => {
       const value = isObject(rawValue) ? (rawValue as CategoryBreakdownValue) : {};
-      const amountCents = toNumber(value.amount_cents ?? value.amountCents);
+      const amountCents = toExpenseCents(
+        toNumber(value.amount_cents ?? value.amountCents),
+      );
       const transactionCount = toNumber(
         value.count ?? value.transaction_count ?? value.transactionCount,
       );
@@ -92,7 +142,7 @@ function parseCategoryBreakdown(
         transactionCount,
       };
     },
-  );
+  ).filter((category) => category.amountCents > 0);
 
   return categories.sort(
     (a, b) => b.amountCents - a.amountCents || a.categoryName.localeCompare(b.categoryName),
@@ -156,21 +206,40 @@ async function fetchLiveTransactionRows(
 }
 
 function rowsToTrendPoint(month: string, rows: TransactionSummaryRow[]): MonthlyTrendPoint {
+  const expenseRows = getLiveExpenseRows(rows);
+
   return {
     month,
-    totalExpenseCents: rows.reduce((sum, row) => sum + row.amount_cents, 0),
-    transactionCount: rows.length,
+    totalExpenseCents: sumExpenseCents(expenseRows),
+    transactionCount: expenseRows.length,
+  };
+}
+
+function precomputedToTrendPoint(
+  month: string,
+  row: MonthlySummaryRow,
+): MonthlyTrendPoint | null {
+  const totalExpenseCents = toExpenseCents(row.total_cents);
+  const transactionCount = countTransactionsFromBreakdown(row.category_breakdown);
+
+  if (totalExpenseCents <= 0 && transactionCount <= 0) {
+    return null;
+  }
+
+  return {
+    month,
+    totalExpenseCents,
+    transactionCount,
   };
 }
 
 async function getTrendPoint(userId: string, month: string): Promise<MonthlyTrendPoint> {
   const precomputed = await fetchPrecomputedSummary(userId, month);
   if (precomputed) {
-    return {
-      month,
-      totalExpenseCents: precomputed.total_cents,
-      transactionCount: countTransactionsFromBreakdown(precomputed.category_breakdown),
-    };
+    const point = precomputedToTrendPoint(month, precomputed);
+    if (point) {
+      return point;
+    }
   }
 
   return rowsToTrendPoint(month, await fetchLiveTransactionRows(userId, month));
@@ -182,19 +251,19 @@ async function getOptionalTrendPoint(
 ): Promise<MonthlyTrendPoint | null> {
   const precomputed = await fetchPrecomputedSummary(userId, month);
   if (precomputed) {
-    return {
-      month,
-      totalExpenseCents: precomputed.total_cents,
-      transactionCount: countTransactionsFromBreakdown(precomputed.category_breakdown),
-    };
+    const point = precomputedToTrendPoint(month, precomputed);
+    if (point) {
+      return point;
+    }
   }
 
   const rows = await fetchLiveTransactionRows(userId, month);
-  if (rows.length === 0) {
+  const point = rowsToTrendPoint(month, rows);
+  if (point.transactionCount === 0 && point.totalExpenseCents === 0) {
     return null;
   }
 
-  return rowsToTrendPoint(month, rows);
+  return point;
 }
 
 export async function getMonthlySummary(
@@ -209,44 +278,43 @@ export async function getMonthlySummary(
   ]);
 
   if (precomputed) {
+    const totalExpenseCents = toExpenseCents(precomputed.total_cents);
     const categories = parseCategoryBreakdown(
       precomputed.category_breakdown,
-      precomputed.total_cents,
+      totalExpenseCents,
     );
     const transactionCount = sumCategoryTransactions(categories);
 
-    return {
-      categories,
-      comparisons: buildMonthlyComparisons(
+    if (totalExpenseCents > 0 || transactionCount > 0 || categories.length > 0) {
+      return {
+        categories,
+        comparisons: buildMonthlyComparisons(
+          month,
+          [
+            yearOverYearPoint,
+            previousMonthPoint,
+            {
+              month,
+              totalExpenseCents,
+              transactionCount,
+            },
+          ].filter((point): point is MonthlyTrendPoint => point !== null),
+        ),
+        generatedAt: new Date().toISOString(),
         month,
-        [
-          yearOverYearPoint,
-          previousMonthPoint,
-          {
-            month,
-            totalExpenseCents: precomputed.total_cents,
-            transactionCount,
-          },
-        ].filter((point): point is MonthlyTrendPoint => point !== null),
-      ),
-      generatedAt: new Date().toISOString(),
-      month,
-      monthEnd: range.end,
-      monthStart: range.start,
-      source: 'precomputed',
-      totalExpenseCents: precomputed.total_cents,
-      transactionCount,
-    };
+        monthEnd: range.end,
+        monthStart: range.start,
+        source: 'precomputed',
+        totalExpenseCents,
+        transactionCount,
+      };
+    }
   }
 
   const rows = await fetchLiveTransactionRows(userId, month);
-  const categories = aggregateMonthlyCategories(
-    rows.map((row) => ({
-      amountCents: row.amount_cents,
-      categoryId: row.category_id,
-      categoryName: row.categories?.name ?? null,
-    })),
-  );
+  const expenseRows = getLiveExpenseRows(rows);
+  const categories = aggregateMonthlyCategories(expenseRows);
+  const totalExpenseCents = sumExpenseCents(expenseRows);
 
   return {
     categories,
@@ -263,8 +331,8 @@ export async function getMonthlySummary(
     monthEnd: range.end,
     monthStart: range.start,
     source: 'live',
-    totalExpenseCents: rows.reduce((sum, row) => sum + row.amount_cents, 0),
-    transactionCount: rows.length,
+    totalExpenseCents,
+    transactionCount: expenseRows.length,
   };
 }
 
@@ -288,7 +356,7 @@ async function fetchPrecomputedTrendPoints(
 
   return ((data ?? []) as MonthlySummaryRow[]).map((row) => ({
     month: toMonthStringFromDate(row.month),
-    totalExpenseCents: row.total_cents,
+    totalExpenseCents: toExpenseCents(row.total_cents),
     transactionCount: countTransactionsFromBreakdown(row.category_breakdown),
   }));
 }

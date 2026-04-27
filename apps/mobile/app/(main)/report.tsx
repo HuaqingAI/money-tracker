@@ -13,6 +13,7 @@ import {
   formatMonthTitle,
   getAdjacentMonth,
   getCurrentMonth,
+  hasMonthlyReportData,
 } from '../../lib/monthly-report';
 import { useAuthStore } from '../../stores/auth-store';
 
@@ -27,7 +28,7 @@ const CATEGORY_COLORS = [
 ] as const;
 
 function amountText(cents: number): string {
-  return `¥${(cents / 100).toLocaleString('zh-CN', {
+  return `¥${(Math.abs(cents) / 100).toLocaleString('zh-CN', {
     maximumFractionDigits: 2,
     minimumFractionDigits: 2,
   })}`;
@@ -168,7 +169,7 @@ export default function MonthlyReportScreen() {
 
   const isLoading = summaryQuery.isLoading || trendQuery.isLoading;
   const hasError = summaryQuery.isError || trendQuery.isError;
-  const hasData = (summary?.transactionCount ?? 0) > 0;
+  const hasData = hasMonthlyReportData(summary);
 
   return (
     <SafeAreaView style={{ backgroundColor: '#F9FAFB', flex: 1 }}>
