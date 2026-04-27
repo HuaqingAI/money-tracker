@@ -91,8 +91,17 @@ function mapTransaction(input: {
     merchant: input.row.merchant,
     source: input.row.source,
     status: toBillingTransactionStatus(input.row.status),
-    transactionAt: input.row.transaction_at,
+    transactionAt: toIsoDatetime(input.row.transaction_at),
   };
+}
+
+function toIsoDatetime(value: string): string {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    throw new Error(`Invalid transaction timestamp: ${value}`);
+  }
+
+  return parsed.toISOString();
 }
 
 function toBillingTransactionStatus(status: string): BillingTransactionStatus {

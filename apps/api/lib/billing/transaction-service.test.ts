@@ -34,7 +34,7 @@ describe('TransactionService', () => {
             merchant: '包子铺',
             source: 'alipay_csv',
             status: 'confirmed',
-            transaction_at: '2026-04-27T01:00:00.000Z',
+            transaction_at: '2026-04-27 01:00:00+00',
           },
           {
             amount_cents: -900,
@@ -44,7 +44,7 @@ describe('TransactionService', () => {
             merchant: '便利店',
             source: 'wechat_csv',
             status: 'pending_confirmation',
-            transaction_at: '2026-04-26T01:00:00.000Z',
+            transaction_at: '2026-04-26 01:00:00+00',
           },
         ],
       }),
@@ -74,4 +74,3 @@ describe('TransactionService', () => {
     });
   });
 });
-
