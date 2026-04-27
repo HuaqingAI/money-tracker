@@ -43,7 +43,7 @@ describe('dashboard-api', () => {
       totalExpenseCents: 1200,
     });
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      'https://api.example.com/api/analytics/monthly-summary?month=2026-04',
+      'https://api.example.com/api/dashboard/monthly-summary?month=2026-04',
       expect.objectContaining({
         headers: expect.objectContaining({
           Authorization: 'Bearer access-token',

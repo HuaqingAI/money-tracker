@@ -8,8 +8,8 @@ const { requireAuthenticatedUserMock, withRequestLoggingMock } = vi.hoisted(() =
   ),
 }));
 
-const { getMonthlySummaryMock } = vi.hoisted(() => ({
-  getMonthlySummaryMock: vi.fn(),
+const { getMonthlyTrendMock } = vi.hoisted(() => ({
+  getMonthlyTrendMock: vi.fn(),
 }));
 
 vi.mock('../../../../lib/middleware/request-logger', () => ({
@@ -30,7 +30,7 @@ vi.mock('../../../../lib/middleware/require-authenticated-user', () => ({
 }));
 
 vi.mock('../../../../lib/analytics/monthly-summary-service', () => ({
-  getMonthlySummary: getMonthlySummaryMock,
+  getMonthlyTrend: getMonthlyTrendMock,
 }));
 
 import { GET } from './route';
@@ -47,79 +47,57 @@ function createUser(): User {
   } as User;
 }
 
-describe('GET /api/analytics/monthly-summary', () => {
+describe('GET /api/analytics/trend', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     requireAuthenticatedUserMock.mockResolvedValue({
       accessToken: 'access-token',
       user: createUser(),
     });
-    getMonthlySummaryMock.mockResolvedValue({
-      categories: [],
-      comparisons: {
-        previousMonth: null,
-        yearOverYear: null,
-      },
-      generatedAt: '2026-04-27T00:00:00.000Z',
-      month: '2026-04',
-      monthEnd: '2026-05-01T00:00:00.000Z',
-      monthStart: '2026-04-01T00:00:00.000Z',
-      source: 'live',
-      totalExpenseCents: 0,
-      transactionCount: 0,
+    getMonthlyTrendMock.mockResolvedValue({
+      endMonth: '2026-04',
+      months: 12,
+      points: [],
+      startMonth: '2025-05',
     });
   });
 
-  it('returns monthly summary for the authenticated user', async () => {
+  it('returns monthly trend points with default 12 months', async () => {
     const response = await GET(
-      new Request('https://example.com/api/analytics/monthly-summary?month=2026-04') as never,
+      new Request('https://example.com/api/analytics/trend') as never,
     );
 
-    expect(getMonthlySummaryMock).toHaveBeenCalledWith('user-1', '2026-04');
+    expect(getMonthlyTrendMock).toHaveBeenCalledWith('user-1', 12, undefined);
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toMatchObject({
       success: true,
       data: {
-        month: '2026-04',
+        months: 12,
       },
     });
   });
 
-  it('rejects invalid month query values', async () => {
+  it('supports explicit months and endMonth values', async () => {
     const response = await GET(
-      new Request('https://example.com/api/analytics/monthly-summary?month=2026-13') as never,
+      new Request('https://example.com/api/analytics/trend?months=6&endMonth=2026-03') as never,
     );
 
-    expect(getMonthlySummaryMock).not.toHaveBeenCalled();
+    expect(getMonthlyTrendMock).toHaveBeenCalledWith('user-1', 6, '2026-03');
+    expect(response.status).toBe(200);
+  });
+
+  it('rejects invalid month counts', async () => {
+    const response = await GET(
+      new Request('https://example.com/api/analytics/trend?months=25') as never,
+    );
+
+    expect(getMonthlyTrendMock).not.toHaveBeenCalled();
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({
       success: false,
       error: {
-        code: 'INVALID_MONTHLY_SUMMARY_QUERY',
-        message: 'month must use YYYY-MM format',
-      },
-    });
-  });
-
-  it('rejects unauthenticated users', async () => {
-    requireAuthenticatedUserMock.mockRejectedValue(
-      Object.assign(new Error('Missing bearer token'), {
-        code: 'AUTH_UNAUTHORIZED',
-        status: 401,
-      }),
-    );
-
-    const response = await GET(
-      new Request('https://example.com/api/analytics/monthly-summary?month=2026-04') as never,
-    );
-
-    expect(getMonthlySummaryMock).not.toHaveBeenCalled();
-    expect(response.status).toBe(401);
-    await expect(response.json()).resolves.toEqual({
-      success: false,
-      error: {
-        code: 'AUTH_UNAUTHORIZED',
-        message: 'Missing bearer token',
+        code: 'INVALID_MONTHLY_TREND_QUERY',
+        message: 'months must be at most 24',
       },
     });
   });

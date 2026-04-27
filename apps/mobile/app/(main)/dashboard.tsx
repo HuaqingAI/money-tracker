@@ -346,7 +346,7 @@ function EmptyState() {
 function ActionSection() {
   return (
     <YStack gap="$3">
-      <Button onPress={() => Alert.alert('完整报表', '月度报表将在 Story 1.7 开放。')}>
+      <Button onPress={() => router.push('/(main)/report')}>
         查看完整报表
       </Button>
       <Pressable

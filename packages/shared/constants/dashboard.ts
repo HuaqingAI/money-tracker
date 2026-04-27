@@ -1,5 +1,5 @@
 export const DASHBOARD_ROUTE_PATHS = {
-  monthlySummary: '/api/analytics/monthly-summary',
+  monthlySummary: '/api/dashboard/monthly-summary',
   recentTransactions: '/api/billing/transactions',
 } as const;
 

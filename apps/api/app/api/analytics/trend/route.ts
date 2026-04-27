@@ -1,7 +1,7 @@
-import { monthlySummaryQuerySchema } from '@money-tracker/shared';
+import { monthlyTrendQuerySchema, monthStringSchema } from '@money-tracker/shared';
 import type { NextRequest } from 'next/server';
 
-import { getMonthlySummary } from '../../../../lib/analytics/monthly-summary-service';
+import { getMonthlyTrend } from '../../../../lib/analytics/monthly-summary-service';
 import { errorResponse, successResponse } from '../../../../lib/api-response';
 import { withRequestLogging } from '../../../../lib/middleware/request-logger';
 import {
@@ -26,11 +26,7 @@ function toErrorResponse(error: unknown): Response {
     return errorResponse(code, message, status);
   }
 
-  return errorResponse(
-    'MONTHLY_SUMMARY_FAILED',
-    'Failed to load monthly summary.',
-    500,
-  );
+  return errorResponse('MONTHLY_TREND_FAILED', 'Failed to load monthly trend.', 500);
 }
 
 export function GET(request: NextRequest): Promise<Response> {
@@ -38,20 +34,37 @@ export function GET(request: NextRequest): Promise<Response> {
     try {
       const { user } = await requireAuthenticatedUser(request);
       const url = new URL(request.url);
-      const parsed = monthlySummaryQuerySchema.safeParse({
-        month: url.searchParams.get('month'),
+      const parsed = monthlyTrendQuerySchema.safeParse({
+        months: url.searchParams.get('months') ?? undefined,
       });
 
       if (!parsed.success) {
         return errorResponse(
-          'INVALID_MONTHLY_SUMMARY_QUERY',
-          parsed.error.issues[0]?.message ?? 'Invalid monthly summary query.',
+          'INVALID_MONTHLY_TREND_QUERY',
+          parsed.error.issues[0]?.message ?? 'Invalid monthly trend query.',
+          400,
+        );
+      }
+
+      const endMonthInput = url.searchParams.get('endMonth') ?? undefined;
+      const parsedEndMonth = endMonthInput
+        ? monthStringSchema.safeParse(endMonthInput)
+        : null;
+
+      if (parsedEndMonth && !parsedEndMonth.success) {
+        return errorResponse(
+          'INVALID_MONTHLY_TREND_QUERY',
+          parsedEndMonth.error.issues[0]?.message ?? 'Invalid monthly trend query.',
           400,
         );
       }
 
       return successResponse(
-        await getMonthlySummary(user.id, parsed.data.month),
+        await getMonthlyTrend(
+          user.id,
+          parsed.data.months,
+          parsedEndMonth?.success ? parsedEndMonth.data : undefined,
+        ),
       );
     } catch (error) {
       return toErrorResponse(error);
