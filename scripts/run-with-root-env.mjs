@@ -1,12 +1,11 @@
 import { spawn } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
-import { createServer } from 'node:net';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const DEFAULT_METRO_PORT = 8081;
-const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
-const REPO_ROOT = resolve(SCRIPT_DIR, '../../..');
+const scriptDir = dirname(fileURLToPath(import.meta.url));
+const rootDir = resolve(scriptDir, '..');
+const envFiles = ['.env.local'];
 
 function parseEnvLine(line) {
   const trimmed = line.trim();
@@ -33,8 +32,8 @@ function parseEnvLine(line) {
 }
 
 function loadRootEnv() {
-  for (const file of ['.env.local']) {
-    const path = resolve(REPO_ROOT, file);
+  for (const file of envFiles) {
+    const path = resolve(rootDir, file);
     if (!existsSync(path)) {
       continue;
     }
@@ -56,52 +55,28 @@ function loadRootEnv() {
 
 loadRootEnv();
 
-function canUsePort(port) {
-  return new Promise((resolve) => {
-    const server = createServer();
-
-    server.once('error', () => {
-      resolve(false);
-    });
-
-    server.once('listening', () => {
-      server.close(() => {
-        resolve(true);
-      });
-    });
-
-    server.listen(port);
-  });
+const [command, ...args] = process.argv.slice(2);
+if (!command) {
+  console.error('Usage: node scripts/run-with-root-env.mjs <command> [...args]');
+  process.exit(1);
 }
 
-async function findAvailablePort(startPort) {
-  let port = startPort;
-
-  while (!(await canUsePort(port))) {
-    port += 1;
+function quoteWindowsArg(value) {
+  if (/^[\w./:@=-]+$/u.test(value)) {
+    return value;
   }
 
-  return port;
+  return `"${value.replace(/"/g, '\\"')}"`;
 }
 
-const requestedPort = Number.parseInt(
-  process.env.EXPO_DEV_PORT ?? process.env.RCT_METRO_PORT ?? `${DEFAULT_METRO_PORT}`,
-  10,
-);
-const startPort = Number.isNaN(requestedPort) ? DEFAULT_METRO_PORT : requestedPort;
-const port = await findAvailablePort(startPort);
-
-if (port !== startPort) {
-  console.log(`Metro port ${startPort} is unavailable; starting Expo on ${port}.`);
-}
-
-const child = spawn('expo', ['start', '--port', `${port}`], {
-  env: {
-    ...process.env,
-    EXPO_OFFLINE: process.env.EXPO_OFFLINE ?? '1',
-    RCT_METRO_PORT: `${port}`,
-  },
-  shell: true,
+const child = process.platform === 'win32'
+  ? spawn([command, ...args].map(quoteWindowsArg).join(' '), {
+      env: process.env,
+      shell: true,
+      stdio: 'inherit',
+    })
+  : spawn(command, args, {
+  env: process.env,
   stdio: 'inherit',
 });
 

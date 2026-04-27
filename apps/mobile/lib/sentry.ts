@@ -16,11 +16,7 @@ import * as Sentry from '@sentry/react-native';
 export function initSentry(): void {
   const dsn = process.env.EXPO_PUBLIC_SENTRY_DSN;
 
-  // 未配置 DSN 时跳过初始化（本地开发友好）
-  if (!dsn) {
-    return;
-  }
-
+  // 未配置 DSN 时仍初始化为 disabled，避免 Sentry.wrap() 早于 Sentry.init()。
   Sentry.init({
     dsn,
     environment: process.env.EXPO_PUBLIC_SENTRY_ENVIRONMENT ?? 'development',
@@ -33,6 +29,8 @@ export function initSentry(): void {
     sendDefaultPii: false,
     // 禁用 debug 模式避免生产环境大量日志
     debug: false,
+    // Keep Sentry initialized before Sentry.wrap() even when local DSN is absent.
+    enabled: Boolean(dsn),
   });
 }
 

@@ -40,6 +40,28 @@ export type {
   WechatCallbackResult,
 } from './types/auth';
 export type {
+  BillingCsvColumnMapping,
+  BillingCsvEncoding,
+  BillingCsvParseRule,
+  BillingCsvPlatform,
+  BillingImportErrorCode,
+  BillingNormalizedTransaction,
+  BillingRoutePath,
+  BillingTransactionSource,
+  BillingTransactionStatus,
+  CsvRuleUpdateInput,
+  ImportCsvResult,
+} from './types/billing';
+export type {
+  CategorySummary,
+  DashboardErrorCode,
+  DashboardRoutePath,
+  DashboardSpotlight,
+  MonthlySummary,
+  RecentTransaction,
+  RecentTransactionsResult,
+} from './types/dashboard';
+export type {
   CompositeTypes,
   Database,
   Enums,
@@ -60,6 +82,21 @@ export {
   AUTH_REFRESH_TOKEN_TTL_SECONDS,
   AUTH_ROUTE_PATHS,
 } from './constants/auth';
+export {
+  BILLING_CSV_PLATFORMS,
+  BILLING_IMPORT_ERROR_CODES,
+  BILLING_IMPORT_MAX_FILE_SIZE_BYTES,
+  BILLING_ROUTE_PATHS,
+  BILLING_TRANSACTION_SOURCES,
+  BILLING_TRANSACTION_STATUS,
+} from './constants/billing';
+export {
+  DASHBOARD_CATEGORY_DISPLAY,
+  DASHBOARD_ERROR_CODES,
+  DASHBOARD_RECENT_TRANSACTIONS_DEFAULT_LIMIT,
+  DASHBOARD_RECENT_TRANSACTIONS_MAX_LIMIT,
+  DASHBOARD_ROUTE_PATHS,
+} from './constants/dashboard';
 
 // Schemas
 export type { MonthlySummaryQuery, MonthlyTrendQuery } from './schemas/analytics';
@@ -82,6 +119,37 @@ export {
   refreshSessionRequestSchema,
   wechatCallbackRequestSchema,
 } from './schemas/auth';
+export type {
+  BillingCsvParseRuleInput,
+  BillingCsvPlatformInput,
+  BillingNormalizedTransactionInput,
+  CsvRuleUpdateInputSchema,
+  ImportCsvResultInput,
+} from './schemas/billing';
+export {
+  billingCsvColumnMappingSchema,
+  billingCsvEncodingSchema,
+  billingCsvParseRuleSchema,
+  billingCsvPlatformSchema,
+  billingNormalizedTransactionSchema,
+  csvRuleUpdateInputSchema,
+  importCsvResultSchema,
+} from './schemas/billing';
+export type {
+  DashboardMonthInput,
+  DashboardRecentTransactionsLimitInput,
+  MonthlySummaryInput,
+  RecentTransactionsResultInput,
+} from './schemas/dashboard';
+export {
+  dashboardCategorySummarySchema,
+  dashboardMonthSchema,
+  dashboardRecentTransactionsLimitSchema,
+  dashboardSpotlightSchema,
+  monthlySummarySchema,
+  recentTransactionSchema,
+  recentTransactionsResultSchema,
+} from './schemas/dashboard';
 export type { UpdateUserProfileInput } from './schemas/user';
 export { updateUserProfileSchema } from './schemas/user';
 

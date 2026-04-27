@@ -4,6 +4,7 @@ node_modules/
 # Build outputs
 dist/
 .next/
+.next-dev/
 .expo/
 ios/
 android/
@@ -15,8 +16,8 @@ android/
 .tamagui/
 
 # Environment files
-.env
-.env.local
+/.env
+apps/*/.env
 .env.development
 .env.production
 deploy/.env.prod

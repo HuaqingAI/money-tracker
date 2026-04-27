@@ -60,7 +60,7 @@ describe('auth-store', () => {
     vi.useRealTimers();
   });
 
-  it('stores session fields and routes onboarded users to the account area', () => {
+  it('stores session fields and routes onboarded users to Dashboard', () => {
     useAuthStore.getState().setSession(createSession());
 
     const state = useAuthStore.getState();
@@ -71,7 +71,7 @@ describe('auth-store', () => {
       nickname: 'Sue',
       userId: 'user-1',
     });
-    expect(state.getNextPath()).toBe('/(main)/me');
+    expect(state.getNextPath()).toBe('/(main)/dashboard');
   });
 
   it('routes users with pending onboarding to permissions', () => {

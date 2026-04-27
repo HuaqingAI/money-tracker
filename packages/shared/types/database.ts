@@ -969,7 +969,9 @@ export type Database = {
           category_id: string | null
           created_at: string
           description: string | null
+          external_transaction_id: string | null
           id: string
+          import_dedupe_key: string | null
           merchant: string | null
           source: string | null
           status: string
@@ -982,7 +984,9 @@ export type Database = {
           category_id?: string | null
           created_at?: string
           description?: string | null
+          external_transaction_id?: string | null
           id?: string
+          import_dedupe_key?: string | null
           merchant?: string | null
           source?: string | null
           status: string
@@ -995,7 +999,9 @@ export type Database = {
           category_id?: string | null
           created_at?: string
           description?: string | null
+          external_transaction_id?: string | null
           id?: string
+          import_dedupe_key?: string | null
           merchant?: string | null
           source?: string | null
           status?: string
@@ -1018,7 +1024,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      upsert_csv_parse_rule: {
+        Args: {
+          p_platform: string
+          p_version: string
+          p_rule_config: Json
+          p_is_active?: boolean
+        }
+        Returns: Database["billing"]["Tables"]["csv_parse_rules"]["Row"]
+      }
     }
     Enums: {
       [_ in never]: never

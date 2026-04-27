@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node ../../scripts/run-with-root-env.mjs next dev",
     "build": "pnpm run build:worker && next build",
     "build:worker": "tsc --project tsconfig.worker.json",
     "start": "next start",
@@ -12,7 +12,7 @@
     "test": "pnpm exec vitest run --config ../../vitest.config.ts --dir .",
     "worker": "tsx worker/index.ts",
     "worker:start": "node dist/worker/index.js",
-    "clean": "rm -rf .next dist"
+    "clean": "rm -rf .next .next-dev dist"
   },
   "dependencies": {
     "@money-tracker/shared": "workspace:*",

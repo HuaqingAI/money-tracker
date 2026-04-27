@@ -125,6 +125,7 @@ export default function MeScreen() {
           <Divider />
           <Button onPress={() => router.push('/(main)/profile')}>Edit Profile</Button>
           <Button onPress={() => router.push('/(main)/settings')}>Basic Settings</Button>
+          <Button onPress={() => router.push('/(setup)/bill-import')}>账单导入</Button>
           <Button onPress={confirmLogout}>Log Out</Button>
         </AccountCard>
       </YStack>
