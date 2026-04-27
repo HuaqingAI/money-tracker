@@ -75,7 +75,9 @@ function encodeUtf8(text: string): Uint8Array {
 
 describe('BillingImportService', () => {
   beforeEach(() => {
-    vi.spyOn(crypto, 'randomUUID').mockReturnValue('import-1');
+    vi.spyOn(crypto, 'randomUUID').mockReturnValue(
+      '11111111-1111-4111-8111-111111111111',
+    );
   });
 
   it('deduplicates existing rows from development legacy schema fallback', async () => {
@@ -144,7 +146,7 @@ describe('BillingImportService', () => {
       importedCount: 1,
       duplicateCount: 2,
       failedCount: 0,
-      importId: 'import-1',
+      importId: '11111111-1111-4111-8111-111111111111',
       platform: 'wechat',
     });
     expect(transactionRepository.source).toBe('wechat_csv');

@@ -43,6 +43,15 @@ export type {
   ImportCsvResult,
 } from './types/billing';
 export type {
+  CategorySummary,
+  DashboardErrorCode,
+  DashboardRoutePath,
+  DashboardSpotlight,
+  MonthlySummary,
+  RecentTransaction,
+  RecentTransactionsResult,
+} from './types/dashboard';
+export type {
   CompositeTypes,
   Database,
   Enums,
@@ -71,6 +80,13 @@ export {
   BILLING_TRANSACTION_SOURCES,
   BILLING_TRANSACTION_STATUS,
 } from './constants/billing';
+export {
+  DASHBOARD_CATEGORY_DISPLAY,
+  DASHBOARD_ERROR_CODES,
+  DASHBOARD_RECENT_TRANSACTIONS_DEFAULT_LIMIT,
+  DASHBOARD_RECENT_TRANSACTIONS_MAX_LIMIT,
+  DASHBOARD_ROUTE_PATHS,
+} from './constants/dashboard';
 
 // Schemas
 export type {
@@ -103,6 +119,21 @@ export {
   csvRuleUpdateInputSchema,
   importCsvResultSchema,
 } from './schemas/billing';
+export type {
+  DashboardMonthInput,
+  DashboardRecentTransactionsLimitInput,
+  MonthlySummaryInput,
+  RecentTransactionsResultInput,
+} from './schemas/dashboard';
+export {
+  dashboardCategorySummarySchema,
+  dashboardMonthSchema,
+  dashboardRecentTransactionsLimitSchema,
+  dashboardSpotlightSchema,
+  monthlySummarySchema,
+  recentTransactionSchema,
+  recentTransactionsResultSchema,
+} from './schemas/dashboard';
 export type { UpdateUserProfileInput } from './schemas/user';
 export { updateUserProfileSchema } from './schemas/user';
 
