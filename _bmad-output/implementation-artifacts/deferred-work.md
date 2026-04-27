@@ -20,3 +20,7 @@ Items deferred during development or code review. Track here so they surface in 
 - **头像长期持久化仍需 Supabase Storage 能力** - 当前资料页使用系统图片选择器，并允许 `file://` / `content://` URI 作为 MVP 本机会话展示与保存输入；跨设备、重装后恢复、CDN 访问应在后续 story 实现上传、访问控制、删除账户时清理 Storage object。
 - **高保真原型字段必须进入 story AC/数据模型审查** - Story 1.8 的 AC2 只写昵称/头像，但原型还有性别/生日，导致初版 review 未要求落库。后续 story review 前应增加“原型字段逐项映射到 AC、schema、API payload、UI 状态”的检查项。
 - **真机验收路径需要纳入移动端 Definition of Done** - 本次资料保存失败包含 Expo 真机访问 `localhost` 的环境问题。移动端 story 的 DoD 应包含至少一次真机或等效网络路径验证，覆盖登录后业务 API 保存类操作。
+
+## Deferred from: code review of story-1-7-monthly-report (2026-04-27)
+
+- **月报实时口径是否纳入待确认账单** - 虽然未确认分类，但它仍是真实消费；如果不展示在报表里，用户会以为报表丢失了这部分消费。后续需要单独设计 pending 账单在月报中的呈现形式与对比口径。

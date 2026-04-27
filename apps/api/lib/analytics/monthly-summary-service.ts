@@ -26,6 +26,11 @@ interface MonthlySummaryRow {
   total_cents: number;
 }
 
+interface CategoryRow {
+  id: string;
+  name: string;
+}
+
 interface CategoryBreakdownValue {
   amount_cents?: unknown;
   amountCents?: unknown;
@@ -116,6 +121,7 @@ function sumCategoryTransactions(categories: MonthlyReportCategory[]): number {
 function parseCategoryBreakdown(
   categoryBreakdown: Json,
   totalCents: number,
+  categoryNameById = new Map<string, string>(),
 ): MonthlyReportCategory[] {
   if (!isObject(categoryBreakdown)) {
     return [];
@@ -131,8 +137,13 @@ function parseCategoryBreakdown(
         value.count ?? value.transaction_count ?? value.transactionCount,
       );
       const rawName = value.category_name ?? value.categoryName;
-      const categoryName = typeof rawName === 'string' && rawName.trim() ? rawName : '其他';
       const categoryId = UNCATEGORIZED_KEYS.has(key) ? null : key;
+      const categoryName =
+        typeof rawName === 'string' && rawName.trim()
+          ? rawName
+          : categoryId
+            ? categoryNameById.get(categoryId) ?? '其他'
+            : '其他';
 
       return {
         amountCents,
@@ -149,11 +160,40 @@ function parseCategoryBreakdown(
   );
 }
 
+function extractCategoryIds(categoryBreakdown: Json): string[] {
+  if (!isObject(categoryBreakdown)) {
+    return [];
+  }
+
+  return Object.keys(categoryBreakdown).filter(
+    (key) => !UNCATEGORIZED_KEYS.has(key),
+  );
+}
+
 function countTransactionsFromBreakdown(categoryBreakdown: Json): number {
   return parseCategoryBreakdown(categoryBreakdown, 0).reduce(
     (sum, category) => sum + category.transactionCount,
     0,
   );
+}
+
+async function fetchCategoryNameById(categoryIds: string[]): Promise<Map<string, string>> {
+  const uniqueIds = [...new Set(categoryIds)];
+  if (uniqueIds.length === 0) {
+    return new Map();
+  }
+
+  const { data, error } = await getSupabaseAdmin()
+    .schema('billing')
+    .from('categories')
+    .select('id,name')
+    .in('id', uniqueIds);
+
+  if (error) {
+    throw new Error(`Failed to load categories: ${error.message}`);
+  }
+
+  return new Map(((data ?? []) as CategoryRow[]).map((row) => [row.id, row.name]));
 }
 
 async function fetchPrecomputedSummary(
@@ -279,9 +319,13 @@ export async function getMonthlySummary(
 
   if (precomputed) {
     const totalExpenseCents = toExpenseCents(precomputed.total_cents);
+    const categoryNameById = await fetchCategoryNameById(
+      extractCategoryIds(precomputed.category_breakdown),
+    );
     const categories = parseCategoryBreakdown(
       precomputed.category_breakdown,
       totalExpenseCents,
+      categoryNameById,
     );
     const transactionCount = sumCategoryTransactions(categories);
 
@@ -354,11 +398,9 @@ async function fetchPrecomputedTrendPoints(
     throw new Error(`Failed to load monthly trend: ${error.message}`);
   }
 
-  return ((data ?? []) as MonthlySummaryRow[]).map((row) => ({
-    month: toMonthStringFromDate(row.month),
-    totalExpenseCents: toExpenseCents(row.total_cents),
-    transactionCount: countTransactionsFromBreakdown(row.category_breakdown),
-  }));
+  return ((data ?? []) as MonthlySummaryRow[])
+    .map((row) => precomputedToTrendPoint(toMonthStringFromDate(row.month), row))
+    .filter((point): point is MonthlyTrendPoint => point !== null);
 }
 
 export async function getMonthlyTrend(

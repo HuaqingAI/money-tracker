@@ -1,6 +1,6 @@
 # Story 1.7: 月度报表
 
-Status: review
+Status: done
 
 ## Story
 
@@ -79,6 +79,17 @@ So that 我能了解每月的消费结构和变化趋势。
   - [x] 4.3 记录验证结果，更新 File List、Completion Notes、Change Log
   - [x] 4.4 将 Story 状态更新为 review
 
+### Review Findings
+
+- [x] [Review][Defer] 月报实时口径是否纳入待确认账单 [apps/api/lib/analytics/monthly-summary-service.ts:197] - deferred：虽然未确认分类，但它仍是真实消费；如果不展示在报表里，用户会以为报表丢失了这部分消费。后续需要单独设计 pending 账单在月报中的呈现形式与对比口径。
+- [x] [Review][Patch] 预聚合分类没有按 category_id 回填分类名 [apps/api/lib/analytics/monthly-summary-service.ts:124]
+- [x] [Review][Patch] 趋势接口遇到空预聚合点时不会 fallback 到 live transactions [apps/api/lib/analytics/monthly-summary-service.ts:357]
+- [x] [Review][Patch] 缺少对比月份时前端仍展示趋势对比槽位 [apps/mobile/app/(main)/report.tsx:319]
+- [x] [Review][Patch] 页面仍展示结余/收入占位，偏离“只实现支出月报、不伪造收入/结余”的约束 [apps/mobile/app/(main)/report.tsx:234]
+- [x] [Review][Patch] 月报 React Query cache key 未包含用户作用域 [apps/mobile/app/(main)/report.tsx:140]
+- [x] [Review][Patch] 月报服务测试 mock 没有真正验证 user_id 与月份边界过滤 [apps/api/lib/analytics/monthly-summary-service.test.ts:27]
+- [x] [Review][Patch] 空状态未承接指定 empty-monthly-report 插画参考 [apps/mobile/app/(main)/report.tsx:113]
+
 ## Dev Notes
 
 ### 架构约束
@@ -134,6 +145,7 @@ GPT-5 Codex
 - 2026-04-27：新增 `GET /api/analytics/monthly-summary` 和 `GET /api/analytics/trend`，通过 Bearer JWT 鉴权并仅查询当前用户数据；月报优先读 `analytics.monthly_summaries`，缺失时从 confirmed 交易实时聚合。
 - 2026-04-27：新增移动端月报页、Dashboard 入口、月报 API client 和月份切换 helper，覆盖加载、错误、空状态、分类明细和趋势对比。
 - 2026-04-27：完成全量单元测试、lint、build 验证，Story 状态更新为 review。
+- 2026-04-27：完成 code review patch：预聚合分类名回填、空预聚合趋势 fallback、移动端对比隐藏、支出口径 UI、用户作用域缓存 key、服务测试过滤覆盖和空状态插画语义。
 
 ### Verification
 
@@ -147,6 +159,12 @@ GPT-5 Codex
 - PASS: root `pnpm test`
 - PASS: root `pnpm lint`
 - PASS: root `pnpm build`
+- PASS: review patch `pnpm --filter api test -- lib/analytics/monthly-summary-service.test.ts`
+- PASS: review patch `pnpm --filter mobile exec tsc --noEmit`
+- PASS: review patch `pnpm --filter api exec tsc --noEmit`
+- PASS: review patch root `pnpm test`
+- PASS: review patch root `pnpm lint`
+- PASS: review patch root `pnpm build`
 
 ### File List
 
@@ -174,3 +192,4 @@ GPT-5 Codex
 
 - 2026-04-27：创建 Story 1.7 月度报表实现说明与任务清单。
 - 2026-04-27：完成月报 shared 类型/工具、API 聚合接口、移动端报表页和验证收尾，Story 状态进入 review。
+- 2026-04-27：完成 code review patch 并将 Story 状态更新为 done。

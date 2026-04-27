@@ -106,22 +106,114 @@ function SkeletonState() {
   );
 }
 
+function EmptyReportIllustration() {
+  const rows = [0, 1, 2];
+  const columns = [0, 1, 2, 3, 4, 5, 6];
+
+  return (
+    <View
+      style={{
+        alignItems: 'center',
+        height: 150,
+        justifyContent: 'center',
+        width: 168,
+      }}
+    >
+      <View
+        style={{
+          backgroundColor: '#EEF9F6',
+          borderRadius: 64,
+          height: 128,
+          opacity: 0.8,
+          position: 'absolute',
+          width: 128,
+        }}
+      />
+      <View
+        style={{
+          backgroundColor: '#FFFFFF',
+          borderColor: '#1A6B5A',
+          borderRadius: 8,
+          borderWidth: 2,
+          height: 104,
+          overflow: 'hidden',
+          width: 124,
+        }}
+      >
+        <View style={{ backgroundColor: '#1A6B5A', height: 28 }} />
+        <YStack gap="$2" padding="$3">
+          {rows.map((row) => (
+            <XStack gap="$3" key={row}>
+              {columns.map((column) => (
+                <View
+                  key={column}
+                  style={{
+                    backgroundColor: '#E5E7EB',
+                    borderRadius: 3,
+                    height: 5,
+                    width: 5,
+                  }}
+                />
+              ))}
+            </XStack>
+          ))}
+          <View
+            style={{
+              backgroundColor: '#F9FAFB',
+              borderColor: '#E5E7EB',
+              borderRadius: 4,
+              borderWidth: 1,
+              height: 18,
+              justifyContent: 'center',
+              marginTop: 2,
+              paddingHorizontal: 8,
+            }}
+          >
+            <View
+              style={{
+                borderColor: '#D1D5DB',
+                borderStyle: 'dashed',
+                borderTopWidth: 2,
+              }}
+            />
+          </View>
+        </YStack>
+      </View>
+      <View
+        style={{
+          alignItems: 'center',
+          bottom: 4,
+          position: 'absolute',
+          right: 24,
+        }}
+      >
+        <View
+          style={{
+            backgroundColor: '#1A6B5A',
+            borderRadius: 2,
+            height: 24,
+            width: 4,
+          }}
+        />
+        <View
+          style={{
+            backgroundColor: '#A8DDD6',
+            borderRadius: 12,
+            height: 10,
+            transform: [{ rotate: '-22deg' }],
+            width: 24,
+          }}
+        />
+      </View>
+    </View>
+  );
+}
+
 function EmptyState({ onImport }: { onImport: () => void }) {
   return (
     <Card>
       <YStack alignItems="center" gap="$3">
-        <View
-          style={{
-            alignItems: 'center',
-            backgroundColor: '#EEF2FF',
-            borderRadius: 44,
-            height: 88,
-            justifyContent: 'center',
-            width: 88,
-          }}
-        >
-          <Text variant="metric">0</Text>
-        </View>
+        <EmptyReportIllustration />
         <Text variant="h2">本月暂无消费记录</Text>
         <Text textAlign="center" variant="caption">
           导入账单或开启自动识别后，月度报表会自动生成。
@@ -135,20 +227,24 @@ function EmptyState({ onImport }: { onImport: () => void }) {
 export default function MonthlyReportScreen() {
   const [month, setMonth] = useState(getCurrentMonth);
   const accessToken = useAuthStore((state) => state.accessToken);
+  const userId = useAuthStore((state) => state.user.userId ?? state.authUser?.id ?? null);
   const summaryQuery = useQuery({
-    enabled: !!accessToken,
+    enabled: !!accessToken && !!userId,
     queryFn: () => fetchMonthlySummary(accessToken as string, month),
-    queryKey: ['monthly-summary', month],
+    queryKey: ['monthly-summary', userId, month],
     staleTime: 5 * 60 * 1000,
   });
   const trendQuery = useQuery({
-    enabled: !!accessToken,
+    enabled: !!accessToken && !!userId,
     queryFn: () => fetchMonthlyTrend(accessToken as string, 12, month),
-    queryKey: ['monthly-trend', month],
+    queryKey: ['monthly-trend', userId, month],
     staleTime: 5 * 60 * 1000,
   });
   const summary = summaryQuery.data;
   const topCategory = summary?.categories[0] ?? null;
+  const hasComparisons = Boolean(
+    summary?.comparisons.previousMonth || summary?.comparisons.yearOverYear,
+  );
   const visibleTrendPoints = useMemo(
     () => trendQuery.data?.points.slice(-3) ?? [],
     [trendQuery.data?.points],
@@ -232,22 +328,15 @@ export default function MonthlyReportScreen() {
               </YStack>
 
               <Card>
-                <XStack justifyContent="space-between">
-                  <YStack alignItems="center" flex={1} gap="$1">
-                    <Text variant="caption">收入</Text>
-                    <Text variant="bodyMedium">暂无记录</Text>
-                  </YStack>
-                  <YStack alignItems="center" flex={1} gap="$1">
-                    <Text variant="caption">支出</Text>
-                    <Text variant="bodyMedium">
-                      {amountText(summary.totalExpenseCents)}
-                    </Text>
-                  </YStack>
-                  <YStack alignItems="center" flex={1} gap="$1">
-                    <Text variant="caption">结余</Text>
-                    <Text variant="bodyMedium">待识别</Text>
-                  </YStack>
-                </XStack>
+                <YStack gap="$2">
+                  <Text variant="caption">支出月报</Text>
+                  <Text variant="bodyMedium">
+                    已识别支出 {amountText(summary.totalExpenseCents)}
+                  </Text>
+                  <Text variant="caption">
+                    暂未识别到收入记录，本报表先聚焦支出结构。
+                  </Text>
+                </YStack>
               </Card>
 
               <Card>
@@ -314,24 +403,26 @@ export default function MonthlyReportScreen() {
               <Card>
                 <YStack gap="$3">
                   <Text variant="h2">趋势对比</Text>
-                  <XStack justifyContent="space-between">
-                    <YStack flex={1} gap="$1">
-                      <Text variant="caption">较上月</Text>
-                      <Text variant="bodyMedium">
-                        {summary.comparisons.previousMonth
-                          ? trendText(summary.comparisons.previousMonth.percentageChange)
-                          : '暂无上月数据'}
-                      </Text>
-                    </YStack>
-                    <YStack flex={1} gap="$1">
-                      <Text variant="caption">较去年同月</Text>
-                      <Text variant="bodyMedium">
-                        {summary.comparisons.yearOverYear
-                          ? trendText(summary.comparisons.yearOverYear.percentageChange)
-                          : '暂无去年数据'}
-                      </Text>
-                    </YStack>
-                  </XStack>
+                  {hasComparisons ? (
+                    <XStack justifyContent="space-between">
+                      {summary.comparisons.previousMonth ? (
+                        <YStack flex={1} gap="$1">
+                          <Text variant="caption">较上月</Text>
+                          <Text variant="bodyMedium">
+                            {trendText(summary.comparisons.previousMonth.percentageChange)}
+                          </Text>
+                        </YStack>
+                      ) : null}
+                      {summary.comparisons.yearOverYear ? (
+                        <YStack flex={1} gap="$1">
+                          <Text variant="caption">较去年同月</Text>
+                          <Text variant="bodyMedium">
+                            {trendText(summary.comparisons.yearOverYear.percentageChange)}
+                          </Text>
+                        </YStack>
+                      ) : null}
+                    </XStack>
+                  ) : null}
                   {visibleTrendPoints.length > 0 ? (
                     <YStack gap="$2">
                       {visibleTrendPoints.map((point) => (
