@@ -16,7 +16,9 @@ export const BILLING_TRANSACTION_SOURCES = {
 } as const;
 
 export const BILLING_TRANSACTION_STATUS = {
+  confirmed: 'confirmed',
   pendingConfirmation: 'pending_confirmation',
+  rejected: 'rejected',
 } as const;
 
 export const BILLING_IMPORT_ERROR_CODES = {

@@ -62,7 +62,9 @@ function getNextPathFromSession(session: AuthSession | null): AuthRoutePath {
     return AUTH_ROUTE_PATHS.welcome;
   }
 
-  return session.user.needsOnboarding ? AUTH_ROUTE_PATHS.permissions : AUTH_ROUTE_PATHS.me;
+  return session.user.needsOnboarding
+    ? AUTH_ROUTE_PATHS.permissions
+    : AUTH_ROUTE_PATHS.dashboard;
 }
 
 const initialUser: AuthSummary = {
