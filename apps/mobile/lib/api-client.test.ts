@@ -11,7 +11,12 @@ vi.mock('expo-constants', () => ({
   },
 }));
 
-import { fetchUserProfile, updateProfile } from './api-client';
+import {
+  fetchMonthlySummary,
+  fetchMonthlyTrend,
+  fetchUserProfile,
+  updateProfile,
+} from './api-client';
 
 describe('api-client', () => {
   beforeEach(() => {
@@ -91,6 +96,67 @@ describe('api-client', () => {
           nickname: 'New Name',
         }),
         method: 'PUT',
+      }),
+    );
+  });
+
+  it('fetches monthly summary with bearer auth and month query', async () => {
+    vi.mocked(globalThis.fetch).mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          success: true,
+          data: {
+            categories: [],
+            comparisons: {
+              previousMonth: null,
+              yearOverYear: null,
+            },
+            generatedAt: '2026-04-27T00:00:00.000Z',
+            month: '2026-04',
+            monthEnd: '2026-05-01T00:00:00.000Z',
+            monthStart: '2026-04-01T00:00:00.000Z',
+            source: 'live',
+            totalExpenseCents: 0,
+            transactionCount: 0,
+          },
+        }),
+      ),
+    );
+
+    await fetchMonthlySummary('access-token', '2026-04');
+
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      'http://192.168.1.20:3000/api/analytics/monthly-summary?month=2026-04',
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Authorization: 'Bearer access-token',
+        }),
+        method: 'GET',
+      }),
+    );
+  });
+
+  it('fetches monthly trend with default query parameters', async () => {
+    vi.mocked(globalThis.fetch).mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          success: true,
+          data: {
+            endMonth: '2026-04',
+            months: 12,
+            points: [],
+            startMonth: '2025-05',
+          },
+        }),
+      ),
+    );
+
+    await fetchMonthlyTrend('access-token');
+
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      'http://192.168.1.20:3000/api/analytics/trend?months=12',
+      expect.objectContaining({
+        method: 'GET',
       }),
     );
   });

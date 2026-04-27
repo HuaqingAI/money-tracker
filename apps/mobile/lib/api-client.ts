@@ -1,5 +1,7 @@
 import type {
   ApiResponse,
+  MonthlyReportSummary,
+  MonthlyTrend,
   UpdateUserProfileInput,
   UserProfile,
 } from '@money-tracker/shared';
@@ -84,5 +86,37 @@ export function deleteAccount(accessToken: string): Promise<{ deleted: boolean }
   return request<{ deleted: boolean }>('/api/user/delete-account', {
     accessToken,
     method: 'DELETE',
+  });
+}
+
+export function fetchMonthlySummary(
+  accessToken: string,
+  month: string,
+): Promise<MonthlyReportSummary> {
+  return request<MonthlyReportSummary>(
+    `/api/analytics/monthly-summary?month=${encodeURIComponent(month)}`,
+    {
+      accessToken,
+      method: 'GET',
+    },
+  );
+}
+
+export function fetchMonthlyTrend(
+  accessToken: string,
+  months = 12,
+  endMonth?: string,
+): Promise<MonthlyTrend> {
+  const params = new URLSearchParams({
+    months: String(months),
+  });
+
+  if (endMonth) {
+    params.set('endMonth', endMonth);
+  }
+
+  return request<MonthlyTrend>(`/api/analytics/trend?${params.toString()}`, {
+    accessToken,
+    method: 'GET',
   });
 }

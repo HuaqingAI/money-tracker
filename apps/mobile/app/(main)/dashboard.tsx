@@ -23,6 +23,7 @@ export default function DashboardScreen() {
         <Text variant="h1">Dashboard</Text>
         <Text variant="body">Welcome back, {displayName}</Text>
         <Button onPress={() => router.push('/(main)/me')}>我的</Button>
+        <Button onPress={() => router.push('/(main)/report')}>查看完整报表</Button>
         <Button onPress={clearSession}>Log Out</Button>
       </YStack>
     </SafeAreaView>

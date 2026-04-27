@@ -19,6 +19,16 @@ export {
   notificationRuleSetSchema,
   notificationTimeStrategySchema,
 } from './schemas/notification-capture';
+export type {
+  MonthlyReportCategory,
+  MonthlyReportComparisons,
+  MonthlyReportSource,
+  MonthlyReportSummary,
+  MonthlyTrend,
+  MonthlyTrendComparison,
+  MonthlyTrendPoint,
+  TrendDirection,
+} from './types/analytics';
 export type { ApiResponse } from './types/api-response';
 export type {
   AuthMethod,
@@ -52,6 +62,12 @@ export {
 } from './constants/auth';
 
 // Schemas
+export type { MonthlySummaryQuery, MonthlyTrendQuery } from './schemas/analytics';
+export {
+  monthlySummaryQuerySchema,
+  monthlyTrendQuerySchema,
+  monthStringSchema,
+} from './schemas/analytics';
 export type {
   OtpSendRequest,
   OtpVerifyRequest,
@@ -72,6 +88,14 @@ export { updateUserProfileSchema } from './schemas/user';
 // Utils
 export { formatAmountCents } from './utils/format-amount';
 export { maskPhoneNumber } from './utils/mask-phone-number';
+export type { MonthlyCategoryInput, UtcMonthRange } from './utils/monthly-report';
+export {
+  aggregateMonthlyCategories,
+  buildMonthlyComparisons,
+  calculatePercentage,
+  getUtcMonthRange,
+  shiftMonth,
+} from './utils/monthly-report';
 export {
   amountTextToCents,
   extractNotificationCapture,
