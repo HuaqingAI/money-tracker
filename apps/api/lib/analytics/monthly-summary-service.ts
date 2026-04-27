@@ -194,7 +194,7 @@ async function fetchLiveTransactionRows(
     .from('transactions')
     .select('amount_cents,category_id,categories(name)')
     .eq('user_id', userId)
-    .eq('status', 'confirmed')
+    .in('status', ['pending_confirmation', 'confirmed'])
     .gte('transaction_at', range.start)
     .lt('transaction_at', range.end);
 

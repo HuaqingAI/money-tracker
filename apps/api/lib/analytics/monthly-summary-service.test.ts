@@ -15,17 +15,25 @@ const queryState = vi.hoisted(() => ({
     amount_cents: number;
     category_id: string | null;
     categories: { name: string } | null;
+    status: 'confirmed' | 'pending_confirmation' | 'rejected';
   }>,
 }));
 
 const getSupabaseAdminMock = vi.hoisted(() =>
   vi.fn(() => {
     const createQuery = (table: string) => {
+      let statusFilter: string[] | null = null;
       const query = {
         eq: vi.fn(() => query),
         from: vi.fn(() => query),
         gte: vi.fn(() => query),
-        in: vi.fn(() => query),
+        in: vi.fn((column: string, values: string[]) => {
+          if (table === 'transactions' && column === 'status') {
+            statusFilter = values;
+          }
+
+          return query;
+        }),
         limit: vi.fn(() => query),
         lte: vi.fn(() => query),
         lt: vi.fn(() => query),
@@ -48,8 +56,13 @@ const getSupabaseAdminMock = vi.hoisted(() =>
           reject: (reason?: unknown) => void,
         ) => {
           if (table === 'transactions') {
+            const allowedStatuses = statusFilter;
             return Promise.resolve({
-              data: queryState.transactionRows,
+              data: allowedStatuses
+                ? queryState.transactionRows.filter((row) =>
+                    allowedStatuses.includes(row.status),
+                  )
+                : queryState.transactionRows,
               error: null,
             }).then(resolve, reject);
           }
@@ -99,17 +112,25 @@ describe('monthly-summary-service', () => {
     queryState.transactionRows = [];
   });
 
-  it('falls back to live confirmed transactions when no precomputed summary exists', async () => {
+  it('falls back to live pending and confirmed transactions when no precomputed summary exists', async () => {
     queryState.transactionRows = [
       {
         amount_cents: -3200,
         categories: { name: '餐饮' },
         category_id: 'cat-food',
+        status: 'pending_confirmation',
       },
       {
         amount_cents: -1800,
         categories: { name: '交通' },
         category_id: 'cat-transport',
+        status: 'confirmed',
+      },
+      {
+        amount_cents: -900,
+        categories: { name: '其他' },
+        category_id: null,
+        status: 'rejected',
       },
     ];
 
@@ -194,6 +215,7 @@ describe('monthly-summary-service', () => {
         amount_cents: -4200,
         categories: { name: '餐饮' },
         category_id: 'cat-food',
+        status: 'pending_confirmation',
       },
     ];
 
