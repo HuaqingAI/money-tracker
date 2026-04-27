@@ -57,6 +57,13 @@ so that 我能快速了解当月财务状况并处理待确认交易。
   - [x] 5.3 更新本 Story 的 Dev Agent Record、File List、Change Log，并将 Story 状态推进到 `review`
   - [x] 5.4 更新 `_bmad-output/implementation-artifacts/sprint-status.yaml`
 
+### Review Findings
+
+- [ ] [Review][Patch] Dashboard loading/error gate blocks successfully loaded data blocks [apps/mobile/app/(main)/dashboard.tsx:427]
+- [ ] [Review][Patch] Full-data dashboard has no notification-permission re-entry [apps/mobile/app/(main)/dashboard.tsx:346]
+- [ ] [Review][Patch] Positive-only income months are counted as expenses [apps/api/lib/dashboard/dashboard-service.ts:176]
+- [ ] [Review][Patch] Nested `.env.local` files are no longer ignored [./.gitignore:19]
+
 ## Dev Notes
 
 ### 架构约束
