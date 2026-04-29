@@ -965,8 +965,11 @@ export type Database = {
       }
       transactions: {
         Row: {
+          ai_confidence: number | null
+          ai_provider: string | null
           amount_cents: number
           category_id: string | null
+          classified_at: string | null
           created_at: string
           description: string | null
           external_transaction_id: string | null
@@ -980,8 +983,11 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          ai_confidence?: number | null
+          ai_provider?: string | null
           amount_cents: number
           category_id?: string | null
+          classified_at?: string | null
           created_at?: string
           description?: string | null
           external_transaction_id?: string | null
@@ -995,8 +1001,11 @@ export type Database = {
           user_id: string
         }
         Update: {
+          ai_confidence?: number | null
+          ai_provider?: string | null
           amount_cents?: number
           category_id?: string | null
+          classified_at?: string | null
           created_at?: string
           description?: string | null
           external_transaction_id?: string | null

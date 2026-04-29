@@ -17,6 +17,7 @@ android/
 
 # Environment files
 /.env
+/.env.local
 apps/*/.env
 .env.development
 .env.production

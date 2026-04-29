@@ -1,3 +1,18 @@
+export type {
+  AiClassificationProvider,
+  AiClient,
+  ClassifyCategoryCandidate,
+  ClassifyTransactionInput,
+  ClassifyTransactionResult,
+} from './ai/ai-client';
+export { AiClientError } from './ai/ai-client';
+export type {
+  AiCircuitBreakerSnapshot,
+  AiFallbackClock,
+  AiFallbackOptions,
+  AiFallbackTimer,
+} from './ai/fallback';
+export { AiCircuitBreaker, FallbackAiClient } from './ai/fallback';
 export { defaultNotificationRuleSet } from './constants/default-notification-rules';
 export type {
   NotificationCapture,
@@ -40,6 +55,8 @@ export type {
   WechatCallbackResult,
 } from './types/auth';
 export type {
+  BillingCategoryOption,
+  BillingConfirmationErrorCode,
   BillingCsvColumnMapping,
   BillingCsvEncoding,
   BillingCsvParseRule,
@@ -49,8 +66,15 @@ export type {
   BillingRoutePath,
   BillingTransactionSource,
   BillingTransactionStatus,
+  ConfirmBulkTransactionsInput,
+  ConfirmBulkTransactionsResult,
+  ConfirmTransactionResult,
   CsvRuleUpdateInput,
   ImportCsvResult,
+  PendingConfirmationsResult,
+  PendingConfirmationTransaction,
+  RejectTransactionInput,
+  RejectTransactionResult,
 } from './types/billing';
 export type {
   CategorySummary,
@@ -83,6 +107,7 @@ export {
   AUTH_ROUTE_PATHS,
 } from './constants/auth';
 export {
+  BILLING_CONFIRMATION_ERROR_CODES,
   BILLING_CSV_PLATFORMS,
   BILLING_IMPORT_ERROR_CODES,
   BILLING_IMPORT_MAX_FILE_SIZE_BYTES,
@@ -120,20 +145,39 @@ export {
   wechatCallbackRequestSchema,
 } from './schemas/auth';
 export type {
+  BillingCategoryOptionInput,
   BillingCsvParseRuleInput,
   BillingCsvPlatformInput,
   BillingNormalizedTransactionInput,
+  ConfirmBulkTransactionsInputSchema,
+  ConfirmBulkTransactionsResultInput,
+  ConfirmTransactionInputSchema,
+  ConfirmTransactionResultInput,
   CsvRuleUpdateInputSchema,
   ImportCsvResultInput,
+  PendingConfirmationsResultInput,
+  PendingConfirmationTransactionInput,
+  RejectTransactionInputSchema,
+  RejectTransactionResultInput,
 } from './schemas/billing';
 export {
+  aiClassificationProviderSchema,
+  billingCategoryOptionSchema,
   billingCsvColumnMappingSchema,
   billingCsvEncodingSchema,
   billingCsvParseRuleSchema,
   billingCsvPlatformSchema,
   billingNormalizedTransactionSchema,
+  confirmBulkTransactionsInputSchema,
+  confirmBulkTransactionsResultSchema,
+  confirmTransactionInputSchema,
+  confirmTransactionResultSchema,
   csvRuleUpdateInputSchema,
   importCsvResultSchema,
+  pendingConfirmationsResultSchema,
+  pendingConfirmationTransactionSchema,
+  rejectTransactionInputSchema,
+  rejectTransactionResultSchema,
 } from './schemas/billing';
 export type {
   DashboardMonthInput,

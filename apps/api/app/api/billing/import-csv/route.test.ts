@@ -5,8 +5,14 @@ const {
   requireAuthenticatedUserMock,
   withRequestLoggingMock,
   ensurePersistentUserMock,
+  afterMock,
+  classifyPendingTransactionsMock,
   importCsvMock,
 } = vi.hoisted(() => ({
+    afterMock: vi.fn((callback: () => Promise<void> | void) => {
+      void callback();
+    }),
+    classifyPendingTransactionsMock: vi.fn(),
     requireAuthenticatedUserMock: vi.fn(),
     withRequestLoggingMock: vi.fn(
       async (_request: Request, handler: () => Promise<Response>) => handler(),
@@ -14,6 +20,14 @@ const {
     ensurePersistentUserMock: vi.fn(),
     importCsvMock: vi.fn(),
   }));
+
+vi.mock('next/server', async () => {
+  const actual = await vi.importActual<typeof import('next/server')>('next/server');
+  return {
+    ...actual,
+    after: afterMock,
+  };
+});
 
 vi.mock('../../../../lib/middleware/request-logger', () => ({
   withRequestLogging: withRequestLoggingMock,
@@ -39,6 +53,12 @@ vi.mock('../../../../lib/auth/ensure-persistent-user', () => ({
 vi.mock('../../../../lib/billing/import-service', () => ({
   getBillingImportService: () => ({
     importCsv: importCsvMock,
+  }),
+}));
+
+vi.mock('../../../../lib/services/classify-service', () => ({
+  getClassifyService: () => ({
+    classifyPendingTransactions: classifyPendingTransactionsMock,
   }),
 }));
 
@@ -73,6 +93,11 @@ describe('POST /api/billing/import-csv', () => {
       user: createUser(),
     });
     ensurePersistentUserMock.mockResolvedValue(undefined);
+    classifyPendingTransactionsMock.mockResolvedValue({
+      classifiedCount: 1,
+      failedCount: 0,
+      totalCount: 1,
+    });
   });
 
   it('imports a CSV file for the authenticated user', async () => {
@@ -82,6 +107,7 @@ describe('POST /api/billing/import-csv', () => {
       duplicateCount: 0,
       failedCount: 0,
       importId: 'import-1',
+      importedTransactionIds: ['11111111-1111-4111-8111-111111111111'],
       platform: 'alipay',
     });
 
@@ -104,6 +130,11 @@ describe('POST /api/billing/import-csv', () => {
         id: 'user-1',
       }),
     );
+    expect(classifyPendingTransactionsMock).toHaveBeenCalledWith({
+      transactionIds: ['11111111-1111-4111-8111-111111111111'],
+      userId: 'user-1',
+    });
+    expect(afterMock).toHaveBeenCalledTimes(1);
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
       success: true,
@@ -112,6 +143,26 @@ describe('POST /api/billing/import-csv', () => {
         importedCount: 1,
       }),
     });
+  });
+
+  it('does not trigger classification when nothing new was imported', async () => {
+    importCsvMock.mockResolvedValue({
+      totalCount: 1,
+      importedCount: 0,
+      duplicateCount: 1,
+      failedCount: 0,
+      importId: 'import-1',
+      importedTransactionIds: [],
+      platform: 'alipay',
+    });
+
+    const response = await POST(
+      createRequest(new File(['header\nrow'], 'bill.csv', { type: 'text/csv' })) as never,
+    );
+
+    expect(afterMock).not.toHaveBeenCalled();
+    expect(classifyPendingTransactionsMock).not.toHaveBeenCalled();
+    expect(response.status).toBe(200);
   });
 
   it('rejects files larger than 10MB', async () => {

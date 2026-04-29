@@ -4,6 +4,7 @@ import {
   type ImportCsvResult,
 } from '@money-tracker/shared';
 import type { NextRequest } from 'next/server';
+import { after } from 'next/server';
 
 import { errorResponse, successResponse } from '../../../../lib/api-response';
 import { ensurePersistentUser } from '../../../../lib/auth/ensure-persistent-user';
@@ -15,6 +16,7 @@ import {
   AuthenticatedUserError,
   requireAuthenticatedUser,
 } from '../../../../lib/middleware/require-authenticated-user';
+import { getClassifyService } from '../../../../lib/services/classify-service';
 
 function toErrorResponse(error: unknown): Response {
   if (error instanceof AuthenticatedUserError) {
@@ -36,6 +38,17 @@ function toErrorResponse(error: unknown): Response {
 
 function isCsvFile(file: File): boolean {
   return file.name.toLowerCase().endsWith('.csv');
+}
+
+function toPublicImportResult(result: ImportCsvResult): ImportCsvResult {
+  return {
+    duplicateCount: result.duplicateCount,
+    failedCount: result.failedCount,
+    importId: result.importId,
+    importedCount: result.importedCount,
+    platform: result.platform,
+    totalCount: result.totalCount,
+  };
 }
 
 export function POST(request: NextRequest): Promise<Response> {
@@ -77,7 +90,30 @@ export function POST(request: NextRequest): Promise<Response> {
         userId: user.id,
       });
 
-      return successResponse<ImportCsvResult>(result);
+      if (result.importedTransactionIds.length > 0) {
+        after(async () => {
+          try {
+            const classification =
+              await getClassifyService().classifyPendingTransactions({
+                transactionIds: result.importedTransactionIds,
+                userId: user.id,
+              });
+            if (classification.failedCount > 0) {
+              logger.error(
+                { classification },
+                'post-import classification partially failed',
+              );
+            }
+          } catch (error) {
+            logger.error(
+              { err: error },
+              'post-import classification failed after import success',
+            );
+          }
+        });
+      }
+
+      return successResponse<ImportCsvResult>(toPublicImportResult(result));
     } catch (error) {
       return toErrorResponse(error);
     }
