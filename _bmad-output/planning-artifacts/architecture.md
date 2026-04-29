@@ -288,6 +288,30 @@ Winston 提出质疑：如果移动端和 Web 端不共享屏幕级路由逻辑�
 - AI 解析结果进入 pending，用户确认后 confirmed
 - 金额字段 `amount_cents INTEGER`，全栈整数分存储
 
+**交易方向与状态口径（由 sprint-change-proposal-2026-04-29 补丁 A-5 固化，Epic 1.5 Story 1.5.2 落地决策 + migration）：**
+
+- **方向字段 `direction`**（新增枚举，由 Story 1.5.2 通过 supabase migration 引入；默认值 `expense` 保证向后兼容）：
+  - `expense` — 支出（默认）
+  - `income` — 收入
+  - `refund` — 退款（从已确认 expense 回冲）
+  - `closed` — 已冲销 / 双方结算（不参与聚合）
+  - 来源：通知解析 / CSV 解析 / 手动记账显式设置
+  - 无法判定时默认 `expense`，但必须同时标记 `direction_confidence = 'low'` 并进入 `pending_confirmation`
+- **状态口径 `status`**：
+  - `pending_confirmation` — AI 已分类但用户未确认
+  - `confirmed` — 用户确认或自动规则命中置信度阈值
+  - `rejected` — 用户拒绝（不参与任何聚合）
+- **聚合口径（统一规则，四处必须一致）**：
+  - **Dashboard 月度概览**（FR4 / Story 1.6）：分开展示两个数值 — "本月支出 X"（confirmed）与"其中 Y 待确认"（pending_confirmation）
+  - **月报**（FR5 / Story 1.7）：默认只统计 confirmed；提供开关查看"含待确认"
+  - **交易列表**（FR11 / Story 2.1）：默认展示 confirmed + pending_confirmation；支持按 status 筛选
+  - **手动记账**（FR15 / Story 2.3）：默认 confirmed（用户显式输入视为已确认）
+- **收入排除规则**：
+  - `direction = income` 不进入"支出"聚合
+  - Dashboard 的"本月支出"卡片排除 `income` 与 `refund`
+  - Epic 1 retro §3.2 指出的"正数收入月份被计为支出" bug 由 Story 1.5.2 + Story 1.5.8 一并修复
+- **测试要求**：Dashboard / 月报 / 列表 / 手动记账四处聚合口径必须有单元测试交叉验证；见 `CLAUDE.md` DoD「交易/聚合 Story 追加 DoD」
+
 **数据验证：** Zod Schema 共享
 - `packages/shared/schemas/` 定义所有 Zod schema
 - 前端表单验证 + 后端 API 入参验证共用同一 schema
@@ -317,6 +341,25 @@ Winston 提出质疑：如果移动端和 Web 端不共享屏幕级路由逻辑�
 - Access Token 15min + Refresh Token 7天
 - Supabase 客户端 `autoRefreshToken: true`
 - 自托管 JWT secret 必须与 GoTrue `.env` 一致（高危配置项）
+
+**应用认证契约（由 sprint-change-proposal-2026-04-29 补丁 A-4 固化，Epic 1.5 Story 1.5.1 落地验证）：**
+
+- **Token 来源（唯一口径）**：
+  - 应用业务 API（`/api/**` 除 `/api/auth/**`）统一使用应用自签 JWT（access 15min + refresh 7d）
+  - JWT payload 必含 `sub`（user_id）、`iat`、`exp`、`type`（access / refresh）
+  - **禁止** 业务 API 依赖 Supabase Auth 返回的 token 直接鉴权
+- **验签位置**：
+  - Next.js `middleware.ts` 统一拦截受保护路由，验签失败返回 `{ success: false, error: { code: "AUTH_UNAUTHORIZED" } }`
+  - 业务 handler 内通过 `getAuthenticatedUser(request)` helper 获取已验证 user；不再重复写验签逻辑
+- **用户识别**：
+  - user_id 来自 JWT `sub` claim，**不相信** 客户端传入的 userId / body.userId
+- **Supabase Auth 角色**：
+  - 仍作为 OAuth / OTP 签发源（微信 unionid、OTP 短信）
+  - 应用签发 JWT 时持久化映射关系到 `auth.users`，不直接把 Supabase access_token 下发给业务路由
+- **测试要求**：
+  - 所有受保护路由必须有单元测试覆盖三分支：无 token / 过期 token / 有效 token
+  - 登录后 API 写入 / 权限 / 选择器操作的 Story 必须在 Dev Agent Record 记录至少一条真机或等效网络验收证据（URL 不得为 localhost）
+  - 见 `CLAUDE.md` DoD「受保护 API / 权限 Story 追加 DoD」
 
 **PIPL 合规：**
 - 数据删除权：`/api/user/delete-account` 级联删除 + 确认
@@ -391,9 +434,27 @@ apps/mobile/
   screens/              # 屏幕级组件（Onboarding、Dashboard 等）
 ```
 
+**UI 组件契约（由 sprint-change-proposal-2026-04-29 补丁 A-3 固化）：**
+
+- **Spec 唯一来源**：`_bmad-output/D-Design-System/components/*.md` — 每个组件实现前必须读对应 component spec；Props / 状态 / 变体 / accessibility / token 绑定以 spec 为准
+- **落地位置**：`packages/ui/src/<component>.tsx`；从 `packages/ui/src/index.ts` 具名导出
+- **禁止现场实现**：页面/屏幕代码不得现场近似实现 DS 中已有规格的组件；若 spec 缺失必须先补 spec
+- **Storybook 同步**：`packages/ui/src/<component>.stories.tsx` 与组件实现同步提交，覆盖默认态 / 变体 / 禁用态 / 错误态
+- **Token 严格**：颜色 / 间距 / 字体 / 圆角 / 阴影 / 动画全部来自 Tamagui config token，禁止硬编码
+- **清单跟踪**：未实现组件清单见 `_bmad-output/planning-artifacts/ds-component-implementation-checklist.md`，由 Epic 1.5 Story 1.5.3 批量落地
+- **NFR8 合规**：UI Story 的视觉保真度验收依赖组件层合规，见 `prd-bridge.md` NFR8
+
 **导航方案：** Expo Router v4
 - 文件系统路由，Tab + Stack 嵌套
 - Deep linking 预留（微信分享跳转）
+- Tab 组合（MVP Phase 1 定版，由 sprint-change-proposal-2026-04-29 补丁 A-1 固化）：
+  - Tab 1 首页 → `(main)/dashboard`（FR4 Dashboard）
+  - Tab 2 报表 → `(main)/report`（FR5 月报 + 趋势子页）
+  - Tab 3 我的 → `(main)/my`（FR19 基础账户、设置、隐私）
+- FAB 浮动按钮挂载在 Tab 1 Dashboard，不进入 Tab Bar
+- 当前 active Tab 状态由 `ui-store.currentTab` 持有
+- Tab 切换不重新挂载页面状态（使用 Expo Router Tabs.Screen 默认行为）
+- 底部 Tab 外壳实现见 `packages/ui/src/bottom-tab-bar.tsx`（由 Epic 1.5 Story 1.5.3 实现，Story 1.5.4 消费）
 
 ### 类别 5：基础设施与部署
 
@@ -621,10 +682,11 @@ money-tracker/                              # Monorepo root
 │   │   │   │   ├── permissions.tsx         # 01.4 权限申请
 │   │   │   │   ├── bill-import.tsx         # 01.5 账单导入
 │   │   │   │   └── import-progress.tsx     # 01.6 导入处理
-│   │   │   └── (main)/                     # 主应用路由组
-│   │   │       ├── _layout.tsx             # Tab 导航 layout
-│   │   │       ├── dashboard.tsx           # 01.7 Dashboard
-│   │   │       └── report.tsx              # 01.8 月报
+│   │   │   └── (main)/                     # 主应用路由组（Epic 1.5 Story 1.5.4 落地）
+│   │   │       ├── _layout.tsx             # Tab 导航 layout（Tabs.Screen × 3）
+│   │   │       ├── dashboard.tsx           # 01.7 Dashboard（Tab 1 首页）
+│   │   │       ├── report.tsx              # 01.8 月报（Tab 2 入口 + 趋势子页）
+│   │   │       └── my.tsx                  # 08.0 我的（Tab 3 入口 + 子页堆栈）
 │   │   ├── components/                     # 平台专属组件（涉及原生 API）
 │   │   │   ├── notification-permission.tsx
 │   │   │   ├── bill-import-sheet.tsx

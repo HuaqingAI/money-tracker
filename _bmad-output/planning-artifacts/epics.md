@@ -176,11 +176,19 @@ UX 设计通过独立 WDS 流程完成，产物已完整交付，Story 实现时
 **Dependencies:** E0
 **Page designs:** 01.1-welcome, 01.2-onboarding, 01.3-registration, 01.4-permission, 01.5-bill-import, 01.6-import-processing, 01.7-dashboard, 01.8-monthly-report, 08.0-my-hub（基础）, 08.1-settings（基础）, 08.2-profile（基础）
 
+### Epic 1.5: Design System 组件层 · 导航外壳 · Epic 1 保真与契约收口
+Epic 1 的结构性收口 Epic。前置 Design System 完整组件层，实现主应用底部 Tab 导航外壳，重做 Epic 1 重要页面使其对齐高保真原型，并把 Epic 1 retro 识别的认证契约、交易方向/pending 口径作为 Epic 2 开工闸门正式写入架构文档。
+**FRs covered:** 无新 FR；加强 FR4 / FR5 / FR6 / FR19 的 NFR8 视觉保真度达成
+**Phase:** MVP（Epic 1 收口）
+**Dependencies:** E0, E1
+**Page designs:** 复用 01-08 中涉及的 page designs；"我的"(08.0/08.2) 和月报（01.8）重做
+**NFR:** NFR8 视觉保真度（核心 90% / 次要 80%，见 `prd-bridge.md` NFR8）
+
 ### Epic 2: 交易管理与手动补录
 用户能浏览、搜索、纠正交易分类（AI 反馈闭环），iOS 用户能通过 Siri/Widget/OCR 快捷记账，所有用户能手动补充记录和管理分类规则。
 **FRs covered:** FR7, FR11, FR15
 **Phase:** Phase 2（FR11 交易纠错为高优先级）
-**Dependencies:** E1
+**Dependencies:** E1, E1.5
 **Page designs:** 03.1-transaction-list, 03.2-transaction-detail, 06.1-manual-entry, 06.2-category-management, 06.3-ios-shortcuts
 
 ### Epic 3: 家庭财务协同与付费
@@ -824,6 +832,165 @@ So that 我对自己的账户和数据有掌控感，符合个人信息保护要
 **Then** 清除 Zustand auth-store 中的 JWT 和用户信息
 **And** 清除 AsyncStorage 持久化数据
 **And** 导航到欢迎页
+
+---
+
+## Epic 1.5: Design System 组件层 · 导航外壳 · Epic 1 保真与契约收口
+
+作为 Epic 1 的结构性收口 Epic，承担四类工作：(1) 前置 Design System 完整组件层，解决 `D-Design-System/components/` 定义的 20 个组件中仅 4 个落地的底座缺失问题；(2) 实现主应用底部 Tab 导航外壳（dashboard / report / my-hub 三 Tab），补齐 `architecture.md` 已定义但未落地的导航容器；(3) 重做 Epic 1 重要页面使其对齐高保真原型；(4) 把 Epic 1 retro 识别的认证契约、交易方向/pending 口径作为 Epic 2 开工闸门正式写入架构文档。
+
+本 Epic 由 `_bmad-output/planning-artifacts/sprint-change-proposal-2026-04-29.md` 提出，Sue 2026-04-29 签字通过。
+
+### Story 1.5.1: 认证契约正式化（Architecture Patch）
+
+As an 开发团队,
+I want 应用认证契约被正式写入架构文档并落地验证中间件,
+So that Epic 2 后续所有受保护 API 都遵循统一的 token 来源与验签规则，不再出现 Story 1.2 / Story 1.8 之间 token 来源不一致的情况。
+
+**Acceptance Criteria:**
+
+**Given** Epic 1 retro §3.2 指出 JWT 由应用签发 vs 依赖 Supabase Auth token 的矛盾
+**When** 本 Story 完成
+**Then** `_bmad-output/planning-artifacts/architecture.md` 新增「应用认证契约」章节
+**And** 契约包含：token 来源、验签位置、user 识别、Supabase Auth 角色、测试要求
+**And** `apps/backend/middleware.ts` 统一拦截受保护路由（/api/** 除 /api/auth/**）
+**And** 提供 `getAuthenticatedUser(request)` helper 供业务 handler 使用
+**And** 既有 Story 1-2 / 1-8 涉及的受保护路由迁移到新 helper（若已用则确认合规）
+**And** 单元测试覆盖三种分支：无 token / 过期 token / 有效 token
+
+### Story 1.5.2: 交易方向与 pending 口径决策（Architecture + Schema Patch）
+
+As a 产品团队,
+I want 交易方向（expense/income/refund/closed）与 pending 状态聚合口径被正式决策并落地为 schema + 聚合规则,
+So that Dashboard、月报、交易列表对"本月支出"的定义完全一致，避免 Epic 1 retro §3.2 指出的 Dashboard 含 pending、月报只算 confirmed 的割裂。
+
+**Acceptance Criteria:**
+
+**Given** 当前 `billing.transactions` 未明确区分收入/支出/退款
+**When** 本 Story 完成
+**Then** `architecture.md` 新增「交易方向与状态口径」章节，包含 direction 枚举、status 口径、聚合规则
+**And** 若采纳新增 direction 字段方案：提供 supabase migration 脚本，默认值为 `expense`
+**And** Dashboard 聚合逻辑（Story 1-6 已上线）按新口径调整
+**And** 月报聚合逻辑（Story 1-7 已上线）按新口径调整
+**And** "本月支出"明确排除 direction = income / refund
+**And** pending_confirmation 在 Dashboard / 月报的处理方式有单元测试覆盖
+
+### Story 1.5.3: DS 组件层实现（UI 基座）
+
+As a 前端开发团队,
+I want 所有在 `_bmad-output/D-Design-System/components/*.md` 中定义的组件在 `packages/ui/src/` 落地实现并有 Storybook 覆盖,
+So that Epic 1.5-5 / 1.5-6 / 1.5-7 以及后续所有 Epic 的 UI 工作能复用一致的组件层，不再现场近似实现。
+
+**Acceptance Criteria:**
+
+**Given** `_bmad-output/D-Design-System/components/` 定义 20 个组件，仅 4 个在 `packages/ui/src/` 落地
+**When** 本 Story 完成
+**Then** 新增 16 个组件实现：avatar / badge / bottom-tab-bar / card / chart / divider / filter-chip / header / modal-sheet / progress / search-bar / skeleton / tab / toast / toggle / tooltip
+**And** 每个组件：Props 与 D-Design-System spec 完全对齐
+**And** 每个组件：使用 Tamagui token，不硬编码颜色/间距
+**And** 每个组件：有对应 Storybook Story，覆盖默认态/变体/禁用态/错误态
+**And** 每个组件：有单元测试覆盖渲染 + 关键交互
+**And** 每个组件：从 `packages/ui/src/index.ts` 导出
+**And** 验收对照清单 `_bmad-output/planning-artifacts/ds-component-implementation-checklist.md` 全部勾选
+
+### Story 1.5.4: 底部 Tab 导航外壳
+
+As a 用户,
+I want 进入应用后看到稳定的底部 Tab 导航，能在首页/报表/我的三个主要区域之间流畅切换,
+So that 我对应用整体结构有清晰感知，不会因为没有导航容器而感觉"页面孤立"。
+
+**Acceptance Criteria:**
+
+**Given** `architecture.md` 已定义 Tab 组合（dashboard / report / my-hub）
+**When** 用户登录成功或从引导页完成
+**Then** 进入 `(main)/` 路由组，展示底部 Tab Bar
+**And** Tab 1 首页 → `(main)/dashboard.tsx`
+**And** Tab 2 报表 → `(main)/report.tsx`
+**And** Tab 3 我的 → `(main)/my.tsx`
+**And** 视觉匹配 `E-Assets/page-designs/01.7-dashboard.html` 的底部 Tab 区域
+**And** 组件实现使用 `packages/ui/src/bottom-tab-bar.tsx`（依赖 Story 1.5.3）
+**And** Dashboard 的 FAB 浮动按钮位于 Tab Bar 之上，不进入 Tab Bar
+**And** Tab 切换不重新挂载已打开页面状态（使用 Expo Router Tabs.Screen 默认行为）
+**And** 当前 active Tab 状态由 `ui-store.currentTab` 持有
+
+### Story 1.5.5: "我的"页面高保真重做
+
+As a 用户,
+I want "我的"页面的视觉与交互与 `E-Assets/page-designs/08.0-my-hub.html` / `08.2-profile.html` 高保真原型对齐,
+So that 我的账户中心体验与产品承诺一致，Sue 走查时样式偏差消失。
+
+**Acceptance Criteria:**
+
+**Given** Story 1-8 当前交付的"我的"页面样式与高保真原型相差甚远
+**When** 本 Story 完成
+**Then** "我的" Tab 主页视觉匹配 `E-Assets/page-designs/08.0-my-hub.html` >= 90%
+**And** Profile 编辑子页视觉匹配 `E-Assets/page-designs/08.2-profile.html` >= 90%
+**And** 组件实现全部使用 `packages/ui/src/` DS 组件（依赖 Story 1.5.3）
+**And** 字段/状态/交互清单按 `high-fidelity-mapping-checklist.md` 逐项勾选
+**And** Retro §3.3 指出的漏项（性别/生日）验证已在 Story 1-8 完成；否则一并补齐
+**And** 真机或等效网络路径验收截图记录在 Dev Agent Record
+
+### Story 1.5.6: 月报页面高保真重做
+
+As a 用户,
+I want 从首页进入的月度报表页视觉与交互与高保真原型对齐,
+So that 我的月度消费回顾体验与产品承诺一致。
+
+**Acceptance Criteria:**
+
+**Given** Story 1-7 当前交付的月报样式与高保真原型相差甚远
+**When** 本 Story 完成
+**Then** 月报页视觉匹配 `E-Assets/page-designs/01.8-monthly-report.html` >= 90%
+**And** 聚合口径遵循 Story 1.5.2 决策（confirmed 默认，"含待确认"开关）
+**And** 组件实现全部使用 `packages/ui/src/` DS 组件（依赖 Story 1.5.3）
+**And** 字段/状态/交互清单按 `high-fidelity-mapping-checklist.md` 逐项勾选
+**And** 同比/环比趋势的空态（无历史数据）展示符合 high-fidelity 次要路径 >= 80%
+
+### Story 1.5.7: Epic 1 其他页面高保真映射审计与修补
+
+As a 前端开发团队,
+I want Epic 1 其他页面（欢迎/引导/注册/权限/导入/导入处理/Dashboard/AI 分类确认）按 high-fidelity-mapping-checklist 逐项审计,
+So that Epic 1 整体达成 NFR8 视觉保真度（核心 90% / 次要 80%），不只是"我的"和月报两个重灾区被修。
+
+**Acceptance Criteria:**
+
+**Given** Epic 1 交付页面未做过系统性高保真映射审计
+**When** 本 Story 完成
+**Then** 以下页面每个都有一份独立的 high-fidelity-mapping-checklist.md 实例：
+  - 01.1 welcome
+  - 01.2 onboarding
+  - 01.3 registration
+  - 01.4 permission
+  - 01.5 bill-import
+  - 01.6 import-processing
+  - 01.7 dashboard
+  - 01.5 AI 分类确认（Story 1-5）
+**And** 每份 checklist 标注保真度自评（核心 >= 90% / 次要 >= 80%）
+**And** 所有未达标项被修复或登记为偏差并给出原因
+**And** 修复过程使用 DS 组件层（依赖 Story 1.5.3）
+**And** 审计结果汇总到 Story 1.5.7 的 Dev Agent Record
+
+### Story 1.5.8: Story 1-1 / 1-6 状态与 Review Findings 收口
+
+As a 项目经理,
+I want Story 1-1 和 Story 1-6 的实际交付状态与 sprint-status.yaml 一致，Dashboard review findings 全部关闭,
+So that 进入 Epic 2 时所有 Epic 1 的状态语义都可信，避免 retro §3.1 再次踩坑。
+
+**Acceptance Criteria:**
+
+**Given** sprint-status.yaml 已标 Story 1-1 / 1-6 为 done，但 Story 文件仍分别为 ready-for-dev / review
+**When** 本 Story 完成
+**Then** 核实 Story 1-1 实际代码交付状态：
+  - 若已完成：补齐 Story 文件的 Tasks 勾选、Dev Agent Record、review findings，状态改 done
+  - 若未完成：回滚 sprint-status.yaml 中的状态并安排补齐
+**And** 核实 Story 1-6 review findings 四项：
+  - Dashboard loading/error gate
+  - 通知权限重入口
+  - 正数收入月份被计为支出（依赖 Story 1.5.2 决策）
+  - `.env.local` ignore 规则
+**And** 四项 findings 全部 close 或 explicitly triaged 为后续 Story
+**And** Story 1-6 文件状态改 done
+**And** Epic 1 retro 行动项 #1 #2 从"pending"改为"closed"，记录在 `epic-1-retro-2026-04-29.md`
 
 ---
 

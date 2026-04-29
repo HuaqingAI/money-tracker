@@ -1,5 +1,5 @@
 # generated: 2026-04-20
-# last_updated: 2026-04-29 (Epic 1 retrospective completed)
+# last_updated: 2026-04-29 (Epic 1 retrospective completed; Epic 1.5 inserted via sprint-change-proposal-2026-04-29)
 # project: money-tracker
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-20
-last_updated: 2026-04-29 (Epic 1 retrospective completed)
+last_updated: 2026-04-29 (Epic 1 retrospective completed; Epic 1.5 inserted)
 project: money-tracker
 project_key: NOKEY
 tracking_system: file-system
@@ -66,7 +66,20 @@ development_status:
   1-8-basic-account-and-pipl-compliance: done
   epic-1-retrospective: done
 
-  # Epic 2: 交易管理与手动补录 (Phase 2)
+  # Epic 1.5: DS 组件层 · 导航外壳 · Epic 1 保真与契约收口 (MVP 收口)
+  # Inserted 2026-04-29 via sprint-change-proposal-2026-04-29.md (Sue 签字)
+  epic-1.5: backlog
+  1.5-1-auth-contract-formalization: backlog
+  1.5-2-transaction-direction-and-pending-semantics: backlog
+  1.5-3-ds-component-layer-implementation: backlog
+  1.5-4-bottom-tab-navigation-shell: backlog
+  1.5-5-profile-page-high-fidelity-redo: backlog
+  1.5-6-monthly-report-high-fidelity-redo: backlog
+  1.5-7-epic1-pages-fidelity-audit-and-fix: backlog
+  1.5-8-epic1-state-and-review-findings-closure: backlog
+  epic-1.5-retrospective: optional
+
+  # Epic 2: 交易管理与手动补录 (Phase 2) — 依赖 E1, E1.5
   epic-2: backlog
   2-1-transaction-list-and-filter: backlog
   2-2-transaction-detail-and-correction: backlog

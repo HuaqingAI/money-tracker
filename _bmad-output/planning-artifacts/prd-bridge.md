@@ -296,6 +296,18 @@ status: active
 - MVP 年度基础设施成本 ~4000 元
 - 所有开源库 MIT 免费
 
+#### NFR8: 视觉保真度（由 sprint-change-proposal-2026-04-29 引入）
+
+> 由 Epic 1 retro §3.3 与 2026-04-29 Correct Course 流程触发，作为 Epic 1.5 及后续所有 UI Story 的量化验收阈值。替代原"视觉须匹配"的主观判定。
+
+- **核心路径对齐度 >= 90%**：欢迎 / 登录 / Dashboard / 月报 / 账单导入 / 我的 / AI 分类确认 / 引导共 8 类页面，必须对 `E-Assets/page-designs/*.html` 高保真原型达到 >= 90% 视觉对齐
+- **次要路径对齐度 >= 80%**：错误态 / 空态 / 厂商引导子页 / 隐私协议详情页 / PIPL 删除确认页，对齐度 >= 80%
+- **验收方式**：
+  - 主观：UX designer + Dev 对照 `_bmad-output/planning-artifacts/high-fidelity-mapping-checklist.md` 逐项勾选
+  - 客观：DS 组件级 Storybook 基线（必做）+ 页面级截屏基线（选做，Epic 1.5 时间允许时启用）
+  - 偏差登记：低于阈值必须登记原因与修复计划，不得以"近似"进入 review
+- **配套机制**：违反 NFR8 的 Story 不得声明 `done`（见 `CLAUDE.md` DoD UI Story 追加条款）
+
 ---
 
 ## 设计保真度规范

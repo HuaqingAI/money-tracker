@@ -21,6 +21,37 @@ AI驱动的零记账智能财务管家 -- 通过AI自动捕获和智能管理，
 - 数据库变更必须通过 Supabase migration
 - API 响应格式：`{ success: boolean, data?: T, error?: { code: string, message: string } }`
 
+## Definition of Done（DoD）
+
+任何 Story 声明为 `done` 前必须同时满足以下条目。由 `sprint-change-proposal-2026-04-29.md` 引入，2026-04-29 起生效。
+
+**通用 DoD**
+
+- Story AC 全部满足且单元测试通过
+- ESLint / TypeScript 严格模式无错误（`pnpm lint` 和 `pnpm typecheck` 全绿）
+- sprint-status.yaml 与 Story 文件状态一致（避免 Epic 1 retro §3.1 状态不可信问题）
+- review findings 全部 close 或 explicitly triaged 为后续 Story
+- 涉及 schema 变更必须通过 Supabase migration 并在 Dev Agent Record 记录迁移脚本
+
+**UI Story 追加 DoD**
+
+- 必须完成 `_bmad-output/planning-artifacts/high-fidelity-mapping-checklist.md` 实例并附在 Story 文件或 review 资料
+- 自评保真度：核心路径 >= 90% / 次要路径 >= 80%；低于阈值不得进入 review
+- 新增/修改 UI 组件必须提交对应 Storybook Story
+- 所有组件实现来自 `packages/ui/src/`，禁止页面内现场近似实现
+- Token 使用遵循 `_bmad-output/D-Design-System/design-tokens.md`，禁止硬编码颜色/间距/圆角
+
+**受保护 API / 权限 Story 追加 DoD**
+
+- 遵循 `architecture.md`「应用认证契约」章节的 token 来源、验签、user 识别规则
+- 单元测试覆盖三种分支：无 token / 过期 token / 有效 token
+- 涉及登录后 API 写入 / 图片选择 / 系统权限 / 文件选择 / 语音 / 截图的 Story：必须在 Dev Agent Record 记录至少一条真机或等效网络验收证据（URL 不得为 localhost）
+
+**交易/聚合 Story 追加 DoD**
+
+- direction 与 pending 口径遵循 `architecture.md`「交易方向与状态口径」章节
+- Dashboard / 月报 / 列表 / 手动记账 四处聚合口径一致，有单元测试交叉验证
+
 ---
 <!-- bmad-project-config -->
 ## Workflow Commands
