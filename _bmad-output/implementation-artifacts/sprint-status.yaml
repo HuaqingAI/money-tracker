@@ -1,5 +1,5 @@
 # generated: 2026-04-20
-# last_updated: 2026-04-29 (Story 1-5 done)
+# last_updated: 2026-04-29 (Stories 1-1, 1-6 done; Epic 1 complete)
 # project: money-tracker
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-20
-last_updated: 2026-04-29 (Story 1-5 done)
+last_updated: 2026-04-29 (Stories 1-1, 1-6 done; Epic 1 complete)
 project: money-tracker
 project_key: NOKEY
 tracking_system: file-system
@@ -55,13 +55,13 @@ development_status:
   epic-0-retrospective: done
 
   # Epic 1: 零输入首次体验 (MVP)
-  epic-1: in-progress
-  1-1-welcome-and-onboarding: in-progress
+  epic-1: done
+  1-1-welcome-and-onboarding: done
   1-2-user-registration-and-auth: done
   1-3-android-notification-capture: done
   1-4-csv-bill-import: done
   1-5-ai-classification-and-confirmation: done
-  1-6-dashboard-home: review
+  1-6-dashboard-home: done
   1-7-monthly-report: done
   1-8-basic-account-and-pipl-compliance: done
   epic-1-retrospective: optional
