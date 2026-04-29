@@ -46,9 +46,13 @@ class FakeTransactionRepository implements BillingTransactionRepository {
     return Promise.resolve(this.existing);
   }
 
-  insertTransactions(transactions: TransactionInsert[]): Promise<number> {
+  insertTransactions(transactions: TransactionInsert[]): Promise<string[]> {
     this.inserted = transactions;
-    return Promise.resolve(transactions.length);
+    return Promise.resolve(
+      transactions.map((_, index) =>
+        `11111111-1111-4111-8111-${String(index + 1).padStart(12, '0')}`,
+      ),
+    );
   }
 }
 
@@ -57,15 +61,15 @@ class ThrowingTransactionRepository implements BillingTransactionRepository {
     throw new Error('SUPABASE_SERVICE_ROLE_KEY is not set');
   }
 
-  insertTransactions(): Promise<number> {
+  insertTransactions(): Promise<string[]> {
     throw new Error('SUPABASE_SERVICE_ROLE_KEY is not set');
   }
 }
 
 class RaceDuplicateTransactionRepository extends FakeTransactionRepository {
-  insertTransactions(transactions: TransactionInsert[]): Promise<number> {
+  insertTransactions(transactions: TransactionInsert[]): Promise<string[]> {
     this.inserted = transactions;
-    return Promise.resolve(0);
+    return Promise.resolve([]);
   }
 }
 
@@ -147,6 +151,7 @@ describe('BillingImportService', () => {
       duplicateCount: 2,
       failedCount: 0,
       importId: '11111111-1111-4111-8111-111111111111',
+      importedTransactionIds: ['11111111-1111-4111-8111-000000000001'],
       platform: 'wechat',
     });
     expect(transactionRepository.source).toBe('wechat_csv');

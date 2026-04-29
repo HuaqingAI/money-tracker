@@ -62,6 +62,72 @@ export const csvRuleUpdateInputSchema = z.object({
   isActive: z.boolean().optional(),
 });
 
+export const aiClassificationProviderSchema = z.enum([
+  'development-stub',
+  'gpt-5.3-codex',
+  'qwen-3.6-plus',
+  'rule',
+]);
+
+export const billingCategoryOptionSchema = z.object({
+  icon: z.string().nullable(),
+  id: z.string().uuid(),
+  isSystem: z.boolean(),
+  name: z.string().trim().min(1),
+});
+
+export const pendingConfirmationTransactionSchema = z.object({
+  aiConfidence: z.number().min(0).max(1).nullable(),
+  aiProvider: aiClassificationProviderSchema.nullable(),
+  amountCents: z.number().int(),
+  categoryId: z.string().uuid().nullable(),
+  categoryName: z.string().trim().min(1),
+  classifiedAt: z.string().datetime().nullable(),
+  description: z.string().nullable(),
+  id: z.string().uuid(),
+  merchant: z.string().nullable(),
+  source: z.string().nullable(),
+  status: z.literal(BILLING_TRANSACTION_STATUS.pendingConfirmation),
+  transactionAt: z.string().datetime(),
+});
+
+export const pendingConfirmationsResultSchema = z.object({
+  categories: z.array(billingCategoryOptionSchema),
+  classification: z.object({
+    classifiedCount: z.number().int().min(0),
+    totalCount: z.number().int().min(0),
+    unclassifiedCount: z.number().int().min(0),
+  }),
+  transactions: z.array(pendingConfirmationTransactionSchema),
+});
+
+export const confirmTransactionResultSchema = z.object({
+  status: z.literal(BILLING_TRANSACTION_STATUS.confirmed),
+  transactionId: z.string().uuid(),
+});
+
+export const confirmTransactionInputSchema = z.object({
+  categoryId: z.string().uuid().optional(),
+});
+
+export const rejectTransactionInputSchema = z.object({
+  categoryId: z.string().uuid().optional(),
+});
+
+export const rejectTransactionResultSchema = z.object({
+  categoryId: z.string().uuid().nullable(),
+  status: z.literal(BILLING_TRANSACTION_STATUS.rejected),
+  transactionId: z.string().uuid(),
+});
+
+export const confirmBulkTransactionsInputSchema = z.object({
+  transactionIds: z.array(z.string().uuid()).min(1).max(100),
+});
+
+export const confirmBulkTransactionsResultSchema = z.object({
+  confirmedCount: z.number().int().min(0),
+});
+
 export type BillingCsvPlatformInput = z.infer<typeof billingCsvPlatformSchema>;
 export type BillingCsvParseRuleInput = z.infer<typeof billingCsvParseRuleSchema>;
 export type BillingNormalizedTransactionInput = z.infer<
@@ -69,3 +135,30 @@ export type BillingNormalizedTransactionInput = z.infer<
 >;
 export type ImportCsvResultInput = z.infer<typeof importCsvResultSchema>;
 export type CsvRuleUpdateInputSchema = z.infer<typeof csvRuleUpdateInputSchema>;
+export type BillingCategoryOptionInput = z.infer<
+  typeof billingCategoryOptionSchema
+>;
+export type PendingConfirmationTransactionInput = z.infer<
+  typeof pendingConfirmationTransactionSchema
+>;
+export type PendingConfirmationsResultInput = z.infer<
+  typeof pendingConfirmationsResultSchema
+>;
+export type ConfirmTransactionResultInput = z.infer<
+  typeof confirmTransactionResultSchema
+>;
+export type ConfirmTransactionInputSchema = z.infer<
+  typeof confirmTransactionInputSchema
+>;
+export type RejectTransactionInputSchema = z.infer<
+  typeof rejectTransactionInputSchema
+>;
+export type RejectTransactionResultInput = z.infer<
+  typeof rejectTransactionResultSchema
+>;
+export type ConfirmBulkTransactionsInputSchema = z.infer<
+  typeof confirmBulkTransactionsInputSchema
+>;
+export type ConfirmBulkTransactionsResultInput = z.infer<
+  typeof confirmBulkTransactionsResultSchema
+>;

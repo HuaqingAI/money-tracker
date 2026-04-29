@@ -39,7 +39,11 @@ export interface BillingTransactionRepository {
     transactionAts: string[];
     userId: string;
   }): Promise<ExistingTransactionKey[]>;
-  insertTransactions(transactions: TransactionInsert[]): Promise<number>;
+  insertTransactions(transactions: TransactionInsert[]): Promise<string[]>;
+}
+
+export interface BillingImportInternalResult extends ImportCsvResult {
+  importedTransactionIds: string[];
 }
 
 function shouldUseDevelopmentSchemaFallback(): boolean {
@@ -172,13 +176,13 @@ export class SupabaseBillingTransactionRepository
     return existing;
   }
 
-  async insertTransactions(transactions: TransactionInsert[]): Promise<number> {
+  async insertTransactions(transactions: TransactionInsert[]): Promise<string[]> {
     if (transactions.length === 0) {
-      return 0;
+      return [];
     }
 
     let insertResult: {
-      data: Array<{ import_dedupe_key: string | null }> | null;
+      data: Array<{ id: string }> | null;
       error: { message: string } | null;
     };
 
@@ -190,7 +194,7 @@ export class SupabaseBillingTransactionRepository
           ignoreDuplicates: true,
           onConflict: 'user_id,source,import_dedupe_key',
         })
-        .select('import_dedupe_key');
+        .select('id');
     } catch (error) {
       logger.error({ err: error }, 'billing import insert threw');
       throw toServiceUnavailable('导入交易失败，请稍后重试');
@@ -210,12 +214,12 @@ export class SupabaseBillingTransactionRepository
       throw toServiceUnavailable('导入交易失败，请稍后重试');
     }
 
-    return data?.length ?? 0;
+    return (data ?? []).map((row) => row.id);
   }
 
   private async insertTransactionsLegacy(
     transactions: TransactionInsert[],
-  ): Promise<number> {
+  ): Promise<string[]> {
     const legacyTransactions = transactions.map((transaction) => {
       const {
         external_transaction_id: _externalTransactionId,
@@ -224,17 +228,18 @@ export class SupabaseBillingTransactionRepository
       } = transaction;
       return legacyTransaction;
     });
-    const { error } = await getSupabaseAdmin()
+    const { data, error } = await getSupabaseAdmin()
       .schema('billing')
       .from('transactions')
-      .insert(legacyTransactions);
+      .insert(legacyTransactions)
+      .select('id');
 
     if (error) {
       logger.error({ err: error }, 'billing import legacy insert failed');
       throw toServiceUnavailable('导入交易失败，请稍后重试');
     }
 
-    return legacyTransactions.length;
+    return (data ?? []).map((row) => row.id);
   }
 }
 
@@ -279,7 +284,7 @@ export class BillingImportService {
       new SupabaseBillingTransactionRepository(),
   ) {}
 
-  async importCsv(input: BillingImportInput): Promise<ImportCsvResult> {
+  async importCsv(input: BillingImportInput): Promise<BillingImportInternalResult> {
     if (!input.fileName.toLowerCase().endsWith('.csv')) {
       throw new BillingImportError(
         BILLING_IMPORT_ERROR_CODES.invalidCsvFile,
@@ -338,7 +343,8 @@ export class BillingImportService {
       return !duplicate;
     });
 
-    const insertedCount = await this.transactionRepository.insertTransactions(
+    const importedTransactionIds =
+      await this.transactionRepository.insertTransactions(
       toInsert.map((transaction) => ({
         user_id: input.userId,
         amount_cents: transaction.amount_cents,
@@ -351,14 +357,15 @@ export class BillingImportService {
         transaction_at: transaction.transaction_at,
       })),
     );
-    duplicateCount += toInsert.length - insertedCount;
+    duplicateCount += toInsert.length - importedTransactionIds.length;
 
     return {
       totalCount: parsed.totalCount,
-      importedCount: insertedCount,
+      importedCount: importedTransactionIds.length,
       duplicateCount,
       failedCount: parsed.failedCount,
       importId: crypto.randomUUID(),
+      importedTransactionIds,
       platform: parsed.platform,
     };
   }
