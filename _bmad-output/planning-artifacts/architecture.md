@@ -345,19 +345,25 @@ Winston 提出质疑：如果移动端和 Web 端不共享屏幕级路由逻辑�
 **应用认证契约（由 sprint-change-proposal-2026-04-29 补丁 A-4 固化，Epic 1.5 Story 1.5.1 落地验证）：**
 
 - **Token 来源（唯一口径）**：
-  - 应用业务 API（`/api/**` 除 `/api/auth/**`）统一使用应用自签 JWT（access 15min + refresh 7d）
-  - JWT payload 必含 `sub`（user_id）、`iat`、`exp`、`type`（access / refresh）
-  - **禁止** 业务 API 依赖 Supabase Auth 返回的 token 直接鉴权
+  - 应用业务 API（`/api/**` 除 `/api/auth/**`、`/api/health` 与公开配置读取端点 `/api/config/notification-rules`）统一使用 `Authorization: Bearer <appAccessToken>` 传入的应用自签 JWT。
+  - Access token TTL 为 15min；refresh token TTL 为 7 天，且 refresh token 只允许通过 `POST /api/auth/refresh` 使用。
+  - Access JWT payload 必含 `sub`（user_id）、`iat`、`exp`、`authMethod`，并应包含 `type: "access"`；refresh token 不得作为业务 API 访问凭证。
+  - Supabase Auth token 仅作为历史兼容 fallback 或 OAuth/OTP 签发源，不是新业务 API 的正式契约。
 - **验签位置**：
-  - Next.js `middleware.ts` 统一拦截受保护路由，验签失败返回 `{ success: false, error: { code: "AUTH_UNAUTHORIZED" } }`
-  - 业务 handler 内通过 `getAuthenticatedUser(request)` helper 获取已验证 user；不再重复写验签逻辑
+  - `apps/api/middleware.ts` 通过 matcher 统一拦截受保护 API，验签失败返回 `{ success: false, error: { code: "AUTH_UNAUTHORIZED", message: string } }`，HTTP status 为 401。
+  - 中间件只做轻量 token 存在性与 app access JWT 有效性判断，不查询 repository、不读取业务数据，避免所有 API 额外 IO。
+  - 业务 handler 内通过 `getAuthenticatedUser(request)` helper 获取已验证 user；兼容期可继续使用 `requireAuthenticatedUser(request)` 别名。
 - **用户识别**：
-  - user_id 来自 JWT `sub` claim，**不相信** 客户端传入的 userId / body.userId
+  - user_id 必须来自 JWT `sub` claim 或 helper 返回的 `user.id`，**不相信** 客户端传入的 userId、body.userId、query.userId 或任意自定义 header。
+  - 业务 repository/service 需要 userId 时，由 route handler 传入 `getAuthenticatedUser(request).user.id`。
 - **Supabase Auth 角色**：
   - 仍作为 OAuth / OTP 签发源（微信 unionid、OTP 短信）
-  - 应用签发 JWT 时持久化映射关系到 `auth.users`，不直接把 Supabase access_token 下发给业务路由
+  - 应用签发 JWT 时持久化映射关系到 `auth.users`，不直接把 Supabase access_token 作为业务路由契约。
+  - 生产环境必须显式配置 `SUPABASE_JWT_SECRET` 或 `JWT_SECRET`；本地 `dev-jwt-secret` fallback 只服务开发与测试。
 - **测试要求**：
-  - 所有受保护路由必须有单元测试覆盖三分支：无 token / 过期 token / 有效 token
+  - 认证中间件和 helper 必须有单元测试覆盖三分支：无 token / 过期 token / 有效 token。
+  - 中间件测试必须覆盖 `/api/auth/**`、`/api/health` 与 `/api/config/notification-rules` 不被拦截，并断言 401 响应 JSON。
+  - 受保护 route 的测试需证明 userId 来自 helper 返回的 `user.id`，不得来自 request body/query。
   - 登录后 API 写入 / 权限 / 选择器操作的 Story 必须在 Dev Agent Record 记录至少一条真机或等效网络验收证据（URL 不得为 localhost）
   - 见 `CLAUDE.md` DoD「受保护 API / 权限 Story 追加 DoD」
 

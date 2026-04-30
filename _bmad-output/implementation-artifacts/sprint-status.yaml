@@ -69,7 +69,7 @@ development_status:
   # Epic 1.5: DS 组件层 · 导航外壳 · Epic 1 保真与契约收口 (MVP 收口)
   # Inserted 2026-04-29 via sprint-change-proposal-2026-04-29.md (Sue 签字)
   epic-1.5: in-progress
-  1.5-1-auth-contract-formalization: backlog
+  1.5-1-auth-contract-formalization: done
   1.5-2-transaction-direction-and-pending-semantics: done
   1.5-3-ds-component-layer-implementation: backlog
   1.5-4-bottom-tab-navigation-shell: backlog
