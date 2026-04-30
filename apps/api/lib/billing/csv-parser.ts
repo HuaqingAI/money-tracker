@@ -38,6 +38,9 @@ const SUCCESS_STATUS_KEYWORDS = ['支付成功', '交易成功', '已入账', '�
 const REFUND_STATUS_KEYWORDS = ['退款成功', '退还成功', '已退款', '已退还'];
 const REFUND_DIRECTION_KEYWORDS = ['退款', '退还', '退回'];
 const CLOSED_DIRECTION_KEYWORDS = ['关闭', '结清', '冲销'];
+const INCOME_DIRECTION_KEYWORDS = ['收入', '收款'];
+const INCOME_STATUS_KEYWORDS = ['已收钱', '收款成功'];
+const EXPENSE_DIRECTION_KEYWORDS = ['支出', '付款'];
 const NON_IMPORTABLE_STATUS_KEYWORDS = [
   '关闭',
   '失败',
@@ -395,19 +398,6 @@ function inferDirection(input: {
   directionConfidence: BillingDirectionConfidence;
 } {
   const explicitText = [input.direction, input.status].join(' ');
-  const contextText = [
-    input.direction,
-    input.status,
-    input.description,
-    input.merchant,
-  ].join(' ');
-
-  if (includesAny(contextText, REFUND_DIRECTION_KEYWORDS)) {
-    return {
-      direction: BILLING_TRANSACTION_DIRECTIONS.refund,
-      directionConfidence: BILLING_DIRECTION_CONFIDENCE.high,
-    };
-  }
 
   if (includesAny(explicitText, CLOSED_DIRECTION_KEYWORDS)) {
     return {
@@ -416,17 +406,34 @@ function inferDirection(input: {
     };
   }
 
-  if (input.direction.includes('收入') || input.direction.includes('收款')) {
+  if (includesAny(explicitText, REFUND_DIRECTION_KEYWORDS)) {
+    return {
+      direction: BILLING_TRANSACTION_DIRECTIONS.refund,
+      directionConfidence: BILLING_DIRECTION_CONFIDENCE.high,
+    };
+  }
+
+  if (
+    includesAny(input.direction, INCOME_DIRECTION_KEYWORDS) ||
+    includesAny(input.status, INCOME_STATUS_KEYWORDS)
+  ) {
     return {
       direction: BILLING_TRANSACTION_DIRECTIONS.income,
       directionConfidence: BILLING_DIRECTION_CONFIDENCE.high,
     };
   }
 
-  if (input.direction.includes('支出') || input.direction.includes('付款')) {
+  if (includesAny(input.direction, EXPENSE_DIRECTION_KEYWORDS)) {
     return {
       direction: BILLING_TRANSACTION_DIRECTIONS.expense,
       directionConfidence: BILLING_DIRECTION_CONFIDENCE.high,
+    };
+  }
+
+  if (includesAny(input.description, REFUND_DIRECTION_KEYWORDS)) {
+    return {
+      direction: BILLING_TRANSACTION_DIRECTIONS.refund,
+      directionConfidence: BILLING_DIRECTION_CONFIDENCE.medium,
     };
   }
 
@@ -498,6 +505,10 @@ export function parseBillingCsv(
         merchant,
         status: rowStatus,
       });
+      if (directionSemantics.direction === BILLING_TRANSACTION_DIRECTIONS.closed) {
+        failedCount += 1;
+        continue;
+      }
 
       transactions.push({
         amount_cents: parseAmountCents(amount, directionSemantics.direction),

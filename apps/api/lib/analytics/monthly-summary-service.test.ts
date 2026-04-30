@@ -11,6 +11,12 @@ interface TransactionFixtureRow {
 }
 
 const queryState = vi.hoisted(() => ({
+  executedQueries: [] as Array<{
+    eqFilters: Array<[string, unknown]>;
+    gteFilters: Array<[string, string]>;
+    inFilters: Array<[string, string[]]>;
+    ltFilters: Array<[string, string]>;
+  }>,
   transactionRows: [] as TransactionFixtureRow[],
 }));
 
@@ -79,11 +85,18 @@ const getSupabaseAdminMock = vi.hoisted(() =>
         then: (
           resolve: (value: { data: unknown; error: null }) => void,
           reject: (reason?: unknown) => void,
-        ) =>
-          Promise.resolve({
+        ) => {
+          queryState.executedQueries.push({
+            eqFilters: [...eqFilters.entries()],
+            gteFilters: [...gteFilters.entries()],
+            inFilters: [...inFilters.entries()],
+            ltFilters: [...ltFilters.entries()],
+          });
+          return Promise.resolve({
             data: queryState.transactionRows.filter(matchesFilters),
             error: null,
-          }).then(resolve, reject),
+          }).then(resolve, reject);
+        },
       };
 
       return query;
@@ -106,6 +119,7 @@ import { getMonthlySummary, getMonthlyTrend } from './monthly-summary-service';
 describe('monthly-summary-service', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    queryState.executedQueries = [];
     queryState.transactionRows = [];
   });
 
@@ -232,6 +246,70 @@ describe('monthly-summary-service', () => {
     ]);
   });
 
+  it('uses the same includePending scope for monthly comparisons', async () => {
+    queryState.transactionRows = [
+      {
+        amount_cents: -1000,
+        categories: { name: 'Food' },
+        category_id: 'cat-food',
+        direction: 'expense',
+        status: 'confirmed',
+        transaction_at: '2026-04-10T00:00:00.000Z',
+        user_id: 'user-1',
+      },
+      {
+        amount_cents: -2000,
+        categories: { name: 'Food' },
+        category_id: 'cat-food',
+        direction: 'expense',
+        status: 'pending_confirmation',
+        transaction_at: '2026-04-11T00:00:00.000Z',
+        user_id: 'user-1',
+      },
+      {
+        amount_cents: -500,
+        categories: { name: 'Food' },
+        category_id: 'cat-food',
+        direction: 'expense',
+        status: 'confirmed',
+        transaction_at: '2026-03-10T00:00:00.000Z',
+        user_id: 'user-1',
+      },
+      {
+        amount_cents: -1500,
+        categories: { name: 'Food' },
+        category_id: 'cat-food',
+        direction: 'expense',
+        status: 'pending_confirmation',
+        transaction_at: '2026-03-11T00:00:00.000Z',
+        user_id: 'user-1',
+      },
+    ];
+
+    const summary = await getMonthlySummary('user-1', '2026-04', {
+      includePending: true,
+    });
+
+    expect(summary.totalExpenseCents).toBe(3000);
+    expect(summary.comparisons.previousMonth).toEqual({
+      baselineMonth: '2026-03',
+      currentMonth: '2026-04',
+      differenceCents: 1000,
+      direction: 'up',
+      percentageChange: 50,
+    });
+    expect(
+      queryState.executedQueries.every((query) =>
+        query.inFilters.some(
+          ([column, values]) =>
+            column === 'status' &&
+            values.includes('confirmed') &&
+            values.includes('pending_confirmation'),
+        ),
+      ),
+    ).toBe(true);
+  });
+
   it('uses confirmed expense only for trend points', async () => {
     queryState.transactionRows = [
       {
@@ -282,5 +360,14 @@ describe('monthly-summary-service', () => {
       ],
       startMonth: '2026-03',
     });
+    expect(queryState.executedQueries).toHaveLength(1);
+    expect(queryState.executedQueries[0]?.gteFilters).toContainEqual([
+      'transaction_at',
+      '2026-03-01T00:00:00.000Z',
+    ]);
+    expect(queryState.executedQueries[0]?.ltFilters).toContainEqual([
+      'transaction_at',
+      '2026-05-01T00:00:00.000Z',
+    ]);
   });
 });

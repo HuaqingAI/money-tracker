@@ -16,7 +16,7 @@ import { getSupabaseAdmin } from '../db/supabase-admin';
 
 type TransactionSummaryRow = Pick<
   Tables<{ schema: 'billing' }, 'transactions'>,
-  'amount_cents' | 'category_id' | 'direction' | 'status'
+  'amount_cents' | 'category_id' | 'direction' | 'status' | 'transaction_at'
 > & {
   categories: { name: string } | Array<{ name: string }> | null;
 };
@@ -51,15 +51,29 @@ async function fetchLiveTransactionRows(input: {
   userId: string;
 }): Promise<TransactionSummaryRow[]> {
   const range = getUtcMonthRange(input.month);
+  return fetchLiveTransactionRowsInRange({
+    endIso: range.end,
+    includePending: input.includePending,
+    startIso: range.start,
+    userId: input.userId,
+  });
+}
+
+async function fetchLiveTransactionRowsInRange(input: {
+  endIso: string;
+  includePending: boolean;
+  startIso: string;
+  userId: string;
+}): Promise<TransactionSummaryRow[]> {
   const { data, error } = await getSupabaseAdmin()
     .schema('billing')
     .from('transactions')
-    .select('amount_cents,category_id,direction,status,categories(name)')
+    .select('amount_cents,category_id,direction,status,transaction_at,categories(name)')
     .eq('user_id', input.userId)
     .eq('direction', BILLING_TRANSACTION_DIRECTIONS.expense)
     .in('status', getIncludedStatuses(input.includePending))
-    .gte('transaction_at', range.start)
-    .lt('transaction_at', range.end);
+    .gte('transaction_at', input.startIso)
+    .lt('transaction_at', input.endIso);
 
   if (error) {
     throw new Error(`Failed to load monthly transactions: ${error.message}`);
@@ -103,9 +117,10 @@ function rowsToTrendPoint(month: string, rows: TransactionSummaryRow[]): Monthly
 async function getOptionalTrendPoint(
   userId: string,
   month: string,
+  includePending: boolean,
 ): Promise<MonthlyTrendPoint | null> {
   const rows = await fetchLiveTransactionRows({
-    includePending: false,
+    includePending,
     month,
     userId,
   });
@@ -130,8 +145,8 @@ export async function getMonthlySummary(
       month,
       userId,
     }),
-    getOptionalTrendPoint(userId, shiftMonth(month, -12)),
-    getOptionalTrendPoint(userId, shiftMonth(month, -1)),
+    getOptionalTrendPoint(userId, shiftMonth(month, -12), includePending),
+    getOptionalTrendPoint(userId, shiftMonth(month, -1), includePending),
   ]);
   const expenseRows = getLiveExpenseRows(rows);
   const categories = aggregateMonthlyCategories(expenseRows);
@@ -163,17 +178,32 @@ export async function getMonthlyTrend(
   endMonth = currentUtcMonth(),
 ): Promise<MonthlyTrend> {
   const startMonth = shiftMonth(endMonth, -(months - 1));
-  const points: MonthlyTrendPoint[] = [];
+  const startRange = getUtcMonthRange(startMonth);
+  const endRange = getUtcMonthRange(shiftMonth(endMonth, 1));
+  const rows = await fetchLiveTransactionRowsInRange({
+    endIso: endRange.start,
+    includePending: false,
+    startIso: startRange.start,
+    userId,
+  });
+  const rowsByMonth = new Map<string, TransactionSummaryRow[]>();
 
-  for (let offset = 0; offset < months; offset += 1) {
-    const month = shiftMonth(startMonth, offset);
-    const rows = await fetchLiveTransactionRows({
-      includePending: false,
-      month,
-      userId,
-    });
-    points.push(rowsToTrendPoint(month, rows));
+  for (const row of rows) {
+    const transactionAt = new Date(row.transaction_at);
+    if (Number.isNaN(transactionAt.getTime())) {
+      continue;
+    }
+
+    const rowMonth = `${transactionAt.getUTCFullYear()}-${String(
+      transactionAt.getUTCMonth() + 1,
+    ).padStart(2, '0')}`;
+    rowsByMonth.set(rowMonth, [...(rowsByMonth.get(rowMonth) ?? []), row]);
   }
+
+  const points = Array.from({ length: months }, (_, offset) => {
+    const month = shiftMonth(startMonth, offset);
+    return rowsToTrendPoint(month, rowsByMonth.get(month) ?? []);
+  });
 
   return {
     endMonth,

@@ -170,6 +170,106 @@ describe('parseBillingCsv', () => {
     );
   });
 
+  it('treats status-only collection rows as income', () => {
+    const csv = [
+      '日期,商户,金额,状态',
+      '2026/4/26 9:05,朋友,88.00,收款成功',
+    ].join('\n');
+
+    const result = parseBillingCsv({
+      bytes: encodeUtf8(csv),
+      rules: [
+        {
+          platform: 'wechat',
+          encoding: 'utf-8',
+          headerMatch: ['日期', '金额'],
+          skipRows: 0,
+          columnMapping: {
+            amount: '金额',
+            transactionAt: '日期',
+            merchant: '商户',
+            status: '状态',
+          },
+          dateFormat: 'yyyy/M/d H:mm',
+        },
+      ],
+    });
+
+    expect(result.transactions[0]).toEqual(
+      expect.objectContaining({
+        amount_cents: 8800,
+        direction: 'income',
+        direction_confidence: 'high',
+      }),
+    );
+  });
+
+  it('does not let refund text in description override explicit expense direction', () => {
+    const csv = [
+      '日期,商户,商品,金额,方向,状态',
+      '2026/4/26 9:05,咖啡店,退款咨询服务,12.34,支出,支付成功',
+    ].join('\n');
+
+    const result = parseBillingCsv({
+      bytes: encodeUtf8(csv),
+      rules: [
+        {
+          platform: 'wechat',
+          encoding: 'utf-8',
+          headerMatch: ['日期', '金额'],
+          skipRows: 0,
+          columnMapping: {
+            amount: '金额',
+            transactionAt: '日期',
+            merchant: '商户',
+            description: '商品',
+            direction: '方向',
+            status: '状态',
+          },
+          dateFormat: 'yyyy/M/d H:mm',
+        },
+      ],
+    });
+
+    expect(result.transactions[0]).toEqual(
+      expect.objectContaining({
+        amount_cents: -1234,
+        direction: 'expense',
+        direction_confidence: 'high',
+      }),
+    );
+  });
+
+  it('skips rows whose direction indicates closed even when status is successful', () => {
+    const csv = [
+      '日期,商户,金额,方向,状态',
+      '2026/4/26 9:05,平台,12.34,结清,交易成功',
+    ].join('\n');
+
+    const result = parseBillingCsv({
+      bytes: encodeUtf8(csv),
+      rules: [
+        {
+          platform: 'wechat',
+          encoding: 'utf-8',
+          headerMatch: ['日期', '金额'],
+          skipRows: 0,
+          columnMapping: {
+            amount: '金额',
+            transactionAt: '日期',
+            merchant: '商户',
+            direction: '方向',
+            status: '状态',
+          },
+          dateFormat: 'yyyy/M/d H:mm',
+        },
+      ],
+    });
+
+    expect(result.failedCount).toBe(1);
+    expect(result.transactions).toHaveLength(0);
+  });
+
   it('rejects polluted amount cells', () => {
     const csv = [
       '交易时间,交易对方,商品,收/支,金额(元),当前状态',
