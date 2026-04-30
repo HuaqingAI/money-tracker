@@ -144,6 +144,9 @@ importers:
       react-native-webview:
         specifier: ^13.16.1
         version: 13.16.1(react-native@0.81.5(@babel/core@7.29.0)(@react-native/metro-config@0.85.1(@babel/core@7.29.0))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+      semver:
+        specifier: 7.7.4
+        version: 7.7.4
       tamagui:
         specifier: 2.0.0-rc.41
         version: 2.0.0-rc.41(react-dom@19.1.0(react@19.1.0))(react-native-gesture-handler@2.31.1(react-native@0.81.5(@babel/core@7.29.0)(@react-native/metro-config@0.85.1(@babel/core@7.29.0))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native-safe-area-context@5.6.2(react-native@0.81.5(@babel/core@7.29.0)(@react-native/metro-config@0.85.1(@babel/core@7.29.0))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.29.0)(@react-native/metro-config@0.85.1(@babel/core@7.29.0))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)(sf-symbols-typescript@2.2.0)
