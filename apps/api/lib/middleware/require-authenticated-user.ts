@@ -26,6 +26,9 @@ interface AppAccessTokenPayload extends Record<string, unknown> {
   sub: string;
   phone: string | null;
   authMethod: 'otp' | 'wechat';
+  exp: number;
+  iat: number;
+  type?: 'access';
 }
 
 function getAuthSecret(): string {
@@ -38,7 +41,10 @@ function isAppAccessTokenPayload(
   return (
     typeof payload?.sub === 'string' &&
     (typeof payload.phone === 'string' || payload.phone === null) &&
-    (payload.authMethod === 'otp' || payload.authMethod === 'wechat')
+    (payload.authMethod === 'otp' || payload.authMethod === 'wechat') &&
+    typeof payload.iat === 'number' &&
+    typeof payload.exp === 'number' &&
+    (payload.type === undefined || payload.type === 'access')
   );
 }
 
@@ -94,7 +100,7 @@ export function extractBearerToken(request: Request | NextRequest): string | nul
   return token;
 }
 
-export async function requireAuthenticatedUser(
+export async function getAuthenticatedUser(
   request: Request | NextRequest,
 ): Promise<AuthenticatedUserContext> {
   const accessToken = extractBearerToken(request);
@@ -160,4 +166,10 @@ export async function requireAuthenticatedUser(
     accessToken,
     user: data.user,
   };
+}
+
+export function requireAuthenticatedUser(
+  request: Request | NextRequest,
+): Promise<AuthenticatedUserContext> {
+  return getAuthenticatedUser(request);
 }
