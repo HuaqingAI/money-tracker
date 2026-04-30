@@ -92,9 +92,17 @@ export function deleteAccount(accessToken: string): Promise<{ deleted: boolean }
 export function fetchMonthlySummary(
   accessToken: string,
   month: string,
+  options: { includePending?: boolean } = {},
 ): Promise<MonthlyReportSummary> {
+  const params = new URLSearchParams({
+    month,
+  });
+  if (options.includePending) {
+    params.set('includePending', 'true');
+  }
+
   return request<MonthlyReportSummary>(
-    `/api/analytics/monthly-summary?month=${encodeURIComponent(month)}`,
+    `/api/analytics/monthly-summary?${params.toString()}`,
     {
       accessToken,
       method: 'GET',

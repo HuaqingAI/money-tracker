@@ -972,6 +972,8 @@ export type Database = {
           classified_at: string | null
           created_at: string
           description: string | null
+          direction: Database["billing"]["Enums"]["transaction_direction"]
+          direction_confidence: Database["billing"]["Enums"]["direction_confidence"]
           external_transaction_id: string | null
           id: string
           import_dedupe_key: string | null
@@ -990,6 +992,8 @@ export type Database = {
           classified_at?: string | null
           created_at?: string
           description?: string | null
+          direction?: Database["billing"]["Enums"]["transaction_direction"]
+          direction_confidence?: Database["billing"]["Enums"]["direction_confidence"]
           external_transaction_id?: string | null
           id?: string
           import_dedupe_key?: string | null
@@ -1008,6 +1012,8 @@ export type Database = {
           classified_at?: string | null
           created_at?: string
           description?: string | null
+          direction?: Database["billing"]["Enums"]["transaction_direction"]
+          direction_confidence?: Database["billing"]["Enums"]["direction_confidence"]
           external_transaction_id?: string | null
           id?: string
           import_dedupe_key?: string | null
@@ -1035,16 +1041,31 @@ export type Database = {
     Functions: {
       upsert_csv_parse_rule: {
         Args: {
-          p_platform: string
-          p_version: string
-          p_rule_config: Json
           p_is_active?: boolean
+          p_platform: string
+          p_rule_config: Json
+          p_version: string
         }
-        Returns: Database["billing"]["Tables"]["csv_parse_rules"]["Row"]
+        Returns: {
+          created_at: string
+          id: string
+          is_active: boolean
+          platform: string
+          rule_config: Json
+          updated_at: string
+          version: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "csv_parse_rules"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
     }
     Enums: {
-      [_ in never]: never
+      direction_confidence: "high" | "medium" | "low"
+      transaction_direction: "expense" | "income" | "refund" | "closed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1190,7 +1211,10 @@ export const Constants = {
     },
   },
   billing: {
-    Enums: {},
+    Enums: {
+      direction_confidence: ["high", "medium", "low"],
+      transaction_direction: ["expense", "income", "refund", "closed"],
+    },
   },
 } as const
 

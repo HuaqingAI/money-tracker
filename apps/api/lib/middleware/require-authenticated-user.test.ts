@@ -22,7 +22,11 @@ vi.mock('@/db/supabase-admin', () => ({
 }));
 
 import { createAccessToken, createSignedToken } from '../auth/token';
-import { AuthenticatedUserError, requireAuthenticatedUser } from './require-authenticated-user';
+import {
+  AuthenticatedUserError,
+  getAuthenticatedUser,
+  requireAuthenticatedUser,
+} from './require-authenticated-user';
 
 const secret = 'test-jwt-secret';
 
@@ -44,18 +48,29 @@ function createAuthRecord(overrides: Partial<AuthIdentityRecord> = {}): AuthIden
   };
 }
 
-function createRequest(token: string): Request {
-  return new Request('https://example.com/api/user/profile', {
-    headers: {
-      authorization: `Bearer ${token}`,
-    },
-  });
+function createRequest(token?: string): Request {
+  const headers = token
+    ? {
+        authorization: `Bearer ${token}`,
+      }
+    : undefined;
+
+  return new Request('https://example.com/api/user/profile', { headers });
 }
 
-describe('requireAuthenticatedUser', () => {
+describe('authenticated user helper', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubEnv('JWT_SECRET', secret);
+  });
+
+  it('rejects requests without a bearer token', async () => {
+    await expect(getAuthenticatedUser(createRequest())).rejects.toMatchObject({
+      code: 'AUTH_UNAUTHORIZED',
+      status: 401,
+    });
+    expect(authRepositoryMock.getUserById).not.toHaveBeenCalled();
+    expect(getUserMock).not.toHaveBeenCalled();
   });
 
   it('accepts app-issued access tokens and maps in-memory auth users', async () => {
@@ -66,11 +81,12 @@ describe('requireAuthenticatedUser', () => {
         needsOnboarding: false,
         phone: '13812345678',
         sub: 'user-1',
+        type: 'access',
       },
       secret,
     );
 
-    const result = await requireAuthenticatedUser(createRequest(token));
+    const result = await getAuthenticatedUser(createRequest(token));
 
     expect(authRepositoryMock.getUserById).toHaveBeenCalledWith('user-1');
     expect(getUserMock).not.toHaveBeenCalled();
@@ -99,6 +115,7 @@ describe('requireAuthenticatedUser', () => {
         needsOnboarding: false,
         phone: '13812345678',
         sub: 'user-1',
+        type: 'access',
       },
       secret,
     );
@@ -153,6 +170,7 @@ describe('requireAuthenticatedUser', () => {
         needsOnboarding: false,
         phone: '13812345678',
         sub: 'user-1',
+        type: 'access',
       },
       secret,
     );
@@ -177,6 +195,7 @@ describe('requireAuthenticatedUser', () => {
         needsOnboarding: false,
         phone: '13812345678',
         sub: 'user-1',
+        type: 'access',
       },
       secret,
       -60,
@@ -192,5 +211,25 @@ describe('requireAuthenticatedUser', () => {
     });
     expect(authRepositoryMock.getUserById).not.toHaveBeenCalled();
     expect(getUserMock).toHaveBeenCalledWith(token);
+  });
+
+  it('keeps requireAuthenticatedUser as a compatibility alias', async () => {
+    authRepositoryMock.getUserById.mockResolvedValue(createAuthRecord());
+    const { token } = createAccessToken(
+      {
+        authMethod: 'otp',
+        needsOnboarding: false,
+        phone: '13812345678',
+        sub: 'user-1',
+        type: 'access',
+      },
+      secret,
+    );
+
+    await expect(requireAuthenticatedUser(createRequest(token))).resolves.toMatchObject({
+      user: {
+        id: 'user-1',
+      },
+    });
   });
 });
