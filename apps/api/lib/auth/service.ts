@@ -31,6 +31,7 @@ interface AccessTokenPayload {
   phone: string | null;
   authMethod: 'otp' | 'wechat';
   needsOnboarding: boolean;
+  type: 'access';
 }
 
 function getAuthSecret(): string {
@@ -280,6 +281,7 @@ export class AuthService {
         phone: normalizedUser.phone,
         authMethod: normalizedUser.authMethod,
         needsOnboarding: normalizedUser.needsOnboarding,
+        type: 'access',
       },
       getAuthSecret(),
     );
