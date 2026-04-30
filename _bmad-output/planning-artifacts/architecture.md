@@ -288,29 +288,29 @@ Winston 提出质疑：如果移动端和 Web 端不共享屏幕级路由逻辑�
 - AI 解析结果进入 pending，用户确认后 confirmed
 - 金额字段 `amount_cents INTEGER`，全栈整数分存储
 
-**交易方向与状态口径（由 sprint-change-proposal-2026-04-29 补丁 A-5 固化，Epic 1.5 Story 1.5.2 落地决策 + migration）：**
+**交易方向与状态口径（最终执行规则）：**
 
-- **方向字段 `direction`**（新增枚举，由 Story 1.5.2 通过 supabase migration 引入；默认值 `expense` 保证向后兼容）：
-  - `expense` — 支出（默认）
-  - `income` — 收入
-  - `refund` — 退款（从已确认 expense 回冲）
-  - `closed` — 已冲销 / 双方结算（不参与聚合）
-  - 来源：通知解析 / CSV 解析 / 手动记账显式设置
-  - 无法判定时默认 `expense`，但必须同时标记 `direction_confidence = 'low'` 并进入 `pending_confirmation`
+- **方向字段 `direction`**：`billing.transactions.direction` 使用枚举 `expense | income | refund | closed`，默认 `expense`，用于历史数据向后兼容。
+  - `expense` — 支出；所有“本月支出”聚合的唯一入口。
+  - `income` — 收入；作为流水事实可见，但不进入支出聚合。
+  - `refund` — 退款/退还；作为流水事实可见，但不进入支出聚合。
+  - `closed` — 已关闭、已冲销或结算类事实；作为流水事实可见，但不进入支出聚合。
+- **方向置信度 `direction_confidence`**：枚举 `high | medium | low`，默认 `low`。
+  - `high`：来源数据或用户输入明确给出方向，例如 CSV `收/支=支出/收入`、退款成功状态。
+  - `medium`：规则推断方向，但来源字段并非直接表达。
+  - `low`：无法判定方向时的兼容兜底；必须写 `direction = expense` 并保持 `pending_confirmation`。
 - **状态口径 `status`**：
-  - `pending_confirmation` — AI 已分类但用户未确认
-  - `confirmed` — 用户确认或自动规则命中置信度阈值
-  - `rejected` — 用户拒绝（不参与任何聚合）
+  - `pending_confirmation` — 真实但未确认的交易；可提醒用户确认。
+  - `confirmed` — 用户确认或可靠自动规则确认的交易。
+  - `rejected` — 用户拒绝；不参与任何聚合，也不作为默认流水展示。
 - **聚合口径（统一规则，四处必须一致）**：
-  - **Dashboard 月度概览**（FR4 / Story 1.6）：分开展示两个数值 — "本月支出 X"（confirmed）与"其中 Y 待确认"（pending_confirmation）
-  - **月报**（FR5 / Story 1.7）：默认只统计 confirmed；提供开关查看"含待确认"
-  - **交易列表**（FR11 / Story 2.1）：默认展示 confirmed + pending_confirmation；支持按 status 筛选
-  - **手动记账**（FR15 / Story 2.3）：默认 confirmed（用户显式输入视为已确认）
-- **收入排除规则**：
-  - `direction = income` 不进入"支出"聚合
-  - Dashboard 的"本月支出"卡片排除 `income` 与 `refund`
-  - Epic 1 retro §3.2 指出的"正数收入月份被计为支出" bug 由 Story 1.5.2 + Story 1.5.8 一并修复
-- **测试要求**：Dashboard / 月报 / 列表 / 手动记账四处聚合口径必须有单元测试交叉验证；见 `CLAUDE.md` DoD「交易/聚合 Story 追加 DoD」
+  - **Dashboard 月度概览**：`totalExpenseCents` 只统计 `status = confirmed AND direction = expense`，金额使用 `abs(amount_cents)`；`pending_confirmation AND direction = expense` 只进入待确认金额/数量与提醒，不并入本月支出。
+  - **月报**：默认只统计 `status = confirmed AND direction = expense`；当查询显式 `includePending=true` 时，才额外纳入 `pending_confirmation AND direction = expense`。
+  - **交易列表**：默认展示 `confirmed + pending_confirmation`，排除 `rejected`；`expense/income/refund/closed` 都保留在流水中，只有支出聚合排除非 `expense`。
+  - **手动记账**：用户显式输入默认 `status = confirmed`；支出/收入/退款方向必须由用户选择或表单默认规则写入 `direction`，不能靠金额正负推断。
+- **金额字段语义**：`amount_cents` 保持现金流符号兼容现有数据；新聚合逻辑不得使用 `amount_cents > 0` 或 `< 0` 判断支出，只能使用 `direction = expense`。
+- **预聚合约束**：`analytics.monthly_summaries` 只有在生产口径包含相同 direction/status/inclusion metadata 并有测试证明时才能作为 Dashboard/月报来源；否则以 `billing.transactions` live aggregate 为事实来源。
+- **测试要求**：Dashboard / 月报 / 列表 / 手动记账四处聚合口径必须有单元测试交叉验证；见 `CLAUDE.md` DoD「交易/聚合 Story 追加 DoD」。
 
 **数据验证：** Zod Schema 共享
 - `packages/shared/schemas/` 定义所有 Zod schema

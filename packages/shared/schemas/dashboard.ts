@@ -5,6 +5,10 @@ import {
   DASHBOARD_RECENT_TRANSACTIONS_DEFAULT_LIMIT,
   DASHBOARD_RECENT_TRANSACTIONS_MAX_LIMIT,
 } from '../constants/dashboard';
+import {
+  billingDirectionConfidenceSchema,
+  billingTransactionDirectionSchema,
+} from './billing';
 
 export const dashboardMonthSchema = z
   .string()
@@ -39,6 +43,7 @@ export const monthlySummarySchema = z.object({
   hasTransactions: z.boolean(),
   month: dashboardMonthSchema,
   pendingConfirmationCount: z.number().int().min(0),
+  pendingConfirmationExpenseCents: z.number().int().min(0),
   spotlight: dashboardSpotlightSchema.nullable(),
   totalExpenseCents: z.number().int().min(0),
   transactionCount: z.number().int().min(0),
@@ -49,13 +54,14 @@ export const recentTransactionSchema = z.object({
   categoryId: z.string().uuid().nullable(),
   categoryName: z.string().trim().min(1),
   description: z.string().nullable(),
+  direction: billingTransactionDirectionSchema,
+  directionConfidence: billingDirectionConfidenceSchema,
   id: z.string().uuid(),
   merchant: z.string().nullable(),
   source: z.string().nullable(),
   status: z.enum([
     BILLING_TRANSACTION_STATUS.pendingConfirmation,
     BILLING_TRANSACTION_STATUS.confirmed,
-    BILLING_TRANSACTION_STATUS.rejected,
   ]),
   transactionAt: z.string().datetime(),
 });

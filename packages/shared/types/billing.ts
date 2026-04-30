@@ -2,8 +2,10 @@ import type { AiClassificationProvider } from '../ai/ai-client';
 import type {
   BILLING_CONFIRMATION_ERROR_CODES,
   BILLING_CSV_PLATFORMS,
+  BILLING_DIRECTION_CONFIDENCE,
   BILLING_IMPORT_ERROR_CODES,
   BILLING_ROUTE_PATHS,
+  BILLING_TRANSACTION_DIRECTIONS,
   BILLING_TRANSACTION_SOURCES,
   BILLING_TRANSACTION_STATUS,
 } from '../constants/billing';
@@ -16,6 +18,12 @@ export type BillingTransactionSource =
 
 export type BillingTransactionStatus =
   (typeof BILLING_TRANSACTION_STATUS)[keyof typeof BILLING_TRANSACTION_STATUS];
+
+export type BillingTransactionDirection =
+  (typeof BILLING_TRANSACTION_DIRECTIONS)[keyof typeof BILLING_TRANSACTION_DIRECTIONS];
+
+export type BillingDirectionConfidence =
+  (typeof BILLING_DIRECTION_CONFIDENCE)[keyof typeof BILLING_DIRECTION_CONFIDENCE];
 
 export type BillingImportErrorCode =
   (typeof BILLING_IMPORT_ERROR_CODES)[keyof typeof BILLING_IMPORT_ERROR_CODES];
@@ -54,6 +62,8 @@ export interface BillingNormalizedTransaction {
   external_transaction_id: string | null;
   merchant: string | null;
   description: string | null;
+  direction: BillingTransactionDirection;
+  direction_confidence: BillingDirectionConfidence;
   source: BillingTransactionSource;
   status: BillingTransactionStatus;
 }
@@ -89,6 +99,8 @@ export interface PendingConfirmationTransaction {
   categoryName: string;
   classifiedAt: string | null;
   description: string | null;
+  direction: BillingTransactionDirection;
+  directionConfidence: BillingDirectionConfidence;
   id: string;
   merchant: string | null;
   source: string | null;

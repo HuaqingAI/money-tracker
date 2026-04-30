@@ -75,7 +75,9 @@ describe('GET /api/analytics/monthly-summary', () => {
       new Request('https://example.com/api/analytics/monthly-summary?month=2026-04') as never,
     );
 
-    expect(getMonthlySummaryMock).toHaveBeenCalledWith('user-1', '2026-04');
+    expect(getMonthlySummaryMock).toHaveBeenCalledWith('user-1', '2026-04', {
+      includePending: false,
+    });
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toMatchObject({
       success: true,
@@ -83,6 +85,17 @@ describe('GET /api/analytics/monthly-summary', () => {
         month: '2026-04',
       },
     });
+  });
+
+  it('passes includePending query to the monthly summary service', async () => {
+    const response = await GET(
+      new Request('https://example.com/api/analytics/monthly-summary?month=2026-04&includePending=true') as never,
+    );
+
+    expect(getMonthlySummaryMock).toHaveBeenCalledWith('user-1', '2026-04', {
+      includePending: true,
+    });
+    expect(response.status).toBe(200);
   });
 
   it('rejects invalid month query values', async () => {

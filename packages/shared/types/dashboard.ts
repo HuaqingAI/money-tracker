@@ -2,7 +2,11 @@ import type {
   DASHBOARD_ERROR_CODES,
   DASHBOARD_ROUTE_PATHS,
 } from '../constants/dashboard';
-import type { BillingTransactionStatus } from './billing';
+import type {
+  BillingDirectionConfidence,
+  BillingTransactionDirection,
+  BillingTransactionStatus,
+} from './billing';
 
 export type DashboardRoutePath =
   (typeof DASHBOARD_ROUTE_PATHS)[keyof typeof DASHBOARD_ROUTE_PATHS];
@@ -32,6 +36,7 @@ export interface MonthlySummary {
   hasTransactions: boolean;
   month: string;
   pendingConfirmationCount: number;
+  pendingConfirmationExpenseCents: number;
   spotlight: DashboardSpotlight | null;
   totalExpenseCents: number;
   transactionCount: number;
@@ -42,6 +47,8 @@ export interface RecentTransaction {
   categoryId: string | null;
   categoryName: string;
   description: string | null;
+  direction: BillingTransactionDirection;
+  directionConfidence: BillingDirectionConfidence;
   id: string;
   merchant: string | null;
   source: string | null;

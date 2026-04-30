@@ -39,6 +39,7 @@ describe('dashboard schemas', () => {
         hasTransactions: true,
         month: '2026-04',
         pendingConfirmationCount: 1,
+        pendingConfirmationExpenseCents: 800,
         spotlight: {
           contextKey: 'top-category',
           text: '本月其他支出最多，共 12 元。',
@@ -63,6 +64,8 @@ describe('dashboard schemas', () => {
             categoryId: null,
             categoryName: '其他',
             description: null,
+            direction: 'expense',
+            directionConfidence: 'low',
             id: '11111111-1111-4111-8111-111111111111',
             merchant: '便利店',
             source: 'alipay_csv',

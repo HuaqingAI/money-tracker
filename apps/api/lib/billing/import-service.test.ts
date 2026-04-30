@@ -162,6 +162,8 @@ describe('BillingImportService', () => {
         import_dedupe_key:
           'fingerprint|wechat_csv|-1800|咖啡店|2026-04-26T03:00:00.000Z',
         merchant: '咖啡店',
+        direction: 'expense',
+        direction_confidence: 'high',
         source: 'wechat_csv',
         status: 'pending_confirmation',
         transaction_at: '2026-04-26T03:00:00.000Z',

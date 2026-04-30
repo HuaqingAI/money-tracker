@@ -24,6 +24,19 @@ export const BILLING_TRANSACTION_STATUS = {
   rejected: 'rejected',
 } as const;
 
+export const BILLING_TRANSACTION_DIRECTIONS = {
+  closed: 'closed',
+  expense: 'expense',
+  income: 'income',
+  refund: 'refund',
+} as const;
+
+export const BILLING_DIRECTION_CONFIDENCE = {
+  high: 'high',
+  low: 'low',
+  medium: 'medium',
+} as const;
+
 export const BILLING_IMPORT_ERROR_CODES = {
   authUnauthorized: 'AUTH_UNAUTHORIZED',
   importEncodingError: 'IMPORT_ENCODING_ERROR',

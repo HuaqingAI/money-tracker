@@ -28,6 +28,8 @@ type PendingTransactionRow = Pick<
   | 'category_id'
   | 'classified_at'
   | 'description'
+  | 'direction'
+  | 'direction_confidence'
   | 'id'
   | 'merchant'
   | 'source'
@@ -98,7 +100,7 @@ export class SupabaseConfirmationRepository implements ConfirmationRepository {
       .schema('billing')
       .from('transactions')
       .select(
-        'ai_confidence, ai_provider, amount_cents, category_id, classified_at, description, id, merchant, source, status, transaction_at',
+        'ai_confidence, ai_provider, amount_cents, category_id, classified_at, description, direction, direction_confidence, id, merchant, source, status, transaction_at',
       )
       .eq('user_id', userId)
       .eq('status', BILLING_TRANSACTION_STATUS.pendingConfirmation)
@@ -179,7 +181,7 @@ export class SupabaseConfirmationRepository implements ConfirmationRepository {
       .not('classified_at', 'is', null)
       .not('category_id', 'is', null)
       .select(
-        'ai_confidence, ai_provider, amount_cents, category_id, classified_at, description, id, merchant, source, status, transaction_at',
+        'ai_confidence, ai_provider, amount_cents, category_id, classified_at, description, direction, direction_confidence, id, merchant, source, status, transaction_at',
       )
       .maybeSingle();
 
@@ -208,7 +210,7 @@ export class SupabaseConfirmationRepository implements ConfirmationRepository {
       .eq('status', BILLING_TRANSACTION_STATUS.pendingConfirmation)
       .not('classified_at', 'is', null)
       .select(
-        'ai_confidence, ai_provider, amount_cents, category_id, classified_at, description, id, merchant, source, status, transaction_at',
+        'ai_confidence, ai_provider, amount_cents, category_id, classified_at, description, direction, direction_confidence, id, merchant, source, status, transaction_at',
       )
       .maybeSingle();
 
@@ -321,6 +323,8 @@ function mapPendingTransaction(input: {
       ? toIsoDatetime(input.row.classified_at)
       : null,
     description: input.row.description,
+    direction: input.row.direction,
+    directionConfidence: input.row.direction_confidence,
     id: input.row.id,
     merchant: input.row.merchant,
     source: input.row.source,

@@ -1,5 +1,5 @@
 # generated: 2026-04-20
-# last_updated: 2026-04-30 (Story 1.5-1 created; Epic 1.5 started)
+# last_updated: 2026-04-30 (Story 1.5-2 review findings fixed)
 # project: money-tracker
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-04-20
-last_updated: 2026-04-30 (Story 1.5-1 done after code review)
+last_updated: 2026-04-30 (Story 1.5-2 review findings fixed)
 project: money-tracker
 project_key: NOKEY
 tracking_system: file-system
@@ -70,7 +70,7 @@ development_status:
   # Inserted 2026-04-29 via sprint-change-proposal-2026-04-29.md (Sue 签字)
   epic-1.5: in-progress
   1.5-1-auth-contract-formalization: done
-  1.5-2-transaction-direction-and-pending-semantics: backlog
+  1.5-2-transaction-direction-and-pending-semantics: done
   1.5-3-ds-component-layer-implementation: backlog
   1.5-4-bottom-tab-navigation-shell: backlog
   1.5-5-profile-page-high-fidelity-redo: backlog
