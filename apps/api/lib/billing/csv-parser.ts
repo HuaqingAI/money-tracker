@@ -1,12 +1,16 @@
 import {
+  BILLING_DIRECTION_CONFIDENCE,
   BILLING_IMPORT_ERROR_CODES,
+  BILLING_TRANSACTION_DIRECTIONS,
   BILLING_TRANSACTION_SOURCES,
   BILLING_TRANSACTION_STATUS,
   type BillingCsvEncoding,
   type BillingCsvParseRule,
   billingCsvParseRuleSchema,
   type BillingCsvPlatform,
+  type BillingDirectionConfidence,
   type BillingNormalizedTransaction,
+  type BillingTransactionDirection,
 } from '@money-tracker/shared';
 
 import { BillingImportError } from './errors';
@@ -31,11 +35,12 @@ interface ParsedCsvText {
 
 const ENCODING_FALLBACKS: BillingCsvEncoding[] = ['utf-8', 'gb18030', 'gbk'];
 const SUCCESS_STATUS_KEYWORDS = ['支付成功', '交易成功', '已入账', '已收钱', '收款成功'];
+const REFUND_STATUS_KEYWORDS = ['退款成功', '退还成功', '已退款', '已退还'];
+const REFUND_DIRECTION_KEYWORDS = ['退款', '退还', '退回'];
+const CLOSED_DIRECTION_KEYWORDS = ['关闭', '结清', '冲销'];
 const NON_IMPORTABLE_STATUS_KEYWORDS = [
   '关闭',
   '失败',
-  '退款',
-  '退还',
   '撤销',
   '取消',
   '处理中',
@@ -207,7 +212,10 @@ function readCell(row: string[], index: number | null): string {
   return row[index]?.trim() ?? '';
 }
 
-function parseAmountCents(value: string, direction: string): number {
+function parseAmountCents(
+  value: string,
+  direction: BillingTransactionDirection,
+): number {
   const trimmed = value.trim();
   if (!/^[\s,，￥¥元()（）+\-\d.]+$/.test(trimmed)) {
     throw new Error('金额格式无效');
@@ -237,10 +245,13 @@ function parseAmountCents(value: string, direction: string): number {
     throw new Error('金额超出安全范围');
   }
 
-  if (direction.includes('支出')) {
+  if (direction === BILLING_TRANSACTION_DIRECTIONS.expense) {
     return -Math.abs(absoluteCents);
   }
-  if (direction.includes('收入')) {
+  if (
+    direction === BILLING_TRANSACTION_DIRECTIONS.income ||
+    direction === BILLING_TRANSACTION_DIRECTIONS.refund
+  ) {
     return Math.abs(absoluteCents);
   }
 
@@ -365,7 +376,64 @@ function isImportableStatus(value: string): boolean {
     return false;
   }
 
-  return SUCCESS_STATUS_KEYWORDS.some((keyword) => status.includes(keyword));
+  return [...SUCCESS_STATUS_KEYWORDS, ...REFUND_STATUS_KEYWORDS].some((keyword) =>
+    status.includes(keyword),
+  );
+}
+
+function includesAny(value: string, keywords: string[]): boolean {
+  return keywords.some((keyword) => value.includes(keyword));
+}
+
+function inferDirection(input: {
+  description: string;
+  direction: string;
+  merchant: string;
+  status: string;
+}): {
+  direction: BillingTransactionDirection;
+  directionConfidence: BillingDirectionConfidence;
+} {
+  const explicitText = [input.direction, input.status].join(' ');
+  const contextText = [
+    input.direction,
+    input.status,
+    input.description,
+    input.merchant,
+  ].join(' ');
+
+  if (includesAny(contextText, REFUND_DIRECTION_KEYWORDS)) {
+    return {
+      direction: BILLING_TRANSACTION_DIRECTIONS.refund,
+      directionConfidence: BILLING_DIRECTION_CONFIDENCE.high,
+    };
+  }
+
+  if (includesAny(explicitText, CLOSED_DIRECTION_KEYWORDS)) {
+    return {
+      direction: BILLING_TRANSACTION_DIRECTIONS.closed,
+      directionConfidence: BILLING_DIRECTION_CONFIDENCE.high,
+    };
+  }
+
+  if (input.direction.includes('收入') || input.direction.includes('收款')) {
+    return {
+      direction: BILLING_TRANSACTION_DIRECTIONS.income,
+      directionConfidence: BILLING_DIRECTION_CONFIDENCE.high,
+    };
+  }
+
+  if (input.direction.includes('支出') || input.direction.includes('付款')) {
+    return {
+      direction: BILLING_TRANSACTION_DIRECTIONS.expense,
+      directionConfidence: BILLING_DIRECTION_CONFIDENCE.high,
+    };
+  }
+
+  return {
+    direction: BILLING_TRANSACTION_DIRECTIONS.expense,
+    directionConfidence: BILLING_DIRECTION_CONFIDENCE.low,
+  };
 }
 
 export function parseBillingCsv(
@@ -418,17 +486,27 @@ export function parseBillingCsv(
       const transactionAt = readCell(row, transactionAtIndex);
       const direction = readCell(row, directionIndex);
       const rowStatus = readCell(row, statusIndex);
+      const merchant = readCell(row, merchantIndex);
+      const description = readCell(row, descriptionIndex);
       if (!isImportableStatus(rowStatus)) {
         failedCount += 1;
         continue;
       }
+      const directionSemantics = inferDirection({
+        description,
+        direction,
+        merchant,
+        status: rowStatus,
+      });
 
       transactions.push({
-        amount_cents: parseAmountCents(amount, direction),
+        amount_cents: parseAmountCents(amount, directionSemantics.direction),
         transaction_at: parseChinaLocalDateToUtcIso(transactionAt, rule.dateFormat),
         external_transaction_id: normalizeNullable(readCell(row, externalIdIndex)),
-        merchant: normalizeNullable(readCell(row, merchantIndex)),
-        description: normalizeNullable(readCell(row, descriptionIndex)),
+        merchant: normalizeNullable(merchant),
+        description: normalizeNullable(description),
+        direction: directionSemantics.direction,
+        direction_confidence: directionSemantics.directionConfidence,
         source: getSource(rule.platform),
         status: BILLING_TRANSACTION_STATUS.pendingConfirmation,
       });

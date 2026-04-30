@@ -63,12 +63,16 @@ const dockerSocketMount =
     : '/var/run/docker.sock:/var/run/docker.sock');
 
 const dockerNetwork = process.env.SUPABASE_DOCKER_NETWORK || 'supabase-slim_default';
+const dockerHost = process.env.SUPABASE_DOCKER_HOST || 'unix:///var/run/docker.sock';
+const supabaseCliPackage = process.env.SUPABASE_CLI_PACKAGE || 'supabase@2.95.6';
 
 const result = spawnSync(
   'docker',
   [
     'run',
     '--rm',
+    '-e',
+    `DOCKER_HOST=${dockerHost}`,
     '--network',
     dockerNetwork,
     '-v',
@@ -80,7 +84,7 @@ const result = spawnSync(
     'node:22-alpine',
     'sh',
     '-lc',
-    `npx supabase gen types typescript --db-url '${shellEscapeSingleQuoted(dbUrl)}' --schema auth,billing,analytics --network-id '${shellEscapeSingleQuoted(dockerNetwork)}'`,
+    `npx -y '${shellEscapeSingleQuoted(supabaseCliPackage)}' --workdir /workspace/supabase gen types --lang typescript --db-url '${shellEscapeSingleQuoted(dbUrl)}' --schema auth,billing,analytics --network-id '${shellEscapeSingleQuoted(dockerNetwork)}'`,
   ],
   {
     cwd: repoRoot,

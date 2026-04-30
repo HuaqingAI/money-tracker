@@ -2,6 +2,8 @@ import { z } from 'zod';
 
 import {
   BILLING_CSV_PLATFORMS,
+  BILLING_DIRECTION_CONFIDENCE,
+  BILLING_TRANSACTION_DIRECTIONS,
   BILLING_TRANSACTION_SOURCES,
   BILLING_TRANSACTION_STATUS,
 } from '../constants/billing';
@@ -12,6 +14,19 @@ export const billingCsvPlatformSchema = z.enum([
 ]);
 
 export const billingCsvEncodingSchema = z.enum(['utf-8', 'gb18030', 'gbk']);
+
+export const billingTransactionDirectionSchema = z.enum([
+  BILLING_TRANSACTION_DIRECTIONS.expense,
+  BILLING_TRANSACTION_DIRECTIONS.income,
+  BILLING_TRANSACTION_DIRECTIONS.refund,
+  BILLING_TRANSACTION_DIRECTIONS.closed,
+]);
+
+export const billingDirectionConfidenceSchema = z.enum([
+  BILLING_DIRECTION_CONFIDENCE.high,
+  BILLING_DIRECTION_CONFIDENCE.medium,
+  BILLING_DIRECTION_CONFIDENCE.low,
+]);
 
 export const billingCsvColumnMappingSchema = z.object({
   amount: z.string().trim().min(1, '金额列不能为空'),
@@ -39,6 +54,8 @@ export const billingNormalizedTransactionSchema = z.object({
   external_transaction_id: z.string().nullable(),
   merchant: z.string().nullable(),
   description: z.string().nullable(),
+  direction: billingTransactionDirectionSchema,
+  direction_confidence: billingDirectionConfidenceSchema,
   source: z.enum([
     BILLING_TRANSACTION_SOURCES.alipayCsv,
     BILLING_TRANSACTION_SOURCES.wechatCsv,
@@ -84,6 +101,8 @@ export const pendingConfirmationTransactionSchema = z.object({
   categoryName: z.string().trim().min(1),
   classifiedAt: z.string().datetime().nullable(),
   description: z.string().nullable(),
+  direction: billingTransactionDirectionSchema,
+  directionConfidence: billingDirectionConfidenceSchema,
   id: z.string().uuid(),
   merchant: z.string().nullable(),
   source: z.string().nullable(),

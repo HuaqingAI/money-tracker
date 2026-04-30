@@ -1,5 +1,9 @@
 import {
+  BILLING_DIRECTION_CONFIDENCE,
+  BILLING_TRANSACTION_DIRECTIONS,
   BILLING_TRANSACTION_STATUS,
+  type BillingDirectionConfidence,
+  type BillingTransactionDirection,
   type BillingTransactionStatus,
   DASHBOARD_RECENT_TRANSACTIONS_DEFAULT_LIMIT,
   type RecentTransaction,
@@ -15,6 +19,8 @@ type TransactionRow = Pick<
   | 'amount_cents'
   | 'category_id'
   | 'description'
+  | 'direction'
+  | 'direction_confidence'
   | 'id'
   | 'merchant'
   | 'source'
@@ -62,9 +68,13 @@ export class SupabaseTransactionRepository implements TransactionRepository {
       .schema('billing')
       .from('transactions')
       .select(
-        'amount_cents, category_id, description, id, merchant, source, status, transaction_at',
+        'amount_cents, category_id, description, direction, direction_confidence, id, merchant, source, status, transaction_at',
       )
       .eq('user_id', input.userId)
+      .in('status', [
+        BILLING_TRANSACTION_STATUS.pendingConfirmation,
+        BILLING_TRANSACTION_STATUS.confirmed,
+      ])
       .order('transaction_at', { ascending: false })
       .limit(input.limit + 1);
 
@@ -87,6 +97,10 @@ function mapTransaction(input: {
       ? input.categories.get(input.row.category_id)?.name ?? '其他'
       : '其他',
     description: input.row.description,
+    direction: toBillingTransactionDirection(input.row.direction),
+    directionConfidence: toBillingDirectionConfidence(
+      input.row.direction_confidence,
+    ),
     id: input.row.id,
     merchant: input.row.merchant,
     source: input.row.source,
@@ -107,13 +121,41 @@ function toIsoDatetime(value: string): string {
 function toBillingTransactionStatus(status: string): BillingTransactionStatus {
   if (
     status === BILLING_TRANSACTION_STATUS.pendingConfirmation ||
-    status === BILLING_TRANSACTION_STATUS.confirmed ||
-    status === BILLING_TRANSACTION_STATUS.rejected
+    status === BILLING_TRANSACTION_STATUS.confirmed
   ) {
     return status;
   }
 
   return BILLING_TRANSACTION_STATUS.pendingConfirmation;
+}
+
+function toBillingTransactionDirection(
+  direction: string,
+): BillingTransactionDirection {
+  if (
+    direction === BILLING_TRANSACTION_DIRECTIONS.expense ||
+    direction === BILLING_TRANSACTION_DIRECTIONS.income ||
+    direction === BILLING_TRANSACTION_DIRECTIONS.refund ||
+    direction === BILLING_TRANSACTION_DIRECTIONS.closed
+  ) {
+    return direction;
+  }
+
+  return BILLING_TRANSACTION_DIRECTIONS.expense;
+}
+
+function toBillingDirectionConfidence(
+  confidence: string,
+): BillingDirectionConfidence {
+  if (
+    confidence === BILLING_DIRECTION_CONFIDENCE.high ||
+    confidence === BILLING_DIRECTION_CONFIDENCE.medium ||
+    confidence === BILLING_DIRECTION_CONFIDENCE.low
+  ) {
+    return confidence;
+  }
+
+  return BILLING_DIRECTION_CONFIDENCE.low;
 }
 
 export class TransactionService {
