@@ -154,6 +154,8 @@ const color = {
   backdrop: 'rgba(0,0,0,0.5)',
 } as const;
 
+export const dsColorValues = color;
+
 const space = {
   // Tamagui dev-mode 校验要求 `true` 默认键（createTamagui 源码中硬编码 `$true`）。
   // 取值对齐 `space-4 = 16`（设计系统默认间距），与 size.true 保持一致以符合 Tamagui 官方约定。

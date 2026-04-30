@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { TamaguiProvider } from 'tamagui';
 
 import { config } from '../tamagui.config';
+import { ToastProvider } from './toast';
 
 export interface UIProviderProps {
   children: ReactNode;
@@ -20,7 +21,7 @@ export function UIProvider({
 }: UIProviderProps) {
   return (
     <TamaguiProvider config={config} defaultTheme={defaultTheme}>
-      {children}
+      <ToastProvider>{children}</ToastProvider>
     </TamaguiProvider>
   );
 }

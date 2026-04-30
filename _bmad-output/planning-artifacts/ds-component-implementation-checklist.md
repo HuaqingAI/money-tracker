@@ -9,29 +9,29 @@
 
 ## 进度总览
 
-- **已实现 (4/20)**: button / text-input / text / provider
-- **待实现 (16/20)**: 见下方清单
+- **已实现 (20/20)**: button / text-input / text / provider + 下方 16 个 Story 1.5.3 组件
+- **待实现 (0/20)**: 无
 
 ## 16 个待实现组件清单
 
 每个组件的验收口径完全一致，见本文件末尾"每个组件的 Definition of Done"。
 
-- [ ] avatar
-- [ ] badge
-- [ ] bottom-tab-bar
-- [ ] card
-- [ ] chart
-- [ ] divider
-- [ ] filter-chip
-- [ ] header
-- [ ] modal-sheet
-- [ ] progress
-- [ ] search-bar
-- [ ] skeleton
-- [ ] tab
-- [ ] toast
-- [ ] toggle
-- [ ] tooltip
+- [x] avatar
+- [x] badge
+- [x] bottom-tab-bar
+- [x] card
+- [x] chart
+- [x] divider
+- [x] filter-chip
+- [x] header
+- [x] modal-sheet
+- [x] progress
+- [x] search-bar
+- [x] skeleton
+- [x] tab
+- [x] toast
+- [x] toggle
+- [x] tooltip
 
 ## 每个组件的 Definition of Done
 
@@ -85,12 +85,16 @@
 
 Story 1.5.3 整体 done 判定：
 
-- [ ] 16 个组件的清单全部勾选
-- [ ] 每个组件的 9 条 DoD 均满足
-- [ ] `pnpm test --filter @liaoran/ui` 全绿
-- [ ] `pnpm storybook --filter @liaoran/ui` 可启动且无报错
-- [ ] 至少一次真机/等效环境视觉走查，记录在 Dev Agent Record
+- [x] 16 个组件的清单全部勾选
+- [x] 每个组件的 9 条 DoD 均满足
+- [x] `pnpm --filter @money-tracker/ui lint` 全绿
+- [x] `pnpm --filter @money-tracker/ui build` 全绿
+- [x] `pnpm --filter @money-tracker/ui test` 全绿
+- [x] `pnpm --filter @money-tracker/ui build-storybook` 构建成功
+- [x] `pnpm --filter @money-tracker/ui storybook` 可启动且无报错
+- [x] 至少一次真机/等效环境视觉走查，记录在 Dev Agent Record
 
 ## 变更日志
 
 - 2026-04-29 · Amelia · 初始创建；列出 16 个待实现组件清单
+- 2026-04-30 · Codex/Amelia · Story 1.5.3 完成 16 个 DS 组件、Storybook stories、组件测试、导出与质量闸门验证；修正验证命令为 `@money-tracker/ui`。
