@@ -1,40 +1,32 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-interface CategoryFixtureRow {
-  id: string;
-  name: string;
-}
-
-interface MonthlyFixtureRow {
-  category_breakdown: unknown;
-  month: string;
-  total_cents: number;
-  user_id: string;
-}
-
 interface TransactionFixtureRow {
   amount_cents: number;
   category_id: string | null;
   categories: { name: string } | null;
+  direction: 'closed' | 'expense' | 'income' | 'refund';
   status: 'confirmed' | 'pending_confirmation' | 'rejected';
   transaction_at: string;
   user_id: string;
 }
 
 const queryState = vi.hoisted(() => ({
-  categoriesRows: [] as CategoryFixtureRow[],
-  monthlyRows: [] as MonthlyFixtureRow[],
+  executedQueries: [] as Array<{
+    eqFilters: Array<[string, unknown]>;
+    gteFilters: Array<[string, string]>;
+    inFilters: Array<[string, string[]]>;
+    ltFilters: Array<[string, string]>;
+  }>,
   transactionRows: [] as TransactionFixtureRow[],
 }));
 
 const getSupabaseAdminMock = vi.hoisted(() =>
   vi.fn(() => {
-    const createQuery = (table: string) => {
+    const createQuery = () => {
       const eqFilters = new Map<string, unknown>();
       const gteFilters = new Map<string, string>();
       const inFilters = new Map<string, string[]>();
       const ltFilters = new Map<string, string>();
-      const lteFilters = new Map<string, string>();
 
       function readField(row: unknown, column: string): unknown {
         return (row as Record<string, unknown>)[column];
@@ -68,30 +60,7 @@ const getSupabaseAdminMock = vi.hoisted(() =>
           }
         }
 
-        for (const [column, value] of lteFilters) {
-          const field = readField(row, column);
-          if (typeof field !== 'string' || field > value) {
-            return false;
-          }
-        }
-
         return true;
-      }
-
-      function resolveRows(): unknown[] {
-        if (table === 'transactions') {
-          return queryState.transactionRows.filter(matchesFilters);
-        }
-
-        if (table === 'monthly_summaries') {
-          return queryState.monthlyRows.filter(matchesFilters);
-        }
-
-        if (table === 'categories') {
-          return queryState.categoriesRows.filter(matchesFilters);
-        }
-
-        return [];
       }
 
       const query = {
@@ -108,33 +77,26 @@ const getSupabaseAdminMock = vi.hoisted(() =>
           inFilters.set(column, values);
           return query;
         }),
-        limit: vi.fn(() => query),
-        lte: vi.fn((column: string, value: string) => {
-          lteFilters.set(column, value);
-          return query;
-        }),
         lt: vi.fn((column: string, value: string) => {
           ltFilters.set(column, value);
           return query;
         }),
-        order: vi.fn(() => query),
         select: vi.fn(() => query),
-        single: vi.fn(() => {
-          const row = resolveRows()[0] ?? null;
-          return Promise.resolve(
-            row
-              ? { data: row, error: null }
-              : { data: null, error: { code: 'PGRST116', message: 'not found' } },
-          );
-        }),
         then: (
           resolve: (value: { data: unknown; error: null }) => void,
           reject: (reason?: unknown) => void,
-        ) =>
-          Promise.resolve({
-            data: resolveRows(),
+        ) => {
+          queryState.executedQueries.push({
+            eqFilters: [...eqFilters.entries()],
+            gteFilters: [...gteFilters.entries()],
+            inFilters: [...inFilters.entries()],
+            ltFilters: [...ltFilters.entries()],
+          });
+          return Promise.resolve({
+            data: queryState.transactionRows.filter(matchesFilters),
             error: null,
-          }).then(resolve, reject),
+          }).then(resolve, reject);
+        },
       };
 
       return query;
@@ -142,7 +104,7 @@ const getSupabaseAdminMock = vi.hoisted(() =>
 
     return {
       schema: vi.fn(() => ({
-        from: vi.fn((table: string) => createQuery(table)),
+        from: vi.fn(() => createQuery()),
       })),
     };
   }),
@@ -152,68 +114,70 @@ vi.mock('../db/supabase-admin', () => ({
   getSupabaseAdmin: getSupabaseAdminMock,
 }));
 
-import {
-  getMonthlySummary,
-  getMonthlyTrend,
-} from './monthly-summary-service';
+import { getMonthlySummary, getMonthlyTrend } from './monthly-summary-service';
 
 describe('monthly-summary-service', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    queryState.categoriesRows = [];
-    queryState.monthlyRows = [];
+    queryState.executedQueries = [];
     queryState.transactionRows = [];
   });
 
-  it('falls back to live pending and confirmed transactions for the requested user and month', async () => {
+  it('defaults to confirmed expense and excludes pending income refund closed and rejected rows', async () => {
     queryState.transactionRows = [
-      {
-        amount_cents: -3200,
-        categories: { name: 'Food' },
-        category_id: 'cat-food',
-        status: 'pending_confirmation',
-        transaction_at: '2026-04-10T00:00:00.000Z',
-        user_id: 'user-1',
-      },
       {
         amount_cents: -1800,
         categories: { name: 'Transport' },
         category_id: 'cat-transport',
+        direction: 'expense',
         status: 'confirmed',
         transaction_at: '2026-04-11T00:00:00.000Z',
         user_id: 'user-1',
       },
       {
-        amount_cents: -900,
+        amount_cents: -3200,
+        categories: { name: 'Food' },
+        category_id: 'cat-food',
+        direction: 'expense',
+        status: 'pending_confirmation',
+        transaction_at: '2026-04-10T00:00:00.000Z',
+        user_id: 'user-1',
+      },
+      {
+        amount_cents: 300000,
+        categories: { name: 'Income' },
+        category_id: 'cat-income',
+        direction: 'income',
+        status: 'confirmed',
+        transaction_at: '2026-04-12T00:00:00.000Z',
+        user_id: 'user-1',
+      },
+      {
+        amount_cents: 900,
+        categories: { name: 'Refund' },
+        category_id: 'cat-refund',
+        direction: 'refund',
+        status: 'confirmed',
+        transaction_at: '2026-04-13T00:00:00.000Z',
+        user_id: 'user-1',
+      },
+      {
+        amount_cents: -700,
         categories: { name: 'Other' },
         category_id: null,
+        direction: 'expense',
         status: 'rejected',
-        transaction_at: '2026-04-12T00:00:00.000Z',
+        transaction_at: '2026-04-14T00:00:00.000Z',
         user_id: 'user-1',
       },
       {
         amount_cents: -9900,
         categories: { name: 'Food' },
         category_id: 'cat-food',
+        direction: 'expense',
         status: 'confirmed',
-        transaction_at: '2026-04-13T00:00:00.000Z',
+        transaction_at: '2026-04-15T00:00:00.000Z',
         user_id: 'user-2',
-      },
-      {
-        amount_cents: -7700,
-        categories: { name: 'Food' },
-        category_id: 'cat-food',
-        status: 'confirmed',
-        transaction_at: '2026-05-01T00:00:00.000Z',
-        user_id: 'user-1',
-      },
-      {
-        amount_cents: -6600,
-        categories: { name: 'Food' },
-        category_id: 'cat-food',
-        status: 'confirmed',
-        transaction_at: '2026-03-31T23:59:59.999Z',
-        user_id: 'user-1',
       },
     ];
 
@@ -223,6 +187,45 @@ describe('monthly-summary-service', () => {
     expect(summary.month).toBe('2026-04');
     expect(summary.monthStart).toBe('2026-04-01T00:00:00.000Z');
     expect(summary.monthEnd).toBe('2026-05-01T00:00:00.000Z');
+    expect(summary.totalExpenseCents).toBe(1800);
+    expect(summary.transactionCount).toBe(1);
+    expect(summary.categories).toEqual([
+      {
+        amountCents: 1800,
+        categoryId: 'cat-transport',
+        categoryName: 'Transport',
+        percentage: 100,
+        transactionCount: 1,
+      },
+    ]);
+  });
+
+  it('includes pending expense only when includePending is true', async () => {
+    queryState.transactionRows = [
+      {
+        amount_cents: -1800,
+        categories: { name: 'Transport' },
+        category_id: 'cat-transport',
+        direction: 'expense',
+        status: 'confirmed',
+        transaction_at: '2026-04-11T00:00:00.000Z',
+        user_id: 'user-1',
+      },
+      {
+        amount_cents: -3200,
+        categories: { name: 'Food' },
+        category_id: 'cat-food',
+        direction: 'expense',
+        status: 'pending_confirmation',
+        transaction_at: '2026-04-10T00:00:00.000Z',
+        user_id: 'user-1',
+      },
+    ];
+
+    const summary = await getMonthlySummary('user-1', '2026-04', {
+      includePending: true,
+    });
+
     expect(summary.totalExpenseCents).toBe(5000);
     expect(summary.transactionCount).toBe(2);
     expect(summary.categories).toEqual([
@@ -243,125 +246,98 @@ describe('monthly-summary-service', () => {
     ]);
   });
 
-  it('uses precomputed monthly summaries and resolves category names by id', async () => {
-    queryState.categoriesRows = [{ id: 'cat-food', name: 'Food' }];
-    queryState.monthlyRows = [
-      {
-        category_breakdown: {
-          'cat-food': {
-            amount_cents: 3000,
-            count: 3,
-          },
-          uncategorized: {
-            amount_cents: 1000,
-            count: 1,
-          },
-        },
-        month: '2026-04-01',
-        total_cents: 4000,
-        user_id: 'user-1',
-      },
-      {
-        category_breakdown: {
-          'cat-food': {
-            amount_cents: 9999,
-            count: 1,
-          },
-        },
-        month: '2026-04-01',
-        total_cents: 9999,
-        user_id: 'user-2',
-      },
-    ];
-
-    const summary = await getMonthlySummary('user-1', '2026-04');
-
-    expect(summary.source).toBe('precomputed');
-    expect(summary.totalExpenseCents).toBe(4000);
-    expect(summary.transactionCount).toBe(4);
-    expect(summary.categories).toEqual([
-      {
-        amountCents: 3000,
-        categoryId: 'cat-food',
-        categoryName: 'Food',
-        percentage: 75,
-        transactionCount: 3,
-      },
-      {
-        amountCents: 1000,
-        categoryId: null,
-        categoryName: '其他',
-        percentage: 25,
-        transactionCount: 1,
-      },
-    ]);
-  });
-
-  it('falls back to live transactions when a precomputed summary is empty', async () => {
-    queryState.monthlyRows = [
-      {
-        category_breakdown: {},
-        month: '2026-04-01',
-        total_cents: 0,
-        user_id: 'user-1',
-      },
-    ];
-    queryState.transactionRows = [
-      {
-        amount_cents: -4200,
-        categories: { name: 'Food' },
-        category_id: 'cat-food',
-        status: 'pending_confirmation',
-        transaction_at: '2026-04-10T00:00:00.000Z',
-        user_id: 'user-1',
-      },
-    ];
-
-    const summary = await getMonthlySummary('user-1', '2026-04');
-
-    expect(summary.source).toBe('live');
-    expect(summary.totalExpenseCents).toBe(4200);
-    expect(summary.transactionCount).toBe(1);
-    expect(summary.categories).toEqual([
-      expect.objectContaining({
-        amountCents: 4200,
-        categoryId: 'cat-food',
-        transactionCount: 1,
-      }),
-    ]);
-  });
-
-  it('falls back to live trend points when a precomputed trend row is empty', async () => {
-    queryState.monthlyRows = [
-      {
-        category_breakdown: {},
-        month: '2026-03-01',
-        total_cents: 0,
-        user_id: 'user-1',
-      },
-      {
-        category_breakdown: { 'cat-food': { amount_cents: 2500, count: 2 } },
-        month: '2026-04-01',
-        total_cents: 2500,
-        user_id: 'user-1',
-      },
-    ];
+  it('uses the same includePending scope for monthly comparisons', async () => {
     queryState.transactionRows = [
       {
         amount_cents: -1000,
         categories: { name: 'Food' },
         category_id: 'cat-food',
+        direction: 'expense',
+        status: 'confirmed',
+        transaction_at: '2026-04-10T00:00:00.000Z',
+        user_id: 'user-1',
+      },
+      {
+        amount_cents: -2000,
+        categories: { name: 'Food' },
+        category_id: 'cat-food',
+        direction: 'expense',
+        status: 'pending_confirmation',
+        transaction_at: '2026-04-11T00:00:00.000Z',
+        user_id: 'user-1',
+      },
+      {
+        amount_cents: -500,
+        categories: { name: 'Food' },
+        category_id: 'cat-food',
+        direction: 'expense',
         status: 'confirmed',
         transaction_at: '2026-03-10T00:00:00.000Z',
         user_id: 'user-1',
       },
       {
-        amount_cents: -9999,
+        amount_cents: -1500,
         categories: { name: 'Food' },
         category_id: 'cat-food',
+        direction: 'expense',
+        status: 'pending_confirmation',
+        transaction_at: '2026-03-11T00:00:00.000Z',
+        user_id: 'user-1',
+      },
+    ];
+
+    const summary = await getMonthlySummary('user-1', '2026-04', {
+      includePending: true,
+    });
+
+    expect(summary.totalExpenseCents).toBe(3000);
+    expect(summary.comparisons.previousMonth).toEqual({
+      baselineMonth: '2026-03',
+      currentMonth: '2026-04',
+      differenceCents: 1000,
+      direction: 'up',
+      percentageChange: 50,
+    });
+    expect(
+      queryState.executedQueries.every((query) =>
+        query.inFilters.some(
+          ([column, values]) =>
+            column === 'status' &&
+            values.includes('confirmed') &&
+            values.includes('pending_confirmation'),
+        ),
+      ),
+    ).toBe(true);
+  });
+
+  it('uses confirmed expense only for trend points', async () => {
+    queryState.transactionRows = [
+      {
+        amount_cents: -1000,
+        categories: { name: 'Food' },
+        category_id: 'cat-food',
+        direction: 'expense',
         status: 'confirmed',
         transaction_at: '2026-03-10T00:00:00.000Z',
-        user_id: 'user-2',
+        user_id: 'user-1',
+      },
+      {
+        amount_cents: -5000,
+        categories: { name: 'Food' },
+        category_id: 'cat-food',
+        direction: 'expense',
+        status: 'pending_confirmation',
+        transaction_at: '2026-03-11T00:00:00.000Z',
+        user_id: 'user-1',
+      },
+      {
+        amount_cents: -2500,
+        categories: { name: 'Food' },
+        category_id: 'cat-food',
+        direction: 'expense',
+        status: 'confirmed',
+        transaction_at: '2026-04-10T00:00:00.000Z',
+        user_id: 'user-1',
       },
     ];
 
@@ -379,10 +355,19 @@ describe('monthly-summary-service', () => {
         {
           month: '2026-04',
           totalExpenseCents: 2500,
-          transactionCount: 2,
+          transactionCount: 1,
         },
       ],
       startMonth: '2026-03',
     });
+    expect(queryState.executedQueries).toHaveLength(1);
+    expect(queryState.executedQueries[0]?.gteFilters).toContainEqual([
+      'transaction_at',
+      '2026-03-01T00:00:00.000Z',
+    ]);
+    expect(queryState.executedQueries[0]?.ltFilters).toContainEqual([
+      'transaction_at',
+      '2026-05-01T00:00:00.000Z',
+    ]);
   });
 });

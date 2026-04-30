@@ -75,6 +75,7 @@ describe('GET /api/dashboard/monthly-summary', () => {
       hasTransactions: false,
       month: '2026-04',
       pendingConfirmationCount: 0,
+      pendingConfirmationExpenseCents: 0,
       spotlight: null,
       totalExpenseCents: 0,
       transactionCount: 0,

@@ -1,12 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { type DashboardRepository,DashboardService } from './dashboard-service';
+import { type DashboardRepository, DashboardService } from './dashboard-service';
 
 function createRepository(
   overrides: Partial<DashboardRepository> = {},
 ): DashboardRepository {
   return {
-    getMonthlySummaryRow: async () => null,
     listCategories: async () => [],
     listMonthTransactions: async () => [],
     ...overrides,
@@ -29,13 +28,14 @@ describe('DashboardService', () => {
       hasTransactions: false,
       month: '2026-04',
       pendingConfirmationCount: 0,
+      pendingConfirmationExpenseCents: 0,
       spotlight: null,
       totalExpenseCents: 0,
       transactionCount: 0,
     });
   });
 
-  it('aggregates realtime transactions by category and pending count', async () => {
+  it('aggregates confirmed expense by category and separates pending expense', async () => {
     const service = new DashboardService(
       createRepository({
         listCategories: async () => [
@@ -50,19 +50,67 @@ describe('DashboardService', () => {
             amount_cents: -1200,
             category_id: '11111111-1111-4111-8111-111111111111',
             description: null,
+            direction: 'expense',
+            direction_confidence: 'high',
             merchant: '咖啡店',
             source: 'alipay_csv',
-            status: 'pending_confirmation',
+            status: 'confirmed',
             transaction_at: '2026-04-10T02:00:00.000Z',
           },
           {
             amount_cents: -800,
             category_id: null,
             description: null,
+            direction: 'expense',
+            direction_confidence: 'high',
             merchant: '便利店',
             source: 'wechat_csv',
             status: 'confirmed',
             transaction_at: '2026-04-11T02:00:00.000Z',
+          },
+          {
+            amount_cents: -500,
+            category_id: null,
+            description: null,
+            direction: 'expense',
+            direction_confidence: 'low',
+            merchant: '待确认商户',
+            source: 'wechat_csv',
+            status: 'pending_confirmation',
+            transaction_at: '2026-04-12T02:00:00.000Z',
+          },
+          {
+            amount_cents: 300000,
+            category_id: null,
+            description: '工资',
+            direction: 'income',
+            direction_confidence: 'high',
+            merchant: '公司',
+            source: 'alipay_csv',
+            status: 'confirmed',
+            transaction_at: '2026-04-13T02:00:00.000Z',
+          },
+          {
+            amount_cents: 1200,
+            category_id: null,
+            description: '退款',
+            direction: 'refund',
+            direction_confidence: 'high',
+            merchant: '商户',
+            source: 'alipay_csv',
+            status: 'confirmed',
+            transaction_at: '2026-04-14T02:00:00.000Z',
+          },
+          {
+            amount_cents: 999,
+            category_id: null,
+            description: '关闭',
+            direction: 'closed',
+            direction_confidence: 'high',
+            merchant: '商户',
+            source: 'wechat_csv',
+            status: 'confirmed',
+            transaction_at: '2026-04-15T02:00:00.000Z',
           },
         ],
       }),
@@ -78,6 +126,7 @@ describe('DashboardService', () => {
       aiCoveredCount: 1,
       hasTransactions: true,
       pendingConfirmationCount: 1,
+      pendingConfirmationExpenseCents: 500,
       totalExpenseCents: 2000,
       transactionCount: 2,
     });
@@ -101,27 +150,55 @@ describe('DashboardService', () => {
     });
   });
 
-  it('uses analytics monthly summary when populated', async () => {
+  it('does not count pending income refund or closed transactions as expense', async () => {
     const service = new DashboardService(
       createRepository({
-        getMonthlySummaryRow: async () => ({
-          category_breakdown: {
-            '11111111-1111-4111-8111-111111111111': {
-              amount_cents: 3600,
-              count: 3,
-            },
-          },
-          month: '2026-04-01',
-          total_cents: 3600,
-        }),
-        listCategories: async () => [
+        listMonthTransactions: async () => [
           {
-            icon: null,
-            id: '11111111-1111-4111-8111-111111111111',
-            name: '交通',
+            amount_cents: 9000,
+            category_id: null,
+            description: '工资',
+            direction: 'income',
+            direction_confidence: 'high',
+            merchant: '公司',
+            source: 'alipay_csv',
+            status: 'confirmed',
+            transaction_at: '2026-04-10T02:00:00.000Z',
+          },
+          {
+            amount_cents: 1500,
+            category_id: null,
+            description: '退款',
+            direction: 'refund',
+            direction_confidence: 'high',
+            merchant: '商户',
+            source: 'wechat_csv',
+            status: 'confirmed',
+            transaction_at: '2026-04-11T02:00:00.000Z',
+          },
+          {
+            amount_cents: 2000,
+            category_id: null,
+            description: '关闭',
+            direction: 'closed',
+            direction_confidence: 'high',
+            merchant: '商户',
+            source: 'wechat_csv',
+            status: 'confirmed',
+            transaction_at: '2026-04-12T02:00:00.000Z',
+          },
+          {
+            amount_cents: -700,
+            category_id: null,
+            description: '待确认支出',
+            direction: 'expense',
+            direction_confidence: 'low',
+            merchant: '便利店',
+            source: 'wechat_csv',
+            status: 'pending_confirmation',
+            transaction_at: '2026-04-13T02:00:00.000Z',
           },
         ],
-        listMonthTransactions: async () => [],
       }),
     );
 
@@ -131,16 +208,11 @@ describe('DashboardService', () => {
         userId: 'user-1',
       }),
     ).resolves.toMatchObject({
-      categoryBreakdown: [
-        expect.objectContaining({
-          amountCents: 3600,
-          name: '交通',
-          percentage: 100,
-        }),
-      ],
       hasTransactions: true,
-      totalExpenseCents: 3600,
-      transactionCount: 3,
+      pendingConfirmationCount: 1,
+      pendingConfirmationExpenseCents: 700,
+      totalExpenseCents: 0,
+      transactionCount: 0,
     });
   });
 });

@@ -1,9 +1,10 @@
 import {
+  BILLING_TRANSACTION_DIRECTIONS,
+  BILLING_TRANSACTION_STATUS,
   type CategorySummary,
   DASHBOARD_CATEGORY_DISPLAY,
   type DashboardSpotlight,
   formatAmountCents,
-  type Json,
   type MonthlySummary,
   monthlySummarySchema,
   type Tables,
@@ -16,6 +17,8 @@ type TransactionRow = Pick<
   | 'amount_cents'
   | 'category_id'
   | 'description'
+  | 'direction'
+  | 'direction_confidence'
   | 'merchant'
   | 'source'
   | 'status'
@@ -27,11 +30,6 @@ type CategoryRow = Pick<
   'icon' | 'id' | 'name'
 >;
 
-type MonthlySummaryRow = Pick<
-  Tables<{ schema: 'analytics' }, 'monthly_summaries'>,
-  'category_breakdown' | 'month' | 'total_cents'
->;
-
 interface CategoryBreakdownEntry {
   amountCents: number;
   categoryId: string | null;
@@ -39,10 +37,6 @@ interface CategoryBreakdownEntry {
 }
 
 export interface DashboardRepository {
-  getMonthlySummaryRow(input: {
-    month: string;
-    userId: string;
-  }): Promise<MonthlySummaryRow | null>;
   listCategories(categoryIds: string[]): Promise<CategoryRow[]>;
   listMonthTransactions(input: {
     endIso: string;
@@ -52,25 +46,6 @@ export interface DashboardRepository {
 }
 
 export class SupabaseDashboardRepository implements DashboardRepository {
-  async getMonthlySummaryRow(input: {
-    month: string;
-    userId: string;
-  }): Promise<MonthlySummaryRow | null> {
-    const { data, error } = await getSupabaseAdmin()
-      .schema('analytics')
-      .from('monthly_summaries')
-      .select('category_breakdown, month, total_cents')
-      .eq('user_id', input.userId)
-      .eq('month', `${input.month}-01`)
-      .maybeSingle();
-
-    if (error) {
-      throw new Error(`Failed to load monthly summary: ${error.message}`);
-    }
-
-    return data;
-  }
-
   async listCategories(categoryIds: string[]): Promise<CategoryRow[]> {
     if (categoryIds.length === 0) {
       return [];
@@ -98,12 +73,15 @@ export class SupabaseDashboardRepository implements DashboardRepository {
       .schema('billing')
       .from('transactions')
       .select(
-        'amount_cents, category_id, description, merchant, source, status, transaction_at',
+        'amount_cents, category_id, description, direction, direction_confidence, merchant, source, status, transaction_at',
       )
       .eq('user_id', input.userId)
       .gte('transaction_at', input.startIso)
       .lt('transaction_at', input.endIso)
-      .in('status', ['pending_confirmation', 'confirmed']);
+      .in('status', [
+        BILLING_TRANSACTION_STATUS.pendingConfirmation,
+        BILLING_TRANSACTION_STATUS.confirmed,
+      ]);
 
     if (error) {
       throw new Error(`Failed to load dashboard transactions: ${error.message}`);
@@ -126,80 +104,43 @@ function getMonthBounds(month: string): { endIso: string; startIso: string } {
   };
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-function readNumberField(record: Record<string, unknown>, keys: string[]): number {
-  for (const key of keys) {
-    const value = record[key];
-    if (typeof value === 'number' && Number.isFinite(value)) {
-      return value;
-    }
-  }
-
-  return 0;
-}
-
-function parseMonthlySummaryBreakdown(
-  breakdown: Json,
-): CategoryBreakdownEntry[] {
-  if (!isRecord(breakdown)) {
-    return [];
-  }
-
-  return Object.entries(breakdown)
-    .map(([categoryId, rawValue]) => {
-      if (!isRecord(rawValue)) {
-        return null;
-      }
-
-      const amountCents = readNumberField(rawValue, [
-        'amountCents',
-        'amount_cents',
-      ]);
-      const transactionCount = readNumberField(rawValue, ['count', 'transactionCount']);
-
-      if (amountCents <= 0) {
-        return null;
-      }
-
-      return {
-        amountCents,
-        categoryId: categoryId === 'uncategorized' ? null : categoryId,
-        transactionCount,
-      };
-    })
-    .filter((entry): entry is CategoryBreakdownEntry => entry !== null);
-}
-
-function shouldTreatPositiveAmountsAsExpenses(transactions: TransactionRow[]): boolean {
-  return transactions.every((transaction) => transaction.amount_cents >= 0);
-}
-
-function getExpenseCents(
-  transaction: TransactionRow,
-  positiveAmountsAreExpenses: boolean,
-): number {
-  if (transaction.amount_cents < 0) {
-    return Math.abs(transaction.amount_cents);
-  }
-
-  return positiveAmountsAreExpenses ? transaction.amount_cents : 0;
-}
-
 function aggregateTransactions(transactions: TransactionRow[]): {
+  aiCoveredCount: number;
   entries: CategoryBreakdownEntry[];
+  pendingConfirmationCount: number;
+  pendingConfirmationExpenseCents: number;
   totalExpenseCents: number;
+  transactionCount: number;
 } {
-  const positiveAmountsAreExpenses = shouldTreatPositiveAmountsAsExpenses(transactions);
   const byCategory = new Map<string, CategoryBreakdownEntry>();
+  let pendingConfirmationCount = 0;
+  let pendingConfirmationExpenseCents = 0;
   let totalExpenseCents = 0;
+  let transactionCount = 0;
+  let aiCoveredCount = 0;
 
   for (const transaction of transactions) {
-    const amountCents = getExpenseCents(transaction, positiveAmountsAreExpenses);
+    if (transaction.direction !== BILLING_TRANSACTION_DIRECTIONS.expense) {
+      continue;
+    }
+
+    const amountCents = Math.abs(transaction.amount_cents);
     if (amountCents <= 0) {
       continue;
+    }
+
+    if (transaction.status === BILLING_TRANSACTION_STATUS.pendingConfirmation) {
+      pendingConfirmationCount += 1;
+      pendingConfirmationExpenseCents += amountCents;
+      continue;
+    }
+
+    if (transaction.status !== BILLING_TRANSACTION_STATUS.confirmed) {
+      continue;
+    }
+
+    if (transaction.category_id !== null) {
+      aiCoveredCount += 1;
     }
 
     const key = transaction.category_id ?? 'uncategorized';
@@ -213,11 +154,16 @@ function aggregateTransactions(transactions: TransactionRow[]): {
     existing.transactionCount += 1;
     byCategory.set(key, existing);
     totalExpenseCents += amountCents;
+    transactionCount += 1;
   }
 
   return {
+    aiCoveredCount,
     entries: [...byCategory.values()],
+    pendingConfirmationCount,
+    pendingConfirmationExpenseCents,
     totalExpenseCents,
+    transactionCount,
   };
 }
 
@@ -311,60 +257,40 @@ export class DashboardService {
     userId: string;
   }): Promise<MonthlySummary> {
     const bounds = getMonthBounds(input.month);
-    const [summaryRow, transactions] = await Promise.all([
-      this.repository.getMonthlySummaryRow(input),
-      this.repository.listMonthTransactions({
-        ...bounds,
-        userId: input.userId,
-      }),
-    ]);
+    const transactions = await this.repository.listMonthTransactions({
+      ...bounds,
+      userId: input.userId,
+    });
     const realtime = aggregateTransactions(transactions);
-    const summaryEntries = summaryRow
-      ? parseMonthlySummaryBreakdown(summaryRow.category_breakdown)
-      : [];
-    const useSummaryRow =
-      summaryEntries.length > 0 && Number(summaryRow?.total_cents ?? 0) > 0;
-    const entries = useSummaryRow ? summaryEntries : realtime.entries;
-    const totalExpenseCents = useSummaryRow
-      ? Number(summaryRow?.total_cents ?? 0)
-      : realtime.totalExpenseCents;
-    const categoryIds = entries
+    const categoryIds = realtime.entries
       .map((entry) => entry.categoryId)
       .filter((categoryId): categoryId is string => typeof categoryId === 'string');
     const categories = await this.repository.listCategories([...new Set(categoryIds)]);
     const categoryBreakdown = buildCategorySummaries({
       categories,
-      entries,
-      totalExpenseCents,
+      entries: realtime.entries,
+      totalExpenseCents: realtime.totalExpenseCents,
     });
-    const pendingConfirmationCount = transactions.filter(
-      (transaction) => transaction.status === 'pending_confirmation',
-    ).length;
-    const aiCoveredCount = transactions.filter(
-      (transaction) => transaction.category_id !== null,
-    ).length;
-    const transactionCount =
-      transactions.length > 0
-        ? transactions.length
-        : entries.reduce((total, entry) => total + entry.transactionCount, 0);
-
     return monthlySummarySchema.parse({
       aiCoverageRate:
-        transactionCount > 0
-          ? Math.round((aiCoveredCount / transactionCount) * 1000) / 10
+        realtime.transactionCount > 0
+          ? Math.round((realtime.aiCoveredCount / realtime.transactionCount) * 1000) /
+            10
           : 0,
-      aiCoveredCount,
+      aiCoveredCount: realtime.aiCoveredCount,
       categoryBreakdown,
-      hasTransactions: transactionCount > 0 || totalExpenseCents > 0,
+      hasTransactions:
+        realtime.transactionCount > 0 || realtime.pendingConfirmationCount > 0,
       month: input.month,
-      pendingConfirmationCount,
+      pendingConfirmationCount: realtime.pendingConfirmationCount,
+      pendingConfirmationExpenseCents: realtime.pendingConfirmationExpenseCents,
       spotlight: createSpotlight({
         categoryBreakdown,
-        pendingConfirmationCount,
-        transactionCount,
+        pendingConfirmationCount: realtime.pendingConfirmationCount,
+        transactionCount: realtime.transactionCount + realtime.pendingConfirmationCount,
       }),
-      totalExpenseCents,
-      transactionCount,
+      totalExpenseCents: realtime.totalExpenseCents,
+      transactionCount: realtime.transactionCount,
     });
   }
 }

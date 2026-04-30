@@ -2,6 +2,17 @@ import { AUTH_ERROR_CODES, AUTH_ROUTE_PATHS } from '@money-tracker/shared';
 import { describe, expect, it } from 'vitest';
 
 import { AuthService, getNextPathFromAccessToken } from './service';
+import { readAccessTokenPayload } from './token';
+
+interface TestAccessTokenPayload extends Record<string, unknown> {
+  authMethod: 'otp' | 'wechat';
+  exp: number;
+  iat: number;
+  needsOnboarding: boolean;
+  phone: string | null;
+  sub: string;
+  type: 'access';
+}
 
 describe('AuthService', () => {
   it('issues OTP metadata and reuses resend throttle window', async () => {
@@ -60,6 +71,15 @@ describe('AuthService', () => {
     expect(getNextPathFromAccessToken(result.session.accessToken)).toBe(
       AUTH_ROUTE_PATHS.permissions,
     );
+    expect(
+      readAccessTokenPayload<TestAccessTokenPayload>(result.session.accessToken),
+    ).toMatchObject({
+      authMethod: 'otp',
+      needsOnboarding: true,
+      phone: '13800138002',
+      sub: result.session.user.id,
+      type: 'access',
+    });
   });
 
   it('rejects challenge ids that do not belong to the submitted phone', async () => {

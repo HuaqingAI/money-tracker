@@ -5,6 +5,20 @@ export const monthStringSchema = z
   .regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'month must use YYYY-MM format');
 
 export const monthlySummaryQuerySchema = z.object({
+  includePending: z
+    .preprocess((value) => {
+      if (value === undefined || value === null || value === '') {
+        return false;
+      }
+      if (value === 'true') {
+        return true;
+      }
+      if (value === 'false') {
+        return false;
+      }
+      return value;
+    }, z.boolean())
+    .default(false),
   month: monthStringSchema,
 });
 

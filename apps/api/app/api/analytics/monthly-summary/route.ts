@@ -39,6 +39,7 @@ export function GET(request: NextRequest): Promise<Response> {
       const { user } = await requireAuthenticatedUser(request);
       const url = new URL(request.url);
       const parsed = monthlySummaryQuerySchema.safeParse({
+        includePending: url.searchParams.get('includePending') ?? undefined,
         month: url.searchParams.get('month'),
       });
 
@@ -51,7 +52,9 @@ export function GET(request: NextRequest): Promise<Response> {
       }
 
       return successResponse(
-        await getMonthlySummary(user.id, parsed.data.month),
+        await getMonthlySummary(user.id, parsed.data.month, {
+          includePending: parsed.data.includePending,
+        }),
       );
     } catch (error) {
       return toErrorResponse(error);

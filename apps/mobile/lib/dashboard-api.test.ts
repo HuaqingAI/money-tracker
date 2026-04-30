@@ -30,6 +30,7 @@ describe('dashboard-api', () => {
             hasTransactions: true,
             month: '2026-04',
             pendingConfirmationCount: 1,
+            pendingConfirmationExpenseCents: 800,
             spotlight: null,
             totalExpenseCents: 1200,
             transactionCount: 2,
@@ -61,7 +62,21 @@ describe('dashboard-api', () => {
           data: {
             hasMore: false,
             limit: 10,
-            transactions: [],
+            transactions: [
+              {
+                amountCents: 5000,
+                categoryId: null,
+                categoryName: '其他',
+                description: '工资',
+                direction: 'income',
+                directionConfidence: 'high',
+                id: '11111111-1111-4111-8111-111111111111',
+                merchant: '公司',
+                source: 'alipay_csv',
+                status: 'confirmed',
+                transactionAt: '2026-04-27T01:20:00.000Z',
+              },
+            ],
           },
         }),
       ),
@@ -70,7 +85,21 @@ describe('dashboard-api', () => {
     await expect(fetchRecentTransactions('access-token')).resolves.toEqual({
       hasMore: false,
       limit: 10,
-      transactions: [],
+      transactions: [
+        {
+          amountCents: 5000,
+          categoryId: null,
+          categoryName: '其他',
+          description: '工资',
+          direction: 'income',
+          directionConfidence: 'high',
+          id: '11111111-1111-4111-8111-111111111111',
+          merchant: '公司',
+          source: 'alipay_csv',
+          status: 'confirmed',
+          transactionAt: '2026-04-27T01:20:00.000Z',
+        },
+      ],
     });
   });
 

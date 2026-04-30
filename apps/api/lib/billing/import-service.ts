@@ -354,6 +354,8 @@ export class BillingImportService {
         import_dedupe_key: createImportDedupeKey(transaction),
         merchant: transaction.merchant,
         description: transaction.description,
+        direction: transaction.direction,
+        direction_confidence: transaction.direction_confidence,
         transaction_at: transaction.transaction_at,
       })),
     );

@@ -136,6 +136,41 @@ describe('api-client', () => {
     );
   });
 
+  it('fetches monthly summary with includePending when requested', async () => {
+    vi.mocked(globalThis.fetch).mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          success: true,
+          data: {
+            categories: [],
+            comparisons: {
+              previousMonth: null,
+              yearOverYear: null,
+            },
+            generatedAt: '2026-04-27T00:00:00.000Z',
+            month: '2026-04',
+            monthEnd: '2026-05-01T00:00:00.000Z',
+            monthStart: '2026-04-01T00:00:00.000Z',
+            source: 'live',
+            totalExpenseCents: 0,
+            transactionCount: 0,
+          },
+        }),
+      ),
+    );
+
+    await fetchMonthlySummary('access-token', '2026-04', {
+      includePending: true,
+    });
+
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      'http://192.168.1.20:3000/api/analytics/monthly-summary?month=2026-04&includePending=true',
+      expect.objectContaining({
+        method: 'GET',
+      }),
+    );
+  });
+
   it('fetches monthly trend with default query parameters', async () => {
     vi.mocked(globalThis.fetch).mockResolvedValue(
       new Response(
