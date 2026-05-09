@@ -15,6 +15,7 @@ export default tseslint.config(
       '**/.next-dev/**',
       '**/.expo/**',
       '**/coverage/**',
+      '**/storybook-static/**',
       '**/*.tsbuildinfo',
       '_bmad-output/**',
       '_bmad/**',
