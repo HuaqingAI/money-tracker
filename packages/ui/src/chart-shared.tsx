@@ -1,12 +1,11 @@
 import { Text as TamaguiText, XStack, YStack } from 'tamagui';
-import type { InputDatum } from 'victory-native';
 
 import { a11yProps, type CategoryColorKey, categoryColorTokens, dsMetrics } from './component-utils';
 
 export type ChartVariant = 'donut' | 'line' | 'radar' | 'bar';
 export type ChartState = 'default' | 'loading' | 'empty' | 'error';
 
-export interface ChartDatum extends InputDatum {
+export interface ChartDatum {
   key: string;
   label: string;
   value: number;
