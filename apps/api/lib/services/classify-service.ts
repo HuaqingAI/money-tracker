@@ -173,6 +173,13 @@ class OpenAiCompatibleClient implements AiClient {
   ) {}
 
   async classify(input: ClassifyTransactionInput): Promise<ClassifyTransactionResult> {
+    logger.info(
+      {
+        provider: this.options.provider,
+        transactionId: input.transactionId,
+      },
+      'ai classification provider request started',
+    );
     const response = await fetch(`${this.options.baseUrl}/chat/completions`, {
       body: JSON.stringify({
         messages: [
@@ -228,13 +235,21 @@ class OpenAiCompatibleClient implements AiClient {
         ? Math.min(1, Math.max(0, parsed.confidence))
         : 0.72;
 
-    return {
+    const result = {
       categoryId: matched.id,
       categoryName: matched.name,
       confidence,
       provider: this.options.provider,
       transactionId: input.transactionId,
     };
+    logger.info(
+      {
+        provider: this.options.provider,
+        transactionId: input.transactionId,
+      },
+      'ai classification provider request completed',
+    );
+    return result;
   }
 }
 
@@ -444,6 +459,14 @@ export class ClassifyService {
         userId: input.userId,
       }),
     ]);
+    logger.info(
+      {
+        requestedTransactionCount: transactionIds.length,
+        transactionCount: transactions.length,
+        userId: input.userId,
+      },
+      'transaction classification batch loaded',
+    );
 
     let classifiedCount = 0;
     let failedCount = 0;

@@ -145,7 +145,7 @@ describe('POST /api/billing/import-csv', () => {
     });
   });
 
-  it('does not trigger classification when nothing new was imported', async () => {
+  it('triggers catch-up classification when an imported file only contains duplicates', async () => {
     importCsvMock.mockResolvedValue({
       totalCount: 1,
       importedCount: 0,
@@ -160,8 +160,10 @@ describe('POST /api/billing/import-csv', () => {
       createRequest(new File(['header\nrow'], 'bill.csv', { type: 'text/csv' })) as never,
     );
 
-    expect(afterMock).not.toHaveBeenCalled();
-    expect(classifyPendingTransactionsMock).not.toHaveBeenCalled();
+    expect(afterMock).toHaveBeenCalledTimes(1);
+    expect(classifyPendingTransactionsMock).toHaveBeenCalledWith({
+      userId: 'user-1',
+    });
     expect(response.status).toBe(200);
   });
 

@@ -51,6 +51,45 @@ function toPublicImportResult(result: ImportCsvResult): ImportCsvResult {
   };
 }
 
+async function classifyImportedTransactions(input: {
+  importedTransactionIds: string[];
+  userId: string;
+}): Promise<void> {
+  const classificationInput =
+    input.importedTransactionIds.length > 0
+      ? {
+          transactionIds: input.importedTransactionIds,
+          userId: input.userId,
+        }
+      : {
+          userId: input.userId,
+        };
+
+  logger.info(
+    {
+      importedTransactionCount: input.importedTransactionIds.length,
+      mode:
+        input.importedTransactionIds.length > 0
+          ? 'imported-batch'
+          : 'pending-catch-up',
+    },
+    'post-import classification started',
+  );
+
+  const classification =
+    await getClassifyService().classifyPendingTransactions(classificationInput);
+
+  if (classification.failedCount > 0) {
+    logger.error(
+      { classification },
+      'post-import classification partially failed',
+    );
+    return;
+  }
+
+  logger.info({ classification }, 'post-import classification completed');
+}
+
 export function POST(request: NextRequest): Promise<Response> {
   return withRequestLogging(request, async () => {
     try {
@@ -90,20 +129,23 @@ export function POST(request: NextRequest): Promise<Response> {
         userId: user.id,
       });
 
-      if (result.importedTransactionIds.length > 0) {
+      if (
+        result.importedTransactionIds.length > 0 ||
+        result.duplicateCount > 0
+      ) {
+        logger.info(
+          {
+            duplicateCount: result.duplicateCount,
+            importedTransactionCount: result.importedTransactionIds.length,
+          },
+          'post-import classification scheduled',
+        );
         after(async () => {
           try {
-            const classification =
-              await getClassifyService().classifyPendingTransactions({
-                transactionIds: result.importedTransactionIds,
-                userId: user.id,
-              });
-            if (classification.failedCount > 0) {
-              logger.error(
-                { classification },
-                'post-import classification partially failed',
-              );
-            }
+            await classifyImportedTransactions({
+              importedTransactionIds: result.importedTransactionIds,
+              userId: user.id,
+            });
           } catch (error) {
             logger.error(
               { err: error },
