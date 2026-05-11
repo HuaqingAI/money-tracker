@@ -8,6 +8,8 @@ import { describe, expect, it } from 'vitest';
 import {
   type ClassificationRepository,
   ClassifyService,
+  createProviderUrl,
+  extractProviderContent,
   readOpenAiCompatiblePayload,
   resolveDefaultAiClientConfig,
 } from './classify-service';
@@ -129,6 +131,30 @@ describe('ClassifyService', () => {
     );
   });
 
+  it('extracts text from Responses API payloads', () => {
+    expect(
+      extractProviderContent(
+        {
+          output: [
+            {
+              content: [{ text: '{"categoryName":"餐饮","confidence":0.8}' }],
+            },
+          ],
+        },
+        'responses',
+      ),
+    ).toBe('{"categoryName":"餐饮","confidence":0.8}');
+  });
+
+  it('builds provider URLs from base URL and explicit API path', () => {
+    expect(
+      createProviderUrl({
+        apiPath: '/responses',
+        baseUrl: 'https://hth.huaqing.run/',
+      }),
+    ).toBe('https://hth.huaqing.run/responses');
+  });
+
   it('prefers project AI primary env over global OpenAI env', () => {
     expect(
       resolveDefaultAiClientConfig({
@@ -142,7 +168,9 @@ describe('ClassifyService', () => {
       fallback: null,
       mode: 'configured',
       primary: {
+        apiMode: 'responses',
         apiKey: 'project-key',
+        apiPath: '/responses',
         baseUrl: 'https://project.example/v1',
         model: 'project-model',
         provider: 'gpt-5.3-codex',
@@ -160,7 +188,9 @@ describe('ClassifyService', () => {
       fallback: null,
       mode: 'configured',
       primary: {
+        apiMode: 'responses',
         apiKey: 'global-key',
+        apiPath: '/responses',
         baseUrl: 'https://global.example/v1',
         model: 'gpt-5.3-codex',
         provider: 'gpt-5.3-codex',
@@ -181,14 +211,18 @@ describe('ClassifyService', () => {
       }),
     ).toEqual({
       fallback: {
+        apiMode: 'chat-completions',
         apiKey: 'project-fallback-key',
+        apiPath: '/chat/completions',
         baseUrl: 'https://project-fallback.example/v1',
         model: 'project-fallback-model',
         provider: 'qwen-3.6-plus',
       },
       mode: 'configured',
       primary: {
+        apiMode: 'responses',
         apiKey: 'project-key',
+        apiPath: '/responses',
         baseUrl: 'https://project.example/v1',
         model: 'gpt-5.3-codex',
         provider: 'gpt-5.3-codex',

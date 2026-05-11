@@ -165,7 +165,9 @@ class DevelopmentAiClient implements AiClient {
 class OpenAiCompatibleClient implements AiClient {
   constructor(
     private readonly options: {
+      apiMode: AiProviderApiMode;
       apiKey: string;
+      apiPath: string;
       baseUrl: string;
       model: string;
       provider: AiClassificationProvider;
@@ -175,6 +177,8 @@ class OpenAiCompatibleClient implements AiClient {
   async classify(input: ClassifyTransactionInput): Promise<ClassifyTransactionResult> {
     logger.info(
       {
+        apiMode: this.options.apiMode,
+        apiPath: this.options.apiPath,
         baseUrl: this.options.baseUrl,
         model: this.options.model,
         provider: this.options.provider,
@@ -182,28 +186,8 @@ class OpenAiCompatibleClient implements AiClient {
       },
       'ai classification provider request started',
     );
-    const response = await fetch(createChatCompletionsUrl(this.options.baseUrl), {
-      body: JSON.stringify({
-        messages: [
-          {
-            content:
-              '你是消费交易分类器。只返回 JSON：{"categoryName":"餐饮","confidence":0.9}。',
-            role: 'system',
-          },
-          {
-            content: JSON.stringify({
-              amountCents: input.amountCents,
-              categories: input.categories.map((category) => category.name),
-              description: input.description,
-              merchant: input.merchant,
-              source: input.source,
-            }),
-            role: 'user',
-          },
-        ],
-        model: this.options.model,
-        temperature: 0,
-      }),
+    const response = await fetch(createProviderUrl(this.options), {
+      body: JSON.stringify(createProviderRequestBody(this.options, input)),
       headers: {
         Authorization: `Bearer ${this.options.apiKey}`,
         'Content-Type': 'application/json',
@@ -212,12 +196,12 @@ class OpenAiCompatibleClient implements AiClient {
     });
 
     const payload = await readOpenAiCompatiblePayload(response);
-    const content = payload.choices?.[0]?.message?.content;
+    const content = extractProviderContent(payload, this.options.apiMode);
     if (!content) {
       throw new Error('AI provider returned empty content');
     }
 
-    const parsed = JSON.parse(content) as {
+    const parsed = JSON.parse(stripJsonCodeFence(content)) as {
       categoryName?: unknown;
       confidence?: unknown;
     };
@@ -251,10 +235,66 @@ class OpenAiCompatibleClient implements AiClient {
 
 export interface OpenAiCompatiblePayload {
   choices?: Array<{ message?: { content?: string } }>;
+  output?: Array<{
+    content?: Array<{
+      text?: unknown;
+    }>;
+  }>;
+  output_text?: unknown;
 }
 
-function createChatCompletionsUrl(baseUrl: string): string {
-  return `${baseUrl.replace(/\/+$/u, '')}/chat/completions`;
+export type AiProviderApiMode = 'chat-completions' | 'responses';
+
+const classificationInstructions =
+  'You classify consumer transactions. Return only compact JSON like {"categoryName":"餐饮","confidence":0.9}.';
+
+function createTransactionPrompt(input: ClassifyTransactionInput): string {
+  return JSON.stringify({
+    amountCents: input.amountCents,
+    categories: input.categories.map((category) => category.name),
+    description: input.description,
+    merchant: input.merchant,
+    source: input.source,
+  });
+}
+
+function createProviderRequestBody(
+  options: Pick<OpenAiCompatibleClientOptions, 'apiMode' | 'model'>,
+  input: ClassifyTransactionInput,
+): Record<string, unknown> {
+  if (options.apiMode === 'responses') {
+    return {
+      input: createTransactionPrompt(input),
+      instructions: classificationInstructions,
+      model: options.model,
+    };
+  }
+
+  return {
+    messages: [
+      {
+        content: classificationInstructions,
+        role: 'system',
+      },
+      {
+        content: createTransactionPrompt(input),
+        role: 'user',
+      },
+    ],
+    model: options.model,
+    temperature: 0,
+  };
+}
+
+export function createProviderUrl(input: {
+  apiPath: string;
+  baseUrl: string;
+}): string {
+  const baseUrl = input.baseUrl.replace(/\/+$/u, '');
+  const apiPath = input.apiPath.startsWith('/')
+    ? input.apiPath
+    : `/${input.apiPath}`;
+  return `${baseUrl}${apiPath}`;
 }
 
 export async function readOpenAiCompatiblePayload(
@@ -273,13 +313,44 @@ export async function readOpenAiCompatiblePayload(
     return JSON.parse(responseText) as OpenAiCompatiblePayload;
   } catch {
     throw new Error(
-      `AI provider returned non-JSON response (${contentType}). Check AI_PRIMARY_BASE_URL; it must point to an OpenAI-compatible API root, for example https://api.openai.com/v1.`,
+      `AI provider returned non-JSON response (${contentType}). Check AI_PRIMARY_BASE_URL and AI_PRIMARY_API_PATH; they must point to an OpenAI-compatible API endpoint, for example https://api.openai.com/v1 plus /responses.`,
     );
   }
 }
 
+export function extractProviderContent(
+  payload: OpenAiCompatiblePayload,
+  apiMode: AiProviderApiMode,
+): string | undefined {
+  if (apiMode === 'chat-completions') {
+    return payload.choices?.[0]?.message?.content;
+  }
+
+  if (typeof payload.output_text === 'string') {
+    return payload.output_text;
+  }
+
+  for (const item of payload.output ?? []) {
+    for (const content of item.content ?? []) {
+      if (typeof content.text === 'string') {
+        return content.text;
+      }
+    }
+  }
+
+  return undefined;
+}
+
+function stripJsonCodeFence(content: string): string {
+  const trimmed = content.trim();
+  const fenced = /^```(?:json)?\s*([\s\S]*?)\s*```$/u.exec(trimmed);
+  return fenced?.[1]?.trim() ?? trimmed;
+}
+
 interface OpenAiCompatibleClientOptions {
+  apiMode: AiProviderApiMode;
   apiKey: string;
+  apiPath: string;
   baseUrl: string;
   model: string;
   provider: Extract<AiClassificationProvider, 'gpt-5.3-codex' | 'qwen-3.6-plus'>;
@@ -310,6 +381,27 @@ function firstConfiguredEnv(env: EnvMap, keys: string[]): string | undefined {
   return undefined;
 }
 
+function resolveApiMode(
+  value: string | undefined,
+  fallback: AiProviderApiMode,
+): AiProviderApiMode {
+  if (!value) {
+    return fallback;
+  }
+
+  if (value === 'chat-completions' || value === 'responses') {
+    return value;
+  }
+
+  throw new Error(
+    `Unsupported AI API mode "${value}". Use "responses" or "chat-completions".`,
+  );
+}
+
+function defaultApiPath(apiMode: AiProviderApiMode): string {
+  return apiMode === 'responses' ? '/responses' : '/chat/completions';
+}
+
 export function resolveDefaultAiClientConfig(
   env: EnvMap = process.env,
 ): DefaultAiClientConfig {
@@ -329,6 +421,14 @@ export function resolveDefaultAiClientConfig(
     'AI_FALLBACK_BASE_URL',
     'QWEN_BASE_URL',
   ]);
+  const primaryApiMode = resolveApiMode(
+    firstConfiguredEnv(env, ['AI_PRIMARY_API_MODE', 'OPENAI_API_MODE']),
+    'responses',
+  );
+  const fallbackApiMode = resolveApiMode(
+    firstConfiguredEnv(env, ['AI_FALLBACK_API_MODE', 'QWEN_API_MODE']),
+    'chat-completions',
+  );
 
   if (!primaryKey) {
     return {
@@ -339,7 +439,11 @@ export function resolveDefaultAiClientConfig(
   }
 
   const primary: OpenAiCompatibleClientOptions = {
+    apiMode: primaryApiMode,
     apiKey: primaryKey,
+    apiPath:
+      firstConfiguredEnv(env, ['AI_PRIMARY_API_PATH', 'OPENAI_API_PATH']) ??
+      defaultApiPath(primaryApiMode),
     baseUrl: primaryBaseUrl,
     model: firstConfiguredEnv(env, ['AI_PRIMARY_MODEL']) ?? 'gpt-5.3-codex',
     provider: 'gpt-5.3-codex',
@@ -347,7 +451,11 @@ export function resolveDefaultAiClientConfig(
   const fallback =
     fallbackKey && fallbackBaseUrl
       ? {
+          apiMode: fallbackApiMode,
           apiKey: fallbackKey,
+          apiPath:
+            firstConfiguredEnv(env, ['AI_FALLBACK_API_PATH', 'QWEN_API_PATH']) ??
+            defaultApiPath(fallbackApiMode),
           baseUrl: fallbackBaseUrl,
           model:
             firstConfiguredEnv(env, ['AI_FALLBACK_MODEL']) ?? 'qwen-3.6-plus',
