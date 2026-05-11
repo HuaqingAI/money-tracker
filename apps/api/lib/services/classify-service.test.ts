@@ -3,19 +3,21 @@ import type {
   ClassifyTransactionInput,
   ClassifyTransactionResult,
 } from '@money-tracker/shared';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import {
   type ClassificationRepository,
   ClassifyService,
   createProviderUrl,
   extractProviderContent,
+  OpenAiCompatibleClient,
   readOpenAiCompatiblePayload,
   resolveDefaultAiClientConfig,
 } from './classify-service';
 
 const foodId = '00000000-0000-4000-8000-000000000001';
 const shoppingId = '00000000-0000-4000-8000-000000000003';
+const systemFoodId = '00000000-0000-0000-0000-000000000001';
 
 function createRepository(
   overrides: Partial<ClassificationRepository> = {},
@@ -100,6 +102,35 @@ function createAiClient(
     classify: async (input) => {
       calls.push(input);
       return result;
+    },
+  };
+}
+
+function createBatchAiClient(
+  results: ClassifyTransactionResult[],
+): AiClient & {
+  batchCalls: ClassifyTransactionInput[][];
+  calls: ClassifyTransactionInput[];
+} {
+  const batchCalls: ClassifyTransactionInput[][] = [];
+  const calls: ClassifyTransactionInput[] = [];
+
+  return {
+    batchCalls,
+    calls,
+    classify: async (input) => {
+      calls.push(input);
+      return results[0] ?? {
+        categoryId: null,
+        categoryName: '其他',
+        confidence: 0.72,
+        provider: 'gpt-5.3-codex',
+        transactionId: input.transactionId,
+      };
+    },
+    classifyMany: async (inputs) => {
+      batchCalls.push(inputs);
+      return results;
     },
   };
 }
@@ -277,6 +308,80 @@ describe('ClassifyService', () => {
     ]);
   });
 
+  it('classifies multiple AI transactions in one provider call', async () => {
+    const repository = createRepository({
+      listPendingUnclassifiedTransactions: async () => [
+        {
+          amount_cents: -2800,
+          category_id: null,
+          description: '午餐',
+          id: 'tx-1',
+          merchant: '美团外卖',
+          source: 'alipay_csv',
+          transaction_at: '2026-04-28 00:30:00+00',
+          user_id: 'user-1',
+        },
+        {
+          amount_cents: -12900,
+          category_id: null,
+          description: '日用品',
+          id: 'tx-2',
+          merchant: '淘宝',
+          source: 'alipay_csv',
+          transaction_at: '2026-04-27 00:30:00+00',
+          user_id: 'user-1',
+        },
+      ],
+    });
+    const aiClient = createBatchAiClient([
+      {
+        categoryId: foodId,
+        categoryName: '餐饮',
+        confidence: 0.91,
+        provider: 'gpt-5.3-codex',
+        transactionId: 'tx-1',
+      },
+      {
+        categoryId: shoppingId,
+        categoryName: '购物',
+        confidence: 0.83,
+        provider: 'gpt-5.3-codex',
+        transactionId: 'tx-2',
+      },
+    ]);
+    const service = new ClassifyService(repository, aiClient);
+
+    await expect(
+      service.classifyPendingTransactions({
+        userId: 'user-1',
+      }),
+    ).resolves.toEqual({
+      classifiedCount: 2,
+      failedCount: 0,
+      totalCount: 2,
+    });
+    expect(aiClient.calls).toHaveLength(0);
+    expect(aiClient.batchCalls).toHaveLength(1);
+    expect(aiClient.batchCalls[0]?.map((item) => item.transactionId)).toEqual([
+      'tx-1',
+      'tx-2',
+    ]);
+    expect(repository.updates).toEqual([
+      {
+        categoryId: foodId,
+        confidence: 0.91,
+        provider: 'gpt-5.3-codex',
+        transactionId: 'tx-1',
+      },
+      {
+        categoryId: shoppingId,
+        confidence: 0.83,
+        provider: 'gpt-5.3-codex',
+        transactionId: 'tx-2',
+      },
+    ]);
+  });
+
   it('uses user rules before calling AI', async () => {
     const repository = createRepository({
       listUserRules: async () => [
@@ -305,6 +410,200 @@ describe('ClassifyService', () => {
         confidence: 1,
         provider: 'rule',
         transactionId: 'tx-1',
+      },
+    ]);
+  });
+
+  it('normalizes system category names before sending AI inputs', async () => {
+    const repository = createRepository({
+      listCategories: async () => [
+        {
+          id: systemFoodId,
+          is_system: true,
+          name: '??',
+          sort_order: 1,
+          user_id: null,
+        },
+        {
+          id: shoppingId,
+          is_system: true,
+          name: '购物',
+          sort_order: 3,
+          user_id: null,
+        },
+      ],
+    });
+    const aiClient = createBatchAiClient([
+      {
+        categoryId: systemFoodId,
+        categoryName: '餐饮',
+        confidence: 0.91,
+        provider: 'gpt-5.3-codex',
+        transactionId: 'tx-1',
+      },
+    ]);
+    const service = new ClassifyService(repository, aiClient);
+
+    await service.classifyPendingTransactions({ userId: 'user-1' });
+
+    expect(aiClient.batchCalls[0]?.[0]?.categories).toEqual([
+      {
+        id: systemFoodId,
+        name: '餐饮',
+      },
+      {
+        id: shoppingId,
+        name: '购物',
+      },
+    ]);
+  });
+
+  it('keeps rule matches out of the AI batch', async () => {
+    const repository = createRepository({
+      listPendingUnclassifiedTransactions: async () => [
+        {
+          amount_cents: -2800,
+          category_id: null,
+          description: '午餐',
+          id: 'tx-rule',
+          merchant: '美团外卖',
+          source: 'alipay_csv',
+          transaction_at: '2026-04-28 00:30:00+00',
+          user_id: 'user-1',
+        },
+        {
+          amount_cents: -12900,
+          category_id: null,
+          description: '日用品',
+          id: 'tx-ai',
+          merchant: '淘宝',
+          source: 'alipay_csv',
+          transaction_at: '2026-04-27 00:30:00+00',
+          user_id: 'user-1',
+        },
+      ],
+      listUserRules: async () => [
+        {
+          category_id: foodId,
+          keyword: '美团',
+          user_id: 'user-1',
+        },
+      ],
+    });
+    const aiClient = createBatchAiClient([
+      {
+        categoryId: shoppingId,
+        categoryName: '购物',
+        confidence: 0.83,
+        provider: 'gpt-5.3-codex',
+        transactionId: 'tx-ai',
+      },
+    ]);
+    const service = new ClassifyService(repository, aiClient);
+
+    await service.classifyPendingTransactions({ userId: 'user-1' });
+
+    expect(aiClient.batchCalls).toHaveLength(1);
+    expect(aiClient.batchCalls[0]?.map((item) => item.transactionId)).toEqual([
+      'tx-ai',
+    ]);
+    expect(repository.updates).toEqual([
+      {
+        categoryId: foodId,
+        confidence: 1,
+        provider: 'rule',
+        transactionId: 'tx-rule',
+      },
+      {
+        categoryId: shoppingId,
+        confidence: 0.83,
+        provider: 'gpt-5.3-codex',
+        transactionId: 'tx-ai',
+      },
+    ]);
+  });
+
+  it('falls back missing AI batch results by transaction id', async () => {
+    const repository = createRepository({
+      listPendingUnclassifiedTransactions: async () => [
+        {
+          amount_cents: -2800,
+          category_id: null,
+          description: '午餐',
+          id: 'tx-1',
+          merchant: '美团外卖',
+          source: 'alipay_csv',
+          transaction_at: '2026-04-28 00:30:00+00',
+          user_id: 'user-1',
+        },
+        {
+          amount_cents: -12900,
+          category_id: null,
+          description: '日用品',
+          id: 'tx-2',
+          merchant: '淘宝',
+          source: 'alipay_csv',
+          transaction_at: '2026-04-27 00:30:00+00',
+          user_id: 'user-1',
+        },
+      ],
+    });
+    const originalFetch = globalThis.fetch;
+    const fetchMock = vi.fn(async () =>
+      new Response(
+        JSON.stringify({
+          output: [
+            {
+              content: [
+                {
+                  text: JSON.stringify({
+                    results: [
+                      {
+                        categoryName: '购物',
+                        confidence: 0.82,
+                        transactionId: 'tx-2',
+                      },
+                    ],
+                  }),
+                },
+              ],
+            },
+          ],
+        }),
+        {
+          headers: { 'content-type': 'application/json' },
+          status: 200,
+        },
+      ));
+    vi.stubGlobal('fetch', fetchMock);
+    const config = resolveDefaultAiClientConfig({
+      AI_PRIMARY_API_KEY: 'project-key',
+      AI_PRIMARY_BASE_URL: 'https://project.example/v1',
+    });
+    if (config.mode !== 'configured') {
+      throw new Error('Expected configured AI client config');
+    }
+    const aiClient = new OpenAiCompatibleClient(config.primary);
+    const service = new ClassifyService(repository, aiClient);
+
+    try {
+      await service.classifyPendingTransactions({ userId: 'user-1' });
+    } finally {
+      vi.stubGlobal('fetch', originalFetch);
+    }
+
+    expect(repository.updates).toEqual([
+      {
+        categoryId: foodId,
+        confidence: 0.72,
+        provider: 'gpt-5.3-codex',
+        transactionId: 'tx-1',
+      },
+      {
+        categoryId: shoppingId,
+        confidence: 0.82,
+        provider: 'gpt-5.3-codex',
+        transactionId: 'tx-2',
       },
     ]);
   });

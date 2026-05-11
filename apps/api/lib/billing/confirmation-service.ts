@@ -1,5 +1,6 @@
 import {
   BILLING_CONFIRMATION_ERROR_CODES,
+  BILLING_SYSTEM_CATEGORY_NAMES_BY_ID,
   BILLING_TRANSACTION_STATUS,
   type BillingCategoryOption,
   type ConfirmBulkTransactionsResult,
@@ -292,12 +293,20 @@ function toIsoDatetime(value: string): string {
   return parsed.toISOString();
 }
 
+function normalizeCategoryName(category: CategoryRow | null | undefined): string {
+  if (!category) {
+    return '其他';
+  }
+
+  return BILLING_SYSTEM_CATEGORY_NAMES_BY_ID[category.id] ?? category.name;
+}
+
 function toCategoryOption(category: CategoryRow): BillingCategoryOption {
   return {
     icon: category.icon,
     id: category.id,
     isSystem: category.is_system,
-    name: category.name,
+    name: normalizeCategoryName(category),
   };
 }
 
@@ -317,7 +326,7 @@ function mapPendingTransaction(input: {
     amountCents: input.row.amount_cents,
     categoryId: input.row.category_id,
     categoryName: input.row.category_id
-      ? input.categories.get(input.row.category_id)?.name ?? '其他'
+      ? normalizeCategoryName(input.categories.get(input.row.category_id))
       : '其他',
     classifiedAt: input.row.classified_at
       ? toIsoDatetime(input.row.classified_at)

@@ -5,6 +5,7 @@ import { ConfirmationService } from './confirmation-service';
 
 const foodId = '00000000-0000-4000-8000-000000000001';
 const shoppingId = '00000000-0000-4000-8000-000000000003';
+const systemFoodId = '00000000-0000-0000-0000-000000000001';
 const transactionId = '11111111-1111-4111-8111-111111111111';
 
 function createRepository(
@@ -121,6 +122,55 @@ describe('ConfirmationService', () => {
           source: 'alipay_csv',
           status: 'pending_confirmation',
           transactionAt: '2026-04-28T00:30:00.000Z',
+        },
+      ],
+    });
+  });
+
+  it('normalizes system category names when stored names are garbled', async () => {
+    const service = new ConfirmationService(
+      createRepository({
+        listCategories: async () => [
+          {
+            icon: 'utensils',
+            id: systemFoodId,
+            is_system: true,
+            name: '??',
+            sort_order: 1,
+            user_id: null,
+          },
+        ],
+        listPendingTransactions: async () => [
+          {
+            ai_confidence: 0.88,
+            ai_provider: 'gpt-5.3-codex',
+            amount_cents: -2800,
+            category_id: systemFoodId,
+            classified_at: '2026-04-28 01:00:00+00',
+            description: '午餐',
+            direction: 'expense',
+            direction_confidence: 'high',
+            id: transactionId,
+            merchant: '美团外卖',
+            source: 'alipay_csv',
+            status: 'pending_confirmation',
+            transaction_at: '2026-04-28 00:30:00+00',
+          },
+        ],
+      }),
+    );
+
+    await expect(service.listPendingConfirmations('user-1')).resolves.toMatchObject({
+      categories: [
+        {
+          id: systemFoodId,
+          name: '餐饮',
+        },
+      ],
+      transactions: [
+        {
+          categoryId: systemFoodId,
+          categoryName: '餐饮',
         },
       ],
     });

@@ -30,8 +30,11 @@ function result(provider: 'gpt-5.3-codex' | 'qwen-3.6-plus'): ClassifyTransactio
 
 function client(
   classify: (input: ClassifyTransactionInput) => Promise<ClassifyTransactionResult>,
+  classifyMany?: (
+    inputs: ClassifyTransactionInput[],
+  ) => Promise<ClassifyTransactionResult[]>,
 ): AiClient {
-  return { classify };
+  return classifyMany ? { classify, classifyMany } : { classify };
 }
 
 describe('FallbackAiClient', () => {
@@ -63,6 +66,37 @@ describe('FallbackAiClient', () => {
       provider: 'qwen-3.6-plus',
     });
     expect(attempts).toBe(2);
+  });
+
+  it('uses provider batch classification when available', async () => {
+    let primaryBatchAttempts = 0;
+    let primarySingleAttempts = 0;
+    const secondInput: ClassifyTransactionInput = {
+      ...input,
+      transactionId: 'tx-2',
+    };
+    const primary = client(
+      async () => {
+        primarySingleAttempts += 1;
+        return result('gpt-5.3-codex');
+      },
+      async (inputs) => {
+        primaryBatchAttempts += 1;
+        return inputs.map((item) => ({
+          ...result('gpt-5.3-codex'),
+          transactionId: item.transactionId,
+        }));
+      },
+    );
+    const fallback = client(async () => result('qwen-3.6-plus'));
+    const ai = new FallbackAiClient(primary, fallback);
+
+    await expect(ai.classifyMany([input, secondInput])).resolves.toEqual([
+      expect.objectContaining({ transactionId: 'tx-1' }),
+      expect.objectContaining({ transactionId: 'tx-2' }),
+    ]);
+    expect(primaryBatchAttempts).toBe(1);
+    expect(primarySingleAttempts).toBe(0);
   });
 
   it('opens the circuit after three primary failures and recovers after window', async () => {

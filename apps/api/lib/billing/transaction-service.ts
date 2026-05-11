@@ -1,5 +1,6 @@
 import {
   BILLING_DIRECTION_CONFIDENCE,
+  BILLING_SYSTEM_CATEGORY_NAMES_BY_ID,
   BILLING_TRANSACTION_DIRECTIONS,
   BILLING_TRANSACTION_STATUS,
   type BillingDirectionConfidence,
@@ -94,7 +95,7 @@ function mapTransaction(input: {
     amountCents: input.row.amount_cents,
     categoryId: input.row.category_id,
     categoryName: input.row.category_id
-      ? input.categories.get(input.row.category_id)?.name ?? '其他'
+      ? getCategoryName(input.categories.get(input.row.category_id))
       : '其他',
     description: input.row.description,
     direction: toBillingTransactionDirection(input.row.direction),
@@ -107,6 +108,14 @@ function mapTransaction(input: {
     status: toBillingTransactionStatus(input.row.status),
     transactionAt: toIsoDatetime(input.row.transaction_at),
   };
+}
+
+function getCategoryName(category: CategoryRow | undefined): string {
+  if (!category) {
+    return '其他';
+  }
+
+  return BILLING_SYSTEM_CATEGORY_NAMES_BY_ID[category.id] ?? category.name;
 }
 
 function toIsoDatetime(value: string): string {

@@ -146,6 +146,27 @@ export class FallbackAiClient implements AiClient {
     }
   }
 
+  async classifyMany(
+    inputs: ClassifyTransactionInput[],
+  ): Promise<ClassifyTransactionResult[]> {
+    if (inputs.length === 0) {
+      return [];
+    }
+
+    if (this.breaker.shouldUseFallback()) {
+      return classifyManyWithClient(this.fallback, inputs);
+    }
+
+    try {
+      const result = await this.classifyManyWithPrimary(inputs);
+      this.breaker.recordPrimarySuccess();
+      return result;
+    } catch {
+      this.breaker.recordPrimaryFailure();
+      return classifyManyWithClient(this.fallback, inputs);
+    }
+  }
+
   getCircuitBreakerSnapshot(): AiCircuitBreakerSnapshot {
     return this.breaker.snapshot();
   }
@@ -162,4 +183,31 @@ export class FallbackAiClient implements AiClient {
       return this.timer.withTimeout(this.primary.classify(input), this.timeoutMs);
     }
   }
+
+  private async classifyManyWithPrimary(
+    inputs: ClassifyTransactionInput[],
+  ): Promise<ClassifyTransactionResult[]> {
+    try {
+      return await this.timer.withTimeout(
+        classifyManyWithClient(this.primary, inputs),
+        this.timeoutMs,
+      );
+    } catch {
+      return this.timer.withTimeout(
+        classifyManyWithClient(this.primary, inputs),
+        this.timeoutMs,
+      );
+    }
+  }
+}
+
+function classifyManyWithClient(
+  client: AiClient,
+  inputs: ClassifyTransactionInput[],
+): Promise<ClassifyTransactionResult[]> {
+  if (client.classifyMany) {
+    return client.classifyMany(inputs);
+  }
+
+  return Promise.all(inputs.map((input) => client.classify(input)));
 }
