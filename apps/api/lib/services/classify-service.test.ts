@@ -8,6 +8,7 @@ import { describe, expect, it } from 'vitest';
 import {
   type ClassificationRepository,
   ClassifyService,
+  readOpenAiCompatiblePayload,
   resolveDefaultAiClientConfig,
 } from './classify-service';
 
@@ -102,6 +103,32 @@ function createAiClient(
 }
 
 describe('ClassifyService', () => {
+  it('reports non-JSON AI provider responses as base URL configuration errors', async () => {
+    const response = new Response('<!doctype html><html></html>', {
+      headers: {
+        'content-type': 'text/html',
+      },
+      status: 200,
+    });
+
+    await expect(readOpenAiCompatiblePayload(response)).rejects.toThrow(
+      'Check AI_PRIMARY_BASE_URL',
+    );
+  });
+
+  it('includes status and content type when the AI provider rejects a request', async () => {
+    const response = new Response('{"error":{"message":"bad key"}}', {
+      headers: {
+        'content-type': 'application/json',
+      },
+      status: 401,
+    });
+
+    await expect(readOpenAiCompatiblePayload(response)).rejects.toThrow(
+      'AI provider failed with status 401 (application/json)',
+    );
+  });
+
   it('prefers project AI primary env over global OpenAI env', () => {
     expect(
       resolveDefaultAiClientConfig({

@@ -175,12 +175,14 @@ class OpenAiCompatibleClient implements AiClient {
   async classify(input: ClassifyTransactionInput): Promise<ClassifyTransactionResult> {
     logger.info(
       {
+        baseUrl: this.options.baseUrl,
+        model: this.options.model,
         provider: this.options.provider,
         transactionId: input.transactionId,
       },
       'ai classification provider request started',
     );
-    const response = await fetch(`${this.options.baseUrl}/chat/completions`, {
+    const response = await fetch(createChatCompletionsUrl(this.options.baseUrl), {
       body: JSON.stringify({
         messages: [
           {
@@ -209,13 +211,7 @@ class OpenAiCompatibleClient implements AiClient {
       method: 'POST',
     });
 
-    if (!response.ok) {
-      throw new Error(`AI provider failed with status ${response.status}`);
-    }
-
-    const payload = (await response.json()) as {
-      choices?: Array<{ message?: { content?: string } }>;
-    };
+    const payload = await readOpenAiCompatiblePayload(response);
     const content = payload.choices?.[0]?.message?.content;
     if (!content) {
       throw new Error('AI provider returned empty content');
@@ -250,6 +246,35 @@ class OpenAiCompatibleClient implements AiClient {
       'ai classification provider request completed',
     );
     return result;
+  }
+}
+
+export interface OpenAiCompatiblePayload {
+  choices?: Array<{ message?: { content?: string } }>;
+}
+
+function createChatCompletionsUrl(baseUrl: string): string {
+  return `${baseUrl.replace(/\/+$/u, '')}/chat/completions`;
+}
+
+export async function readOpenAiCompatiblePayload(
+  response: Response,
+): Promise<OpenAiCompatiblePayload> {
+  const contentType = response.headers.get('content-type') ?? 'unknown';
+  const responseText = await response.text();
+
+  if (!response.ok) {
+    throw new Error(
+      `AI provider failed with status ${response.status} (${contentType})`,
+    );
+  }
+
+  try {
+    return JSON.parse(responseText) as OpenAiCompatiblePayload;
+  } catch {
+    throw new Error(
+      `AI provider returned non-JSON response (${contentType}). Check AI_PRIMARY_BASE_URL; it must point to an OpenAI-compatible API root, for example https://api.openai.com/v1.`,
+    );
   }
 }
 
