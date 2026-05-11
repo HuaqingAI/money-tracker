@@ -46,9 +46,7 @@ function loadRootEnv() {
       }
 
       const [key, value] = parsed;
-      if (!(key in process.env)) {
-        process.env[key] = value;
-      }
+      process.env[key] = value;
     }
   }
 }
