@@ -48,6 +48,8 @@ interface PendingClassificationPlan {
   ruleResults: ClassifyTransactionResult[];
 }
 
+const AI_CLASSIFICATION_BATCH_SIZE = 25;
+
 export interface ClassificationRepository {
   listCategories(userId: string): Promise<CategoryRow[]>;
   listPendingUnclassifiedTransactions(input: {
@@ -372,6 +374,12 @@ function parseClassificationResults(input: {
 }): ClassifyTransactionResult[] {
   const parsed = JSON.parse(stripJsonCodeFence(input.content)) as unknown;
   const items = extractClassificationItems(parsed);
+  const inputsByTransactionId = new Map(
+    input.inputs.map((transactionInput) => [
+      transactionInput.transactionId,
+      transactionInput,
+    ]),
+  );
   const itemsByTransactionId = new Map<string, ProviderClassificationItem>();
 
   for (const item of items) {
@@ -381,30 +389,62 @@ function parseClassificationResults(input: {
   }
   const hasTransactionIds = itemsByTransactionId.size > 0;
 
-  return input.inputs.map((transactionInput, index) => {
-    const item =
-      itemsByTransactionId.get(transactionInput.transactionId) ??
-      (hasTransactionIds ? {} : items[index]) ??
-      {};
-    const categoryName =
-      typeof item.categoryName === 'string' ? item.categoryName : '其他';
-    const matched =
-      transactionInput.categories.find(
-        (category) => category.name === categoryName,
-      ) ?? chooseCategory(transactionInput);
-    const confidence =
-      typeof item.confidence === 'number'
-        ? Math.min(1, Math.max(0, item.confidence))
-        : 0.72;
+  if (hasTransactionIds) {
+    return [...itemsByTransactionId.entries()].flatMap(
+      ([transactionId, item]) => {
+        const transactionInput = inputsByTransactionId.get(transactionId);
+        return transactionInput
+          ? [
+              createClassificationResultFromProviderItem({
+                item,
+                provider: input.provider,
+                transactionInput,
+              }),
+            ]
+          : [];
+      },
+    );
+  }
 
-    return {
-      categoryId: matched.id,
-      categoryName: matched.name,
-      confidence,
-      provider: input.provider,
-      transactionId: transactionInput.transactionId,
-    };
+  return input.inputs.flatMap((transactionInput, index) => {
+    const item = items[index];
+    return item
+      ? [
+          createClassificationResultFromProviderItem({
+            item,
+            provider: input.provider,
+            transactionInput,
+          }),
+        ]
+      : [];
   });
+}
+
+function createClassificationResultFromProviderItem(input: {
+  item: ProviderClassificationItem;
+  provider: Extract<AiClassificationProvider, 'gpt-5.3-codex' | 'qwen-3.6-plus'>;
+  transactionInput: ClassifyTransactionInput;
+}): ClassifyTransactionResult {
+  const categoryName =
+    typeof input.item.categoryName === 'string'
+      ? input.item.categoryName
+      : '其他';
+  const matched =
+    input.transactionInput.categories.find(
+      (category) => category.name === categoryName,
+    ) ?? chooseCategory(input.transactionInput);
+  const confidence =
+    typeof input.item.confidence === 'number'
+      ? Math.min(1, Math.max(0, input.item.confidence))
+      : 0.72;
+
+  return {
+    categoryId: matched.id,
+    categoryName: matched.name,
+    confidence,
+    provider: input.provider,
+    transactionId: input.transactionInput.transactionId,
+  };
 }
 
 function extractClassificationItems(parsed: unknown): ProviderClassificationItem[] {
@@ -655,6 +695,17 @@ async function classifyManyWithClient(
   return Promise.all(inputs.map((aiInput) => aiClient.classify(aiInput)));
 }
 
+function chunkClassificationInputs(
+  inputs: ClassifyTransactionInput[],
+): ClassifyTransactionInput[][] {
+  const chunks: ClassifyTransactionInput[][] = [];
+  for (let index = 0; index < inputs.length; index += AI_CLASSIFICATION_BATCH_SIZE) {
+    chunks.push(inputs.slice(index, index + AI_CLASSIFICATION_BATCH_SIZE));
+  }
+
+  return chunks;
+}
+
 function createDefaultAiClient(): AiClient {
   const config = resolveDefaultAiClientConfig();
 
@@ -749,20 +800,49 @@ export class ClassifyService {
       resultsByTransactionId.set(result.transactionId, result);
     }
 
-    try {
-      const aiResults = await classifyManyWithClient(this.aiClient, plan.aiInputs);
-      for (const result of aiResults) {
-        resultsByTransactionId.set(result.transactionId, result);
+    for (const aiInputChunk of chunkClassificationInputs(plan.aiInputs)) {
+      try {
+        const aiResults = await classifyManyWithClient(
+          this.aiClient,
+          aiInputChunk,
+        );
+        const expectedTransactionIds = new Set(
+          aiInputChunk.map((aiInput) => aiInput.transactionId),
+        );
+        const returnedTransactionIds = new Set<string>();
+
+        for (const result of aiResults) {
+          if (!expectedTransactionIds.has(result.transactionId)) {
+            logger.error(
+              { resultTransactionId: result.transactionId },
+              'transaction classification returned unexpected result',
+            );
+            continue;
+          }
+
+          returnedTransactionIds.add(result.transactionId);
+          resultsByTransactionId.set(result.transactionId, result);
+        }
+
+        for (const aiInput of aiInputChunk) {
+          if (!returnedTransactionIds.has(aiInput.transactionId)) {
+            failedCount += 1;
+            logger.error(
+              { transactionId: aiInput.transactionId },
+              'transaction classification result missing from batch response',
+            );
+          }
+        }
+      } catch (error) {
+        failedCount += aiInputChunk.length;
+        logger.error(
+          {
+            err: error,
+            transactionIds: aiInputChunk.map((aiInput) => aiInput.transactionId),
+          },
+          'transaction classification batch failed',
+        );
       }
-    } catch (error) {
-      failedCount += plan.aiInputs.length;
-      logger.error(
-        {
-          err: error,
-          transactionIds: plan.aiInputs.map((aiInput) => aiInput.transactionId),
-        },
-        'transaction classification batch failed',
-      );
     }
 
     for (const result of resultsByTransactionId.values()) {

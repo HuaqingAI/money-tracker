@@ -55,29 +55,18 @@ async function classifyImportedTransactions(input: {
   importedTransactionIds: string[];
   userId: string;
 }): Promise<void> {
-  const classificationInput =
-    input.importedTransactionIds.length > 0
-      ? {
-          transactionIds: input.importedTransactionIds,
-          userId: input.userId,
-        }
-      : {
-          userId: input.userId,
-        };
-
   logger.info(
     {
       importedTransactionCount: input.importedTransactionIds.length,
-      mode:
-        input.importedTransactionIds.length > 0
-          ? 'imported-batch'
-          : 'pending-catch-up',
+      mode: 'imported-batch',
     },
     'post-import classification started',
   );
 
-  const classification =
-    await getClassifyService().classifyPendingTransactions(classificationInput);
+  const classification = await getClassifyService().classifyPendingTransactions({
+    transactionIds: input.importedTransactionIds,
+    userId: input.userId,
+  });
 
   if (classification.failedCount > 0) {
     logger.error(
@@ -129,10 +118,7 @@ export function POST(request: NextRequest): Promise<Response> {
         userId: user.id,
       });
 
-      if (
-        result.importedTransactionIds.length > 0 ||
-        result.duplicateCount > 0
-      ) {
+      if (result.importedTransactionIds.length > 0) {
         logger.info(
           {
             duplicateCount: result.duplicateCount,

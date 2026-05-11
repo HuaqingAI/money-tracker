@@ -135,6 +135,29 @@ function createBatchAiClient(
   };
 }
 
+function createMappedBatchAiClient(
+  classifyInput: (input: ClassifyTransactionInput) => ClassifyTransactionResult,
+): AiClient & {
+  batchCalls: ClassifyTransactionInput[][];
+  calls: ClassifyTransactionInput[];
+} {
+  const batchCalls: ClassifyTransactionInput[][] = [];
+  const calls: ClassifyTransactionInput[] = [];
+
+  return {
+    batchCalls,
+    calls,
+    classify: async (input) => {
+      calls.push(input);
+      return classifyInput(input);
+    },
+    classifyMany: async (inputs) => {
+      batchCalls.push(inputs);
+      return inputs.map(classifyInput);
+    },
+  };
+}
+
 describe('ClassifyService', () => {
   it('reports non-JSON AI provider responses as base URL configuration errors', async () => {
     const response = new Response('<!doctype html><html></html>', {
@@ -382,6 +405,48 @@ describe('ClassifyService', () => {
     ]);
   });
 
+  it('splits large AI classification jobs into bounded provider batches', async () => {
+    const transactions = Array.from({ length: 60 }, (_, index) => ({
+      amount_cents: -(index + 1) * 100,
+      category_id: null,
+      description: `transaction ${index + 1}`,
+      id: `tx-${index + 1}`,
+      merchant: `merchant ${index + 1}`,
+      source: 'alipay_csv',
+      transaction_at: '2026-04-28 00:30:00+00',
+      user_id: 'user-1',
+    }));
+    const repository = createRepository({
+      listPendingUnclassifiedTransactions: async () => transactions,
+    });
+    const aiClient = createMappedBatchAiClient((input) => ({
+      categoryId: foodId,
+      categoryName: '餐饮',
+      confidence: 0.91,
+      provider: 'gpt-5.3-codex',
+      transactionId: input.transactionId,
+    }));
+    const service = new ClassifyService(repository, aiClient);
+
+    await expect(
+      service.classifyPendingTransactions({
+        transactionIds: transactions.map((transaction) => transaction.id),
+        userId: 'user-1',
+      }),
+    ).resolves.toEqual({
+      classifiedCount: 60,
+      failedCount: 0,
+      totalCount: 60,
+    });
+    expect(aiClient.calls).toHaveLength(0);
+    expect(aiClient.batchCalls.map((batch) => batch.length)).toEqual([
+      25,
+      25,
+      10,
+    ]);
+    expect(repository.updates).toHaveLength(60);
+  });
+
   it('uses user rules before calling AI', async () => {
     const repository = createRepository({
       listUserRules: async () => [
@@ -523,7 +588,7 @@ describe('ClassifyService', () => {
     ]);
   });
 
-  it('falls back missing AI batch results by transaction id', async () => {
+  it('reports missing AI batch results instead of silently classifying them', async () => {
     const repository = createRepository({
       listPendingUnclassifiedTransactions: async () => [
         {
@@ -587,18 +652,18 @@ describe('ClassifyService', () => {
     const service = new ClassifyService(repository, aiClient);
 
     try {
-      await service.classifyPendingTransactions({ userId: 'user-1' });
+      await expect(
+        service.classifyPendingTransactions({ userId: 'user-1' }),
+      ).resolves.toEqual({
+        classifiedCount: 1,
+        failedCount: 1,
+        totalCount: 2,
+      });
     } finally {
       vi.stubGlobal('fetch', originalFetch);
     }
 
     expect(repository.updates).toEqual([
-      {
-        categoryId: foodId,
-        confidence: 0.72,
-        provider: 'gpt-5.3-codex',
-        transactionId: 'tx-1',
-      },
       {
         categoryId: shoppingId,
         confidence: 0.82,
