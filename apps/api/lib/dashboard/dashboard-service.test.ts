@@ -215,5 +215,71 @@ describe('DashboardService', () => {
       transactionCount: 0,
     });
   });
+
+  it('does not infer positive-only income months as expense and keeps expense status buckets intact', async () => {
+    const service = new DashboardService(
+      createRepository({
+        listMonthTransactions: async () => [
+          {
+            amount_cents: 250000,
+            category_id: null,
+            description: '工资',
+            direction: 'income',
+            direction_confidence: 'high',
+            merchant: '公司',
+            source: 'alipay_csv',
+            status: 'confirmed',
+            transaction_at: '2026-04-01T02:00:00.000Z',
+          },
+          {
+            amount_cents: 3000,
+            category_id: null,
+            description: '报销',
+            direction: 'refund',
+            direction_confidence: 'high',
+            merchant: '商户',
+            source: 'wechat_csv',
+            status: 'confirmed',
+            transaction_at: '2026-04-02T02:00:00.000Z',
+          },
+          {
+            amount_cents: -1200,
+            category_id: null,
+            description: '咖啡',
+            direction: 'expense',
+            direction_confidence: 'high',
+            merchant: '咖啡店',
+            source: 'alipay_csv',
+            status: 'confirmed',
+            transaction_at: '2026-04-03T02:00:00.000Z',
+          },
+          {
+            amount_cents: -800,
+            category_id: null,
+            description: '待确认支出',
+            direction: 'expense',
+            direction_confidence: 'low',
+            merchant: '便利店',
+            source: 'wechat_csv',
+            status: 'pending_confirmation',
+            transaction_at: '2026-04-04T02:00:00.000Z',
+          },
+        ],
+      }),
+    );
+
+    await expect(
+      service.getMonthlySummary({
+        month: '2026-04',
+        userId: 'user-1',
+      }),
+    ).resolves.toMatchObject({
+      hasTransactions: true,
+      pendingConfirmationCount: 1,
+      pendingConfirmationExpenseCents: 800,
+      totalExpenseCents: 1200,
+      transactionCount: 1,
+    });
+  });
 });
 

@@ -23,6 +23,10 @@ import {
   fetchMonthlySummary,
   fetchRecentTransactions,
 } from '../../lib/dashboard-api';
+import {
+  type DashboardQueryStatus,
+  getDashboardRenderState,
+} from '../../lib/dashboard-render-state';
 import { useAuthStore } from '../../stores/auth-store';
 
 const page = '#F9FAFB';
@@ -39,6 +43,21 @@ function getCurrentMonth(): string {
   const now = new Date();
   const month = String(now.getMonth() + 1).padStart(2, '0');
   return `${now.getFullYear()}-${month}`;
+}
+
+function getQueryStatus(query: {
+  isError: boolean;
+  isLoading: boolean;
+}): DashboardQueryStatus {
+  if (query.isError) {
+    return 'error';
+  }
+
+  if (query.isLoading) {
+    return 'loading';
+  }
+
+  return 'success';
 }
 
 function formatMonthLabel(month: string): string {
@@ -275,6 +294,30 @@ function RecentTransactionsSection({
   );
 }
 
+function InlineStatusCard({
+  actionLabel,
+  message,
+  onPress,
+  title,
+}: {
+  actionLabel?: string;
+  message: string;
+  onPress?: () => void;
+  title: string;
+}) {
+  return (
+    <Card>
+      <YStack gap="$3">
+        <Text style={styles.sectionTitle}>{title}</Text>
+        <Text style={styles.errorText}>{message}</Text>
+        {actionLabel && onPress ? (
+          <Button onPress={onPress}>{actionLabel}</Button>
+        ) : null}
+      </YStack>
+    </Card>
+  );
+}
+
 function EmptyGuideCard({
   bodyText,
   cta,
@@ -364,6 +407,21 @@ function ActionSection() {
         </View>
         <Text style={styles.importAction}>去导入</Text>
       </Pressable>
+      <Pressable
+        accessibilityLabel="开启通知读取"
+        accessibilityRole="button"
+        onPress={() => router.push('/(setup)/permissions')}
+        style={({ pressed }) => [styles.importMore, pressed ? styles.pressed : null]}
+      >
+        <View style={styles.importIcon}>
+          <Text style={styles.importIconText}>通知</Text>
+        </View>
+        <View style={styles.importCopy}>
+          <Text style={styles.importTitle}>开启通知读取</Text>
+          <Text style={styles.importBody}>消费到账自动识别，不用动手</Text>
+        </View>
+        <Text style={styles.importAction}>去开启</Text>
+      </Pressable>
     </YStack>
   );
 }
@@ -423,8 +481,6 @@ export default function DashboardScreen() {
   });
 
   const refreshing = summaryQuery.isRefetching || recentQuery.isRefetching;
-  const initialLoading = summaryQuery.isLoading || recentQuery.isLoading;
-  const hasError = summaryQuery.isError || recentQuery.isError;
 
   async function refreshDashboard(): Promise<void> {
     await Promise.all([
@@ -439,6 +495,12 @@ export default function DashboardScreen() {
 
   const summary = summaryQuery.data;
   const transactions = recentQuery.data?.transactions ?? [];
+  const renderState = getDashboardRenderState({
+    recentTransactionsStatus: getQueryStatus(recentQuery),
+    summary,
+    summaryStatus: getQueryStatus(summaryQuery),
+    transactions,
+  });
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -470,9 +532,9 @@ export default function DashboardScreen() {
               </Pressable>
             </XStack>
 
-            {initialLoading ? <DashboardSkeleton /> : null}
+            {renderState.showPageSkeleton ? <DashboardSkeleton /> : null}
 
-            {!initialLoading && hasError ? (
+            {renderState.showPageError ? (
               <Card>
                 <YStack gap="$3">
                   <Text style={styles.sectionTitle}>首页加载失败</Text>
@@ -488,17 +550,62 @@ export default function DashboardScreen() {
               </Card>
             ) : null}
 
-            {!initialLoading && !hasError && summary && !summary.hasTransactions ? (
+            {renderState.showSummaryLoading ? <SkeletonBlock height={154} /> : null}
+
+            {renderState.showSummaryError ? (
+              <InlineStatusCard
+                actionLabel="重试"
+                message="月度概览暂时无法加载，最近交易仍可继续查看。"
+                onPress={() => {
+                  void summaryQuery.refetch();
+                }}
+                title="月度概览加载失败"
+              />
+            ) : null}
+
+            {renderState.showEmptyState ? (
               <EmptyState />
             ) : null}
 
-            {!initialLoading && !hasError && summary?.hasTransactions ? (
+            {renderState.showSummaryContent && summary ? (
               <YStack gap="$4">
                 <SummaryCard summary={summary} />
                 <SpotlightCard summary={summary} />
                 <CoverageBar summary={summary} />
                 <CategorySection categories={summary.categoryBreakdown} />
+              </YStack>
+            ) : null}
+
+            {renderState.showRecentLoading ? (
+              <Card>
+                <YStack gap="$3">
+                  <SkeletonBlock height={20} width="40%" />
+                  {[0, 1, 2].map((item) => (
+                    <SkeletonBlock height={54} key={item} />
+                  ))}
+                </YStack>
+              </Card>
+            ) : null}
+
+            {renderState.showRecentError ? (
+              <InlineStatusCard
+                actionLabel="重试"
+                message="最近交易暂时无法加载，月度概览不受影响。"
+                onPress={() => {
+                  void recentQuery.refetch();
+                }}
+                title="最近交易加载失败"
+              />
+            ) : null}
+
+            {renderState.showRecentTransactions ? (
+              <YStack gap="$4">
                 <RecentTransactionsSection transactions={transactions} />
+              </YStack>
+            ) : null}
+
+            {renderState.showSummaryContent || renderState.showRecentTransactions ? (
+              <YStack gap="$4">
                 <ActionSection />
               </YStack>
             ) : null}
