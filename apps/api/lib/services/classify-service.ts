@@ -238,6 +238,90 @@ class OpenAiCompatibleClient implements AiClient {
   }
 }
 
+interface OpenAiCompatibleClientOptions {
+  apiKey: string;
+  baseUrl: string;
+  model: string;
+  provider: Extract<AiClassificationProvider, 'gpt-5.3-codex' | 'qwen-3.6-plus'>;
+}
+
+export type DefaultAiClientConfig =
+  | {
+      fallback: OpenAiCompatibleClientOptions | null;
+      mode: 'configured';
+      primary: OpenAiCompatibleClientOptions;
+    }
+  | {
+      fallback: null;
+      mode: 'development-stub' | 'production-missing-key';
+      primary: null;
+    };
+
+type EnvMap = Readonly<Record<string, string | undefined>>;
+
+function firstConfiguredEnv(env: EnvMap, keys: string[]): string | undefined {
+  for (const key of keys) {
+    const value = env[key]?.trim();
+    if (value) {
+      return value;
+    }
+  }
+
+  return undefined;
+}
+
+export function resolveDefaultAiClientConfig(
+  env: EnvMap = process.env,
+): DefaultAiClientConfig {
+  const isProduction = env.NODE_ENV === 'production';
+  const primaryKey = firstConfiguredEnv(env, [
+    'AI_PRIMARY_API_KEY',
+    'OPENAI_API_KEY',
+  ]);
+  const primaryBaseUrl =
+    firstConfiguredEnv(env, ['AI_PRIMARY_BASE_URL', 'OPENAI_BASE_URL']) ??
+    'https://api.openai.com/v1';
+  const fallbackKey = firstConfiguredEnv(env, [
+    'AI_FALLBACK_API_KEY',
+    'QWEN_API_KEY',
+  ]);
+  const fallbackBaseUrl = firstConfiguredEnv(env, [
+    'AI_FALLBACK_BASE_URL',
+    'QWEN_BASE_URL',
+  ]);
+
+  if (!primaryKey) {
+    return {
+      fallback: null,
+      mode: isProduction ? 'production-missing-key' : 'development-stub',
+      primary: null,
+    };
+  }
+
+  const primary: OpenAiCompatibleClientOptions = {
+    apiKey: primaryKey,
+    baseUrl: primaryBaseUrl,
+    model: firstConfiguredEnv(env, ['AI_PRIMARY_MODEL']) ?? 'gpt-5.3-codex',
+    provider: 'gpt-5.3-codex',
+  };
+  const fallback =
+    fallbackKey && fallbackBaseUrl
+      ? {
+          apiKey: fallbackKey,
+          baseUrl: fallbackBaseUrl,
+          model:
+            firstConfiguredEnv(env, ['AI_FALLBACK_MODEL']) ?? 'qwen-3.6-plus',
+          provider: 'qwen-3.6-plus' as const,
+        }
+      : null;
+
+  return {
+    fallback,
+    mode: 'configured',
+    primary,
+  };
+}
+
 function normalize(value: string | null): string {
   return (value ?? '').trim().toLowerCase();
 }
@@ -312,18 +396,10 @@ function createAiInput(input: {
 }
 
 function createDefaultAiClient(): AiClient {
-  const isProduction = process.env.NODE_ENV === 'production';
-  const primaryKey = process.env.OPENAI_API_KEY ?? process.env.AI_PRIMARY_API_KEY;
-  const primaryBaseUrl =
-    process.env.OPENAI_BASE_URL ??
-    process.env.AI_PRIMARY_BASE_URL ??
-    'https://api.openai.com/v1';
-  const fallbackKey = process.env.QWEN_API_KEY ?? process.env.AI_FALLBACK_API_KEY;
-  const fallbackBaseUrl =
-    process.env.QWEN_BASE_URL ?? process.env.AI_FALLBACK_BASE_URL;
+  const config = resolveDefaultAiClientConfig();
 
-  if (!primaryKey) {
-    if (isProduction) {
+  if (config.mode !== 'configured') {
+    if (config.mode === 'production-missing-key') {
       throw new BillingConfirmationError(
         BILLING_CONFIRMATION_ERROR_CODES.classificationFailed,
         'AI 分类服务暂不可用',
@@ -338,25 +414,10 @@ function createDefaultAiClient(): AiClient {
   }
 
   return new FallbackAiClient(
-    new OpenAiCompatibleClient({
-      apiKey: primaryKey,
-      baseUrl: primaryBaseUrl,
-      model: process.env.AI_PRIMARY_MODEL ?? 'gpt-5.3-codex',
-      provider: 'gpt-5.3-codex',
-    }),
-    fallbackKey && fallbackBaseUrl
-      ? new OpenAiCompatibleClient({
-          apiKey: fallbackKey,
-          baseUrl: fallbackBaseUrl,
-          model: process.env.AI_FALLBACK_MODEL ?? 'qwen-3.6-plus',
-          provider: 'qwen-3.6-plus',
-        })
-      : new OpenAiCompatibleClient({
-          apiKey: primaryKey,
-          baseUrl: primaryBaseUrl,
-          model: process.env.AI_PRIMARY_MODEL ?? 'gpt-5.3-codex',
-          provider: 'gpt-5.3-codex',
-        }),
+    new OpenAiCompatibleClient(config.primary),
+    config.fallback
+      ? new OpenAiCompatibleClient(config.fallback)
+      : new OpenAiCompatibleClient(config.primary),
   );
 }
 

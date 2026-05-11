@@ -5,8 +5,11 @@ import type {
 } from '@money-tracker/shared';
 import { describe, expect, it } from 'vitest';
 
-import type { ClassificationRepository } from './classify-service';
-import { ClassifyService } from './classify-service';
+import {
+  type ClassificationRepository,
+  ClassifyService,
+  resolveDefaultAiClientConfig,
+} from './classify-service';
 
 const foodId = '00000000-0000-4000-8000-000000000001';
 const shoppingId = '00000000-0000-4000-8000-000000000003';
@@ -99,6 +102,89 @@ function createAiClient(
 }
 
 describe('ClassifyService', () => {
+  it('prefers project AI primary env over global OpenAI env', () => {
+    expect(
+      resolveDefaultAiClientConfig({
+        AI_PRIMARY_API_KEY: 'project-key',
+        AI_PRIMARY_BASE_URL: 'https://project.example/v1',
+        AI_PRIMARY_MODEL: 'project-model',
+        OPENAI_API_KEY: 'global-key',
+        OPENAI_BASE_URL: 'https://global.example/v1',
+      }),
+    ).toEqual({
+      fallback: null,
+      mode: 'configured',
+      primary: {
+        apiKey: 'project-key',
+        baseUrl: 'https://project.example/v1',
+        model: 'project-model',
+        provider: 'gpt-5.3-codex',
+      },
+    });
+  });
+
+  it('falls back to OpenAI-compatible env when project primary env is absent', () => {
+    expect(
+      resolveDefaultAiClientConfig({
+        OPENAI_API_KEY: 'global-key',
+        OPENAI_BASE_URL: 'https://global.example/v1',
+      }),
+    ).toEqual({
+      fallback: null,
+      mode: 'configured',
+      primary: {
+        apiKey: 'global-key',
+        baseUrl: 'https://global.example/v1',
+        model: 'gpt-5.3-codex',
+        provider: 'gpt-5.3-codex',
+      },
+    });
+  });
+
+  it('prefers project fallback env over Qwen-compatible env', () => {
+    expect(
+      resolveDefaultAiClientConfig({
+        AI_FALLBACK_API_KEY: 'project-fallback-key',
+        AI_FALLBACK_BASE_URL: 'https://project-fallback.example/v1',
+        AI_FALLBACK_MODEL: 'project-fallback-model',
+        AI_PRIMARY_API_KEY: 'project-key',
+        AI_PRIMARY_BASE_URL: 'https://project.example/v1',
+        QWEN_API_KEY: 'qwen-key',
+        QWEN_BASE_URL: 'https://qwen.example/v1',
+      }),
+    ).toEqual({
+      fallback: {
+        apiKey: 'project-fallback-key',
+        baseUrl: 'https://project-fallback.example/v1',
+        model: 'project-fallback-model',
+        provider: 'qwen-3.6-plus',
+      },
+      mode: 'configured',
+      primary: {
+        apiKey: 'project-key',
+        baseUrl: 'https://project.example/v1',
+        model: 'gpt-5.3-codex',
+        provider: 'gpt-5.3-codex',
+      },
+    });
+  });
+
+  it('uses development stub mode when primary key is absent outside production', () => {
+    expect(resolveDefaultAiClientConfig({ NODE_ENV: 'development' })).toEqual({
+      fallback: null,
+      mode: 'development-stub',
+      primary: null,
+    });
+  });
+
+  it('reports production missing-key mode when primary key is absent in production', () => {
+    expect(resolveDefaultAiClientConfig({ NODE_ENV: 'production' })).toEqual({
+      fallback: null,
+      mode: 'production-missing-key',
+      primary: null,
+    });
+  });
+
   it('classifies pending transactions through the AI client', async () => {
     const repository = createRepository();
     const aiClient = createAiClient({
