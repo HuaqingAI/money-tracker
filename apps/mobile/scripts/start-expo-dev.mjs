@@ -32,6 +32,13 @@ function parseEnvLine(line) {
   return [key, value];
 }
 
+function expandEnvValue(value) {
+  return value.replace(
+    /(?<!\\)\$\{?([A-Za-z_][A-Za-z0-9_]*)\}?/gu,
+    (_match, key) => process.env[key] ?? '',
+  ).replace(/\\\$/gu, '$');
+}
+
 function loadRootEnv() {
   for (const file of ['.env.local']) {
     const path = resolve(REPO_ROOT, file);
@@ -47,7 +54,7 @@ function loadRootEnv() {
       }
 
       const [key, value] = parsed;
-      process.env[key] = value;
+      process.env[key] = expandEnvValue(value);
     }
   }
 }
