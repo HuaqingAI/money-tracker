@@ -29,8 +29,19 @@ export interface ParseBillingCsvResult {
 }
 
 interface ParsedCsvText {
+  header: MatchedCsvHeader;
   rule: BillingCsvParseRule;
-  text: string;
+  rows: string[][];
+}
+
+interface MatchedCsvHeader {
+  headers: string[];
+  index: number;
+}
+
+interface HeaderColumnMatch {
+  index: number;
+  strength: number;
 }
 
 const ENCODING_FALLBACKS: BillingCsvEncoding[] = ['utf-8', 'gb18030', 'gbk'];
@@ -49,9 +60,87 @@ const NON_IMPORTABLE_STATUS_KEYWORDS = [
   '处理中',
   '待支付',
 ];
+const HEADER_ALIASES: Readonly<Record<string, readonly string[]>> = {
+  '交易时间': ['交易创建时间', '时间', '日期'],
+  交易金额: ['金额'],
+  金额: ['交易金额'],
+  '金额(元)': ['金额（元）', '金额', '交易金额'],
+  交易号: ['交易订单号', '交易单号', '商家订单号', '商户订单号'],
+  交易单号: ['交易号', '交易订单号', '商家订单号', '商户订单号'],
+  交易对方: ['对方', '商户', '商家', '商户名称'],
+  商品说明: ['商品', '商品名称', '交易说明'],
+  商品: ['商品说明', '商品名称', '交易说明'],
+  交易状态: ['当前状态', '状态'],
+  当前状态: ['交易状态', '状态'],
+  '收/支': ['收支', '收/付款', '收付款'],
+};
 
 function normalizeHeader(value: string): string {
-  return value.replace(/^\uFEFF/, '').trim();
+  return value
+    .replace(/^\uFEFF/, '')
+    .replace(/[（]/g, '(')
+    .replace(/[）]/g, ')')
+    .trim();
+}
+
+function uniqueValues(values: string[]): string[] {
+  return values.filter((value, index, all) => all.indexOf(value) === index);
+}
+
+function getHeaderCandidates(value: string): string[] {
+  const normalized = normalizeHeader(value);
+  const aliases = HEADER_ALIASES[normalized] ?? [];
+  return uniqueValues([normalized, ...aliases.map(normalizeHeader)]);
+}
+
+function matchHeaderColumn(
+  headers: string[],
+  columnName: string | undefined,
+): HeaderColumnMatch | null {
+  if (!columnName) {
+    return null;
+  }
+
+  const candidates = getHeaderCandidates(columnName);
+  for (let candidateIndex = 0; candidateIndex < candidates.length; candidateIndex += 1) {
+    const index = headers.indexOf(candidates[candidateIndex] ?? '');
+    if (index >= 0) {
+      return {
+        index,
+        strength: candidateIndex === 0 ? 2 : 1,
+      };
+    }
+  }
+
+  return null;
+}
+
+function getRuleColumnNames(rule: BillingCsvParseRule): string[] {
+  const mapping = rule.columnMapping;
+  return [
+    ...rule.headerMatch,
+    mapping.amount,
+    mapping.transactionAt,
+    mapping.externalId,
+    mapping.merchant,
+    mapping.description,
+    mapping.direction,
+    mapping.status,
+  ].filter(
+    (value): value is string =>
+      typeof value === 'string' && value.trim().length > 0,
+  );
+}
+
+function scoreHeaderForRule(
+  headers: string[],
+  rule: BillingCsvParseRule,
+): number {
+  return getRuleColumnNames(rule).reduce(
+    (score, columnName) =>
+      score + (matchHeaderColumn(headers, columnName)?.strength ?? 0),
+    0,
+  );
 }
 
 function uniqueEncodings(primary: BillingCsvEncoding): BillingCsvEncoding[] {
@@ -115,21 +204,43 @@ function parseCsvRows(text: string): string[][] {
   );
 }
 
-function getHeaderForRule(
-  rows: string[][],
+function matchHeaderRow(
+  row: string[] | undefined,
   rule: BillingCsvParseRule,
 ): string[] | null {
-  const header = rows[rule.skipRows];
-  if (!header) {
+  if (!row) {
     return null;
   }
 
-  const normalizedHeader = header.map(normalizeHeader);
+  const normalizedHeader = row.map(normalizeHeader);
   const hasRequiredHeaders = rule.headerMatch.every((expected) =>
-    normalizedHeader.includes(expected),
+    matchHeaderColumn(normalizedHeader, expected) !== null,
   );
 
   return hasRequiredHeaders ? normalizedHeader : null;
+}
+
+function getHeaderForRule(
+  rows: string[][],
+  rule: BillingCsvParseRule,
+): MatchedCsvHeader | null {
+  const preferredStart = Math.min(rule.skipRows, rows.length);
+
+  for (let index = preferredStart; index < rows.length; index += 1) {
+    const headers = matchHeaderRow(rows[index], rule);
+    if (headers) {
+      return { headers, index };
+    }
+  }
+
+  for (let index = 0; index < preferredStart; index += 1) {
+    const headers = matchHeaderRow(rows[index], rule);
+    if (headers) {
+      return { headers, index };
+    }
+  }
+
+  return null;
 }
 
 function findMatchingCsvText(
@@ -139,6 +250,7 @@ function findMatchingCsvText(
   let hadEncodingFailure = false;
   let hadPrimaryDecodedCandidate = false;
   let hadFallbackDecodedCandidate = false;
+  let bestMatch: (ParsedCsvText & { score: number }) | null = null;
 
   for (const rule of rules) {
     const parsedRule = billingCsvParseRuleSchema.safeParse(rule);
@@ -169,12 +281,25 @@ function findMatchingCsvText(
       const rows = parseCsvRows(text);
       const header = getHeaderForRule(rows, parsedRule.data);
       if (header) {
-        return {
+        const match = {
+          header,
           rule: parsedRule.data,
-          text,
+          rows,
+          score: scoreHeaderForRule(header.headers, parsedRule.data),
         };
+        if (!bestMatch || match.score > bestMatch.score) {
+          bestMatch = match;
+        }
       }
     }
+  }
+
+  if (bestMatch) {
+    return {
+      header: bestMatch.header,
+      rule: bestMatch.rule,
+      rows: bestMatch.rows,
+    };
   }
 
   if (
@@ -199,12 +324,7 @@ function getColumnIndex(
   headers: string[],
   columnName: string | undefined,
 ): number | null {
-  if (!columnName) {
-    return null;
-  }
-
-  const index = headers.indexOf(columnName);
-  return index >= 0 ? index : null;
+  return matchHeaderColumn(headers, columnName)?.index ?? null;
 }
 
 function readCell(row: string[], index: number | null): string {
@@ -454,17 +574,8 @@ export function parseBillingCsv(
     );
   }
 
-  const { rule, text } = findMatchingCsvText(input.bytes, input.rules);
-  const rows = parseCsvRows(text);
-  const headers = getHeaderForRule(rows, rule);
-
-  if (!headers) {
-    throw new BillingImportError(
-      BILLING_IMPORT_ERROR_CODES.invalidCsvFile,
-      'CSV 表头与解析规则不匹配',
-      400,
-    );
-  }
+  const { header, rule, rows } = findMatchingCsvText(input.bytes, input.rules);
+  const headers = header.headers;
 
   const mapping = rule.columnMapping;
   const amountIndex = getColumnIndex(headers, mapping.amount);
@@ -483,7 +594,7 @@ export function parseBillingCsv(
     );
   }
 
-  const dataRows = rows.slice(rule.skipRows + 1);
+  const dataRows = rows.slice(header.index + 1);
   const transactions: BillingNormalizedTransaction[] = [];
   let failedCount = 0;
 

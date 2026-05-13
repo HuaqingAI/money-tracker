@@ -52,6 +52,85 @@ describe('parseBillingCsv', () => {
     ]);
   });
 
+  it('auto-locates the header row after provider metadata rows', () => {
+    const csv = [
+      '微信支付账单',
+      '导出时间：2026-04-26 12:00:00',
+      '以下流水仅用于个人对账',
+      '交易时间,交易对方,商品,收/支,金额(元),当前状态',
+      '2026-04-26 10:30:00,便利店,早餐,支出,12.34,支付成功',
+    ].join('\n');
+
+    const result = parseBillingCsv({
+      bytes: encodeUtf8(csv),
+      rules: DEFAULT_CSV_PARSE_RULES,
+    });
+
+    expect(result).toMatchObject({
+      failedCount: 0,
+      platform: 'wechat',
+      totalCount: 1,
+    });
+    expect(result.transactions[0]).toEqual(
+      expect.objectContaining({
+        amount_cents: -1234,
+        merchant: '便利店',
+      }),
+    );
+  });
+
+  it('supports common Alipay amount and transaction id header aliases', () => {
+    const csv = [
+      '支付宝交易流水证明',
+      '账号：[已脱敏]',
+      '交易时间,交易分类,交易对方,商品说明,收/支,金额,收/付款方式,交易状态,交易订单号,商家订单号',
+      '2026-04-26 10:30:00,餐饮美食,便利店,早餐,支出,12.34,余额,交易成功,202604260001,merchant-order-1',
+    ].join('\n');
+
+    const result = parseBillingCsv({
+      bytes: encodeUtf8(csv),
+      rules: DEFAULT_CSV_PARSE_RULES,
+    });
+
+    expect(result).toMatchObject({
+      failedCount: 0,
+      platform: 'alipay',
+      totalCount: 1,
+    });
+    expect(result.transactions[0]).toEqual(
+      expect.objectContaining({
+        amount_cents: -1234,
+        external_transaction_id: '202604260001',
+        merchant: '便利店',
+        source: 'alipay_csv',
+      }),
+    );
+  });
+
+  it('prefers the rule with stronger platform-specific header matches', () => {
+    const csv = [
+      '微信支付账单',
+      '交易时间,交易对方,商品,收/支,金额,当前状态,交易单号',
+      '2026-04-26 10:30:00,便利店,早餐,支出,12.34,支付成功,wx-order-1',
+    ].join('\n');
+
+    const result = parseBillingCsv({
+      bytes: encodeUtf8(csv),
+      rules: DEFAULT_CSV_PARSE_RULES,
+    });
+
+    expect(result).toMatchObject({
+      platform: 'wechat',
+      totalCount: 1,
+    });
+    expect(result.transactions[0]).toEqual(
+      expect.objectContaining({
+        external_transaction_id: 'wx-order-1',
+        source: 'wechat_csv',
+      }),
+    );
+  });
+
   it('counts malformed data rows instead of failing the whole import', () => {
     const csv = [
       '交易时间,交易金额,交易对方,商品说明,收/支,交易状态',

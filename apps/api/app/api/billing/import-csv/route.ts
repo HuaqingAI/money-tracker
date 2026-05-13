@@ -18,12 +18,27 @@ import {
 } from '../../../../lib/middleware/require-authenticated-user';
 import { getClassifyService } from '../../../../lib/services/classify-service';
 
+function getFileLogContext(file: File) {
+  return {
+    fileName: file.name,
+    fileSize: file.size,
+    fileType: file.type || null,
+  };
+}
+
 function toErrorResponse(error: unknown): Response {
   if (error instanceof AuthenticatedUserError) {
     return errorResponse(error.code, error.message, error.status);
   }
 
   if (error instanceof BillingImportError) {
+    logger.warn(
+      {
+        errorCode: error.code,
+        status: error.status,
+      },
+      'billing import rejected',
+    );
     return errorResponse(error.code, error.message, error.status);
   }
 
@@ -89,6 +104,10 @@ export function POST(request: NextRequest): Promise<Response> {
       const file = formData.get('file');
 
       if (!(file instanceof File)) {
+        logger.warn(
+          { errorCode: BILLING_IMPORT_ERROR_CODES.invalidImportRequest },
+          'billing import rejected',
+        );
         return errorResponse(
           BILLING_IMPORT_ERROR_CODES.invalidImportRequest,
           '请上传 CSV 账单文件',
@@ -97,6 +116,13 @@ export function POST(request: NextRequest): Promise<Response> {
       }
 
       if (!isCsvFile(file)) {
+        logger.warn(
+          {
+            ...getFileLogContext(file),
+            errorCode: BILLING_IMPORT_ERROR_CODES.invalidCsvFile,
+          },
+          'billing import rejected',
+        );
         return errorResponse(
           BILLING_IMPORT_ERROR_CODES.invalidCsvFile,
           '请选择 .csv 格式的账单文件',
@@ -105,6 +131,13 @@ export function POST(request: NextRequest): Promise<Response> {
       }
 
       if (file.size > BILLING_IMPORT_MAX_FILE_SIZE_BYTES) {
+        logger.warn(
+          {
+            ...getFileLogContext(file),
+            errorCode: BILLING_IMPORT_ERROR_CODES.importFileTooLarge,
+          },
+          'billing import rejected',
+        );
         return errorResponse(
           BILLING_IMPORT_ERROR_CODES.importFileTooLarge,
           'CSV 文件不能超过 10MB',
