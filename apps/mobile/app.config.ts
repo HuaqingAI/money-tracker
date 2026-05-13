@@ -38,8 +38,21 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   orientation: 'portrait',
   scheme: 'money-tracker',
   platforms: ['ios', 'android'],
+  icon: './assets/brand/icon.png',
+  splash: {
+    image: './assets/brand/splash-icon.png',
+    backgroundColor: '#E8F5F1',
+    resizeMode: 'contain',
+  },
   android: {
+    adaptiveIcon: {
+      foregroundImage: './assets/brand/adaptive-icon.png',
+      backgroundColor: '#E8F5F1',
+    },
     permissions: ['READ_MEDIA_IMAGES'],
+  },
+  web: {
+    favicon: './assets/brand/favicon.png',
   },
   ios: {
     infoPlist: {
