@@ -215,6 +215,29 @@ describe('parseBillingCsv', () => {
     );
   });
 
+  it('accepts spreadsheet-normalized date formats without seconds', () => {
+    const csv = [
+      '交易时间,交易对方,商品,收/支,金额(元),当前状态',
+      '2026/4/26 10:30,便利店,早餐,支出,12.34,支付成功',
+    ].join('\n');
+
+    const result = parseBillingCsv({
+      bytes: encodeUtf8(csv),
+      rules: DEFAULT_CSV_PARSE_RULES,
+    });
+
+    expect(result).toMatchObject({
+      failedCount: 0,
+      platform: 'wechat',
+      totalCount: 1,
+    });
+    expect(result.transactions[0]).toEqual(
+      expect.objectContaining({
+        transaction_at: '2026-04-26T02:30:00.000Z',
+      }),
+    );
+  });
+
   it('falls back to expense with low direction confidence when source direction is unknown', () => {
     const csv = [
       '日期,商户,金额,状态',

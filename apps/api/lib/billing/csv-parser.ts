@@ -45,6 +45,15 @@ interface HeaderColumnMatch {
 }
 
 const ENCODING_FALLBACKS: BillingCsvEncoding[] = ['utf-8', 'gb18030', 'gbk'];
+const DATE_FORMAT_FALLBACKS = [
+  'yyyy-M-d H:mm:ss',
+  'yyyy-M-d H:mm',
+  'yyyy/M/d H:mm:ss',
+  'yyyy/M/d H:mm',
+  'yyyy-MM-dd H:mm:ss',
+  'yyyy-MM-dd H:mm',
+  'yyyy-MM-dd HH:mm',
+];
 const SUCCESS_STATUS_KEYWORDS = ['支付成功', '交易成功', '已入账', '已收钱', '收款成功'];
 const REFUND_STATUS_KEYWORDS = ['退款成功', '退还成功', '已退款', '已退还'];
 const REFUND_DIRECTION_KEYWORDS = ['退款', '退还', '退回'];
@@ -478,6 +487,25 @@ function parseChinaLocalDateToUtcIso(value: string, dateFormat: string): string 
   return date.toISOString();
 }
 
+function parseTransactionAt(value: string, dateFormat: string): string {
+  const formats = uniqueValues([dateFormat, ...DATE_FORMAT_FALLBACKS]);
+  let lastError: unknown;
+
+  for (const format of formats) {
+    try {
+      return parseChinaLocalDateToUtcIso(value, format);
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  if (lastError instanceof Error) {
+    throw lastError;
+  }
+
+  throw new Error('交易时间格式无效');
+}
+
 function getSource(platform: BillingCsvPlatform) {
   return platform === 'alipay'
     ? BILLING_TRANSACTION_SOURCES.alipayCsv
@@ -623,7 +651,7 @@ export function parseBillingCsv(
 
       transactions.push({
         amount_cents: parseAmountCents(amount, directionSemantics.direction),
-        transaction_at: parseChinaLocalDateToUtcIso(transactionAt, rule.dateFormat),
+        transaction_at: parseTransactionAt(transactionAt, rule.dateFormat),
         external_transaction_id: normalizeNullable(readCell(row, externalIdIndex)),
         merchant: normalizeNullable(merchant),
         description: normalizeNullable(description),
