@@ -394,7 +394,7 @@ All 8 scenarios, 30 pages specified (29 + 08.0 Hub).
 ## Backlog
 
 - [x] Phase 4: UX Design — 详细页面规格、线框图、组件定义 (COMPLETE)
-- [x] Phase 7: Design System — 17个组件 + Lucide Icons + Token 具体化 (COMPLETE)
+- [x] Phase 7: Design System — 17个组件 + Lucide Icons + Token 具体化 + Brand Logo 入库 (COMPLETE)
 - [ ] Phase 5: Agentic Development — AI辅助开发
 - [x] Phase 6: Asset Generation — Content (全部 8 个场景 30 页文案定稿 COMPLETE)
 - [x] Phase 6: Asset Generation — Visual — Wireframes (全部 30 页 HTML 线框图 COMPLETE)
@@ -402,6 +402,30 @@ All 8 scenarios, 30 pages specified (29 + 08.0 Hub).
 - [x] Phase 6: Asset Generation — Icons (App Icon + 8 分类图标 + 3 Onboarding 插图 COMPLETE)
 - [x] Phase 6: Asset Generation — Images (9 空状态 + 4 Hero + 9 动效帧 + 8 教程 + 4 分享卡 = 34 COMPLETE)
 - [ ] Phase 6: Asset Generation — Visual (UI 元素等，可选)
+
+---
+
+### 2026-05-13 — Phase 7: Brand Logo Updated
+
+**Agent:** Design System Architect
+**Mode:** Design System Maintenance
+**Status:** COMPLETE
+
+**Artifacts Updated:**
+- `D-Design-System/02-Assets/logos/app-logo-house-receipt.svg` — App logo canonical SVG source
+- `D-Design-System/02-Assets/logos/app-logo-house-receipt.md` — Logo 规格说明
+- `D-Design-System/02-Assets/logos/README.md` — Brand logo 资产索引
+- `D-Design-System/design-tokens.md` — Brand token 更新为了然绿系，并新增 logo token
+- `D-Design-System/component-library-config.md` — Tamagui brand color token 示例和 logo source 引用
+- `D-Design-System/components/README.md` — 增加 Brand Assets 入口
+- `D-Design-System/catalog.html` — Catalog 侧边栏和 token 区域接入正式 logo 预览
+
+**Summary:** 将原先放在错误目录 `design-artifacts/D-Design-System/app-logo-house-receipt.svg` 的 logo 意向稿迁移到 WDS 规范目录 `D-Design-System/02-Assets/logos/`，并清理 `design-artifacts/` 临时目录。Logo 方向采用「家 + 消费小票 + AI 闪光」，匹配了然面向家庭消费场景的零记账财务管家定位。同步把设计系统中的旧紫色 brand token 占位更新为了然绿系，避免 catalog、tokens 和 app 原型之间继续分叉。
+
+**Design Decisions:**
+- `app-logo-house-receipt.svg` 作为 logo canonical source；移动端 PNG 运行时资产应从该 SVG 导出
+- Logo 无障碍文本统一为「了然应用图标」
+- 品牌主色保持 `#1A6B5A`，与现有高保真页面和移动端 onboarding 实现一致
 
 ---
 

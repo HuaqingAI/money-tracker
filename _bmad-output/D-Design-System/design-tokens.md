@@ -3,7 +3,7 @@
 **Status:** Defined
 **Library:** Tamagui v2
 **Icon Library:** Lucide Icons (`lucide-react-native` / `@tamagui/lucide-icons`)
-**Last Updated:** 2026-04-11
+**Last Updated:** 2026-05-13
 
 ---
 
@@ -13,13 +13,24 @@
 
 | Token | Hex | Usage |
 |-------|-----|-------|
-| `brand-50` | `#EEF2FF` | 极浅背景、hover 态 |
-| `brand-100` | `#E0E7FF` | 浅背景、选中态底色 |
-| `brand-200` | `#C7D2FE` | 边框、分隔 |
-| `brand-500` | `#6366F1` | **主品牌色** — CTA、active 态、链接 |
-| `brand-600` | `#4F46E5` | hover 加深 |
-| `brand-700` | `#4338CA` | pressed 加深 |
-| `brand-900` | `#312E81` | 深色文字强调 |
+| `brand-50` | `#E8F5F1` | 极浅背景、hover 态 |
+| `brand-100` | `#D1EBE3` | 浅背景、选中态底色 |
+| `brand-200` | `#A3D7C7` | 边框、分隔 |
+| `brand-300` | `#75C3AB` | 辅助图形、浅色强调 |
+| `brand-400` | `#47AF8F` | 渐变辅助色、图表辅助 |
+| `brand-500` | `#1A6B5A` | **主品牌色** — CTA、active 态、链接 |
+| `brand-600` | `#165A4B` | hover 加深 |
+| `brand-700` | `#0F4F42` | pressed 加深、深色渐变 |
+| `brand-800` | `#0A3A31` | 深色背景 |
+| `brand-900` | `#052520` | 最深文字强调 |
+
+### Brand Logo
+
+| Token | Asset | Usage |
+|-------|-------|-------|
+| `logo-app-primary` | `02-Assets/logos/app-logo-house-receipt.svg` | App icon source、Welcome/Onboarding 品牌标志 |
+| `logo-accessibility-label` | `了然应用图标` | Image accessibility label |
+| `logo-export-size` | `1024x1024` | App Store / launcher icon source size |
 
 ### Neutral
 
@@ -66,7 +77,7 @@
 | `gift-neutral` | `#6B7280` | 人情净额（中性色） |
 | `saving-green` | `#22C55E` | 省钱潜力（正向激励） |
 | `warm-tint` | `#FFF7ED` | 提示卡暖色背景 |
-| `tag-self` | `#6366F1` | 受益人：为自己 |
+| `tag-self` | `#1A6B5A` | 受益人：为自己 |
 | `tag-spouse` | `#EC4899` | 受益人：为配偶 |
 | `tag-child` | `#F97316` | 受益人：为孩子 |
 | `tag-family` | `#22C55E` | 受益人：为家庭 |

@@ -3,7 +3,7 @@
 **Library:** Tamagui v2
 **Version:** ^2.x (latest stable)
 **License:** MIT (open source core)
-**Last Updated:** 2026-04-11
+**Last Updated:** 2026-05-13
 
 ## Installation
 
@@ -40,9 +40,20 @@ const liaoran = createTamagui({
   ...config,
   tokens: {
     color: {
-      // Primary — 待定义
-      // Semantic — 待定义
-      // 人情中性色、省钱绿、趋势橙+青
+      brand50: '#E8F5F1',
+      brand100: '#D1EBE3',
+      brand200: '#A3D7C7',
+      brand300: '#75C3AB',
+      brand400: '#47AF8F',
+      brand500: '#1A6B5A',
+      brand600: '#165A4B',
+      brand700: '#0F4F42',
+      brand800: '#0A3A31',
+      brand900: '#052520',
+      success: '#22C55E',
+      error: '#EF4444',
+      warning: '#F59E0B',
+      info: '#3B82F6',
     },
     space: {
       // Spacing scale — 待定义
@@ -56,7 +67,10 @@ const liaoran = createTamagui({
   },
   themes: {
     light: {
-      // Light theme — 待定义
+      brandPrimary: '$brand500',
+      brandPrimaryHover: '$brand600',
+      brandPrimaryPressed: '$brand700',
+      brandSubtle: '$brand50',
     },
     dark: {
       // Dark theme — 待定义（如需要）
@@ -66,6 +80,14 @@ const liaoran = createTamagui({
 
 export default liaoran
 ```
+
+## Brand Assets
+
+| Token | Source |
+|-------|--------|
+| `logoAppPrimary` | `_bmad-output/D-Design-System/02-Assets/logos/app-logo-house-receipt.svg` |
+
+Runtime apps should export platform-specific PNG assets from the SVG source instead of maintaining independent logo drawings.
 
 ## Cross-Platform Strategy
 
