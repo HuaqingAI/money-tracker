@@ -49,6 +49,7 @@ interface PendingClassificationPlan {
 }
 
 const AI_CLASSIFICATION_BATCH_SIZE = 25;
+const PRIMARY_AI_KEY_NAMES = ['AI_PRIMARY_API_KEY', 'OPENAI_API_KEY'] as const;
 
 export interface ClassificationRepository {
   listCategories(userId: string): Promise<CategoryRow[]>;
@@ -536,10 +537,7 @@ export function resolveDefaultAiClientConfig(
   env: EnvMap = process.env,
 ): DefaultAiClientConfig {
   const isProduction = env.NODE_ENV === 'production';
-  const primaryKey = firstConfiguredEnv(env, [
-    'AI_PRIMARY_API_KEY',
-    'OPENAI_API_KEY',
-  ]);
+  const primaryKey = firstConfiguredEnv(env, [...PRIMARY_AI_KEY_NAMES]);
   const primaryBaseUrl =
     firstConfiguredEnv(env, ['AI_PRIMARY_BASE_URL', 'OPENAI_BASE_URL']) ??
     'https://api.openai.com/v1';
@@ -710,6 +708,13 @@ function createDefaultAiClient(): AiClient {
   const config = resolveDefaultAiClientConfig();
 
   if (config.mode !== 'configured') {
+    logger.warn(
+      {
+        checkedKeyNames: PRIMARY_AI_KEY_NAMES,
+        mode: config.mode,
+      },
+      'ai classification client using non-provider mode',
+    );
     if (config.mode === 'production-missing-key') {
       throw new BillingConfirmationError(
         BILLING_CONFIRMATION_ERROR_CODES.classificationFailed,
@@ -723,6 +728,18 @@ function createDefaultAiClient(): AiClient {
       new DevelopmentAiClient('qwen-3.6-plus'),
     );
   }
+
+  logger.info(
+    {
+      apiMode: config.primary.apiMode,
+      apiPath: config.primary.apiPath,
+      baseUrl: config.primary.baseUrl,
+      fallbackConfigured: config.fallback !== null,
+      model: config.primary.model,
+      provider: config.primary.provider,
+    },
+    'ai classification client configured',
+  );
 
   return new FallbackAiClient(
     new OpenAiCompatibleClient(config.primary),

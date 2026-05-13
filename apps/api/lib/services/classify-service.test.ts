@@ -3,7 +3,7 @@ import type {
   ClassifyTransactionInput,
   ClassifyTransactionResult,
 } from '@money-tracker/shared';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   type ClassificationRepository,
@@ -14,6 +14,19 @@ import {
   readOpenAiCompatiblePayload,
   resolveDefaultAiClientConfig,
 } from './classify-service';
+
+const { loggerInfoMock, loggerWarnMock } = vi.hoisted(() => ({
+  loggerInfoMock: vi.fn(),
+  loggerWarnMock: vi.fn(),
+}));
+
+vi.mock('../logger', () => ({
+  logger: {
+    error: vi.fn(),
+    info: loggerInfoMock,
+    warn: loggerWarnMock,
+  },
+}));
 
 const foodId = '00000000-0000-4000-8000-000000000001';
 const shoppingId = '00000000-0000-4000-8000-000000000003';
@@ -159,6 +172,10 @@ function createMappedBatchAiClient(
 }
 
 describe('ClassifyService', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('reports non-JSON AI provider responses as base URL configuration errors', async () => {
     const response = new Response('<!doctype html><html></html>', {
       headers: {
