@@ -1,5 +1,6 @@
 import {
   aggregateMonthlyCategories,
+  BILLING_SYSTEM_CATEGORY_NAMES_BY_ID,
   BILLING_TRANSACTION_DIRECTIONS,
   BILLING_TRANSACTION_STATUS,
   buildMonthlyComparisons,
@@ -18,7 +19,7 @@ type TransactionSummaryRow = Pick<
   Tables<{ schema: 'billing' }, 'transactions'>,
   'amount_cents' | 'category_id' | 'direction' | 'status' | 'transaction_at'
 > & {
-  categories: { name: string } | Array<{ name: string }> | null;
+  categories: { id: string; name: string } | Array<{ id: string; name: string }> | null;
 };
 
 function currentUtcMonth(): string {
@@ -29,11 +30,12 @@ function currentUtcMonth(): string {
 function getCategoryName(
   categories: TransactionSummaryRow['categories'],
 ): string | null {
-  if (Array.isArray(categories)) {
-    return categories[0]?.name ?? null;
+  const category = Array.isArray(categories) ? categories[0] : categories;
+  if (!category) {
+    return null;
   }
 
-  return categories?.name ?? null;
+  return BILLING_SYSTEM_CATEGORY_NAMES_BY_ID[category.id] ?? category.name;
 }
 
 function getIncludedStatuses(includePending: boolean): string[] {
@@ -68,7 +70,7 @@ async function fetchLiveTransactionRowsInRange(input: {
   const { data, error } = await getSupabaseAdmin()
     .schema('billing')
     .from('transactions')
-    .select('amount_cents,category_id,direction,status,transaction_at,categories(name)')
+    .select('amount_cents,category_id,direction,status,transaction_at,categories(id,name)')
     .eq('user_id', input.userId)
     .eq('direction', BILLING_TRANSACTION_DIRECTIONS.expense)
     .in('status', getIncludedStatuses(input.includePending))

@@ -30,6 +30,9 @@ export interface ClassifyTransactionResult {
 
 export interface AiClient {
   classify(input: ClassifyTransactionInput): Promise<ClassifyTransactionResult>;
+  classifyMany?(
+    inputs: ClassifyTransactionInput[],
+  ): Promise<ClassifyTransactionResult[]>;
 }
 
 export class AiClientError extends Error {

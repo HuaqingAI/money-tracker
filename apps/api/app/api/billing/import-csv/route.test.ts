@@ -8,6 +8,8 @@ const {
   afterMock,
   classifyPendingTransactionsMock,
   importCsvMock,
+  loggerInfoMock,
+  loggerWarnMock,
 } = vi.hoisted(() => ({
     afterMock: vi.fn((callback: () => Promise<void> | void) => {
       void callback();
@@ -19,6 +21,8 @@ const {
     ),
     ensurePersistentUserMock: vi.fn(),
     importCsvMock: vi.fn(),
+    loggerInfoMock: vi.fn(),
+    loggerWarnMock: vi.fn(),
   }));
 
 vi.mock('next/server', async () => {
@@ -62,6 +66,15 @@ vi.mock('../../../../lib/services/classify-service', () => ({
   }),
 }));
 
+vi.mock('../../../../lib/logger', () => ({
+  logger: {
+    error: vi.fn(),
+    info: loggerInfoMock,
+    warn: loggerWarnMock,
+  },
+}));
+
+import { BillingImportError } from '../../../../lib/billing/errors';
 import { POST } from './route';
 
 function createUser(): User {
@@ -145,7 +158,7 @@ describe('POST /api/billing/import-csv', () => {
     });
   });
 
-  it('does not trigger classification when nothing new was imported', async () => {
+  it('does not trigger classification when an imported file only contains duplicates', async () => {
     importCsvMock.mockResolvedValue({
       totalCount: 1,
       importedCount: 0,
@@ -162,6 +175,16 @@ describe('POST /api/billing/import-csv', () => {
 
     expect(afterMock).not.toHaveBeenCalled();
     expect(classifyPendingTransactionsMock).not.toHaveBeenCalled();
+    expect(loggerInfoMock).toHaveBeenCalledWith(
+      {
+        duplicateCount: 1,
+        failedCount: 0,
+        importedCount: 0,
+        platform: 'alipay',
+        totalCount: 1,
+      },
+      'billing import completed',
+    );
     expect(response.status).toBe(200);
   });
 
@@ -194,5 +217,41 @@ describe('POST /api/billing/import-csv', () => {
         code: 'INVALID_CSV_FILE',
       },
     });
+    expect(loggerWarnMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        errorCode: 'INVALID_CSV_FILE',
+        fileName: 'bill.txt',
+      }),
+      'billing import rejected',
+    );
+  });
+
+  it('logs controlled import errors with their public error code', async () => {
+    importCsvMock.mockRejectedValue(
+      new BillingImportError(
+        'IMPORT_PARSE_ERROR',
+        '未解析到可导入的有效交易记录',
+        400,
+      ),
+    );
+
+    const response = await POST(
+      createRequest(new File(['header\nrow'], 'bill.csv', { type: 'text/csv' })) as never,
+    );
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toMatchObject({
+      success: false,
+      error: {
+        code: 'IMPORT_PARSE_ERROR',
+      },
+    });
+    expect(loggerWarnMock).toHaveBeenCalledWith(
+      {
+        errorCode: 'IMPORT_PARSE_ERROR',
+        status: 400,
+      },
+      'billing import rejected',
+    );
   });
 });

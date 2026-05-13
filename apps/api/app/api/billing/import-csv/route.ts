@@ -18,12 +18,27 @@ import {
 } from '../../../../lib/middleware/require-authenticated-user';
 import { getClassifyService } from '../../../../lib/services/classify-service';
 
+function getFileLogContext(file: File) {
+  return {
+    fileName: file.name,
+    fileSize: file.size,
+    fileType: file.type || null,
+  };
+}
+
 function toErrorResponse(error: unknown): Response {
   if (error instanceof AuthenticatedUserError) {
     return errorResponse(error.code, error.message, error.status);
   }
 
   if (error instanceof BillingImportError) {
+    logger.warn(
+      {
+        errorCode: error.code,
+        status: error.status,
+      },
+      'billing import rejected',
+    );
     return errorResponse(error.code, error.message, error.status);
   }
 
@@ -51,6 +66,34 @@ function toPublicImportResult(result: ImportCsvResult): ImportCsvResult {
   };
 }
 
+async function classifyImportedTransactions(input: {
+  importedTransactionIds: string[];
+  userId: string;
+}): Promise<void> {
+  logger.info(
+    {
+      importedTransactionCount: input.importedTransactionIds.length,
+      mode: 'imported-batch',
+    },
+    'post-import classification started',
+  );
+
+  const classification = await getClassifyService().classifyPendingTransactions({
+    transactionIds: input.importedTransactionIds,
+    userId: input.userId,
+  });
+
+  if (classification.failedCount > 0) {
+    logger.error(
+      { classification },
+      'post-import classification partially failed',
+    );
+    return;
+  }
+
+  logger.info({ classification }, 'post-import classification completed');
+}
+
 export function POST(request: NextRequest): Promise<Response> {
   return withRequestLogging(request, async () => {
     try {
@@ -61,6 +104,10 @@ export function POST(request: NextRequest): Promise<Response> {
       const file = formData.get('file');
 
       if (!(file instanceof File)) {
+        logger.warn(
+          { errorCode: BILLING_IMPORT_ERROR_CODES.invalidImportRequest },
+          'billing import rejected',
+        );
         return errorResponse(
           BILLING_IMPORT_ERROR_CODES.invalidImportRequest,
           '请上传 CSV 账单文件',
@@ -69,6 +116,13 @@ export function POST(request: NextRequest): Promise<Response> {
       }
 
       if (!isCsvFile(file)) {
+        logger.warn(
+          {
+            ...getFileLogContext(file),
+            errorCode: BILLING_IMPORT_ERROR_CODES.invalidCsvFile,
+          },
+          'billing import rejected',
+        );
         return errorResponse(
           BILLING_IMPORT_ERROR_CODES.invalidCsvFile,
           '请选择 .csv 格式的账单文件',
@@ -77,6 +131,13 @@ export function POST(request: NextRequest): Promise<Response> {
       }
 
       if (file.size > BILLING_IMPORT_MAX_FILE_SIZE_BYTES) {
+        logger.warn(
+          {
+            ...getFileLogContext(file),
+            errorCode: BILLING_IMPORT_ERROR_CODES.importFileTooLarge,
+          },
+          'billing import rejected',
+        );
         return errorResponse(
           BILLING_IMPORT_ERROR_CODES.importFileTooLarge,
           'CSV 文件不能超过 10MB',
@@ -89,21 +150,31 @@ export function POST(request: NextRequest): Promise<Response> {
         fileName: file.name,
         userId: user.id,
       });
+      logger.info(
+        {
+          duplicateCount: result.duplicateCount,
+          failedCount: result.failedCount,
+          importedCount: result.importedCount,
+          platform: result.platform,
+          totalCount: result.totalCount,
+        },
+        'billing import completed',
+      );
 
       if (result.importedTransactionIds.length > 0) {
+        logger.info(
+          {
+            duplicateCount: result.duplicateCount,
+            importedTransactionCount: result.importedTransactionIds.length,
+          },
+          'post-import classification scheduled',
+        );
         after(async () => {
           try {
-            const classification =
-              await getClassifyService().classifyPendingTransactions({
-                transactionIds: result.importedTransactionIds,
-                userId: user.id,
-              });
-            if (classification.failedCount > 0) {
-              logger.error(
-                { classification },
-                'post-import classification partially failed',
-              );
-            }
+            await classifyImportedTransactions({
+              importedTransactionIds: result.importedTransactionIds,
+              userId: user.id,
+            });
           } catch (error) {
             logger.error(
               { err: error },

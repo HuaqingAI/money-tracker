@@ -1,4 +1,5 @@
 import {
+  BILLING_SYSTEM_CATEGORY_NAMES_BY_ID,
   BILLING_TRANSACTION_DIRECTIONS,
   BILLING_TRANSACTION_STATUS,
   type CategorySummary,
@@ -186,6 +187,14 @@ function findCategoryDisplay(name: string | null): {
   };
 }
 
+function getCategoryName(category: CategoryRow | null): string | null {
+  if (!category) {
+    return null;
+  }
+
+  return BILLING_SYSTEM_CATEGORY_NAMES_BY_ID[category.id] ?? category.name;
+}
+
 function buildCategorySummaries(input: {
   categories: CategoryRow[];
   entries: CategoryBreakdownEntry[];
@@ -196,7 +205,8 @@ function buildCategorySummaries(input: {
   return input.entries
     .map((entry) => {
       const category = entry.categoryId ? categoryById.get(entry.categoryId) : null;
-      const display = findCategoryDisplay(category?.name ?? null);
+      const categoryName = getCategoryName(category ?? null);
+      const display = findCategoryDisplay(categoryName);
       const percentage =
         input.totalExpenseCents > 0
           ? Math.round((entry.amountCents / input.totalExpenseCents) * 1000) / 10
@@ -207,7 +217,7 @@ function buildCategorySummaries(input: {
         categoryId: entry.categoryId,
         color: display.color,
         icon: category?.icon ?? display.icon,
-        name: category?.name ?? display.name,
+        name: categoryName ?? display.name,
         percentage,
         transactionCount: entry.transactionCount,
       };

@@ -2,6 +2,7 @@ import {
   type AiClassificationProvider,
   type AiClient,
   BILLING_CONFIRMATION_ERROR_CODES,
+  BILLING_SYSTEM_CATEGORY_NAMES_BY_ID,
   BILLING_TRANSACTION_STATUS,
   type ClassifyCategoryCandidate,
   type ClassifyTransactionInput,
@@ -41,6 +42,14 @@ export interface ClassificationSummary {
   classifiedCount: number;
   totalCount: number;
 }
+
+interface PendingClassificationPlan {
+  aiInputs: ClassifyTransactionInput[];
+  ruleResults: ClassifyTransactionResult[];
+}
+
+const AI_CLASSIFICATION_BATCH_SIZE = 25;
+const PRIMARY_AI_KEY_NAMES = ['AI_PRIMARY_API_KEY', 'OPENAI_API_KEY'] as const;
 
 export interface ClassificationRepository {
   listCategories(userId: string): Promise<CategoryRow[]>;
@@ -160,41 +169,48 @@ class DevelopmentAiClient implements AiClient {
       transactionId: input.transactionId,
     });
   }
+
+  classifyMany(
+    inputs: ClassifyTransactionInput[],
+  ): Promise<ClassifyTransactionResult[]> {
+    return Promise.all(inputs.map((input) => this.classify(input)));
+  }
 }
 
-class OpenAiCompatibleClient implements AiClient {
-  constructor(
-    private readonly options: {
-      apiKey: string;
-      baseUrl: string;
-      model: string;
-      provider: AiClassificationProvider;
-    },
-  ) {}
+export class OpenAiCompatibleClient implements AiClient {
+  constructor(private readonly options: OpenAiCompatibleClientOptions) {}
 
   async classify(input: ClassifyTransactionInput): Promise<ClassifyTransactionResult> {
-    const response = await fetch(`${this.options.baseUrl}/chat/completions`, {
-      body: JSON.stringify({
-        messages: [
-          {
-            content:
-              '你是消费交易分类器。只返回 JSON：{"categoryName":"餐饮","confidence":0.9}。',
-            role: 'system',
-          },
-          {
-            content: JSON.stringify({
-              amountCents: input.amountCents,
-              categories: input.categories.map((category) => category.name),
-              description: input.description,
-              merchant: input.merchant,
-              source: input.source,
-            }),
-            role: 'user',
-          },
-        ],
+    return this.classifyMany([input]).then((results) => {
+      const result = results[0];
+      if (!result) {
+        throw new Error('AI provider returned no classification result');
+      }
+
+      return result;
+    });
+  }
+
+  async classifyMany(
+    inputs: ClassifyTransactionInput[],
+  ): Promise<ClassifyTransactionResult[]> {
+    if (inputs.length === 0) {
+      return [];
+    }
+
+    logger.info(
+      {
+        apiMode: this.options.apiMode,
+        apiPath: this.options.apiPath,
+        baseUrl: this.options.baseUrl,
+        inputCount: inputs.length,
         model: this.options.model,
-        temperature: 0,
-      }),
+        provider: this.options.provider,
+      },
+      'ai classification provider request started',
+    );
+    const response = await fetch(createProviderUrl(this.options), {
+      body: JSON.stringify(createProviderRequestBody(this.options, inputs)),
       headers: {
         Authorization: `Bearer ${this.options.apiKey}`,
         'Content-Type': 'application/json',
@@ -202,40 +218,384 @@ class OpenAiCompatibleClient implements AiClient {
       method: 'POST',
     });
 
-    if (!response.ok) {
-      throw new Error(`AI provider failed with status ${response.status}`);
-    }
-
-    const payload = (await response.json()) as {
-      choices?: Array<{ message?: { content?: string } }>;
-    };
-    const content = payload.choices?.[0]?.message?.content;
+    const payload = await readOpenAiCompatiblePayload(response);
+    const content = extractProviderContent(payload, this.options.apiMode);
     if (!content) {
       throw new Error('AI provider returned empty content');
     }
 
-    const parsed = JSON.parse(content) as {
-      categoryName?: unknown;
-      confidence?: unknown;
-    };
-    const categoryName =
-      typeof parsed.categoryName === 'string' ? parsed.categoryName : '其他';
-    const matched =
-      input.categories.find((category) => category.name === categoryName) ??
-      chooseCategory(input);
-    const confidence =
-      typeof parsed.confidence === 'number'
-        ? Math.min(1, Math.max(0, parsed.confidence))
-        : 0.72;
-
-    return {
-      categoryId: matched.id,
-      categoryName: matched.name,
-      confidence,
+    const results = parseClassificationResults({
+      content,
+      inputs,
       provider: this.options.provider,
+    });
+    logger.info(
+      {
+        inputCount: inputs.length,
+        provider: this.options.provider,
+      },
+      'ai classification provider request completed',
+    );
+    return results;
+  }
+}
+
+export interface OpenAiCompatiblePayload {
+  choices?: Array<{ message?: { content?: string } }>;
+  output?: Array<{
+    content?: Array<{
+      text?: unknown;
+    }>;
+  }>;
+  output_text?: unknown;
+}
+
+export type AiProviderApiMode = 'chat-completions' | 'responses';
+
+const classificationInstructions =
+  'You classify consumer transactions. Return only compact JSON. For one transaction return {"categoryName":"餐饮","confidence":0.9}. For multiple transactions return {"results":[{"transactionId":"...","categoryName":"餐饮","confidence":0.9}]}. Use only provided category names.';
+
+function createTransactionsPrompt(inputs: ClassifyTransactionInput[]): string {
+  const categories = inputs[0]?.categories.map((category) => category.name) ?? [];
+
+  return JSON.stringify({
+    categories,
+    transactions: inputs.map((input) => ({
+      amountCents: input.amountCents,
+      description: input.description,
+      merchant: input.merchant,
+      source: input.source,
+      transactionAt: input.transactionAt,
       transactionId: input.transactionId,
+    })),
+  });
+}
+
+function createProviderRequestBody(
+  options: Pick<OpenAiCompatibleClientOptions, 'apiMode' | 'model'>,
+  inputs: ClassifyTransactionInput[],
+): Record<string, unknown> {
+  const prompt = createTransactionsPrompt(inputs);
+
+  if (options.apiMode === 'responses') {
+    return {
+      input: prompt,
+      instructions: classificationInstructions,
+      model: options.model,
     };
   }
+
+  return {
+    messages: [
+      {
+        content: classificationInstructions,
+        role: 'system',
+      },
+      {
+        content: prompt,
+        role: 'user',
+      },
+    ],
+    model: options.model,
+    temperature: 0,
+  };
+}
+
+export function createProviderUrl(input: {
+  apiPath: string;
+  baseUrl: string;
+}): string {
+  const baseUrl = input.baseUrl.replace(/\/+$/u, '');
+  const apiPath = input.apiPath.startsWith('/')
+    ? input.apiPath
+    : `/${input.apiPath}`;
+  return `${baseUrl}${apiPath}`;
+}
+
+export async function readOpenAiCompatiblePayload(
+  response: Response,
+): Promise<OpenAiCompatiblePayload> {
+  const contentType = response.headers.get('content-type') ?? 'unknown';
+  const responseText = await response.text();
+
+  if (!response.ok) {
+    throw new Error(
+      `AI provider failed with status ${response.status} (${contentType})`,
+    );
+  }
+
+  try {
+    return JSON.parse(responseText) as OpenAiCompatiblePayload;
+  } catch {
+    throw new Error(
+      `AI provider returned non-JSON response (${contentType}). Check AI_PRIMARY_BASE_URL and AI_PRIMARY_API_PATH; they must point to an OpenAI-compatible API endpoint, for example https://api.openai.com/v1 plus /responses.`,
+    );
+  }
+}
+
+export function extractProviderContent(
+  payload: OpenAiCompatiblePayload,
+  apiMode: AiProviderApiMode,
+): string | undefined {
+  if (apiMode === 'chat-completions') {
+    return payload.choices?.[0]?.message?.content;
+  }
+
+  if (typeof payload.output_text === 'string') {
+    return payload.output_text;
+  }
+
+  for (const item of payload.output ?? []) {
+    for (const content of item.content ?? []) {
+      if (typeof content.text === 'string') {
+        return content.text;
+      }
+    }
+  }
+
+  return undefined;
+}
+
+function stripJsonCodeFence(content: string): string {
+  const trimmed = content.trim();
+  const fenced = /^```(?:json)?\s*([\s\S]*?)\s*```$/u.exec(trimmed);
+  return fenced?.[1]?.trim() ?? trimmed;
+}
+
+interface ProviderClassificationItem {
+  categoryName?: unknown;
+  confidence?: unknown;
+  transactionId?: unknown;
+}
+
+function parseClassificationResults(input: {
+  content: string;
+  inputs: ClassifyTransactionInput[];
+  provider: Extract<AiClassificationProvider, 'gpt-5.3-codex' | 'qwen-3.6-plus'>;
+}): ClassifyTransactionResult[] {
+  const parsed = JSON.parse(stripJsonCodeFence(input.content)) as unknown;
+  const items = extractClassificationItems(parsed);
+  const inputsByTransactionId = new Map(
+    input.inputs.map((transactionInput) => [
+      transactionInput.transactionId,
+      transactionInput,
+    ]),
+  );
+  const itemsByTransactionId = new Map<string, ProviderClassificationItem>();
+
+  for (const item of items) {
+    if (typeof item.transactionId === 'string') {
+      itemsByTransactionId.set(item.transactionId, item);
+    }
+  }
+  const hasTransactionIds = itemsByTransactionId.size > 0;
+
+  if (hasTransactionIds) {
+    return [...itemsByTransactionId.entries()].flatMap(
+      ([transactionId, item]) => {
+        const transactionInput = inputsByTransactionId.get(transactionId);
+        return transactionInput
+          ? [
+              createClassificationResultFromProviderItem({
+                item,
+                provider: input.provider,
+                transactionInput,
+              }),
+            ]
+          : [];
+      },
+    );
+  }
+
+  return input.inputs.flatMap((transactionInput, index) => {
+    const item = items[index];
+    return item
+      ? [
+          createClassificationResultFromProviderItem({
+            item,
+            provider: input.provider,
+            transactionInput,
+          }),
+        ]
+      : [];
+  });
+}
+
+function createClassificationResultFromProviderItem(input: {
+  item: ProviderClassificationItem;
+  provider: Extract<AiClassificationProvider, 'gpt-5.3-codex' | 'qwen-3.6-plus'>;
+  transactionInput: ClassifyTransactionInput;
+}): ClassifyTransactionResult {
+  const categoryName =
+    typeof input.item.categoryName === 'string'
+      ? input.item.categoryName
+      : '其他';
+  const matched =
+    input.transactionInput.categories.find(
+      (category) => category.name === categoryName,
+    ) ?? chooseCategory(input.transactionInput);
+  const confidence =
+    typeof input.item.confidence === 'number'
+      ? Math.min(1, Math.max(0, input.item.confidence))
+      : 0.72;
+
+  return {
+    categoryId: matched.id,
+    categoryName: matched.name,
+    confidence,
+    provider: input.provider,
+    transactionId: input.transactionInput.transactionId,
+  };
+}
+
+function extractClassificationItems(parsed: unknown): ProviderClassificationItem[] {
+  if (Array.isArray(parsed)) {
+    return parsed.filter(isProviderClassificationItem);
+  }
+
+  if (!isObjectRecord(parsed)) {
+    return [];
+  }
+
+  if (Array.isArray(parsed.results)) {
+    return parsed.results.filter(isProviderClassificationItem);
+  }
+
+  if (Array.isArray(parsed.transactions)) {
+    return parsed.transactions.filter(isProviderClassificationItem);
+  }
+
+  return isProviderClassificationItem(parsed) ? [parsed] : [];
+}
+
+function isProviderClassificationItem(
+  value: unknown,
+): value is ProviderClassificationItem {
+  return isObjectRecord(value);
+}
+
+function isObjectRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+interface OpenAiCompatibleClientOptions {
+  apiMode: AiProviderApiMode;
+  apiKey: string;
+  apiPath: string;
+  baseUrl: string;
+  model: string;
+  provider: Extract<AiClassificationProvider, 'gpt-5.3-codex' | 'qwen-3.6-plus'>;
+}
+
+export type DefaultAiClientConfig =
+  | {
+      fallback: OpenAiCompatibleClientOptions | null;
+      mode: 'configured';
+      primary: OpenAiCompatibleClientOptions;
+    }
+  | {
+      fallback: null;
+      mode: 'development-stub' | 'production-missing-key';
+      primary: null;
+    };
+
+type EnvMap = Readonly<Record<string, string | undefined>>;
+
+function firstConfiguredEnv(env: EnvMap, keys: string[]): string | undefined {
+  for (const key of keys) {
+    const value = env[key]?.trim();
+    if (value) {
+      return value;
+    }
+  }
+
+  return undefined;
+}
+
+function resolveApiMode(
+  value: string | undefined,
+  fallback: AiProviderApiMode,
+): AiProviderApiMode {
+  if (!value) {
+    return fallback;
+  }
+
+  if (value === 'chat-completions' || value === 'responses') {
+    return value;
+  }
+
+  throw new Error(
+    `Unsupported AI API mode "${value}". Use "responses" or "chat-completions".`,
+  );
+}
+
+function defaultApiPath(apiMode: AiProviderApiMode): string {
+  return apiMode === 'responses' ? '/responses' : '/chat/completions';
+}
+
+export function resolveDefaultAiClientConfig(
+  env: EnvMap = process.env,
+): DefaultAiClientConfig {
+  const isProduction = env.NODE_ENV === 'production';
+  const primaryKey = firstConfiguredEnv(env, [...PRIMARY_AI_KEY_NAMES]);
+  const primaryBaseUrl =
+    firstConfiguredEnv(env, ['AI_PRIMARY_BASE_URL', 'OPENAI_BASE_URL']) ??
+    'https://api.openai.com/v1';
+  const fallbackKey = firstConfiguredEnv(env, [
+    'AI_FALLBACK_API_KEY',
+    'QWEN_API_KEY',
+  ]);
+  const fallbackBaseUrl = firstConfiguredEnv(env, [
+    'AI_FALLBACK_BASE_URL',
+    'QWEN_BASE_URL',
+  ]);
+  const primaryApiMode = resolveApiMode(
+    firstConfiguredEnv(env, ['AI_PRIMARY_API_MODE', 'OPENAI_API_MODE']),
+    'responses',
+  );
+  const fallbackApiMode = resolveApiMode(
+    firstConfiguredEnv(env, ['AI_FALLBACK_API_MODE', 'QWEN_API_MODE']),
+    'chat-completions',
+  );
+
+  if (!primaryKey) {
+    return {
+      fallback: null,
+      mode: isProduction ? 'production-missing-key' : 'development-stub',
+      primary: null,
+    };
+  }
+
+  const primary: OpenAiCompatibleClientOptions = {
+    apiMode: primaryApiMode,
+    apiKey: primaryKey,
+    apiPath:
+      firstConfiguredEnv(env, ['AI_PRIMARY_API_PATH', 'OPENAI_API_PATH']) ??
+      defaultApiPath(primaryApiMode),
+    baseUrl: primaryBaseUrl,
+    model: firstConfiguredEnv(env, ['AI_PRIMARY_MODEL']) ?? 'gpt-5.3-codex',
+    provider: 'gpt-5.3-codex',
+  };
+  const fallback =
+    fallbackKey && fallbackBaseUrl
+      ? {
+          apiMode: fallbackApiMode,
+          apiKey: fallbackKey,
+          apiPath:
+            firstConfiguredEnv(env, ['AI_FALLBACK_API_PATH', 'QWEN_API_PATH']) ??
+            defaultApiPath(fallbackApiMode),
+          baseUrl: fallbackBaseUrl,
+          model:
+            firstConfiguredEnv(env, ['AI_FALLBACK_MODEL']) ?? 'qwen-3.6-plus',
+          provider: 'qwen-3.6-plus' as const,
+        }
+      : null;
+
+  return {
+    fallback,
+    mode: 'configured',
+    primary,
+  };
 }
 
 function normalize(value: string | null): string {
@@ -277,6 +637,13 @@ function chooseCategory(input: {
 
 const nullId = '00000000-0000-0000-0000-000000000010';
 
+function normalizeCategoryRow(category: CategoryRow): CategoryRow {
+  return {
+    ...category,
+    name: BILLING_SYSTEM_CATEGORY_NAMES_BY_ID[category.id] ?? category.name,
+  };
+}
+
 function matchUserRule(input: {
   rules: CategoryRuleRow[];
   transaction: ClassifiableTransactionRow;
@@ -300,7 +667,7 @@ function createAiInput(input: {
     amountCents: input.transaction.amount_cents,
     categories: input.categories.map((category) => ({
       id: category.id,
-      name: category.name,
+      name: BILLING_SYSTEM_CATEGORY_NAMES_BY_ID[category.id] ?? category.name,
     })),
     description: input.transaction.description,
     merchant: input.transaction.merchant,
@@ -311,19 +678,44 @@ function createAiInput(input: {
   };
 }
 
-function createDefaultAiClient(): AiClient {
-  const isProduction = process.env.NODE_ENV === 'production';
-  const primaryKey = process.env.OPENAI_API_KEY ?? process.env.AI_PRIMARY_API_KEY;
-  const primaryBaseUrl =
-    process.env.OPENAI_BASE_URL ??
-    process.env.AI_PRIMARY_BASE_URL ??
-    'https://api.openai.com/v1';
-  const fallbackKey = process.env.QWEN_API_KEY ?? process.env.AI_FALLBACK_API_KEY;
-  const fallbackBaseUrl =
-    process.env.QWEN_BASE_URL ?? process.env.AI_FALLBACK_BASE_URL;
+async function classifyManyWithClient(
+  aiClient: AiClient,
+  inputs: ClassifyTransactionInput[],
+): Promise<ClassifyTransactionResult[]> {
+  if (inputs.length === 0) {
+    return [];
+  }
 
-  if (!primaryKey) {
-    if (isProduction) {
+  if (aiClient.classifyMany) {
+    return aiClient.classifyMany(inputs);
+  }
+
+  return Promise.all(inputs.map((aiInput) => aiClient.classify(aiInput)));
+}
+
+function chunkClassificationInputs(
+  inputs: ClassifyTransactionInput[],
+): ClassifyTransactionInput[][] {
+  const chunks: ClassifyTransactionInput[][] = [];
+  for (let index = 0; index < inputs.length; index += AI_CLASSIFICATION_BATCH_SIZE) {
+    chunks.push(inputs.slice(index, index + AI_CLASSIFICATION_BATCH_SIZE));
+  }
+
+  return chunks;
+}
+
+function createDefaultAiClient(): AiClient {
+  const config = resolveDefaultAiClientConfig();
+
+  if (config.mode !== 'configured') {
+    logger.warn(
+      {
+        checkedKeyNames: PRIMARY_AI_KEY_NAMES,
+        mode: config.mode,
+      },
+      'ai classification client using non-provider mode',
+    );
+    if (config.mode === 'production-missing-key') {
       throw new BillingConfirmationError(
         BILLING_CONFIRMATION_ERROR_CODES.classificationFailed,
         'AI 分类服务暂不可用',
@@ -337,26 +729,23 @@ function createDefaultAiClient(): AiClient {
     );
   }
 
+  logger.info(
+    {
+      apiMode: config.primary.apiMode,
+      apiPath: config.primary.apiPath,
+      baseUrl: config.primary.baseUrl,
+      fallbackConfigured: config.fallback !== null,
+      model: config.primary.model,
+      provider: config.primary.provider,
+    },
+    'ai classification client configured',
+  );
+
   return new FallbackAiClient(
-    new OpenAiCompatibleClient({
-      apiKey: primaryKey,
-      baseUrl: primaryBaseUrl,
-      model: process.env.AI_PRIMARY_MODEL ?? 'gpt-5.3-codex',
-      provider: 'gpt-5.3-codex',
-    }),
-    fallbackKey && fallbackBaseUrl
-      ? new OpenAiCompatibleClient({
-          apiKey: fallbackKey,
-          baseUrl: fallbackBaseUrl,
-          model: process.env.AI_FALLBACK_MODEL ?? 'qwen-3.6-plus',
-          provider: 'qwen-3.6-plus',
-        })
-      : new OpenAiCompatibleClient({
-          apiKey: primaryKey,
-          baseUrl: primaryBaseUrl,
-          model: process.env.AI_PRIMARY_MODEL ?? 'gpt-5.3-codex',
-          provider: 'gpt-5.3-codex',
-        }),
+    new OpenAiCompatibleClient(config.primary),
+    config.fallback
+      ? new OpenAiCompatibleClient(config.fallback)
+      : new OpenAiCompatibleClient(config.primary),
   );
 }
 
@@ -383,43 +772,111 @@ export class ClassifyService {
         userId: input.userId,
       }),
     ]);
+    logger.info(
+      {
+        requestedTransactionCount: transactionIds.length,
+        transactionCount: transactions.length,
+        userId: input.userId,
+      },
+      'transaction classification batch loaded',
+    );
 
+    const normalizedCategories = categories.map(normalizeCategoryRow);
+    const plan = transactions.reduce<PendingClassificationPlan>(
+      (acc, transaction) => {
+        const matchedRule = matchUserRule({ rules, transaction });
+        if (matchedRule) {
+          acc.ruleResults.push({
+            categoryId: matchedRule.category_id,
+            categoryName:
+              normalizedCategories.find(
+                (category) => category.id === matchedRule.category_id,
+              )?.name ?? '其他',
+            confidence: 1,
+            provider: 'rule',
+            transactionId: transaction.id,
+          });
+          return acc;
+        }
+
+        acc.aiInputs.push(
+          createAiInput({
+            categories: normalizedCategories,
+            transaction,
+          }),
+        );
+        return acc;
+      },
+      { aiInputs: [], ruleResults: [] },
+    );
     let classifiedCount = 0;
     let failedCount = 0;
+    const resultsByTransactionId = new Map<string, ClassifyTransactionResult>();
 
-    for (const transaction of transactions) {
+    for (const result of plan.ruleResults) {
+      resultsByTransactionId.set(result.transactionId, result);
+    }
+
+    for (const aiInputChunk of chunkClassificationInputs(plan.aiInputs)) {
       try {
-        const matchedRule = matchUserRule({ rules, transaction });
-        const result = matchedRule
-          ? {
-              categoryId: matchedRule.category_id,
-              categoryName:
-                categories.find((category) => category.id === matchedRule.category_id)
-                  ?.name ?? '其他',
-              confidence: 1,
-              provider: 'rule' as const,
-              transactionId: transaction.id,
-            }
-          : await this.aiClient.classify(
-              createAiInput({
-                categories,
-                transaction,
-              }),
-            );
+        const aiResults = await classifyManyWithClient(
+          this.aiClient,
+          aiInputChunk,
+        );
+        const expectedTransactionIds = new Set(
+          aiInputChunk.map((aiInput) => aiInput.transactionId),
+        );
+        const returnedTransactionIds = new Set<string>();
 
+        for (const result of aiResults) {
+          if (!expectedTransactionIds.has(result.transactionId)) {
+            logger.error(
+              { resultTransactionId: result.transactionId },
+              'transaction classification returned unexpected result',
+            );
+            continue;
+          }
+
+          returnedTransactionIds.add(result.transactionId);
+          resultsByTransactionId.set(result.transactionId, result);
+        }
+
+        for (const aiInput of aiInputChunk) {
+          if (!returnedTransactionIds.has(aiInput.transactionId)) {
+            failedCount += 1;
+            logger.error(
+              { transactionId: aiInput.transactionId },
+              'transaction classification result missing from batch response',
+            );
+          }
+        }
+      } catch (error) {
+        failedCount += aiInputChunk.length;
+        logger.error(
+          {
+            err: error,
+            transactionIds: aiInputChunk.map((aiInput) => aiInput.transactionId),
+          },
+          'transaction classification batch failed',
+        );
+      }
+    }
+
+    for (const result of resultsByTransactionId.values()) {
+      try {
         await this.repository.updateClassification({
           categoryId: result.categoryId,
           classifiedAt: new Date().toISOString(),
           confidence: result.confidence,
           provider: result.provider,
-          transactionId: transaction.id,
+          transactionId: result.transactionId,
           userId: input.userId,
         });
         classifiedCount += 1;
       } catch (error) {
         failedCount += 1;
         logger.error(
-          { err: error, transactionId: transaction.id },
+          { err: error, transactionId: result.transactionId },
           'transaction classification failed',
         );
       }

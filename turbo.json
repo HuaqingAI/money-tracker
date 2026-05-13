@@ -10,7 +10,29 @@
     "test": {},
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "passThroughEnv": [
+        "AI_PRIMARY_API_KEY",
+        "OPENAI_API_KEY",
+        "AI_PRIMARY_BASE_URL",
+        "OPENAI_BASE_URL",
+        "AI_PRIMARY_API_MODE",
+        "OPENAI_API_MODE",
+        "AI_PRIMARY_API_PATH",
+        "OPENAI_API_PATH",
+        "AI_PRIMARY_MODEL",
+        "OPENAI_MODEL",
+        "AI_FALLBACK_API_KEY",
+        "QWEN_API_KEY",
+        "AI_FALLBACK_BASE_URL",
+        "QWEN_BASE_URL",
+        "AI_FALLBACK_API_MODE",
+        "QWEN_API_MODE",
+        "AI_FALLBACK_API_PATH",
+        "QWEN_API_PATH",
+        "AI_FALLBACK_MODEL",
+        "QWEN_MODEL"
+      ]
     },
     "clean": {
       "cache": false
