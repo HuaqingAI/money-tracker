@@ -150,6 +150,16 @@ export function POST(request: NextRequest): Promise<Response> {
         fileName: file.name,
         userId: user.id,
       });
+      logger.info(
+        {
+          duplicateCount: result.duplicateCount,
+          failedCount: result.failedCount,
+          importedCount: result.importedCount,
+          platform: result.platform,
+          totalCount: result.totalCount,
+        },
+        'billing import completed',
+      );
 
       if (result.importedTransactionIds.length > 0) {
         logger.info(

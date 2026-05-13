@@ -8,6 +8,7 @@ const {
   afterMock,
   classifyPendingTransactionsMock,
   importCsvMock,
+  loggerInfoMock,
   loggerWarnMock,
 } = vi.hoisted(() => ({
     afterMock: vi.fn((callback: () => Promise<void> | void) => {
@@ -20,6 +21,7 @@ const {
     ),
     ensurePersistentUserMock: vi.fn(),
     importCsvMock: vi.fn(),
+    loggerInfoMock: vi.fn(),
     loggerWarnMock: vi.fn(),
   }));
 
@@ -67,7 +69,7 @@ vi.mock('../../../../lib/services/classify-service', () => ({
 vi.mock('../../../../lib/logger', () => ({
   logger: {
     error: vi.fn(),
-    info: vi.fn(),
+    info: loggerInfoMock,
     warn: loggerWarnMock,
   },
 }));
@@ -173,6 +175,16 @@ describe('POST /api/billing/import-csv', () => {
 
     expect(afterMock).not.toHaveBeenCalled();
     expect(classifyPendingTransactionsMock).not.toHaveBeenCalled();
+    expect(loggerInfoMock).toHaveBeenCalledWith(
+      {
+        duplicateCount: 1,
+        failedCount: 0,
+        importedCount: 0,
+        platform: 'alipay',
+        totalCount: 1,
+      },
+      'billing import completed',
+    );
     expect(response.status).toBe(200);
   });
 
