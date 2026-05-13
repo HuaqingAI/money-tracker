@@ -2,7 +2,11 @@
 
 **Total Components:** 17
 **Library:** Tamagui v2
-**Last Updated:** 2026-04-11
+**Last Updated:** 2026-05-13
+
+## Brand Assets
+
+- App Logo [logo-001] — `../02-Assets/logos/app-logo-house-receipt.svg`，家 + 消费小票 + AI 闪光，作为 App icon 和 Welcome/Onboarding 品牌标志源文件
 
 ## Component List
 

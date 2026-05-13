@@ -12,7 +12,7 @@
       theme: {
         extend: {
           colors: {
-            brand: { 50:'#EEF2FF',100:'#E0E7FF',200:'#C7D2FE',500:'#6366F1',600:'#4F46E5',700:'#4338CA',900:'#312E81' },
+            brand: { 50:'#E8F5F1',100:'#D1EBE3',200:'#A3D7C7',300:'#75C3AB',400:'#47AF8F',500:'#1A6B5A',600:'#165A4B',700:'#0F4F42',800:'#0A3A31',900:'#052520' },
           }
         }
       }
@@ -20,10 +20,16 @@
     </script>
     <style>
         :root {
-            --brand-500: #6366F1;
-            --brand-600: #4F46E5;
-            --brand-700: #4338CA;
-            --brand-50: #EEF2FF;
+            --brand-500: #1A6B5A;
+            --brand-600: #165A4B;
+            --brand-700: #0F4F42;
+            --brand-50: #E8F5F1;
+            --brand-100: #D1EBE3;
+            --brand-200: #A3D7C7;
+            --brand-300: #75C3AB;
+            --brand-400: #47AF8F;
+            --brand-800: #0A3A31;
+            --brand-900: #052520;
             --neutral-50: #F9FAFB;
             --neutral-100: #F3F4F6;
             --neutral-200: #E5E7EB;
@@ -40,7 +46,8 @@
         .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 272px; background: #fff; border-right: 1px solid var(--neutral-200); overflow-y: auto; z-index: 50; }
         .sidebar-inner { padding: 28px 20px; }
         .sidebar-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--neutral-200); }
-        .sidebar-logo-icon { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, var(--brand-500), var(--brand-700)); display: flex; align-items: center; justify-content: center; color: #fff; }
+        .sidebar-logo-icon { width: 40px; height: 40px; border-radius: 12px; background: #E8F5F1; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .sidebar-logo-icon img { width: 40px; height: 40px; display: block; }
         .sidebar-logo-text { font-weight: 700; font-size: 15px; color: var(--neutral-900); }
         .sidebar-logo-sub { font-size: 11px; color: var(--neutral-500); margin-top: 1px; }
         .nav-group { margin-bottom: 20px; }
@@ -88,14 +95,14 @@
         .d-btn-ghost { background: transparent; color: var(--neutral-500); padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 400; }
         .d-btn-icon { background: transparent; color: var(--neutral-700); width: 36px; height: 36px; border-radius: 50%; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
         .d-btn-icon:hover { background: var(--neutral-100); }
-        .d-btn-fab { background: var(--brand-500); color: #fff; width: 56px; height: 56px; border-radius: 50%; padding: 0; box-shadow: 0 6px 20px rgba(99,102,241,0.35); display: inline-flex; align-items: center; justify-content: center; }
+        .d-btn-fab { background: var(--brand-500); color: #fff; width: 56px; height: 56px; border-radius: 50%; padding: 0; box-shadow: 0 6px 20px rgba(26,107,90,0.28); display: inline-flex; align-items: center; justify-content: center; }
         .d-tabbar { display: flex; background: #fff; border-top: 1px solid var(--neutral-200); height: 56px; align-items: center; }
         .d-tabbar-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 10px; font-weight: 500; color: var(--neutral-400); cursor: pointer; padding: 6px 0; }
         .d-tabbar-item.active { color: var(--brand-500); }
         .d-tabbar-item i { width: 22px; height: 22px; }
         .d-header { display: flex; align-items: center; height: 44px; padding: 0 16px; background: #fff; }
         .d-card { background: #fff; border-radius: 12px; padding: 16px; border: 1px solid var(--neutral-200); box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-        .d-card-metric { background: linear-gradient(135deg, var(--brand-500), #7C3AED); color: #fff; border: none; box-shadow: 0 4px 16px rgba(99,102,241,0.2); }
+        .d-card-metric { background: linear-gradient(135deg, var(--brand-700), var(--brand-500), var(--brand-400)); color: #fff; border: none; box-shadow: 0 4px 16px rgba(26,107,90,0.18); }
         .d-chip { display: inline-flex; align-items: center; height: 32px; padding: 0 12px; border-radius: 16px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.12s; }
         .d-chip-active { background: var(--brand-500); color: #fff; }
         .d-chip-inactive { background: var(--neutral-100); color: var(--neutral-700); }
@@ -122,7 +129,7 @@
 <aside class="sidebar">
     <div class="sidebar-inner">
         <div class="sidebar-logo">
-            <div class="sidebar-logo-icon"><i data-lucide="wallet" style="width:20px;height:20px;"></i></div>
+            <div class="sidebar-logo-icon"><img src="02-Assets/logos/app-logo-house-receipt.svg" alt="了然应用图标"></div>
             <div>
                 <div class="sidebar-logo-text">了然 Liaoran</div>
                 <div class="sidebar-logo-sub">Design System v1.0</div>
@@ -194,6 +201,7 @@
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <span class="badge badge-id">v1.0.0</span>
             <span class="badge badge-usage">17 Components</span>
+            <span class="badge badge-id">Brand Logo v1</span>
             <span class="badge badge-id">Tamagui v2</span>
             <span class="badge badge-id">Lucide Icons</span>
         </div>
@@ -225,12 +233,20 @@ npm install @tamagui/lucide-icons lucide-react-native</pre></div>
     <div class="card">
         <h3 style="font-size:16px;font-weight:600;margin-bottom:16px;">Brand Colors</h3>
         <div class="vgrid">
-            <div><div class="swatch" style="background:#EEF2FF;"></div><p style="font-size:12px;font-family:monospace;margin-top:6px;">brand-50 #EEF2FF</p></div>
-            <div><div class="swatch" style="background:#C7D2FE;"></div><p style="font-size:12px;font-family:monospace;margin-top:6px;">brand-200 #C7D2FE</p></div>
-            <div><div class="swatch" style="background:#6366F1;"></div><p style="font-size:12px;font-family:monospace;margin-top:6px;">brand-500 #6366F1</p></div>
-            <div><div class="swatch" style="background:#4F46E5;"></div><p style="font-size:12px;font-family:monospace;margin-top:6px;">brand-600 #4F46E5</p></div>
-            <div><div class="swatch" style="background:#4338CA;"></div><p style="font-size:12px;font-family:monospace;margin-top:6px;">brand-700 #4338CA</p></div>
-            <div><div class="swatch" style="background:#312E81;"></div><p style="font-size:12px;font-family:monospace;margin-top:6px;">brand-900 #312E81</p></div>
+            <div><div class="swatch" style="background:#E8F5F1;"></div><p style="font-size:12px;font-family:monospace;margin-top:6px;">brand-50 #E8F5F1</p></div>
+            <div><div class="swatch" style="background:#A3D7C7;"></div><p style="font-size:12px;font-family:monospace;margin-top:6px;">brand-200 #A3D7C7</p></div>
+            <div><div class="swatch" style="background:#47AF8F;"></div><p style="font-size:12px;font-family:monospace;margin-top:6px;">brand-400 #47AF8F</p></div>
+            <div><div class="swatch" style="background:#1A6B5A;"></div><p style="font-size:12px;font-family:monospace;margin-top:6px;">brand-500 #1A6B5A</p></div>
+            <div><div class="swatch" style="background:#0F4F42;"></div><p style="font-size:12px;font-family:monospace;margin-top:6px;">brand-700 #0F4F42</p></div>
+            <div><div class="swatch" style="background:#052520;"></div><p style="font-size:12px;font-family:monospace;margin-top:6px;">brand-900 #052520</p></div>
+        </div>
+        <h3 style="font-size:16px;font-weight:600;margin:24px 0 16px;">Brand Logo</h3>
+        <div class="preview" style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
+            <img src="02-Assets/logos/app-logo-house-receipt.svg" alt="了然应用图标" style="width:96px;height:96px;border-radius:22px;box-shadow:0 8px 24px rgba(26,107,90,0.18);position:relative;z-index:1;">
+            <div style="position:relative;z-index:1;">
+                <p style="font-size:15px;font-weight:600;margin-bottom:4px;">App Logo Primary</p>
+                <p style="font-size:13px;color:var(--neutral-500);line-height:1.6;margin:0;">Source: <code>02-Assets/logos/app-logo-house-receipt.svg</code><br>Concept: 家 + 消费小票 + AI 闪光</p>
+            </div>
         </div>
         <h3 style="font-size:16px;font-weight:600;margin:24px 0 16px;">Semantic</h3>
         <div class="vgrid">
@@ -357,7 +373,7 @@ npm install @tamagui/lucide-icons lucide-react-native</pre></div>
             </div>
             <div><p style="font-size:11px;color:var(--neutral-400);margin-bottom:8px;">guidance</p>
                 <div class="d-card" style="display:flex;gap:12px;align-items:flex-start;">
-                    <div style="width:36px;height:36px;border-radius:10px;background:#EEF2FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="bell" style="width:18px;height:18px;color:var(--brand-500);"></i></div>
+                    <div style="width:36px;height:36px;border-radius:10px;background:var(--brand-50);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="bell" style="width:18px;height:18px;color:var(--brand-500);"></i></div>
                     <div style="flex:1;"><div style="font-weight:600;font-size:14px;">开启通知读取</div><div style="font-size:13px;color:var(--neutral-500);margin-top:4px;">自动捕获支付通知，实现零记账</div><button class="d-btn d-btn-primary" style="margin-top:12px;height:36px;font-size:13px;">去开启</button></div>
                 </div>
             </div>
@@ -610,6 +626,15 @@ npm install @tamagui/lucide-icons lucide-react-native</pre></div>
 <section id="changelog" style="margin-bottom:48px;scroll-margin-top:2rem;">
     <div class="section-title">Changelog</div>
     <div class="card">
+        <div style="border-left:3px solid var(--brand-500);padding-left:16px;margin-bottom:20px;">
+            <p style="font-weight:600;font-size:14px;">2026-05-13 — Brand Logo 资产入库</p>
+            <ul style="font-size:13px;color:var(--neutral-500);margin-top:6px;padding-left:16px;line-height:1.8;">
+                <li>新增 `02-Assets/logos/app-logo-house-receipt.svg` 作为 App logo canonical source</li>
+                <li>Catalog 侧边栏和 Design Tokens 区域接入正式 logo 预览</li>
+                <li>Brand token 从旧紫色占位更新为了然绿系 token</li>
+                <li>清理旧 `design-artifacts/D-Design-System/` 临时目录</li>
+            </ul>
+        </div>
         <div style="border-left:3px solid var(--brand-500);padding-left:16px;margin-bottom:20px;">
             <p style="font-weight:600;font-size:14px;">2026-04-11 — 质感打磨 + 最终组件</p>
             <ul style="font-size:13px;color:var(--neutral-500);margin-top:6px;padding-left:16px;line-height:1.8;">
