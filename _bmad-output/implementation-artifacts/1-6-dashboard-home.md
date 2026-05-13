@@ -1,6 +1,6 @@
 # Story 1.6: Dashboard 首页
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -59,10 +59,10 @@ so that 我能快速了解当月财务状况并处理待确认交易。
 
 ### Review Findings
 
-- [ ] [Review][Patch] Dashboard loading/error gate blocks successfully loaded data blocks [apps/mobile/app/(main)/dashboard.tsx:427]
-- [ ] [Review][Patch] Full-data dashboard has no notification-permission re-entry [apps/mobile/app/(main)/dashboard.tsx:346]
-- [ ] [Review][Patch] Positive-only income months are counted as expenses [apps/api/lib/dashboard/dashboard-service.ts:176]
-- [ ] [Review][Patch] Nested `.env.local` files are no longer ignored [./.gitignore:19]
+- [x] [Review][Patch] Dashboard loading/error gate blocks successfully loaded data blocks [apps/mobile/app/(main)/dashboard.tsx:427] - 已拆分 summary/recent render state，单块失败不会遮住另一块的已成功数据。
+- [x] [Review][Patch] Full-data dashboard has no notification-permission re-entry [apps/mobile/app/(main)/dashboard.tsx:346] - 已在完整数据态的 Action 区补回 `/(setup)/permissions` 入口。
+- [x] [Review][Patch] Positive-only income months are counted as expenses [apps/api/lib/dashboard/dashboard-service.ts:176] - 已补 `DashboardService` 回归测试，确认正数收入月不计入 `totalExpenseCents` 且 pending/confirmed 口径保持稳定。
+- [x] [Review][Patch] Nested `.env.local` files are no longer ignored [./.gitignore:19] - 已新增 `**/.env.local` 与 `**/.env.*.local`，并用 `git check-ignore` 复核。
 
 ## Dev Notes
 
@@ -137,11 +137,24 @@ GPT-5 Codex
 - 2026-04-27: 完成移动端 Dashboard 数据层与首页 UI；包含 full/empty/loading/error 状态、下拉刷新、独立缓存、最近交易、分类 Top 5、CTA 与 FAB 受控动作。
 - 2026-04-27: 未新增数据库 migration；本 Story 复用既有 `billing.transactions`、`billing.categories`、`analytics.monthly_summaries` 表结构。
 - 2026-04-27: 单元测试、lint、编译验证均通过，Story 状态推进到 review。
+- 2026-05-09: 关闭 4 项 review findings，补充 Dashboard 块级渲染状态、通知权限重入口、支出聚合回归测试与 `.env.local` ignore 规则。
+
+### Verification
+
+- `pnpm --filter mobile test -- lib/dashboard-render-state.test.ts lib/dashboard-api.test.ts screens/onboarding/content.test.ts`
+- `pnpm --filter api test -- lib/dashboard/dashboard-service.test.ts`
+- `pnpm --filter mobile lint`
+- `pnpm lint`
+- `pnpm test`
+- `pnpm build`
+- `pnpm --filter mobile exec tsc --noEmit`
+- `pnpm --filter api exec tsc --noEmit`
 
 ### File List
 
 - `_bmad-output/implementation-artifacts/1-6-dashboard-home.md`
 - `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- `.gitignore`
 - `apps/api/app/api/analytics/monthly-summary/route.test.ts`
 - `apps/api/app/api/analytics/monthly-summary/route.ts`
 - `apps/api/app/api/billing/transactions/route.test.ts`
@@ -154,6 +167,8 @@ GPT-5 Codex
 - `apps/mobile/app/(main)/dashboard.tsx`
 - `apps/mobile/lib/dashboard-api.test.ts`
 - `apps/mobile/lib/dashboard-api.ts`
+- `apps/mobile/lib/dashboard-render-state.test.ts`
+- `apps/mobile/lib/dashboard-render-state.ts`
 - `apps/mobile/stores/auth-store.test.ts`
 - `apps/mobile/stores/auth-store.ts`
 - `packages/shared/constants/billing.ts`
@@ -168,3 +183,4 @@ GPT-5 Codex
 - 2026-04-27: 创建 Story 1.6 开发规格，状态设为 ready-for-dev。
 - 2026-04-27: Story 1.6 开始实现，状态设为 in-progress。
 - 2026-04-27: 完成 Dashboard shared/API/mobile 实现与测试，状态设为 review。
+- 2026-05-09: 收口 Story 1.6 review findings，状态改为 done。
