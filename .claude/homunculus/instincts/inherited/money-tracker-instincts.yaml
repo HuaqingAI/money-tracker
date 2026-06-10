@@ -1,0 +1,480 @@
+# Instincts generated from https://github.com/HuaqingAI/money-tracker
+# Generated: 2026-05-09T08:58:19.216Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: money-tracker-commit-conventional
+trigger: "when writing a commit message"
+confidence: 0.85
+domain: git
+source: repo-analysis
+source_repo: https://github.com/HuaqingAI/money-tracker
+---
+
+# Money Tracker Commit Conventional
+
+## Action
+
+Use conventional commit format with prefixes: fix, feat
+
+## Evidence
+
+- 4 commits analyzed
+- Detected conventional commit pattern
+- Examples: feat(ui): implement DS component layer, fix(mobile): expose semver to metro build
+
+---
+id: money-tracker-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/HuaqingAI/money-tracker
+---
+
+# Money Tracker Commit Length
+
+## Action
+
+Write moderate-length commit messages (~50 characters)
+
+## Evidence
+
+- Average commit message length: 50 chars
+- Based on 4 commits
+
+---
+id: money-tracker-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/HuaqingAI/money-tracker
+---
+
+# Money Tracker Naming Files
+
+## Action
+
+Use camelCase naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: camelCase
+
+---
+id: money-tracker-import-relative
+trigger: "when importing modules"
+confidence: 0.75
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/HuaqingAI/money-tracker
+---
+
+# Money Tracker Import Relative
+
+## Action
+
+Use relative imports for project files
+
+## Evidence
+
+- Import analysis shows relative import pattern
+- Example: import { x } from '../lib/x'
+
+---
+id: money-tracker-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/HuaqingAI/money-tracker
+---
+
+# Money Tracker Export Style
+
+## Action
+
+Prefer mixed exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: mixed
+
+---
+id: money-tracker-test-framework
+trigger: "when writing tests"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/HuaqingAI/money-tracker
+---
+
+# Money Tracker Test Framework
+
+## Action
+
+Use vitest as the test framework
+
+## Evidence
+
+- Test framework detected: vitest
+- File pattern: *.test.tsx
+
+---
+id: money-tracker-test-naming
+trigger: "when creating a test file"
+confidence: 0.85
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/HuaqingAI/money-tracker
+---
+
+# Money Tracker Test Naming
+
+## Action
+
+Name test files using the pattern: *.test.tsx
+
+## Evidence
+
+- File pattern: *.test.tsx
+- Consistent across test files
+
+---
+id: money-tracker-workflow-add-or-update-ui-component
+trigger: "when doing add or update ui component"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/HuaqingAI/money-tracker
+---
+
+# Money Tracker Workflow Add Or Update Ui Component
+
+## Action
+
+Follow the add-or-update-ui-component workflow:
+1. Create or update the component implementation file in packages/ui/src/
+2. Create or update a corresponding .stories.tsx file for Storybook in packages/ui/src/
+3. Create or update a corresponding test file in packages/ui/src/__tests__/
+4. Update packages/ui/src/index.ts to export the component
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: packages/ui/src/[component].tsx, packages/ui/src/[component].stories.tsx, packages/ui/src/__tests__/[component].test.tsx
+
+---
+id: money-tracker-workflow-api-or-shared-schema-change
+trigger: "when doing api or shared schema change"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/HuaqingAI/money-tracker
+---
+
+# Money Tracker Workflow Api Or Shared Schema Change
+
+## Action
+
+Follow the api-or-shared-schema-change workflow:
+1. Create or update API route implementation and test files in apps/api/app/api/[feature]/[endpoint]/
+2. Update or add service files and their tests in apps/api/lib/[feature]/
+3. Update or add shared schema and type definitions in packages/shared/schemas/ and packages/shared/types/
+4. If database structure changes, add a new migration in supabase/migrations/
+5. Update scripts or configs as needed (e.g., supabase/scripts/gen-types.mjs)
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: apps/api/app/api/*/*/route.ts, apps/api/app/api/*/*/route.test.ts, apps/api/lib/*/*.ts
+
+---
+id: money-tracker-instinct-file-naming
+trigger: "When creating a new file (component, test, util, etc.) in the repository"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: HuaqingAI/money-tracker
+---
+
+# Money Tracker Instinct File Naming
+
+## Action
+
+Name the file using camelCase (e.g., myComponent.tsx)
+
+## Evidence
+
+- Pattern in namingConventions.files
+- Seen in packages/ui/src/[component].tsx
+
+---
+id: money-tracker-instinct-function-naming
+trigger: "When defining a new function"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: HuaqingAI/money-tracker
+---
+
+# Money Tracker Instinct Function Naming
+
+## Action
+
+Name the function using camelCase (e.g., fetchData)
+
+## Evidence
+
+- Pattern in namingConventions.functions
+- Seen in TypeScript files across packages/ui and apps/api
+
+---
+id: money-tracker-instinct-class-naming
+trigger: "When defining a new class"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: HuaqingAI/money-tracker
+---
+
+# Money Tracker Instinct Class Naming
+
+## Action
+
+Name the class using PascalCase (e.g., MoneyTracker)
+
+## Evidence
+
+- Pattern in namingConventions.classes
+- Seen in TypeScript files
+
+---
+id: money-tracker-instinct-constant-naming
+trigger: "When defining a constant"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: HuaqingAI/money-tracker
+---
+
+# Money Tracker Instinct Constant Naming
+
+## Action
+
+Name the constant using SCREAMING_SNAKE_CASE (e.g., MAX_AMOUNT)
+
+## Evidence
+
+- Pattern in namingConventions.constants
+- Seen in TypeScript files
+
+---
+id: money-tracker-instinct-import-style
+trigger: "When importing modules within the repository"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: HuaqingAI/money-tracker
+---
+
+# Money Tracker Instinct Import Style
+
+## Action
+
+Use relative import paths (e.g., import x from '../utils/x')
+
+## Evidence
+
+- Pattern in importStyle: relative
+- Seen in TypeScript source files
+
+---
+id: money-tracker-instinct-export-style
+trigger: "When exporting modules or symbols"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: HuaqingAI/money-tracker
+---
+
+# Money Tracker Instinct Export Style
+
+## Action
+
+Use both named and default exports as appropriate (mixed export style)
+
+## Evidence
+
+- Pattern in exportStyle: mixed
+- Seen in packages/ui/src/index.ts
+
+---
+id: money-tracker-instinct-test-file-location
+trigger: "When adding a test for a component or module"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: HuaqingAI/money-tracker
+---
+
+# Money Tracker Instinct Test File Location
+
+## Action
+
+Place the test file alongside the implementation or in a __tests__ folder (mixed test location)
+
+## Evidence
+
+- Pattern in testLocation: mixed
+- Seen in packages/ui/src/__tests__/[component].test.tsx
+
+---
+id: money-tracker-instinct-test-file-naming
+trigger: "When naming a test file"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: HuaqingAI/money-tracker
+---
+
+# Money Tracker Instinct Test File Naming
+
+## Action
+
+Use the pattern *.test.tsx for test files
+
+## Evidence
+
+- Pattern in testing.filePattern: *.test.tsx
+- Seen in packages/ui/src/__tests__/[component].test.tsx
+
+---
+id: money-tracker-instinct-test-framework
+trigger: "When writing or configuring tests"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: HuaqingAI/money-tracker
+---
+
+# Money Tracker Instinct Test Framework
+
+## Action
+
+Use the Vitest framework for testing
+
+## Evidence
+
+- Pattern in testing.framework: vitest
+- Seen in packages/ui/vitest.config.ts
+
+---
+id: money-tracker-instinct-test-type
+trigger: "When writing tests"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: HuaqingAI/money-tracker
+---
+
+# Money Tracker Instinct Test Type
+
+## Action
+
+Write unit tests
+
+## Evidence
+
+- Pattern in testing.testTypes: unit
+- Seen in *.test.tsx files
+
+---
+id: money-tracker-instinct-git-commit-format
+trigger: "When making a git commit"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: HuaqingAI/money-tracker
+---
+
+# Money Tracker Instinct Git Commit Format
+
+## Action
+
+Use conventional commit prefixes (feat, fix) followed by scope and message (e.g., feat(ui): ...)
+
+## Evidence
+
+- Pattern in commits.prefixes: feat, fix
+- Seen in commit: feat(ui): implement DS component layer
+
+---
+id: money-tracker-instinct-git-commit-length
+trigger: "When writing a commit message"
+confidence: 0.7
+domain: git
+source: repo-analysis
+source_repo: HuaqingAI/money-tracker
+---
+
+# Money Tracker Instinct Git Commit Length
+
+## Action
+
+Keep the commit message concise, around 50 characters on average
+
+## Evidence
+
+- Pattern in commits.averageLength: 50
+- Seen in commit examples
+
+---
+id: money-tracker-instinct-add-ui-component
+trigger: "When adding or updating a UI component in the design system package"
+confidence: 0.95
+domain: workflow
+source: repo-analysis
+source_repo: HuaqingAI/money-tracker
+---
+
+# Money Tracker Instinct Add Ui Component
+
+## Action
+
+Create/update implementation, story, test, and export in index.ts for the component
+
+## Evidence
+
+- Workflow: add-or-update-ui-component
+- Files: packages/ui/src/[component].tsx, .stories.tsx, __tests__/, index.ts
+- Commit sequence in workflow example
+
+---
+id: money-tracker-instinct-api-schema-change
+trigger: "When adding or updating an API endpoint or shared schema/type"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: HuaqingAI/money-tracker
+---
+
+# Money Tracker Instinct Api Schema Change
+
+## Action
+
+Create/update API route and test, update/add service files and tests, update/add shared schemas/types, add migration if needed, update scripts/configs as needed
+
+## Evidence
+
+- Workflow: api-or-shared-schema-change
+- Files: apps/api/app/api/*/*/route.ts, route.test.ts, packages/shared/schemas/*.ts, supabase/migrations/*.sql
+- Commit sequence in workflow example
+
